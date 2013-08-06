@@ -1,0 +1,291 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4FC50E09-DB4F-43D5-8C13-FB52F008DD57}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>BMCLV2</RootNamespace>
+    <AssemblyName>BMCLV2</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile />
+    <PublishUrl>发布\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>tofu.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="auth.cs" />
+    <Compile Include="config.cs" />
+    <Compile Include="download\DownLib.cs" />
+    <Compile Include="download\downloader.cs" />
+    <Compile Include="download\DownNative.cs" />
+    <Compile Include="FrmCheckRes.xaml.cs">
+      <DependentUpon>FrmCheckRes.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FrmPrs.xaml.cs">
+      <DependentUpon>FrmPrs.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="HtmlAgilityPack\crc32.cs" />
+    <Compile Include="HtmlAgilityPack\EncodingFoundException.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlAttribute.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlAttributeCollection.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlCmdLine.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlCommentNode.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlConsoleListener.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlDocument.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlDocument.PathMethods.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlDocument.Xpath.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlElementFlag.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlEntity.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlNameTable.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlNode.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlNode.Xpath.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlNodeCollection.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlNodeNavigator.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlNodeType.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlParseError.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlParseErrorCode.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlTextNode.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlWeb.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlWeb.Xpath.cs" />
+    <Compile Include="HtmlAgilityPack\HtmlWebException.cs" />
+    <Compile Include="HtmlAgilityPack\IOLibrary.cs" />
+    <Compile Include="HtmlAgilityPack\MixedCodeDocument.cs" />
+    <Compile Include="HtmlAgilityPack\MixedCodeDocumentCodeFragment.cs" />
+    <Compile Include="HtmlAgilityPack\MixedCodeDocumentFragment.cs" />
+    <Compile Include="HtmlAgilityPack\MixedCodeDocumentFragmentList.cs" />
+    <Compile Include="HtmlAgilityPack\MixedCodeDocumentFragmentType.cs" />
+    <Compile Include="HtmlAgilityPack\MixedCodeDocumentTextFragment.cs" />
+    <Compile Include="HtmlAgilityPack\NameValuePair.cs" />
+    <Compile Include="HtmlAgilityPack\NameValuePairList.cs" />
+    <Compile Include="HtmlAgilityPack\Trace.cs" />
+    <Compile Include="HtmlAgilityPack\Trace.FullFramework.cs" />
+    <Compile Include="HtmlAgilityPack\Utilities.cs" />
+    <Compile Include="launcher\gameinfo.cs" />
+    <Compile Include="libraries\extract.cs" />
+    <Compile Include="libraries\libraryies.cs" />
+    <Compile Include="libraries\OS.cs" />
+    <Compile Include="libraries\ros.cs" />
+    <Compile Include="libraries\rules.cs" />
+    <Compile Include="Report.cs" />
+    <Compile Include="Resource\NormalProfile.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>NormalProfile.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Resource\Url.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Url.resx</DependentUpon>
+    </Compile>
+    <Compile Include="util\Dir.cs" />
+    <Compile Include="Versions\RawVersionListType.cs" />
+    <Compile Include="Versions\RemoteVerType.cs" />
+    <Compile Include="zip\Checksums\Adler32.cs" />
+    <Compile Include="zip\Checksums\CRC32.cs" />
+    <Compile Include="zip\Checksums\IChecksum.cs" />
+    <Compile Include="zip\Checksums\StrangeCRC.cs" />
+    <Compile Include="zip\Compression\Deflater.cs" />
+    <Compile Include="zip\Compression\DeflaterConstants.cs" />
+    <Compile Include="zip\Compression\DeflaterEngine.cs" />
+    <Compile Include="zip\Compression\DeflaterHuffman.cs" />
+    <Compile Include="zip\Compression\DeflaterPending.cs" />
+    <Compile Include="zip\Compression\Inflater.cs" />
+    <Compile Include="zip\Compression\InflaterDynHeader.cs" />
+    <Compile Include="zip\Compression\InflaterHuffmanTree.cs" />
+    <Compile Include="zip\Compression\PendingBuffer.cs" />
+    <Compile Include="zip\Compression\Streams\DeflaterOutputStream.cs" />
+    <Compile Include="zip\Compression\Streams\InflaterInputStream.cs" />
+    <Compile Include="zip\Compression\Streams\OutputWindow.cs" />
+    <Compile Include="zip\Compression\Streams\StreamManipulator.cs" />
+    <Compile Include="zip\Core\FileSystemScanner.cs" />
+    <Compile Include="zip\Core\INameTransform.cs" />
+    <Compile Include="zip\Core\IScanFilter.cs" />
+    <Compile Include="zip\Core\NameFilter.cs" />
+    <Compile Include="zip\Core\PathFilter.cs" />
+    <Compile Include="zip\Core\StreamUtils.cs" />
+    <Compile Include="zip\Core\WindowsPathUtils.cs" />
+    <Compile Include="zip\Encryption\PkzipClassic.cs" />
+    <Compile Include="zip\Encryption\ZipAESStream.cs" />
+    <Compile Include="zip\Encryption\ZipAESTransform.cs" />
+    <Compile Include="zip\FastZip.cs" />
+    <Compile Include="zip\IEntryFactory.cs" />
+    <Compile Include="zip\SharpZipBaseException.cs" />
+    <Compile Include="zip\WindowsNameTransform.cs" />
+    <Compile Include="zip\ZipConstants.cs" />
+    <Compile Include="zip\ZipEntry.cs" />
+    <Compile Include="zip\ZipEntryFactory.cs" />
+    <Compile Include="zip\ZipException.cs" />
+    <Compile Include="zip\ZipExtraData.cs" />
+    <Compile Include="zip\ZipFile.cs" />
+    <Compile Include="zip\ZipHelperStream.cs" />
+    <Compile Include="zip\ZipInputStream.cs" />
+    <Compile Include="zip\ZipNameTransform.cs" />
+    <Compile Include="zip\ZipOutputStream.cs" />
+    <Page Include="FrmCheckRes.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FrmMain.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FrmMain.xaml.cs">
+      <DependentUpon>FrmMain.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="FrmPrs.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="launcher\launcher.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resource\NormalProfile.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>NormalProfile.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resource\Url.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Url.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="HtmlAgilityPack\HtmlAgilityPack.snk" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resource\tofu slime.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="tofu.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.5">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.5 %28x86 和 x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="HtmlAgilityPack\HtmlAgilityPack VS2008.csproj" />
+    <Content Include="HtmlAgilityPack\HtmlAgilityPack.csproj" />
+    <Content Include="HtmlAgilityPack\HtmlAgilityPack.csproj.vspscc" />
+    <Content Include="HtmlAgilityPack\HtmlAgilityPack.fx.4.0-CP.csproj" />
+    <Content Include="HtmlAgilityPack\HtmlAgilityPack.fx.4.0.csproj" />
+    <Content Include="HtmlAgilityPack\HtmlAgilityPack.fx.4.5.csproj" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>F:\Code\VS\IncBuildNo.exe "$(PROJECTDIR)\Properties\AssemblyInfo.cs" "\[assembly: AssemblyVersion\(\"\d+\.\d+\.\d+\.(\d+)" 1
+F:\Code\VS\IncBuildNo.exe "$(PROJECTDIR)\Properties\AssemblyInfo.cs" "\[assembly: AssemblyFileVersion\(\"\d+\.\d+\.\d+\.(\d+)" 1
+</PreBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,10 @@
+﻿<Window x:Name="frmPrs" x:Class="BMCLV2.FrmPrs"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="FrmPrs" Height="113" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None">
+    <Grid>
+        <Label x:Name="labName" Content="Label" HorizontalAlignment="Center" Height="48" Margin="45,25,41,0" VerticalAlignment="Top" Width="214" FontSize="16" HorizontalContentAlignment="Center"/>
+        <Label x:Name="labStatus" Content="Label" HorizontalAlignment="Center" Margin="63,78,57,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Width="180"/>
+
+    </Grid>
+</Window>
