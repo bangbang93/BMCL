@@ -22,9 +22,11 @@ using System.Diagnostics;
 using System.Net;
 using System.Data;
 using System.Threading;
+using System.Net.Sockets;
 
 
 using BMCLV2.Versions;
+using BMCLV2.util;
 
 using HtmlAgilityPack;
 
@@ -69,6 +71,14 @@ namespace BMCLV2
             MenuItem.Click += NMenu_ShowMainWindows_Click;
             NIcon.DoubleClick += NIcon_DoubleClick;
             NIcon.ContextMenu = NMenu;
+            System.Windows.Controls.ContextMenu SkinMenu = new System.Windows.Controls.ContextMenu();
+            System.Windows.Controls.MenuItem SelectFile = new System.Windows.Controls.MenuItem();
+            SelectFile.Name = "menuSelectFile";
+            SelectFile.Header = "选择文件";
+            SelectFile.Click += SelectFile_Click;
+            SkinMenu.Items.Add(SelectFile);
+            btnChangeBg.ContextMenu = SkinMenu;
+            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
 
             #region 加载插件
             listAuth.Items.Add("啥都没有");
@@ -141,6 +151,14 @@ namespace BMCLV2
 #endif
         }
 
+        void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            e.Handled = true;
+            var crash = new CrashHandle(e.Exception);
+            crash.Show();
+        }
+
+
 
         #region 公共按钮
         private void btnChangeBg_Click(object sender, RoutedEventArgs e)
@@ -207,101 +225,140 @@ namespace BMCLV2
                 return;
             }
             FrmPrs starter = new FrmPrs("正在准备游戏环境及启动游戏");
-            starter.Show();
-            changeEvent("正在登陆");
-            try
+            int SelectedIndex = listAuth.SelectedIndex;
+            Thread thGO = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
             {
-                if (listAuth.SelectedIndex != 0)
+                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                 {
-                    object Auth = Auths[Auths.Count - 1];
-                    Type T = Auth.GetType();
-                    MethodInfo Login = T.GetMethod("login");
-                    string loginans;
-                    try
+                    starter.Show();
+                    starter.Activate();
+                    starter.Focus();
+                    changeEvent("正在登陆");
+                }));
+                
+                try
+                {
+                    if (SelectedIndex != 0)
                     {
-                        loginans = Login.Invoke(Auth, new object[] { txtUserName.Text, txtPwd.Password }).ToString();
-                    }
-                    catch (Exception ex)
-                    {
-                        Exception exc = ex;
-                        while (exc.InnerException != null)
-                        {
-                            exc = exc.InnerException;
-                        }
-                        MessageBox.Show(exc.Message);
-                        return;
-                    }
-                    if (loginans == "True")
-                    {
-                        cfg.username = txtUserName.Text;
-                        cfg.passwd = Encoding.UTF8.GetBytes(txtPwd.Password);
-                        cfg.javaxmx = txtJavaXmx.Text;
-                        cfg.javaw = txtJavaPath.Text;
-                        cfg.login = listAuth.SelectedItem.ToString();
-                        cfg.lastPlayVer = listVer.SelectedItem.ToString();
-                        cfg.autostart = checkAutoStart.IsChecked.Value;
-                        cfg.extraJVMArg = txtExtJArg.Text;
-                        MethodInfo getSession = T.GetMethod("getsession");
-                        session = getSession.Invoke(Auth, null).ToString();
-                        config.Save(cfg, cfgfile);
-                        MethodInfo getPname = T.GetMethod("getPname");
-                        string username = getPname.Invoke(Auth, null).ToString();
+                        object Auth = Auths[Auths.Count - 1];
+                        Type T = Auth.GetType();
+                        MethodInfo Login = T.GetMethod("login");
+                        string loginans = "false";
                         try
                         {
-                            game = new launcher(txtJavaPath.Text, txtJavaXmx.Text, username, listVer.SelectedItem.ToString(), info, txtExtJArg.Text, session);
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { loginans = Login.Invoke(Auth, new object[] { txtUserName.Text, txtPwd.Password }).ToString(); }));
+                        }
+                        catch (Exception ex)
+                        {
+                            Exception exc = ex;
+                            while (exc.InnerException != null)
+                            {
+                                exc = exc.InnerException;
+                            }
+                            MessageBox.Show(exc.Message);
+                            return;
+                        }
+                        if (loginans == "True")
+                        {
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                            {
+                                cfg.username = txtUserName.Text;
+                                cfg.passwd = Encoding.UTF8.GetBytes(txtPwd.Password);
+                                cfg.javaxmx = txtJavaXmx.Text;
+                                cfg.javaw = txtJavaPath.Text;
+                                cfg.login = listAuth.SelectedItem.ToString();
+                                cfg.lastPlayVer = listVer.SelectedItem.ToString();
+                                cfg.autostart = checkAutoStart.IsChecked.Value;
+                                cfg.extraJVMArg = txtExtJArg.Text;
+                            }));
+                            MethodInfo getSession = T.GetMethod("getsession");
+                            session = getSession.Invoke(Auth, null).ToString();
+                            config.Save(cfg, cfgfile);
+                            MethodInfo getPname = T.GetMethod("getPname");
+                            string username = getPname.Invoke(Auth, null).ToString();
+                            try
+                            {
+                                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { game = new launcher(txtJavaPath.Text, txtJavaXmx.Text, username, listVer.SelectedItem.ToString(), info, txtExtJArg.Text, session); }));
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("登录失败，用户名或密码错误");
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                            {
+                                cfg.username = txtUserName.Text;
+                                cfg.passwd = null;
+                                cfg.javaxmx = txtJavaXmx.Text;
+                                cfg.javaw = txtJavaPath.Text;
+                                cfg.login = listAuth.SelectedItem.ToString();
+                                cfg.lastPlayVer = listVer.SelectedItem.ToString();
+                                cfg.autostart = checkAutoStart.IsChecked.Value;
+                                cfg.extraJVMArg = txtExtJArg.Text;
+                            }));
+                            config.Save(cfg, cfgfile);
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { game = new launcher(txtJavaPath.Text, txtJavaXmx.Text, txtUserName.Text, listVer.SelectedItem.ToString(), info, txtExtJArg.Text); }));
                         }
                         catch (Exception ex)
                         {
                             MessageBox.Show(ex.Message);
                         }
                     }
-                    else
-                    {
-                        MessageBox.Show("登录失败，用户名或密码错误");
-                        return;
-                    }
-                }
-                else
-                {
+
                     try
                     {
-                        cfg.username = txtUserName.Text;
-                        cfg.passwd = null;
-                        cfg.javaxmx = txtJavaXmx.Text;
-                        cfg.javaw = txtJavaPath.Text;
-                        cfg.login = listAuth.SelectedItem.ToString();
-                        cfg.lastPlayVer = listVer.SelectedItem.ToString();
-                        cfg.autostart = checkAutoStart.IsChecked.Value;
-                        cfg.extraJVMArg = txtExtJArg.Text;
-                        config.Save(cfg, cfgfile);
-                        game = new launcher(txtJavaPath.Text, txtJavaXmx.Text, txtUserName.Text, listVer.SelectedItem.ToString(), info, txtExtJArg.Text);
+                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                        {
+                            bool start = game.start();
+                            launcher.gameexit += launcher_gameexit;
+                            this.Hide();
+                        }));
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show(ex.Message);
                     }
                 }
-
-                try
+                finally
                 {
-                    bool start = game.start();
-                    launcher.gameexit += launcher_gameexit;
-                    this.Hide();
+                    NIcon.Visible = true;
+                    NIcon.ShowBalloonTip(10000, "BMCL", "启动" + cfg.lastPlayVer + "成功", System.Windows.Forms.ToolTipIcon.Info);
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { starter.Close(); }));
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-            }
-            finally
-            {
-                NIcon.Visible = true;
-                NIcon.ShowBalloonTip(10000, "BMCL", "启动" + cfg.lastPlayVer + "成功", System.Windows.Forms.ToolTipIcon.Info);
-                starter.Close();
-            }
+            })));
+            thGO.Start();
 
         }
-
+        void SelectFile_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog ofbg = new System.Windows.Forms.OpenFileDialog();
+            ofbg.CheckFileExists = true;
+            ofbg.Filter = "支持的图片|*.jpg;*.png;*.bmp";
+            ofbg.Multiselect = false;
+            string pic;
+            if (ofbg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                pic = ofbg.FileName;
+            else
+                return;
+            ImageBrush b = new ImageBrush();
+            b.ImageSource = new BitmapImage(new Uri((pic)));
+            b.Stretch = Stretch.Fill;
+            DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
+            this.BeginAnimation(FrmMain.OpacityProperty, da);
+            this.Top.Background = b;
+            da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
+            this.BeginAnimation(FrmMain.OpacityProperty, da);
+        }
         void launcher_gameexit()
         {
             if (!inscreen)
@@ -676,6 +733,12 @@ namespace BMCLV2
             cfg.WindowTransparency = sliderWindowTransparency.Value;
             cfg.Report = checkReport.IsChecked.Value;
             config.Save(cfg, cfgfile);
+            DoubleAnimationUsingKeyFrames dak = new DoubleAnimationUsingKeyFrames();
+            dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(0)));
+            dak.KeyFrames.Add(new LinearDoubleKeyFrame(30, TimeSpan.FromSeconds(0.3)));
+            dak.KeyFrames.Add(new LinearDoubleKeyFrame(30, TimeSpan.FromSeconds(2.3)));
+            dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(2.6)));
+            popupSaveSuccess.BeginAnimation(Grid.HeightProperty, dak);
         }
         private void sliderJavaxmx_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -708,7 +771,7 @@ namespace BMCLV2
         #region tabRemoteVer
         private void btnRefreshRemoteVer_Click(object sender, RoutedEventArgs e)
         {
-            listRemoteVer.Items.Clear();
+            listRemoteVer.DataContext = null;
             DataContractJsonSerializer RawJson = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(RawVersionListType));
             HttpWebRequest GetJson = (HttpWebRequest)WebRequest.Create("https://s3.amazonaws.com/Minecraft.Download/versions/versions.json");
             GetJson.Timeout = 10000;
@@ -741,7 +804,7 @@ namespace BMCLV2
                 }
                 catch (TimeoutException ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show("刷新版本时与Mojang服务器通信超时");
                 }
             })));
             thGet.Start();
@@ -996,6 +1059,202 @@ namespace BMCLV2
         #endregion
 
 
+        #region tabServerList
+        private serverlist.serverlist sl;
+        private void btnReflushServer_Click(object sender, RoutedEventArgs e)
+        {
+            this.listServer.DataContext = null;
+            Thread thGetServerInfo = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
+            {
+                DataTable dt=new DataTable();
+                dt.Columns.Add("服务器名");
+                dt.Columns.Add("隐藏地址");
+                dt.Columns.Add("地址");
+                dt.Columns.Add("服务器介绍");
+                dt.Columns.Add("版本");
+                dt.Columns.Add("在线人数");
+                dt.Columns.Add("延迟");
+                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnReflushServer.Content = "正在检测延迟"; }));
+                if (File.Exists(@".minecraft\servers.dat"))
+                {
+                    sl = new serverlist.serverlist();
+                    foreach (serverlist.serverinfo info in sl.info)
+                    {
+                        DateTime start = DateTime.Now;
+                        string[] server = new string[7];
+                        server[0] = info.Name;
+                        server[1] = info.IsHide ? "是" : "否";
+                        if (info.IsHide)
+                            server[2] = string.Empty;
+                        else
+                            server[2] = info.Address;
+                        try
+                        {
+                            Socket con = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                            con.ReceiveTimeout = 3000;
+                            con.SendTimeout = 3000;
+                            if (info.Address.Split(':').Length == 1)
+                                con.Connect(Dns.GetHostAddresses(info.Address.Split(':')[0]), 25565);
+                            else
+                                con.Connect(Dns.GetHostAddresses(info.Address.Split(':')[0]), int.Parse(info.Address.Split(':')[1]));
+                            con.Send(new byte[1] { 254 });
+                            con.Send(new byte[1] { 1 });
+                            byte[] recive = new byte[512];
+                            int bytes = con.Receive(recive);
+                            if (recive[0] != 255)
+                            {
+                                throw new Exception("服务器回复无效");
+                            }
+                            string message = Encoding.UTF8.GetString(recive, 4, bytes - 4);
+                            StringBuilder remessage = new StringBuilder(30);
+                            for (int i = 0; i <= message.Length; i += 2)
+                            {
+                                remessage.Append(message[i]);
+                            }
+                            message = remessage.ToString();
+                            con.Shutdown(SocketShutdown.Both);
+                            con.Close();
+                            DateTime end = DateTime.Now;
+                            char[] achar = message.ToCharArray();
+
+                            for (int i = 0; i < achar.Length; ++i)
+                            {
+                                if (achar[i] != 167 && achar[i] != 0 && char.IsControl(achar[i]))
+                                {
+                                    achar[i] = (char)63;
+                                }
+                            }
+                            message = new String(achar);
+                            if (message[0] == (char)253 || message[0] == (char)65533)
+                            {
+                                message = (char)167 + message.Substring(1);
+                            }
+                            string[] astring;
+                            if (message.StartsWith("\u00a7") && message.Length > 1)
+                            {
+                                astring = message.Substring(1).Split('\0');
+                                if (MathHelper.parseIntWithDefault(astring[0], 0) == 1)
+                                {
+                                    server[3] = astring[3];
+                                    server[4] = astring[2];
+                                    int online = MathHelper.parseIntWithDefault(astring[4], 0);
+                                    int maxplayer = MathHelper.parseIntWithDefault(astring[5], 0);
+                                    server[5] = online + "/" + maxplayer;
+                                }
+                            }
+                            else
+                            {
+                                server[3] = " ";
+                                server[4] = " ";
+                                server[5] = " ";
+                            }
+                            server[6] = (end - start).Milliseconds.ToString() + " ms";
+                            //    if (((end - start).Milliseconds < 200))
+                            //    {
+                            //        server.SubItems[0].ForeColor = Color.Green;
+                            //    }
+                            //    else
+                            //        if (((end - start).Milliseconds < 500))
+                            //        {
+                            //            server.SubItems[0].ForeColor = Color.Blue;
+                            //        }
+                            //        else
+                            //            if (((end - start).Milliseconds < 1000))
+                            //            {
+                            //                server.SubItems[0].ForeColor = Color.YellowGreen;
+                            //            }
+                            //            else
+                            //                if (((end - start).Milliseconds < 3000))
+                            //                {
+                            //                    server.SubItems[0].ForeColor = Color.Orange;
+                            //                }
+                            //                else
+                            //                    if (((end - start).Milliseconds > 3000))
+                            //                    {
+                            //                        server.SubItems[0].ForeColor = Color.OrangeRed;
+                            //                    }
+                        }
+                        catch (SocketException ex)
+                        {
+                            server[3] = " ";
+                            server[4] = " ";
+                            server[5] = " ";
+                            server[6] = "连接失败" + ex.Message;
+                            //server.SubItems[0].ForeColor = Color.Red;
+                        }
+                        catch (Exception ex)
+                        {
+                            server[3] = " ";
+                            server[4] = " ";
+                            server[5] = " ";
+                            server[6] = "无法识别的服务器" + ex.Message;
+                            //server.SubItems[0].ForeColor = Color.Red;
+                        }
+                        finally
+                        {
+                            dt.Rows.Add(server);
+                        }
+                    }
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { listServer.DataContext = dt; btnReflushServer.Content = "刷新服务器"; }));
+                }
+                else
+                {
+                    if (MessageBox.Show("服务器列表找不到，是否创建？", "找不到文件", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    {
+                        if (!Directory.Exists(".minecraft"))
+                        {
+                            Directory.CreateDirectory(".minecraft");
+                        }
+                        FileStream serverdat = new FileStream(@".minecraft\servers.dat", FileMode.Create);
+                        serverdat.Write(Convert.FromBase64String(Resource.ServerDat.Header), 0, Convert.FromBase64String(Resource.ServerDat.Header).Length);
+                        serverdat.WriteByte(0);
+                        serverdat.Close();
+                        sl = new serverlist.serverlist();
+                        btnAddServer.IsEnabled = true;
+                        btnDeleteServer.IsEnabled = true;
+                        btnEditServer.IsEnabled = true;
+                        btnReflushServer.IsEnabled = true;
+                    }
+                    else
+                    {
+                        btnAddServer.IsEnabled = false;
+                        btnDeleteServer.IsEnabled = false;
+                        btnEditServer.IsEnabled = false;
+                        btnReflushServer.IsEnabled = false;
+                    }
+                }
+            })));
+            thGetServerInfo.Start();
+        }
+
+        private void btnAddServer_Click(object sender, RoutedEventArgs e)
+        {
+            serverlist.AddServer FrmAdd = new serverlist.AddServer(ref sl);
+            if (FrmAdd.ShowDialog() == true)
+            {
+                sl.Write();
+                btnReflushServer_Click(null, null);
+            }
+        }
+
+        private void btnDeleteServer_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                sl.Delete(listServer.SelectedIndex);
+                sl.Write();
+                btnReflushServer_Click(null, null);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                MessageBox.Show("请先选择一个服务器");
+            }
+        }
+
+
+        #endregion 
+
+
         private void ReFlushlistver()
         {
             listVer.Items.Clear();
@@ -1109,8 +1368,13 @@ namespace BMCLV2
             {
                 case 0: gridGame.BeginAnimation(Grid.WidthProperty, da1); gridGame.BeginAnimation(Grid.HeightProperty, da2); break;
                 case 1: gridLaunchCfg.BeginAnimation(Grid.WidthProperty, da1); gridLaunchCfg.BeginAnimation(Grid.HeightProperty, da2); break;
-                case 2: gridRemoteVer.BeginAnimation(Grid.WidthProperty, da1); gridRemoteVer.BeginAnimation(Grid.HeightProperty, da2); break;
-                case 3: gridForge.BeginAnimation(Grid.WidthProperty, da1); gridForge.BeginAnimation(Grid.HeightProperty, da2); break;
+                case 2: gridRemoteVer.BeginAnimation(Grid.WidthProperty, da1); gridRemoteVer.BeginAnimation(Grid.HeightProperty, da2); if (listRemoteVer.DataContext==null) btnRefreshRemoteVer_Click(null, null); break;
+                case 3: gridForge.BeginAnimation(Grid.WidthProperty, da1); gridForge.BeginAnimation(Grid.HeightProperty, da2); if (treeForgeVer.Items.Count==0) btnReForge_Click(null, null); break;
+                case 4: gridServerList.BeginAnimation(Grid.WidthProperty, da1); gridServerList.BeginAnimation(Grid.HeightProperty, da2); if(listServer.DataContext==null) btnReflushServer_Click(null, null); break;
+                case 5:
+                    gridUpdateInfo.BeginAnimation(Grid.WidthProperty, da1); 
+                    gridUpdateInfo.BeginAnimation(Grid.HeightProperty, da2); 
+                    break;
             }
         }
 
@@ -1120,6 +1384,36 @@ namespace BMCLV2
         {
             NIcon.Visible = false;
         }
+
+        private void FrmMainWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (this.IsVisible == true)
+                inscreen = true;
+            else
+                inscreen = false;
+        }
+
+        private void btnEditServer_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int selected = this.listServer.SelectedIndex;
+                serverlist.AddServer FrmEdit = new serverlist.AddServer(ref sl, selected);
+                if (FrmEdit.ShowDialog() == true)
+                {
+                    serverlist.serverinfo info = FrmEdit.getEdit();
+                    sl.Edit(selected, info.Name, info.Address, info.IsHide);
+                    sl.Write();
+                    btnReflushServer_Click(null, null);
+                }
+            }
+            catch (ArgumentOutOfRangeException ex)
+            {
+                MessageBox.Show("请先选择一个服务器");
+            }
+        }
+
+
 
 
 

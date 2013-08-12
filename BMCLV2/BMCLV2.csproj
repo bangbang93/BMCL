@@ -72,6 +72,7 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -80,6 +81,9 @@
     </ApplicationDefinition>
     <Compile Include="auth.cs" />
     <Compile Include="config.cs" />
+    <Compile Include="CrashHandle.xaml.cs">
+      <DependentUpon>CrashHandle.xaml</DependentUpon>
+    </Compile>
     <Compile Include="download\DownLib.cs" />
     <Compile Include="download\downloader.cs" />
     <Compile Include="download\DownNative.cs" />
@@ -137,12 +141,23 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>NormalProfile.resx</DependentUpon>
     </Compile>
+    <Compile Include="Resource\ServerDat.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ServerDat.resx</DependentUpon>
+    </Compile>
     <Compile Include="Resource\Url.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Url.resx</DependentUpon>
     </Compile>
+    <Compile Include="serverlist\AddServer.xaml.cs">
+      <DependentUpon>AddServer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="serverlist\serverinfo.cs" />
+    <Compile Include="serverlist\serverlist.cs" />
     <Compile Include="util\Dir.cs" />
+    <Compile Include="util\MathHelper.cs" />
     <Compile Include="Versions\RawVersionListType.cs" />
     <Compile Include="Versions\RemoteVerType.cs" />
     <Compile Include="zip\Checksums\Adler32.cs" />
@@ -186,6 +201,10 @@
     <Compile Include="zip\ZipInputStream.cs" />
     <Compile Include="zip\ZipNameTransform.cs" />
     <Compile Include="zip\ZipOutputStream.cs" />
+    <Page Include="CrashHandle.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="FrmCheckRes.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -203,6 +222,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="FrmPrs.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="serverlist\AddServer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -229,6 +252,10 @@
     <EmbeddedResource Include="Resource\NormalProfile.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>NormalProfile.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resource\ServerDat.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>ServerDat.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Include="Resource\Url.resx">
       <Generator>ResXFileCodeGenerator</Generator>
