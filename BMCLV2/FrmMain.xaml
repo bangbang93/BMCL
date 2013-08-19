@@ -84,6 +84,7 @@
                             <Grid x:Name="popupSaveSuccess" Background="#B0FFFFFF" Margin="774,306,10,88" Height="0">
                                 <Label Content="保存成功！" HorizontalAlignment="Left" VerticalAlignment="Top" Width="104" Height="28" Background="{x:Null}"/>
                             </Grid>
+                            <CheckBox x:Name="checkOptifine" Content="Optifine和中文补丁" HorizontalAlignment="Left" Height="23" Margin="735,233,0,0" VerticalAlignment="Top" Width="133" Checked="checkOptifine_Checked" Unchecked="checkOptifine_Unchecked"/>
                         </Grid>
                     </TabItem>
                     <TabItem x:Name="tabRemoteVer" Header="版本管理" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61">

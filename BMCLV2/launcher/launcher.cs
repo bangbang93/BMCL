@@ -463,7 +463,11 @@ namespace BMCLV2
             }
             if (Directory.Exists(@".minecraft\versions\" + name + @"\mods"))
             {
+                Directory.Delete(@".minecraft\versions\" + name + @"\mods", true);
+                Dir.dircopy(@".minecraft\mods", @".minecraft\versions\" + name + @"\mods");
                 Directory.Delete(@".minecraft\mods", true);
+                Directory.Delete(@".minecraft\versions\" + name + @"\coremods", true);
+                Dir.dircopy(@".minecraft\coremods", @".minecraft\versions\" + name + @"\coremods");
                 Directory.Delete(@".minecraft\coremods", true);
                 Directory.Delete(@".minecraft\versions\" + name + @"\config", true);
                 Dir.dircopy(@".minecraft\config", @".minecraft\versions\" + name + @"\config");

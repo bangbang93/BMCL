@@ -509,7 +509,9 @@ namespace BMCLV2
         private void btnImportOldMc_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog folderImportOldVer = new System.Windows.Forms.FolderBrowserDialog();
+            folderImportOldVer.Description = "请选择到.minecraft目录";
             FrmPrs prs = new FrmPrs("正在导入Minecraft");
+            prs.Show();
             if (folderImportOldVer.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string ImportFrom = folderImportOldVer.SelectedPath;
@@ -535,90 +537,10 @@ namespace BMCLV2
                         F2 = true;
 
                 } while (!(F1 && F2));
-                prs.Show();
-                changeEvent("导入主程序");
-                Directory.CreateDirectory(".minecraft\\versions\\" + ImportName);
-                File.Copy(ImportFrom + "\\bin\\minecraft.jar", ".minecraft\\versions\\" + ImportName + "\\" + ImportName + ".jar");
-                changeEvent("创建Json");
-                gameinfo info = new gameinfo();
-                info.id = ImportName;
-                string timezone = DateTimeOffset.Now.Offset.ToString();
-                if (timezone[0] != '-')
-                {
-                    timezone = "+" + timezone;
-                }
-                info.time = DateTime.Now.GetDateTimeFormats('s')[0].ToString() + timezone;
-                info.releaseTime = DateTime.Now.GetDateTimeFormats('s')[0].ToString() + timezone;
-                info.type = portinfo;
-                info.minecraftArguments = "${auth_player_name}";
-                info.mainClass = "net.minecraft.client.Minecraft";
-                changeEvent("处理native");
-                ArrayList libs = new ArrayList();
-                DirectoryInfo bin = new DirectoryInfo(ImportFrom + "\\bin");
-                foreach (FileInfo file in bin.GetFiles("*.jar"))
-                {
-                    libraries.libraryies libfile = new libraries.libraryies();
-                    if (file.Name == "minecraft.jar")
-                        continue;
-                    if (!Directory.Exists(".minecraft\\libraries\\" + ImportName + "\\" + file.Name.Substring(0, file.Name.Length - 4) + "\\BMCL\\"))
-                    {
-                        Directory.CreateDirectory(".minecraft\\libraries\\" + ImportName + "\\" + file.Name.Substring(0, file.Name.Length - 4) + "\\BMCL\\");
-                    }
-                    File.Copy(file.FullName, ".minecraft\\libraries\\" + ImportName + "\\" + file.Name.Substring(0, file.Name.Length - 4) + "\\BMCL\\" + file.Name.Substring(0, file.Name.Length - 4) + "-BMCL.jar");
-                    libfile.name = ImportName + ":" + file.Name.Substring(0, file.Name.Length - 4) + ":BMCL";
-                    libs.Add(libfile);
-                }
-                ICSharpCode.SharpZipLib.Zip.FastZip nativejar = new ICSharpCode.SharpZipLib.Zip.FastZip();
-                if (!Directory.Exists(".minecraft\\libraries\\" + ImportName + "\\BMCL\\"))
-                {
-                    Directory.CreateDirectory(".minecraft\\libraries\\" + ImportName + "\\native\\BMCL\\");
-                }
-                nativejar.CreateZip(".minecraft\\libraries\\" + ImportName + "\\native\\BMCL\\native-BMCL-natives-windows.jar", ImportFrom + "\\bin\\natives", false, @"\.dll");
-                libraries.libraryies nativefile = new libraries.libraryies();
-                nativefile.name = ImportName + ":native:BMCL";
-                libraries.OS nativeos = new libraries.OS();
-                nativeos.windows = "natives-windows";
-                nativefile.natives = nativeos;
-                nativefile.extract = new libraries.extract();
-                libs.Add(nativefile);
-                info.libraries = (libraries.libraryies[])libs.ToArray(typeof(libraries.libraryies));
-                changeEvent("写入Json");
-                FileStream wcfg = new FileStream(".minecraft\\versions\\" + ImportName + "\\" + ImportName + ".json", FileMode.Create);
-                DataContractJsonSerializer infojson = new DataContractJsonSerializer(typeof(gameinfo));
-                infojson.WriteObject(wcfg, info);
-                wcfg.Close();
-                changeEvent("处理lib");
-                if (Directory.Exists(ImportFrom + "\\lib"))
-                {
-                    if (!Directory.Exists(".minecraft\\lib"))
-                    {
-                        Directory.CreateDirectory(".minecraft\\lib");
-                    }
-                    foreach (string libfile in Directory.GetFiles(ImportFrom + "\\lib", "*", SearchOption.AllDirectories))
-                    {
-                        if (!File.Exists(".minecraft\\lib\\" + System.IO.Path.GetFileName(libfile)))
-                        {
-                            File.Copy(libfile, ".minecraft\\lib\\" + System.IO.Path.GetFileName(libfile));
-                        }
-                    }
-                }
-                changeEvent("处理mods");
-                if (Directory.Exists(ImportFrom + "\\mods"))
-                    util.Dir.dircopy(ImportFrom + "\\mods", ".minecraft\\versions\\" + ImportName + "\\mods");
-                else
-                    Directory.CreateDirectory(".minecraft\\versions\\" + ImportName + "\\mods");
-                if (Directory.Exists(ImportFrom + "\\coremods"))
-                    util.Dir.dircopy(ImportFrom + "\\coremods", ".minecraft\\versions\\" + ImportName + "\\coremods");
-                else
-                    Directory.CreateDirectory(".minecraft\\versions\\" + ImportName + "\\coremods");
-                if (Directory.Exists(ImportFrom + "\\config"))
-                    util.Dir.dircopy(ImportFrom + "\\config", ".minecraft\\versions\\" + ImportName + "\\config");
-                else
-                    Directory.CreateDirectory(".minecraft\\versions\\" + ImportName + "\\configmods");
-                prs.Close();
-                MessageBox.Show("导入成功，如果这个版本的MC还有MOD在.minecraft下创建了文件夹（例如Flan's mod,Custom NPC等），请点击MOD独立文件夹按钮进行管理");
-                this.ReFlushlistver();
+                Thread thImport = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate { ImportOldMC(ImportName, ImportFrom, prs); })));
+                thImport.Start();
             }
+            else prs.Close();
         }
         private void btnCoreModMrg_Click(object sender, RoutedEventArgs e)
         {
@@ -1413,7 +1335,105 @@ namespace BMCLV2
             }
         }
 
+        private void checkOptifine_Checked(object sender, RoutedEventArgs e)
+        {
+                txtExtJArg.Text += " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
+        }
 
+        private void checkOptifine_Unchecked(object sender, RoutedEventArgs e)
+        {
+            int t=txtExtJArg.Text.IndexOf(" -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true");
+            txtExtJArg.Text = txtExtJArg.Text.Replace(" -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true", "");
+        }
+
+        private void ImportOldMC(string ImportName,string ImportFrom,FrmPrs prs)
+        {
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { changeEvent("导入主程序"); }));
+            Directory.CreateDirectory(".minecraft\\versions\\" + ImportName);
+            File.Copy(ImportFrom + "\\bin\\minecraft.jar", ".minecraft\\versions\\" + ImportName + "\\" + ImportName + ".jar");
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { changeEvent("创建Json"); }));
+            gameinfo info = new gameinfo();
+            info.id = ImportName;
+            string timezone = DateTimeOffset.Now.Offset.ToString();
+            if (timezone[0] != '-')
+            {
+                timezone = "+" + timezone;
+            }
+            info.time = DateTime.Now.GetDateTimeFormats('s')[0].ToString() + timezone;
+            info.releaseTime = DateTime.Now.GetDateTimeFormats('s')[0].ToString() + timezone;
+            info.type = portinfo;
+            info.minecraftArguments = "${auth_player_name}";
+            info.mainClass = "net.minecraft.client.Minecraft";
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { changeEvent("处理native"); }));
+            ArrayList libs = new ArrayList();
+            DirectoryInfo bin = new DirectoryInfo(ImportFrom + "\\bin");
+            foreach (FileInfo file in bin.GetFiles("*.jar"))
+            {
+                libraries.libraryies libfile = new libraries.libraryies();
+                if (file.Name == "minecraft.jar")
+                    continue;
+                if (!Directory.Exists(".minecraft\\libraries\\" + ImportName + "\\" + file.Name.Substring(0, file.Name.Length - 4) + "\\BMCL\\"))
+                {
+                    Directory.CreateDirectory(".minecraft\\libraries\\" + ImportName + "\\" + file.Name.Substring(0, file.Name.Length - 4) + "\\BMCL\\");
+                }
+                File.Copy(file.FullName, ".minecraft\\libraries\\" + ImportName + "\\" + file.Name.Substring(0, file.Name.Length - 4) + "\\BMCL\\" + file.Name.Substring(0, file.Name.Length - 4) + "-BMCL.jar");
+                libfile.name = ImportName + ":" + file.Name.Substring(0, file.Name.Length - 4) + ":BMCL";
+                libs.Add(libfile);
+            }
+            ICSharpCode.SharpZipLib.Zip.FastZip nativejar = new ICSharpCode.SharpZipLib.Zip.FastZip();
+            if (!Directory.Exists(".minecraft\\libraries\\" + ImportName + "\\BMCL\\"))
+            {
+                Directory.CreateDirectory(".minecraft\\libraries\\" + ImportName + "\\native\\BMCL\\");
+            }
+            nativejar.CreateZip(".minecraft\\libraries\\" + ImportName + "\\native\\BMCL\\native-BMCL-natives-windows.jar", ImportFrom + "\\bin\\natives", false, @"\.dll");
+            libraries.libraryies nativefile = new libraries.libraryies();
+            nativefile.name = ImportName + ":native:BMCL";
+            libraries.OS nativeos = new libraries.OS();
+            nativeos.windows = "natives-windows";
+            nativefile.natives = nativeos;
+            nativefile.extract = new libraries.extract();
+            libs.Add(nativefile);
+            info.libraries = (libraries.libraryies[])libs.ToArray(typeof(libraries.libraryies));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { changeEvent("写入Json"); }));
+            FileStream wcfg = new FileStream(".minecraft\\versions\\" + ImportName + "\\" + ImportName + ".json", FileMode.Create);
+            DataContractJsonSerializer infojson = new DataContractJsonSerializer(typeof(gameinfo));
+            infojson.WriteObject(wcfg, info);
+            wcfg.Close();
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { changeEvent("处理lib"); }));
+            if (Directory.Exists(ImportFrom + "\\lib"))
+            {
+                if (!Directory.Exists(".minecraft\\lib"))
+                {
+                    Directory.CreateDirectory(".minecraft\\lib");
+                }
+                foreach (string libfile in Directory.GetFiles(ImportFrom + "\\lib", "*", SearchOption.AllDirectories))
+                {
+                    if (!File.Exists(".minecraft\\lib\\" + System.IO.Path.GetFileName(libfile)))
+                    {
+                        File.Copy(libfile, ".minecraft\\lib\\" + System.IO.Path.GetFileName(libfile));
+                    }
+                }
+            }
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { changeEvent("处理mods"); }));
+            if (Directory.Exists(ImportFrom + "\\mods"))
+                util.Dir.dircopy(ImportFrom + "\\mods", ".minecraft\\versions\\" + ImportName + "\\mods");
+            else
+                Directory.CreateDirectory(".minecraft\\versions\\" + ImportName + "\\mods");
+            if (Directory.Exists(ImportFrom + "\\coremods"))
+                util.Dir.dircopy(ImportFrom + "\\coremods", ".minecraft\\versions\\" + ImportName + "\\coremods");
+            else
+                Directory.CreateDirectory(".minecraft\\versions\\" + ImportName + "\\coremods");
+            if (Directory.Exists(ImportFrom + "\\config"))
+                util.Dir.dircopy(ImportFrom + "\\config", ".minecraft\\versions\\" + ImportName + "\\config");
+            else
+                Directory.CreateDirectory(".minecraft\\versions\\" + ImportName + "\\configmods");
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+            {
+                prs.Close();
+                MessageBox.Show("导入成功，如果这个版本的MC还有MOD在.minecraft下创建了文件夹（例如Flan's mod,Custom NPC等），请点击MOD独立文件夹按钮进行管理");
+                this.ReFlushlistver();
+            }));
+        }
 
 
 
