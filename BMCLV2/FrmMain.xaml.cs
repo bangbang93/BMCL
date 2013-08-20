@@ -817,6 +817,8 @@ namespace BMCLV2
             if (DownloadUrl.Count == 0)
             {
                 HtmlDocument ForgePage;
+                treeForgeVer.Items.Clear();
+                DownloadUrl.Clear();
                 treeForgeVer.Items.Add("正在获取列表，视网络情况可能需要数秒到数分钟，请耐心等待");
                 thGet = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
                 {
@@ -836,12 +838,14 @@ namespace BMCLV2
         private void btnReForge_Click(object sender, RoutedEventArgs e)
         {
             HtmlDocument ForgePage;
+            treeForgeVer.Items.Clear();
+            DownloadUrl.Clear();
             treeForgeVer.Items.Add("正在获取列表，视网络情况可能需要数秒到数分钟，请耐心等待");
             thGet=new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate{
             HtmlWeb ForgePageGet = new HtmlWeb();
             ForgePage= ForgePageGet.Load("http://files.minecraftforge.net/");
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { treeForgeVer.Items.Clear(); }));
             GetForgeFinishDel GetForgePageFin = new GetForgeFinishDel(GetForgeFinish);
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { treeForgeVer.Items.Clear(); }));
             Dispatcher.Invoke(GetForgePageFin, ForgePage);
             })));
             thGet.Start();
