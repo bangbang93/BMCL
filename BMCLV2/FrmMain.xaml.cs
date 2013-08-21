@@ -80,7 +80,43 @@ namespace BMCLV2
             btnChangeBg.ContextMenu = SkinMenu;
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
 
-            #region 加载插件
+            #region 加载旧插件
+            //listAuth.Items.Add("啥都没有");
+            //if (Directory.Exists("auths"))
+            //{
+            //    string[] authplugins = Directory.GetFiles(Environment.CurrentDirectory + @"\auths");
+            //    foreach (string auth in authplugins)
+            //    {
+            //        if (auth.ToLower().EndsWith(".dll"))
+            //        {
+            //            try
+            //            {
+            //                Assembly AuthMothed = Assembly.LoadFrom(auth);
+            //                Type[] types = AuthMothed.GetTypes();
+            //                foreach (Type t in types)
+            //                {
+            //                    if (t.GetInterface("auth") != null)
+            //                    {
+            //                        Auths.Add(AuthMothed.CreateInstance(t.FullName));
+            //                        object Auth = Auths[Auths.Count - 1];
+            //                        Type T = Auth.GetType();
+            //                        MethodInfo AuthName = T.GetMethod("getname");
+            //                        listAuth.Items.Add(AuthName.Invoke(Auth, null).ToString());
+
+            //                    }
+            //                }
+            //            }
+            //            catch (Exception ex)
+            //            {
+            //                MessageBox.Show(ex.Message);
+            //            }
+            //        }
+
+            //    }
+            //}
+            //AuthList = listAuth;
+            #endregion
+            #region 加载新插件
             listAuth.Items.Add("啥都没有");
             if (Directory.Exists("auths"))
             {
@@ -95,13 +131,13 @@ namespace BMCLV2
                             Type[] types = AuthMothed.GetTypes();
                             foreach (Type t in types)
                             {
-                                if (t.GetInterface("auth") != null)
+                                if (t.GetInterface("IAuth") != null)
                                 {
                                     Auths.Add(AuthMothed.CreateInstance(t.FullName));
                                     object Auth = Auths[Auths.Count - 1];
                                     Type T = Auth.GetType();
-                                    MethodInfo AuthName = T.GetMethod("getname");
-                                    listAuth.Items.Add(AuthName.Invoke(Auth, null).ToString());
+                                    MethodInfo AuthName = T.GetMethod("GetName");
+                                    listAuth.Items.Add(AuthName.Invoke(Auth, new object[]{"zh-cn"}).ToString());
 
                                 }
                             }
@@ -134,6 +170,8 @@ namespace BMCLV2
             txtExtJArg.Text = cfg.extraJVMArg;
             listVer.SelectedItem = cfg.lastPlayVer;
             listAuth.SelectedItem = cfg.login;
+            if (listAuth.SelectedItem == null)
+                listAuth.SelectedIndex = 0;
             sliderWindowTransparency.Value = cfg.WindowTransparency;
             checkReport.IsChecked = cfg.Report;
             txtInsPath.Text = Environment.CurrentDirectory + "\\.minecraft";
@@ -238,15 +276,15 @@ namespace BMCLV2
                 
                 try
                 {
+                    MCAuth.LoginInfo loginans = new MCAuth.LoginInfo();
                     if (SelectedIndex != 0)
                     {
                         object Auth = Auths[Auths.Count - 1];
                         Type T = Auth.GetType();
-                        MethodInfo Login = T.GetMethod("login");
-                        string loginans = "false";
+                        MethodInfo Login = T.GetMethod("Login");
                         try
                         {
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { loginans = Login.Invoke(Auth, new object[] { txtUserName.Text, txtPwd.Password }).ToString(); }));
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { loginans = (MCAuth.LoginInfo)Login.Invoke(Auth, new object[] { txtUserName.Text, txtPwd.Password, "", "zh-cn" }); }));
                         }
                         catch (Exception ex)
                         {
@@ -258,7 +296,7 @@ namespace BMCLV2
                             MessageBox.Show(exc.Message);
                             return;
                         }
-                        if (loginans == "True")
+                        if (loginans.Suc==true)
                         {
                             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                             {
@@ -271,11 +309,9 @@ namespace BMCLV2
                                 cfg.autostart = checkAutoStart.IsChecked.Value;
                                 cfg.extraJVMArg = txtExtJArg.Text;
                             }));
-                            MethodInfo getSession = T.GetMethod("getsession");
-                            session = getSession.Invoke(Auth, null).ToString();
+                            session = loginans.SID;
                             config.Save(cfg, cfgfile);
-                            MethodInfo getPname = T.GetMethod("getPname");
-                            string username = getPname.Invoke(Auth, null).ToString();
+                            string username = loginans.UN;
                             try
                             {
                                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { game = new launcher(txtJavaPath.Text, txtJavaXmx.Text, username, listVer.SelectedItem.ToString(), info, txtExtJArg.Text, session); }));
@@ -287,7 +323,7 @@ namespace BMCLV2
                         }
                         else
                         {
-                            MessageBox.Show("登录失败，用户名或密码错误");
+                            MessageBox.Show(loginans.Errinfo);
                             return;
                         }
                     }
