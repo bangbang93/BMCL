@@ -9,11 +9,11 @@ using System.Web;
 
 namespace Genuine
 {
-    public class Auth:MCAuth.IAuth
-    {
-        public MCAuth.LoginInfo Login(string UserName, string Password, string Client_identifier = "", string Language = "zh-cn")
+    public class _Login
+    {   
+        public LoginInfo Login(string UserName, string Password, string Client_identifier = "", string Language = "zh-cn")
         {
-            MCAuth.LoginInfo LI = new MCAuth.LoginInfo();
+            LoginInfo LI = new LoginInfo();
             try
             {
                 HttpWebRequest auth = (HttpWebRequest)WebRequest.Create("https://login.minecraft.net");
@@ -100,6 +100,16 @@ namespace Genuine
                 sb.Append(HttpUtility.UrlEncode(k) + "=" + HttpUtility.UrlEncode(Pars[k].ToString()));
             }
             return sb.ToString();
+        }
+        public struct LoginInfo
+        {
+            public string UN;
+            public string UID;
+            public string SID;
+            public bool Suc;
+            public string Errinfo;
+            public string OtherInfo;
+            public string Client_identifier;
         }
     }
 }

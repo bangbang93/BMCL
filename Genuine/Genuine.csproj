@@ -43,12 +43,6 @@
     <Compile Include="Auth.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\BMCLV2\BMCLV2.csproj">
-      <Project>{4fc50e09-db4f-43d5-8c13-fb52f008dd57}</Project>
-      <Name>BMCLV2</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

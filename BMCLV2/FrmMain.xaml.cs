@@ -40,7 +40,7 @@ namespace BMCLV2
         static private string cfgfile = "bmcl.xml";
         public static String URL_DOWNLOAD_BASE = "https://s3.amazonaws.com/Minecraft.Download/";
         public static String URL_RESOURCE_BASE = "https://s3.amazonaws.com/Minecraft.Resources/";
-        private ArrayList Auths = new ArrayList();
+        private Hashtable  Auths = new Hashtable();
         public static config cfg;
         static DataContractSerializer Cfg = new DataContractSerializer(typeof(config));
         static public gameinfo info;
@@ -79,43 +79,6 @@ namespace BMCLV2
             SkinMenu.Items.Add(SelectFile);
             btnChangeBg.ContextMenu = SkinMenu;
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
-
-            #region 加载旧插件
-            //listAuth.Items.Add("啥都没有");
-            //if (Directory.Exists("auths"))
-            //{
-            //    string[] authplugins = Directory.GetFiles(Environment.CurrentDirectory + @"\auths");
-            //    foreach (string auth in authplugins)
-            //    {
-            //        if (auth.ToLower().EndsWith(".dll"))
-            //        {
-            //            try
-            //            {
-            //                Assembly AuthMothed = Assembly.LoadFrom(auth);
-            //                Type[] types = AuthMothed.GetTypes();
-            //                foreach (Type t in types)
-            //                {
-            //                    if (t.GetInterface("auth") != null)
-            //                    {
-            //                        Auths.Add(AuthMothed.CreateInstance(t.FullName));
-            //                        object Auth = Auths[Auths.Count - 1];
-            //                        Type T = Auth.GetType();
-            //                        MethodInfo AuthName = T.GetMethod("getname");
-            //                        listAuth.Items.Add(AuthName.Invoke(Auth, null).ToString());
-
-            //                    }
-            //                }
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                MessageBox.Show(ex.Message);
-            //            }
-            //        }
-
-            //    }
-            //}
-            //AuthList = listAuth;
-            #endregion
             #region 加载新插件
             listAuth.Items.Add("啥都没有");
             if (Directory.Exists("auths"))
@@ -125,29 +88,40 @@ namespace BMCLV2
                 {
                     if (auth.ToLower().EndsWith(".dll"))
                     {
-                        try
+                        Assembly AuthMethod = Assembly.LoadFrom(auth);
+                        Type[] types = AuthMethod.GetTypes();
+                        foreach (Type t in types)
                         {
-                            Assembly AuthMothed = Assembly.LoadFrom(auth);
-                            Type[] types = AuthMothed.GetTypes();
-                            foreach (Type t in types)
+                            try
+                            //if (t.GetInterface("IAuth") != null)
                             {
-                                if (t.GetInterface("IAuth") != null)
+                                object Auth = AuthMethod.CreateInstance(t.FullName);
+                                Type T = Auth.GetType();
+                                MethodInfo AuthVer = T.GetMethod("GetVer");
+                                if (AuthVer == null)
                                 {
-                                    Auths.Add(AuthMothed.CreateInstance(t.FullName));
-                                    object Auth = Auths[Auths.Count - 1];
-                                    Type T = Auth.GetType();
-                                    MethodInfo AuthName = T.GetMethod("GetName");
-                                    listAuth.Items.Add(AuthName.Invoke(Auth, new object[]{"zh-cn"}).ToString());
-
+                                    continue;
                                 }
+                                if ((long)AuthVer.Invoke(Auth, null) != 1)
+                                {
+                                    continue;
+                                }
+                                MethodInfo MAuthName = T.GetMethod("GetName");
+                                string AuthName = MAuthName.Invoke(Auth, new object[] { "zh-cn" }).ToString();
+                                Auths.Add(AuthName, Auth);
+                                listAuth.Items.Add(AuthName);
+                            }
+                            catch (MissingMethodException) { }
+                            catch (ArgumentException) { }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
                             }
                         }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
+                        
                     }
-
+                nextplugin:
+                    for (;false ; ) ;
                 }
             }
             AuthList = listAuth;
@@ -263,7 +237,12 @@ namespace BMCLV2
                 return;
             }
             FrmPrs starter = new FrmPrs("正在准备游戏环境及启动游戏");
-            int SelectedIndex = listAuth.SelectedIndex;
+            int SelectedIndex = listAuth.SelectedIndex; ;
+            object Auth;
+            if (SelectedIndex != 0)
+                Auth = Auths[AuthList.SelectedItem.ToString()];
+            else
+                Auth = null;
             Thread thGO = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
             {
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
@@ -279,12 +258,32 @@ namespace BMCLV2
                     MCAuth.LoginInfo loginans = new MCAuth.LoginInfo();
                     if (SelectedIndex != 0)
                     {
-                        object Auth = Auths[Auths.Count - 1];
                         Type T = Auth.GetType();
                         MethodInfo Login = T.GetMethod("Login");
                         try
                         {
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { loginans = (MCAuth.LoginInfo)Login.Invoke(Auth, new object[] { txtUserName.Text, txtPwd.Password, "", "zh-cn" }); }));
+                            object loginansobj;
+                            Type Li;
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { 
+                                loginansobj= Login.Invoke(Auth, new object[] { txtUserName.Text, txtPwd.Password, "", "zh-cn" });
+                                Li = loginansobj.GetType();
+                                loginans.Suc = (bool)Li.GetField("Suc").GetValue(loginansobj);
+                                if (loginans.Suc == true)
+                                {
+                                    loginans.UN = Li.GetField("UN").GetValue(loginansobj) as string;
+                                    loginans.SID = Li.GetField("SID").GetValue(loginansobj)as string;
+                                    loginans.Client_identifier = Li.GetField("Client_identifier").GetValue(loginansobj) as string;
+                                    loginans.UID = Li.GetField("UID").GetValue(loginansobj) as string;
+                                }
+                                else
+                                {
+                                    loginans.Errinfo = Li.GetField("Errinfo").GetValue(loginansobj)as string;
+                                    loginans.OtherInfo = Li.GetField("OtherInfo").GetValue(loginansobj)as string;
+                                }
+                                
+                            }));
+                            
+                            
                         }
                         catch (Exception ex)
                         {
