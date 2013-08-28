@@ -88,14 +88,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="auth.cs" />
     <Compile Include="config.cs" />
     <Compile Include="CrashHandle.xaml.cs">
       <DependentUpon>CrashHandle.xaml</DependentUpon>
     </Compile>
-    <Compile Include="download\DownLib.cs" />
-    <Compile Include="download\downloader.cs" />
-    <Compile Include="download\DownNative.cs" />
     <Compile Include="FrmCheckRes.xaml.cs">
       <DependentUpon>FrmCheckRes.xaml</DependentUpon>
     </Compile>
@@ -138,7 +134,6 @@
     <Compile Include="HtmlAgilityPack\Trace.cs" />
     <Compile Include="HtmlAgilityPack\Trace.FullFramework.cs" />
     <Compile Include="HtmlAgilityPack\Utilities.cs" />
-    <Compile Include="IAuth.cs" />
     <Compile Include="launcher\gameinfo.cs" />
     <Compile Include="libraries\extract.cs" />
     <Compile Include="libraries\libraryies.cs" />
@@ -272,7 +267,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Url.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="HtmlAgilityPack\HtmlAgilityPack.snk" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -281,9 +275,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Resource\tofu slime.jpg" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="tofu.ico" />
@@ -306,12 +297,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="HtmlAgilityPack\HtmlAgilityPack VS2008.csproj" />
-    <Content Include="HtmlAgilityPack\HtmlAgilityPack.csproj" />
-    <Content Include="HtmlAgilityPack\HtmlAgilityPack.csproj.vspscc" />
-    <Content Include="HtmlAgilityPack\HtmlAgilityPack.fx.4.0-CP.csproj" />
-    <Content Include="HtmlAgilityPack\HtmlAgilityPack.fx.4.0.csproj" />
-    <Content Include="HtmlAgilityPack\HtmlAgilityPack.fx.4.5.csproj" />
+    <SplashScreen Include="screenLaunch.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

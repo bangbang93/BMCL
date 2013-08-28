@@ -7,7 +7,6 @@ using System.IO;
 using System.Threading;
 using System.Net;
 
-using BMCLV2.download;
 using BMCLV2.libraries;
 using BMCLV2.util;
 
@@ -51,8 +50,6 @@ namespace BMCLV2
 
         #region 委托
         delegate void downThread();
-        public delegate void downLibEventHandler(libraryies lib);
-        public delegate void downNativeEventHalder(libraryies lib);
         public delegate void gameExitEvent();
         #endregion
 

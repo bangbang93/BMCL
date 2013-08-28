@@ -60,20 +60,22 @@ namespace BMCLV2
             Logger.Log("BMCL V2 Ver." + ver + "正在启动");
             InitializeComponent();
             ReFlushlistver();
-            this.Icon = new BitmapImage(new Uri("pack://application:,,,/Resource/tofu slime.jpg"));
+            #region 图标
             NIcon = new System.Windows.Forms.NotifyIcon();
             NIcon.Visible = true;
-            System.Windows.Resources.StreamResourceInfo s = Application.GetResourceStream(new Uri("pack://application:,,,/Resource/tofu slime.jpg"));
+            System.Windows.Resources.StreamResourceInfo s = Application.GetResourceStream(new Uri("pack://application:,,,/screenLaunch.png"));
             NIcon.Icon = System.Drawing.Icon.FromHandle(new System.Drawing.Bitmap(s.Stream).GetHicon());
             System.Windows.Forms.ContextMenu NMenu = new System.Windows.Forms.ContextMenu();
             System.Windows.Forms.MenuItem MenuItem = NMenu.MenuItems.Add("显示主窗口");
             MenuItem.Name = "ShowMainWindow";
+            MenuItem.DefaultItem = true;
             MenuItem.Click += NMenu_ShowMainWindows_Click;
             NIcon.DoubleClick += NIcon_DoubleClick;
             System.Windows.Forms.MenuItem DebugMode = NMenu.MenuItems.Add("以Debug模式重启");
             DebugMode.Name = "DebugMode";
             DebugMode.Click += DebugMode_Click;
             NIcon.ContextMenu = NMenu;
+            #endregion
             System.Windows.Controls.ContextMenu SkinMenu = new System.Windows.Controls.ContextMenu();
             System.Windows.Controls.MenuItem SelectFile = new System.Windows.Controls.MenuItem();
             SelectFile.Name = "menuSelectFile";
@@ -91,44 +93,57 @@ namespace BMCLV2
                 {
                     if (auth.ToLower().EndsWith(".dll"))
                     {
-                        Assembly AuthMethod = Assembly.LoadFrom(auth);
-                        Type[] types = AuthMethod.GetTypes();
-                        foreach (Type t in types)
+                        try
                         {
-                            try
-                            //if (t.GetInterface("IAuth") != null)
+                            Assembly AuthMethod = Assembly.LoadFrom(auth);
+                            Type[] types = AuthMethod.GetTypes();
+                            foreach (Type t in types)
                             {
-                                object Auth = AuthMethod.CreateInstance(t.FullName);
-                                Type T = Auth.GetType();
-                                MethodInfo AuthVer = T.GetMethod("GetVer");
-                                if (AuthVer == null)
+                                try
                                 {
-                                    continue;
+                                    object Auth = AuthMethod.CreateInstance(t.FullName);
+                                    Type T = Auth.GetType();
+                                    MethodInfo AuthVer = T.GetMethod("GetVer");
+                                    if (AuthVer == null)
+                                    {
+                                        continue;
+                                    }
+                                    if ((long)AuthVer.Invoke(Auth, null) != 1)
+                                    {
+                                        continue;
+                                    }
+                                    MethodInfo MAuthName = T.GetMethod("GetName");
+                                    string AuthName = MAuthName.Invoke(Auth, new object[] { "zh-cn" }).ToString();
+                                    Auths.Add(AuthName, Auth);
+                                    listAuth.Items.Add(AuthName);
                                 }
-                                if ((long)AuthVer.Invoke(Auth, null) != 1)
-                                {
-                                    continue;
-                                }
-                                MethodInfo MAuthName = T.GetMethod("GetName");
-                                string AuthName = MAuthName.Invoke(Auth, new object[] { "zh-cn" }).ToString();
-                                Auths.Add(AuthName, Auth);
-                                listAuth.Items.Add(AuthName);
-                            }
-                            catch (MissingMethodException) { }
-                            catch (ArgumentException) { }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show(ex.Message);
+                                catch (MissingMethodException) { }
+                                catch (ArgumentException) { }
                             }
                         }
-                        
+                        catch (NotSupportedException ex)
+                        {
+                            if (ex.Message.IndexOf("0x80131515") != -1)
+                            {
+                                MessageBox.Show("一个或多个插件加载失败，请打开auths目录下所有DLL文件，单击右键,选择属性,然后把锁定解除即可。","插件加载失败");
+                            }
+                        }
                     }
                 }
             }
             AuthList = listAuth;
             #endregion
             #region 加载配置
-            cfg = config.Load(cfgfile);
+            if (File.Exists(cfgfile))
+            {
+                cfg = config.Load(cfgfile);
+                Logger.Log(string.Format("加载{0}文件", cfgfile));
+            }
+            else
+            {
+                cfg = new config();
+                Logger.Log("加载默认配置");
+            }
             if (cfg.javaw == "autosearch")
                 txtJavaPath.Text = config.getjavadir();
             else
@@ -204,13 +219,13 @@ namespace BMCLV2
                 int imgTotal = pics.Count; 
                 if (imgTotal == 0)
                 {
-                    if (sender != null)
+                    if (e != null)
                         MessageBox.Show("没有可用的背景图");
                     return;
                 }
                 if (imgTotal == 1)
                 {
-                    if (sender != null)
+                    if (e != null)
                         MessageBox.Show("只有一张可用的背景图哦");
                     return;
                 }
@@ -227,7 +242,7 @@ namespace BMCLV2
             }
             else
             {
-                if (sender == null)
+                if (e == null)
                     return;
                 MessageBox.Show("请在启动启动其目录下新建bg文件夹，并放入图片文件，支持jpg,bmp,png等格式，比例请尽量接近16:9，否则会被拉伸");
                 Directory.CreateDirectory(Environment.CurrentDirectory + "\\bg");
@@ -268,7 +283,7 @@ namespace BMCLV2
                     starter.Focus();
                     starter.changeEventH("正在登陆");
                 }));
-                MCAuth.LoginInfo loginans = new MCAuth.LoginInfo();
+                LoginInfo loginans = new LoginInfo();
                 try
                 {
                     if (SelectedIndex != 0)
@@ -1437,7 +1452,7 @@ namespace BMCLV2
             if (this.IsVisible == true)
             {
                 inscreen = true;
-                btnChangeBg_Click(null, new RoutedEventArgs());
+                btnChangeBg_Click(null, null);
             }
             else
                 inscreen = false;
@@ -1564,21 +1579,16 @@ namespace BMCLV2
             }));
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        public struct LoginInfo
+        {
+            public string UN;
+            public string UID;
+            public string SID;
+            public bool Suc;
+            public string Errinfo;
+            public string OtherInfo;
+            public string Client_identifier;
+        }
 
     }
 }
