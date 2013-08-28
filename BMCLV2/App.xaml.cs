@@ -13,5 +13,23 @@ namespace BMCLV2
     /// </summary>
     public partial class App : Application
     {
+        protected override void OnStartup(StartupEventArgs e)
+        {
+            if (e.Args.Length == 0)
+                Logger.Debug = false;
+            else
+                if (Array.IndexOf(e.Args, "-Debug") != -1)
+                {
+                    Logger.Debug = true;
+                    Logger.Start();
+                }
+            base.OnStartup(e);
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            base.OnExit(e);
+            Logger.Stop();
+        }
     }
 }

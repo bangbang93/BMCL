@@ -52,6 +52,15 @@
   <PropertyGroup>
     <ApplicationIcon>tofu.ico</ApplicationIcon>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugDebug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\DebugDebug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
@@ -136,6 +145,7 @@
     <Compile Include="libraries\OS.cs" />
     <Compile Include="libraries\ros.cs" />
     <Compile Include="libraries\rules.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="Report.cs" />
     <Compile Include="Resource\NormalProfile.Designer.cs">
       <AutoGen>True</AutoGen>

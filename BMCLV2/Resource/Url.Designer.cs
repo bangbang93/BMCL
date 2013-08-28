@@ -61,11 +61,29 @@ namespace BMCLV2.Resource {
         }
         
         /// <summary>
+        ///   查找类似 http://www.bangbang93.com/bmcl/download/ 的本地化字符串。
+        /// </summary>
+        internal static string URL_DOWNLOAD_bangbang93 {
+            get {
+                return ResourceManager.GetString("URL_DOWNLOAD_bangbang93", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 https://s3.amazonaws.com/Minecraft.Download/ 的本地化字符串。
         /// </summary>
         internal static string URL_DOWNLOAD_BASE {
             get {
                 return ResourceManager.GetString("URL_DOWNLOAD_BASE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 http://www.bangbang93.com/bmcl/resources/ 的本地化字符串。
+        /// </summary>
+        internal static string URL_RESOURCE_bangbang93 {
+            get {
+                return ResourceManager.GetString("URL_RESOURCE_bangbang93", resourceCulture);
             }
         }
         

@@ -23,14 +23,16 @@ namespace BMCLV2
         public CrashHandle(Exception ex)
         {
             InitializeComponent();
-            txtMessage.Text = ex.Message;
+            txtMessage.Text = "BMCL," + FrmMain.ver + "\n";
+            txtMessage.Text += ex.Message;
+            txtMessage.Text += "\n" + ex.StackTrace;
             var iex = ex;
             while (iex.InnerException != null)
             {
                 iex = iex.InnerException;
                 txtMessage.Text += "\n" + iex.Message;
+                txtMessage.Text += "\n" + ex.StackTrace;
             }
-            txtMessage.Text += "\n" + ex.StackTrace;
         }
 
         private void btnMyWeb_Click(object sender, RoutedEventArgs e)
@@ -38,14 +40,7 @@ namespace BMCLV2
             Process p = new Process();
             p.StartInfo.FileName = "http://www.bangbang93.com/forum-bmcl-1.html";
             p.Start();
-            try
-            {
-                Clipboard.SetText(txtMessage.Text);
-            }
-            catch
-            {
-                MessageBox.Show("自动复制失败，请手动复制");
-            }
+            Copy();
         }
 
         private void btnMcbbs_Click(object sender, RoutedEventArgs e)
@@ -53,14 +48,7 @@ namespace BMCLV2
             Process p = new Process();
             p.StartInfo.FileName = "http://www.mcbbs.net/thread-137254-1-1.html";
             p.Start();
-            try
-            {
-                Clipboard.SetText(txtMessage.Text);
-            }
-            catch
-            {
-                MessageBox.Show("自动复制失败，请手动复制");
-            }
+            Copy();
         }
 
         private void btnWeibo_Click(object sender, RoutedEventArgs e)
@@ -68,14 +56,7 @@ namespace BMCLV2
             Process p = new Process();
             p.StartInfo.FileName = "http://weibo.com/bangbang93";
             p.Start();
-            try
-            {
-                Clipboard.SetText(txtMessage.Text);
-            }
-            catch
-            {
-                MessageBox.Show("自动复制失败，请手动复制");
-            }
+            Copy();
         }
 
         private void btnTwitter_Click(object sender, RoutedEventArgs e)
@@ -83,14 +64,7 @@ namespace BMCLV2
             Process p = new Process();
             p.StartInfo.FileName = "https://twitter.com/bangbangpal";
             p.Start();
-            try
-            {
-                Clipboard.SetText(txtMessage.Text);
-            }
-            catch
-            {
-                MessageBox.Show("自动复制失败，请手动复制");
-            }
+            Copy();
         }
 
         private void btnEmail_Click(object sender, RoutedEventArgs e)
@@ -98,27 +72,24 @@ namespace BMCLV2
             Process p = new Process();
             p.StartInfo.FileName = "mailto:bangbang93@163.com?subject=" + HttpUtility.UrlEncode("BMCL崩溃报告") + "&body=" + HttpUtility.UrlEncode(txtMessage.Text);
             p.Start();
-            try
-            {
-                Clipboard.SetText(txtMessage.Text);
-            }
-            catch
-            {
-                MessageBox.Show("自动复制失败，请手动复制");
-            }
+            Copy();
         }
 
         private void labTip_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            Copy();
+        }
+
+        private void Copy()
         {
             try
             {
                 Clipboard.SetText(txtMessage.Text);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 MessageBox.Show("自动复制失败，请手动复制\n" + ex.Message);
             }
         }
-
     }
 }

@@ -19,17 +19,19 @@ namespace BMCLV2
     /// </summary>
     public partial class FrmPrs : Window
     {
+        public delegate void changeHandel(string status);
+        public event changeHandel changeEvent;
+
         public FrmPrs(string Name)
         {
             InitializeComponent();
             labName.Content = Name;
-            launcher.changeEvent += changeEvent;
-            FrmMain.changeEvent += changeEvent;
+            changeEvent += changeEventH;
         }
 
-        void changeEvent(string status)
+        public void changeEventH(string status)
         {
-            labStatus.Content = status;
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { labStatus.Content = status; }));
         }
     }
 }

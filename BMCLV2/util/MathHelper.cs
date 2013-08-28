@@ -15,9 +15,9 @@ namespace BMCLV2.util
             {
                 j = int.Parse(par0Str);
             }
-            catch (Exception ex)
+            catch 
             {
-                ;
+                
             }
 
             return j;

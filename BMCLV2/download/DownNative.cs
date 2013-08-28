@@ -21,11 +21,6 @@ namespace BMCLV2.download
         public static Exception UnSupportVer = new Exception("启动器不支持这个版本");
         public static Exception FailInLib = new Exception("无法获得所需的依赖");
 
-        public DownNative(libraryies Lib)
-        {
-            lib = Lib;
-            launcher.downNativeEvent += launcher_downNativeEvent;
-        }
 
         void launcher_downNativeEvent(libraryies lib)
         {

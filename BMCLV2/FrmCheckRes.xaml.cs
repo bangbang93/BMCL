@@ -28,10 +28,12 @@ namespace BMCLV2
         {
             InitializeComponent();
         }
-        string URL_RESOURCE_BASE = Resource.Url.URL_RESOURCE_BASE;
+        string URL_RESOURCE_BASE = FrmMain.URL_RESOURCE_BASE;
         DataTable dt=new DataTable();
         int InDownloading = 0;
         int WaitingForSync = 0;
+        bool ischecked = false;
+        int checkedfile = 0;
         private void frmCheckRes_Loaded(object sender, RoutedEventArgs e)
         {
             try
@@ -62,12 +64,12 @@ namespace BMCLV2
                     listRes.DataContext = dt;
                 }
             }
-            catch (WebException ex)
+            catch (WebException)
             {
                 MessageBox.Show("与文件服务器通信超时，请重试");
                 this.Close();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
@@ -75,6 +77,7 @@ namespace BMCLV2
 
         private void btnCheck_Click(object sender, RoutedEventArgs e)
         {
+            ischecked = true;
             prs.Maximum = listRes.Items.Count;
             prs.Value = 0;
             foreach (object item in listRes.Items)
@@ -83,6 +86,12 @@ namespace BMCLV2
                 ThreadPool.QueueUserWorkItem(new WaitCallback(GetMD5HashFromFile), prs.Value);
                 //GetMD5HashFromFile(prs.Value);
             }
+            Thread thCount=new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
+            {
+                while (checkedfile != dt.Rows.Count) { }
+                Logger.Log(string.Format("检查资源文件，共有{0}个文件待同步，共计{1}个文件", WaitingForSync, dt.Rows.Count));
+            })));
+            thCount.Start();
         }
         public void GetMD5HashFromFile(object obj)
         {
@@ -105,6 +114,7 @@ namespace BMCLV2
                     lock (dt)
                     {
                         dt.Rows[num]["状态"] = "已完成";
+                        Logger.Log(string.Format("检查资源文件{0}，无需同步", dt.Rows[num]["文件名"]));
                     }
                 }
                 else
@@ -112,11 +122,12 @@ namespace BMCLV2
                     lock (dt)
                     {
                         dt.Rows[num]["状态"] = "待同步";
+                        Logger.Log(string.Format("检查资源文件{0}，需要同步", dt.Rows[num]["文件名"]));
                     }
                     WaitingForSync++;
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 lock (dt)
                 {
@@ -124,10 +135,17 @@ namespace BMCLV2
                 }
                 WaitingForSync++;
             }
+            checkedfile++;
         }
 
         private void btnSync_Click(object sender, RoutedEventArgs e)
         {
+            if (WaitingForSync == 0)
+            {
+                MessageBox.Show("没有需要同步的文件");
+            }
+            if (!ischecked)
+                btnCheck_Click(null, null);
             prs.Maximum = WaitingForSync;
             prs.Value = 0;
             int num = -1;
@@ -147,24 +165,29 @@ namespace BMCLV2
                     }
                     downer.DownloadFileCompleted += downer_DownloadFileCompleted;
                     InDownloading++;
-                    downer.DownloadFileAsync(new Uri(rpath.ToString()), lpath.ToString(), num);
+                    ThreadPool.QueueUserWorkItem(a => Downer(new Uri(rpath.ToString()), lpath.ToString(), num, downer));
                 }
             }
         }
-
+        void Downer(Uri url, string lpath, int num,WebClient downer)
+        {
+            Logger.Log(string.Format("下载资源文件{0}", url.ToString()));
+            downer.DownloadFileAsync(url, lpath.ToString(), num);
+        }
         void downer_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             InDownloading--;
             int num = (int)e.UserState;
+            Logger.Log(string.Format("下载资源文件{0}", dt.Rows[num]["文件名"]));
             lock (dt)
             {
                 dt.Rows[num]["状态"] = "已同步";
             }
-            prs.Value++;
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
             if (InDownloading == 0)
             {
                 MessageBox.Show("同步完成");
-                this.Close();
+                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Close(); }));
             }
         }
     }

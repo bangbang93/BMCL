@@ -45,19 +45,19 @@ namespace BMCLV2
         static DataContractSerializer Cfg = new DataContractSerializer(typeof(config));
         static public gameinfo info;
         string session;
-        int startup = 4;
         launcher game;
         bool inscreen;
         static public ListBox AuthList;
         static public string portinfo = "Port By BMCL";
         static public bool debug;
-        public delegate void statuschange(string status);
-        public static event statuschange changeEvent;
         System.Windows.Forms.NotifyIcon NIcon;
         public static string ver;
 
         public FrmMain()
         {
+            string ver = Application.ResourceAssembly.FullName.Split('=')[1];
+            ver = ver.Substring(0, ver.IndexOf(','));
+            Logger.Log("BMCL V2 Ver." + ver + "正在启动");
             InitializeComponent();
             ReFlushlistver();
             this.Icon = new BitmapImage(new Uri("pack://application:,,,/Resource/tofu slime.jpg"));
@@ -70,6 +70,9 @@ namespace BMCLV2
             MenuItem.Name = "ShowMainWindow";
             MenuItem.Click += NMenu_ShowMainWindows_Click;
             NIcon.DoubleClick += NIcon_DoubleClick;
+            System.Windows.Forms.MenuItem DebugMode = NMenu.MenuItems.Add("以Debug模式重启");
+            DebugMode.Name = "DebugMode";
+            DebugMode.Click += DebugMode_Click;
             NIcon.ContextMenu = NMenu;
             System.Windows.Controls.ContextMenu SkinMenu = new System.Windows.Controls.ContextMenu();
             System.Windows.Controls.MenuItem SelectFile = new System.Windows.Controls.MenuItem();
@@ -120,8 +123,6 @@ namespace BMCLV2
                         }
                         
                     }
-                nextplugin:
-                    for (;false ; ) ;
                 }
             }
             AuthList = listAuth;
@@ -142,6 +143,7 @@ namespace BMCLV2
             if (cfg.passwd != null)
                 txtPwd.Password = Encoding.UTF8.GetString(cfg.passwd);
             txtExtJArg.Text = cfg.extraJVMArg;
+            checkAutoStart.IsChecked = cfg.autostart;
             listVer.SelectedItem = cfg.lastPlayVer;
             listAuth.SelectedItem = cfg.login;
             if (listAuth.SelectedItem == null)
@@ -149,9 +151,10 @@ namespace BMCLV2
             sliderWindowTransparency.Value = cfg.WindowTransparency;
             checkReport.IsChecked = cfg.Report;
             txtInsPath.Text = Environment.CurrentDirectory + "\\.minecraft";
+            listDownSource.SelectedIndex = cfg.DownloadSource;
             #endregion
-            ver=Application.ResourceAssembly.FullName.Split('=')[1];
-            ver = ver.Substring(0, ver.IndexOf(','));
+            Logger.Log(cfg);
+            
             this.Title = "BMCL V2 Ver." + ver;
 #if DEBUG
 #else
@@ -161,6 +164,13 @@ namespace BMCLV2
                 thReport.Start();
             }
 #endif
+        }
+
+        void DebugMode_Click(object sender, EventArgs e)
+        {
+            Process.Start(Environment.CommandLine.Replace("\"", ""), "-Debug");
+            NIcon.Visible = false;
+            Environment.Exit(0);
         }
 
         void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -194,12 +204,14 @@ namespace BMCLV2
                 int imgTotal = pics.Count; 
                 if (imgTotal == 0)
                 {
-                    MessageBox.Show("没有可用的背景图");
+                    if (sender != null)
+                        MessageBox.Show("没有可用的背景图");
                     return;
                 }
                 if (imgTotal == 1)
                 {
-                    MessageBox.Show("只有一张可用的背景图哦");
+                    if (sender != null)
+                        MessageBox.Show("只有一张可用的背景图哦");
                     return;
                 }
                 ImageBrush b;
@@ -215,6 +227,8 @@ namespace BMCLV2
             }
             else
             {
+                if (sender == null)
+                    return;
                 MessageBox.Show("请在启动启动其目录下新建bg文件夹，并放入图片文件，支持jpg,bmp,png等格式，比例请尽量接近16:9，否则会被拉伸");
                 Directory.CreateDirectory(Environment.CurrentDirectory + "\\bg");
                 Process explorer = new Process();
@@ -225,6 +239,7 @@ namespace BMCLV2
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
+            Logger.Log(string.Format("BMCL V2 Ver.{0} 正在退出", ver));
             this.Close();
         }
         private void btnStart_Click(object sender, RoutedEventArgs e)
@@ -238,6 +253,7 @@ namespace BMCLV2
             }
             FrmPrs starter = new FrmPrs("正在准备游戏环境及启动游戏");
             int SelectedIndex = listAuth.SelectedIndex; ;
+            Logger.Log(string.Format("正在启动{0},使用的登陆方式为{1}", listVer.SelectedItem.ToString(), AuthList.SelectedItem.ToString()));
             object Auth;
             if (SelectedIndex != 0)
                 Auth = Auths[AuthList.SelectedItem.ToString()];
@@ -250,12 +266,11 @@ namespace BMCLV2
                     starter.Show();
                     starter.Activate();
                     starter.Focus();
-                    changeEvent("正在登陆");
+                    starter.changeEventH("正在登陆");
                 }));
-                
+                MCAuth.LoginInfo loginans = new MCAuth.LoginInfo();
                 try
                 {
-                    MCAuth.LoginInfo loginans = new MCAuth.LoginInfo();
                     if (SelectedIndex != 0)
                     {
                         Type T = Auth.GetType();
@@ -264,8 +279,13 @@ namespace BMCLV2
                         {
                             object loginansobj;
                             Type Li;
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { 
-                                loginansobj= Login.Invoke(Auth, new object[] { txtUserName.Text, txtPwd.Password, "", "zh-cn" });
+                            string username = "", pwd = "";
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                            {
+                                username = txtUserName.Text;
+                                pwd = txtPwd.Password;
+                            }));
+                                loginansobj= Login.Invoke(Auth, new object[] { username, pwd, "", "zh-cn" });
                                 Li = loginansobj.GetType();
                                 loginans.Suc = (bool)Li.GetField("Suc").GetValue(loginansobj);
                                 if (loginans.Suc == true)
@@ -274,55 +294,50 @@ namespace BMCLV2
                                     loginans.SID = Li.GetField("SID").GetValue(loginansobj)as string;
                                     loginans.Client_identifier = Li.GetField("Client_identifier").GetValue(loginansobj) as string;
                                     loginans.UID = Li.GetField("UID").GetValue(loginansobj) as string;
+                                    Logger.Log(string.Format("登陆成功，使用用户名{0},sid{1},Client_identifier{2},uid{3}", loginans.UN != null ? loginans.UN : "", loginans.SID != null ? loginans.SID : "", loginans.Client_identifier != null ? loginans.Client_identifier : "", loginans.UID != null ? loginans.UID : ""));
                                 }
                                 else
                                 {
                                     loginans.Errinfo = Li.GetField("Errinfo").GetValue(loginansobj)as string;
                                     loginans.OtherInfo = Li.GetField("OtherInfo").GetValue(loginansobj)as string;
+                                    Logger.Log(string.Format("登陆失败，错误信息:{0}，其他信息:{1}", loginans.Errinfo != null ? loginans.Errinfo : "", loginans.OtherInfo != null ? loginans.OtherInfo : ""));
                                 }
-                                
-                            }));
-                            
-                            
                         }
                         catch (Exception ex)
                         {
-                            Exception exc = ex;
-                            while (exc.InnerException != null)
+                            loginans.Suc = false;
+                            loginans.Errinfo = ex.Message;
+                            while (ex.InnerException != null)
                             {
-                                exc = exc.InnerException;
+                                ex = ex.InnerException;
+                                loginans.Errinfo += "\n" + ex.Message;
                             }
-                            MessageBox.Show(exc.Message);
-                            return;
+                            MessageBox.Show("登录失败:" + loginans.Errinfo);
                         }
                         if (loginans.Suc==true)
                         {
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
-                            {
-                                cfg.username = txtUserName.Text;
-                                cfg.passwd = Encoding.UTF8.GetBytes(txtPwd.Password);
-                                cfg.javaxmx = txtJavaXmx.Text;
-                                cfg.javaw = txtJavaPath.Text;
-                                cfg.login = listAuth.SelectedItem.ToString();
-                                cfg.lastPlayVer = listVer.SelectedItem.ToString();
-                                cfg.autostart = checkAutoStart.IsChecked.Value;
-                                cfg.extraJVMArg = txtExtJArg.Text;
-                            }));
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnSaveConfig_Click(null, null); }));
                             session = loginans.SID;
-                            config.Save(cfg, cfgfile);
                             string username = loginans.UN;
                             try
                             {
-                                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { game = new launcher(txtJavaPath.Text, txtJavaXmx.Text, username, listVer.SelectedItem.ToString(), info, txtExtJArg.Text, session); }));
+                                string javaPath="", javaXmx="", selectVer="", extArg="";
+                                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { 
+                                    javaPath = txtJavaPath.Text;
+                                    javaXmx = txtJavaXmx.Text;
+                                    selectVer=listVer.SelectedItem.ToString();
+                                    extArg=txtExtJArg.Text;
+                                }));
+                                game = new launcher(javaPath, javaXmx, username,selectVer , info, extArg, ref starter, session);
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show(ex.Message);
+                                MessageBox.Show("启动失败：" + ex.Message);
                             }
                         }
                         else
                         {
-                            MessageBox.Show(loginans.Errinfo);
+                            MessageBox.Show("登录失败:" + loginans.Errinfo);
                             return;
                         }
                     }
@@ -330,31 +345,33 @@ namespace BMCLV2
                     {
                         try
                         {
+                            string javaPath = "", javaXmx = "", selectVer = "", extArg = "", username = "";
                             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                             {
-                                cfg.username = txtUserName.Text;
-                                cfg.passwd = null;
-                                cfg.javaxmx = txtJavaXmx.Text;
-                                cfg.javaw = txtJavaPath.Text;
-                                cfg.login = listAuth.SelectedItem.ToString();
-                                cfg.lastPlayVer = listVer.SelectedItem.ToString();
-                                cfg.autostart = checkAutoStart.IsChecked.Value;
-                                cfg.extraJVMArg = txtExtJArg.Text;
+                                btnSaveConfig_Click(null, null);
+                                username = txtUserName.Text;
+                                javaPath = txtJavaPath.Text;
+                                javaXmx = txtJavaXmx.Text;
+                                selectVer = listVer.SelectedItem.ToString();
+                                extArg = txtExtJArg.Text;
                             }));
-                            config.Save(cfg, cfgfile);
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { game = new launcher(txtJavaPath.Text, txtJavaXmx.Text, txtUserName.Text, listVer.SelectedItem.ToString(), info, txtExtJArg.Text); }));
+                            game = new launcher(javaPath, javaXmx, username, selectVer, info, extArg, ref starter);
                         }
                         catch (Exception ex)
                         {
                             MessageBox.Show(ex.Message);
                         }
                     }
-
                     try
                     {
                         Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                         {
-                            bool start = game.start();
+                            if (game == null)
+                            {
+                                Logger.Log("启动器初始化失败，放弃启动", Logger.LogType.Crash);
+                                return;
+                            }
+                            game.start();
                             launcher.gameexit += launcher_gameexit;
                             this.Hide();
                         }));
@@ -367,14 +384,17 @@ namespace BMCLV2
                 finally
                 {
                     NIcon.Visible = true;
-                    NIcon.ShowBalloonTip(10000, "BMCL", "启动" + cfg.lastPlayVer + "成功", System.Windows.Forms.ToolTipIcon.Info);
+                    if ((loginans.Suc == false && SelectedIndex != 0) || game == null)
+                        NIcon.ShowBalloonTip(10000, "BMCL", "启动失败" + cfg.lastPlayVer, System.Windows.Forms.ToolTipIcon.Error);
+                    else
+                        NIcon.ShowBalloonTip(10000, "BMCL", "已启动" + cfg.lastPlayVer, System.Windows.Forms.ToolTipIcon.Info);
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { starter.Close(); }));
                 }
             })));
             thGO.Start();
 
         }
-        void SelectFile_Click(object sender, RoutedEventArgs e)
+        private void SelectFile_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.OpenFileDialog ofbg = new System.Windows.Forms.OpenFileDialog();
             ofbg.CheckFileExists = true;
@@ -394,20 +414,26 @@ namespace BMCLV2
             da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
             this.BeginAnimation(FrmMain.OpacityProperty, da);
         }
-        void launcher_gameexit()
+        private void launcher_gameexit()
         {
             if (!inscreen)
             {
-                Environment.Exit(0);
+                Logger.Log("BMCL V2 Ver" + ver + DateTime.Now.ToString() + "由于游戏退出而退出");
+                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { Application.Current.Shutdown(0); }));
             }
         }
-        void NIcon_DoubleClick(object sender, EventArgs e)
+        private void NIcon_DoubleClick(object sender, EventArgs e)
         {
             this.Show();
         }
-        void NMenu_ShowMainWindows_Click(object sender, EventArgs e)
+        private void NMenu_ShowMainWindows_Click(object sender, EventArgs e)
         {
             this.Show();
+        }
+        private void btnMiniSize_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+            NIcon.ShowBalloonTip(2000, "BMCL", "BMCL隐藏在这里了", System.Windows.Forms.ToolTipIcon.Info);
         }
         #endregion
 
@@ -685,10 +711,12 @@ namespace BMCLV2
             cfg.javaw = txtJavaPath.Text;
             cfg.javaxmx = txtJavaXmx.Text;
             cfg.login = listAuth.SelectedItem.ToString();
+            cfg.lastPlayVer = listVer.SelectedItem as string;
             cfg.passwd = Encoding.UTF8.GetBytes(txtPwd.Password);
             cfg.username = txtUserName.Text;
             cfg.WindowTransparency = sliderWindowTransparency.Value;
             cfg.Report = checkReport.IsChecked.Value;
+            cfg.DownloadSource = listDownSource.SelectedIndex;
             config.Save(cfg, cfgfile);
             DoubleAnimationUsingKeyFrames dak = new DoubleAnimationUsingKeyFrames();
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(0)));
@@ -722,6 +750,22 @@ namespace BMCLV2
                 Top.Background.Opacity = e.NewValue;
         }
 
+        private void listDownSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch (listDownSource.SelectedIndex)
+            {
+                case 0:
+                    FrmMain.URL_DOWNLOAD_BASE = Resource.Url.URL_DOWNLOAD_BASE;
+                    FrmMain.URL_RESOURCE_BASE = Resource.Url.URL_RESOURCE_BASE;
+                    break;
+                case 1:
+                    FrmMain.URL_DOWNLOAD_BASE = Resource.Url.URL_DOWNLOAD_bangbang93;
+                    FrmMain.URL_RESOURCE_BASE = Resource.Url.URL_RESOURCE_bangbang93;
+                    break;
+                default:
+                    goto case 0;
+            }
+        }
         #endregion
 
 
@@ -730,14 +774,14 @@ namespace BMCLV2
         {
             listRemoteVer.DataContext = null;
             DataContractJsonSerializer RawJson = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(RawVersionListType));
-            HttpWebRequest GetJson = (HttpWebRequest)WebRequest.Create("https://s3.amazonaws.com/Minecraft.Download/versions/versions.json");
+            HttpWebRequest GetJson = (HttpWebRequest)WebRequest.Create(URL_DOWNLOAD_BASE + "versions/versions.json");
             GetJson.Timeout = 10000;
             GetJson.ReadWriteTimeout = 10000;
             Thread thGet = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
             {
                 try
                 {
-                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnRefreshRemoteVer.Content = "正在获取，请稍候"; }));
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnRefreshRemoteVer.Content = "正在获取，请稍候"; btnRefreshRemoteVer.IsEnabled = false; }));
                 HttpWebResponse GetJsonAns = (HttpWebResponse)GetJson.GetResponse();
                 RawVersionListType RemoteVersion = RawJson.ReadObject(GetJsonAns.GetResponseStream()) as RawVersionListType;
                 DataTable dt = new DataTable();
@@ -751,17 +795,28 @@ namespace BMCLV2
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                 {
                     btnRefreshRemoteVer.Content = "刷新版本";
+                    btnRefreshRemoteVer.IsEnabled = true;
                     listRemoteVer.DataContext = dt;
                     listRemoteVer.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("版本", System.ComponentModel.ListSortDirection.Ascending));
                 }));
                 }
                 catch (WebException ex)
                 {
-                    MessageBox.Show(ex.Message);
+                    MessageBox.Show("刷新版本时与服务器通信超时\n"+ex.Message);
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                    {
+                        btnRefreshRemoteVer.Content = "刷新版本";
+                        btnRefreshRemoteVer.IsEnabled = true;
+                    }));
                 }
                 catch (TimeoutException ex)
                 {
-                    MessageBox.Show("刷新版本时与Mojang服务器通信超时");
+                    MessageBox.Show("刷新版本时与服务器通信超时\n"+ex.Message);
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                    {
+                        btnRefreshRemoteVer.Content = "刷新版本";
+                        btnRefreshRemoteVer.IsEnabled = true;
+                    }));
                 }
             })));
             thGet.Start();
@@ -787,6 +842,7 @@ namespace BMCLV2
             MessageBox.Show(downpath.ToString()+"\n"+downurl.ToString());
 #endif
             btnDownloadVer.Content = "下载中请稍候";
+            btnDownloadVer.IsEnabled = false;
             if (!Directory.Exists(System.IO.Path.GetDirectoryName(downpath.ToString())))
             {
                 Directory.CreateDirectory(System.IO.Path.GetDirectoryName(downpath.ToString()));
@@ -797,7 +853,9 @@ namespace BMCLV2
             {
                 downer.DownloadFileCompleted += downer_DownloadClientFileCompleted;
                 downer.DownloadProgressChanged += downer_DownloadProgressChanged;
+                Logger.Log("下载:" + downjsonfile, Logger.LogType.Info);
                 downer.DownloadFile(new Uri(downjsonfile), downjsonpath);
+                Logger.Log("下载:" + downurl, Logger.LogType.Info);
                 downer.DownloadFileAsync(new Uri(downurl.ToString()), downpath.ToString());
                 downedtime = Environment.TickCount - 1;
                 downed = 0;
@@ -805,7 +863,9 @@ namespace BMCLV2
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message+"\n"+ex.InnerException.Message);
+                MessageBox.Show(ex.Message+"\n");
+                btnDownloadVer.Content = "下载";
+                btnDownloadVer.IsEnabled = true;
             }
 
         }
@@ -819,17 +879,19 @@ namespace BMCLV2
             StringBuilder info = new StringBuilder("速度：");
             try
             {
-                info.Append(((double)(e.BytesReceived - downed) / (double)((Environment.TickCount - downedtime) / 1000) / 1024.0).ToString("F2")).AppendLine("KB/s");
+                info.Append(((double)(e.BytesReceived - downed) / (double)((Environment.TickCount - downedtime) / 1000) / 1024.0).ToString("F2")).Append("KB/s,");
             }
-            catch (DivideByZeroException) { info.AppendLine("0B/s"); }
-            info.Append(e.ProgressPercentage.ToString()).AppendLine("%");
+            catch (DivideByZeroException) { info.Append("0B/s,"); }
+            info.Append(e.ProgressPercentage.ToString()).Append("%");
             labDownInfo.Content = info.ToString();
         }
 
         void downer_DownloadClientFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
+            Logger.Log("下载客户端文件成功", Logger.LogType.Info);
             MessageBox.Show("下载成功");
             btnDownloadVer.Content = "下载";
+            btnDownloadVer.IsEnabled = true;
             ReFlushlistver();
             //            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
             gridDown.Visibility = Visibility.Hidden;
@@ -839,6 +901,10 @@ namespace BMCLV2
         {
             FrmCheckRes checkres = new FrmCheckRes();
             checkres.ShowDialog();
+        }
+        private void listRemoteVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            btnDownloadVer_Click(null, null);
         }
 
         #endregion
@@ -872,6 +938,8 @@ namespace BMCLV2
         delegate void GetForgeFinishDel(HtmlDocument ForgePage);
         private void btnReForge_Click(object sender, RoutedEventArgs e)
         {
+            btnReForge.Content = "正在获取";
+            btnReForge.IsEnabled = false;
             HtmlDocument ForgePage;
             treeForgeVer.Items.Clear();
             DownloadUrl.Clear();
@@ -950,6 +1018,8 @@ namespace BMCLV2
                 tree.Items.Add(ver);
             }
             treeForgeVer.Items.Add(tree);
+            btnReForge.Content = "刷新forge版本列表";
+            btnReForge.IsEnabled = true;
         }
         private void DownloadForge(string ver)
         {
@@ -1171,17 +1241,23 @@ namespace BMCLV2
                         serverdat.WriteByte(0);
                         serverdat.Close();
                         sl = new serverlist.serverlist();
-                        btnAddServer.IsEnabled = true;
-                        btnDeleteServer.IsEnabled = true;
-                        btnEditServer.IsEnabled = true;
-                        btnReflushServer.IsEnabled = true;
+                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                        {
+                            btnAddServer.IsEnabled = true;
+                            btnDeleteServer.IsEnabled = true;
+                            btnEditServer.IsEnabled = true;
+                            btnReflushServer.IsEnabled = true;
+                        }));
                     }
                     else
                     {
-                        btnAddServer.IsEnabled = false;
-                        btnDeleteServer.IsEnabled = false;
-                        btnEditServer.IsEnabled = false;
-                        btnReflushServer.IsEnabled = false;
+                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                        {
+                            btnAddServer.IsEnabled = false;
+                            btnDeleteServer.IsEnabled = false;
+                            btnEditServer.IsEnabled = false;
+                            btnReflushServer.IsEnabled = false;
+                        }));
                     }
                 }
             })));
@@ -1276,6 +1352,22 @@ namespace BMCLV2
         bool loadOk = false;
         private void FrmMainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            if (cfg.username == "!!!")
+            {
+                tabMain.SelectedIndex = 1;
+                tip.IsOpen = true;
+                txtUserName.Focus();
+            }
+            else
+            {
+                if (cfg.autostart == true)
+                {
+                    btnStart_Click(null, null);
+                    loadOk = true;
+                    this.Hide();
+                    return;
+                }
+            }
             DoubleAnimation da = new DoubleAnimation();
             da.From = 0;
             da.To = 1;
@@ -1294,12 +1386,6 @@ namespace BMCLV2
             {
                 SolidColorBrush b=new SolidColorBrush(Color.FromRgb(255,255,255));
                 this.Top.Background = b;
-            }
-            if (cfg.username == "!!!")
-            {
-                tabMain.SelectedIndex = 1;
-                tip.IsOpen = true;
-                txtUserName.Focus();
             }
             loadOk = true;
         }
@@ -1349,9 +1435,13 @@ namespace BMCLV2
         private void FrmMainWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (this.IsVisible == true)
+            {
                 inscreen = true;
+                btnChangeBg_Click(null, new RoutedEventArgs());
+            }
             else
                 inscreen = false;
+            
         }
 
         private void btnEditServer_Click(object sender, RoutedEventArgs e)
@@ -1368,7 +1458,7 @@ namespace BMCLV2
                     btnReflushServer_Click(null, null);
                 }
             }
-            catch (ArgumentOutOfRangeException ex)
+            catch (ArgumentOutOfRangeException)
             {
                 MessageBox.Show("请先选择一个服务器");
             }
@@ -1387,10 +1477,10 @@ namespace BMCLV2
 
         private void ImportOldMC(string ImportName,string ImportFrom,FrmPrs prs)
         {
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { changeEvent("导入主程序"); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH("导入主程序"); }));
             Directory.CreateDirectory(".minecraft\\versions\\" + ImportName);
             File.Copy(ImportFrom + "\\bin\\minecraft.jar", ".minecraft\\versions\\" + ImportName + "\\" + ImportName + ".jar");
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { changeEvent("创建Json"); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH("创建Json"); }));
             gameinfo info = new gameinfo();
             info.id = ImportName;
             string timezone = DateTimeOffset.Now.Offset.ToString();
@@ -1403,7 +1493,7 @@ namespace BMCLV2
             info.type = portinfo;
             info.minecraftArguments = "${auth_player_name}";
             info.mainClass = "net.minecraft.client.Minecraft";
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { changeEvent("处理native"); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH("处理native"); }));
             ArrayList libs = new ArrayList();
             DirectoryInfo bin = new DirectoryInfo(ImportFrom + "\\bin");
             foreach (FileInfo file in bin.GetFiles("*.jar"))
@@ -1433,12 +1523,12 @@ namespace BMCLV2
             nativefile.extract = new libraries.extract();
             libs.Add(nativefile);
             info.libraries = (libraries.libraryies[])libs.ToArray(typeof(libraries.libraryies));
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { changeEvent("写入Json"); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH("写入Json"); }));
             FileStream wcfg = new FileStream(".minecraft\\versions\\" + ImportName + "\\" + ImportName + ".json", FileMode.Create);
             DataContractJsonSerializer infojson = new DataContractJsonSerializer(typeof(gameinfo));
             infojson.WriteObject(wcfg, info);
             wcfg.Close();
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { changeEvent("处理lib"); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH("处理lib"); }));
             if (Directory.Exists(ImportFrom + "\\lib"))
             {
                 if (!Directory.Exists(".minecraft\\lib"))
@@ -1453,7 +1543,7 @@ namespace BMCLV2
                     }
                 }
             }
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { changeEvent("处理mods"); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH("处理mods"); }));
             if (Directory.Exists(ImportFrom + "\\mods"))
                 util.Dir.dircopy(ImportFrom + "\\mods", ".minecraft\\versions\\" + ImportName + "\\mods");
             else
@@ -1473,6 +1563,12 @@ namespace BMCLV2
                 this.ReFlushlistver();
             }));
         }
+
+
+
+
+
+
 
 
 

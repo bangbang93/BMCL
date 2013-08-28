@@ -23,6 +23,7 @@ namespace BMCLV2
         public string extraJVMArg;
         public double WindowTransparency;
         public bool Report;
+        public int DownloadSource;
 
         public config()
         {
@@ -35,6 +36,7 @@ namespace BMCLV2
             extraJVMArg = "";
             WindowTransparency = 1;
             Report = true;
+            DownloadSource = 0;
         }
         object ICloneable.Clone()
         {
