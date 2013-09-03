@@ -27,6 +27,7 @@ using System.Net.Sockets;
 
 using BMCLV2.Versions;
 using BMCLV2.util;
+using BMCLV2.Lang;
 
 using HtmlAgilityPack;
 
@@ -66,12 +67,12 @@ namespace BMCLV2
             System.Windows.Resources.StreamResourceInfo s = Application.GetResourceStream(new Uri("pack://application:,,,/screenLaunch.png"));
             NIcon.Icon = System.Drawing.Icon.FromHandle(new System.Drawing.Bitmap(s.Stream).GetHicon());
             System.Windows.Forms.ContextMenu NMenu = new System.Windows.Forms.ContextMenu();
-            System.Windows.Forms.MenuItem MenuItem = NMenu.MenuItems.Add("显示主窗口");
+            System.Windows.Forms.MenuItem MenuItem = NMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
             MenuItem.Name = "ShowMainWindow";
             MenuItem.DefaultItem = true;
             MenuItem.Click += NMenu_ShowMainWindows_Click;
             NIcon.DoubleClick += NIcon_DoubleClick;
-            System.Windows.Forms.MenuItem DebugMode = NMenu.MenuItems.Add("以Debug模式重启");
+            System.Windows.Forms.MenuItem DebugMode = NMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuUseDebugMode"));
             DebugMode.Name = "DebugMode";
             DebugMode.Click += DebugMode_Click;
             NIcon.ContextMenu = NMenu;
@@ -79,60 +80,12 @@ namespace BMCLV2
             System.Windows.Controls.ContextMenu SkinMenu = new System.Windows.Controls.ContextMenu();
             System.Windows.Controls.MenuItem SelectFile = new System.Windows.Controls.MenuItem();
             SelectFile.Name = "menuSelectFile";
-            SelectFile.Header = "选择文件";
+            SelectFile.Header = LangManager.GetLangFromResource("MenuSelectFile");
             SelectFile.Click += SelectFile_Click;
             SkinMenu.Items.Add(SelectFile);
             btnChangeBg.ContextMenu = SkinMenu;
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
-            #region 加载新插件
-            listAuth.Items.Add("啥都没有");
-            if (Directory.Exists("auths"))
-            {
-                string[] authplugins = Directory.GetFiles(Environment.CurrentDirectory + @"\auths");
-                foreach (string auth in authplugins)
-                {
-                    if (auth.ToLower().EndsWith(".dll"))
-                    {
-                        try
-                        {
-                            Assembly AuthMethod = Assembly.LoadFrom(auth);
-                            Type[] types = AuthMethod.GetTypes();
-                            foreach (Type t in types)
-                            {
-                                try
-                                {
-                                    object Auth = AuthMethod.CreateInstance(t.FullName);
-                                    Type T = Auth.GetType();
-                                    MethodInfo AuthVer = T.GetMethod("GetVer");
-                                    if (AuthVer == null)
-                                    {
-                                        continue;
-                                    }
-                                    if ((long)AuthVer.Invoke(Auth, null) != 1)
-                                    {
-                                        continue;
-                                    }
-                                    MethodInfo MAuthName = T.GetMethod("GetName");
-                                    string AuthName = MAuthName.Invoke(Auth, new object[] { "zh-cn" }).ToString();
-                                    Auths.Add(AuthName, Auth);
-                                    listAuth.Items.Add(AuthName);
-                                }
-                                catch (MissingMethodException) { }
-                                catch (ArgumentException) { }
-                            }
-                        }
-                        catch (NotSupportedException ex)
-                        {
-                            if (ex.Message.IndexOf("0x80131515") != -1)
-                            {
-                                MessageBox.Show("一个或多个插件加载失败，请打开auths目录下所有DLL文件，单击右键,选择属性,然后把锁定解除即可。","插件加载失败");
-                            }
-                        }
-                    }
-                }
-            }
-            AuthList = listAuth;
-            #endregion
+            LoadPlugin(LangManager.GetLangFromResource("LangName"));
             #region 加载配置
             if (File.Exists(cfgfile))
             {
@@ -169,6 +122,7 @@ namespace BMCLV2
             listDownSource.SelectedIndex = cfg.DownloadSource;
             #endregion
             Logger.Log(cfg);
+            LoadLanguage();
             
             this.Title = "BMCL V2 Ver." + ver;
 #if DEBUG
@@ -194,8 +148,6 @@ namespace BMCLV2
             var crash = new CrashHandle(e.Exception);
             crash.Show();
         }
-
-
 
         #region 公共按钮
         private void btnChangeBg_Click(object sender, RoutedEventArgs e)
@@ -448,7 +400,7 @@ namespace BMCLV2
         private void btnMiniSize_Click(object sender, RoutedEventArgs e)
         {
             this.Hide();
-            NIcon.ShowBalloonTip(2000, "BMCL", "BMCL隐藏在这里了", System.Windows.Forms.ToolTipIcon.Info);
+            NIcon.ShowBalloonTip(2000, "BMCL", LangManager.GetLangFromResource("BMCLHiddenInfo"), System.Windows.Forms.ToolTipIcon.Info);
         }
         #endregion
 
@@ -481,7 +433,7 @@ namespace BMCLV2
                 }
                 if (!find)
                 {
-                    MessageBox.Show("找不到版本所需的json文件");
+                    MessageBox.Show(LangManager.GetLangFromResource("CantFindVersionJsonInfo"));
                     btnStart.IsEnabled = false;
                     return;
                 }
@@ -501,7 +453,7 @@ namespace BMCLV2
         }
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show("你确定要删除当前版本？这个操作不能恢复，1.5.1之后的版本可去版本管理里重新下载", "删除确认", MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK)
+            if (MessageBox.Show(LangManager.GetLangFromResource("DeleteMessageBoxInfo"), LangManager.GetLangFromResource("DeleteMessageBoxTitle"), MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK)
             {
                 try
                 {
@@ -515,11 +467,11 @@ namespace BMCLV2
                 }
                 catch (UnauthorizedAccessException)
                 {
-                    MessageBox.Show("删除失败，请检查该客户端是否正处于运行状态");
+                    MessageBox.Show(LangManager.GetLangFromResource("DeleteFailedMessageInfo"));
                 }
                 catch (IOException)
                 {
-                    MessageBox.Show("删除失败，请检查该客户端是否正处于运行状态");
+                    MessageBox.Show(LangManager.GetLangFromResource("DeleteFailedMessageInfo"));
                 }
                 finally
                 {
@@ -531,15 +483,15 @@ namespace BMCLV2
         {
             try
             {
-                string rname = Microsoft.VisualBasic.Interaction.InputBox("新名字", "重命名", listVer.SelectedItem.ToString());
+                string rname = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("RenameNewName"), LangManager.GetLangFromResource("RenameTitle"), listVer.SelectedItem.ToString());
                 if (rname == "") return;
                 if (rname == listVer.SelectedItem.ToString()) return;
-                if (listVer.Items.IndexOf(rname) != -1) throw new Exception("这个名字已经存在");
+                if (listVer.Items.IndexOf(rname) != -1) throw new Exception(LangManager.GetLangFromResource("RenameFailedExist"));
                 Directory.Move(".minecraft\\versions\\" + listVer.SelectedItem.ToString(), ".minecraft\\versions\\" + rname);
             }
             catch (UnauthorizedAccessException)
             {
-                MessageBox.Show("重命名失败，请检查客户端是否开启");
+                MessageBox.Show(LangManager.GetLangFromResource("RenameFailedError"));
             }
             catch (Exception ex)
             {
@@ -585,30 +537,30 @@ namespace BMCLV2
         private void btnImportOldMc_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.FolderBrowserDialog folderImportOldVer = new System.Windows.Forms.FolderBrowserDialog();
-            folderImportOldVer.Description = "请选择到.minecraft目录";
-            FrmPrs prs = new FrmPrs("正在导入Minecraft");
+            folderImportOldVer.Description = LangManager.GetLangFromResource("ImportDirInfo");
+            FrmPrs prs = new FrmPrs(LangManager.GetLangFromResource("ImportPrsTitle"));
             prs.Show();
             if (folderImportOldVer.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 string ImportFrom = folderImportOldVer.SelectedPath;
                 if (!File.Exists(ImportFrom + "\\bin\\minecraft.jar"))
                 {
-                    MessageBox.Show("未在该目录内发现有效的旧版Minecraft");
+                    MessageBox.Show(LangManager.GetLangFromResource("ImportFailedNoMinecraftFound"));
                     return;
                 }
                 string ImportName;
                 bool F1 = false, F2 = false;
-                ImportName = Microsoft.VisualBasic.Interaction.InputBox("输入导入后的名称", "导入旧版MC", "OldMinecraft");
+                ImportName = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("ImportNameInfo"), LangManager.GetLangFromResource("ImportOldMcInfo"), "OldMinecraft");
                 do
                 {
                     F1 = false;
                     F2 = false;
                     if (ImportName.Length <= 0 || ImportName.IndexOf('.') != -1)
-                        ImportName = Microsoft.VisualBasic.Interaction.InputBox("输入导入后的名称", "输入无效，请不要带\".\"符号", "OldMinecraft");
+                        ImportName = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("ImportNameInfo"), LangManager.GetLangFromResource("ImportInvildName"), "OldMinecraft");
                     else
                         F1 = true;
                     if (Directory.Exists(".minecraft\\versions\\" + ImportName))
-                        ImportName = Microsoft.VisualBasic.Interaction.InputBox("输入导入后的名称", "版本已存在", "OldMinecraft");
+                        ImportName = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("ImportNameInfo"), LangManager.GetLangFromResource("ImportFailedExist"), "OldMinecraft");
                     else
                         F2 = true;
 
@@ -732,6 +684,7 @@ namespace BMCLV2
             cfg.WindowTransparency = sliderWindowTransparency.Value;
             cfg.Report = checkReport.IsChecked.Value;
             cfg.DownloadSource = listDownSource.SelectedIndex;
+            cfg.Lang = LangManager.GetLangFromResource("Name");
             config.Save(cfg, cfgfile);
             DoubleAnimationUsingKeyFrames dak = new DoubleAnimationUsingKeyFrames();
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(0)));
@@ -796,40 +749,40 @@ namespace BMCLV2
             {
                 try
                 {
-                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnRefreshRemoteVer.Content = "正在获取，请稍候"; btnRefreshRemoteVer.IsEnabled = false; }));
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnRefreshRemoteVer.Content = LangManager.GetLangFromResource("RemoteVerGetting"); btnRefreshRemoteVer.IsEnabled = false; }));
                 HttpWebResponse GetJsonAns = (HttpWebResponse)GetJson.GetResponse();
                 RawVersionListType RemoteVersion = RawJson.ReadObject(GetJsonAns.GetResponseStream()) as RawVersionListType;
                 DataTable dt = new DataTable();
-                dt.Columns.Add("版本");
-                dt.Columns.Add("发布时间");
-                dt.Columns.Add("发布类型");
+                dt.Columns.Add("Ver");
+                dt.Columns.Add("RelTime");
+                dt.Columns.Add("Type");
                 foreach (RemoteVerType RV in RemoteVersion.getVersions())
                 {
                     dt.Rows.Add(new string[] { RV.id, RV.releaseTime, RV.type });
                 }
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                 {
-                    btnRefreshRemoteVer.Content = "刷新版本";
+                    btnRefreshRemoteVer.Content = LangManager.GetLangFromResource("btnRefreshRemoteVer");
                     btnRefreshRemoteVer.IsEnabled = true;
                     listRemoteVer.DataContext = dt;
-                    listRemoteVer.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("版本", System.ComponentModel.ListSortDirection.Ascending));
+                    listRemoteVer.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("Ver", System.ComponentModel.ListSortDirection.Ascending));
                 }));
                 }
                 catch (WebException ex)
                 {
-                    MessageBox.Show("刷新版本时与服务器通信超时\n"+ex.Message);
+                    MessageBox.Show(LangManager.GetLangFromResource("RemoteVerFailedTimeout")+"\n"+ex.Message);
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                     {
-                        btnRefreshRemoteVer.Content = "刷新版本";
+                        btnRefreshRemoteVer.Content = LangManager.GetLangFromResource("btnRefreshRemoteVer");
                         btnRefreshRemoteVer.IsEnabled = true;
                     }));
                 }
                 catch (TimeoutException ex)
                 {
-                    MessageBox.Show("刷新版本时与服务器通信超时\n"+ex.Message);
+                    MessageBox.Show(LangManager.GetLangFromResource("RemoteVerFailedTimeout")+"\n"+ex.Message);
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                     {
-                        btnRefreshRemoteVer.Content = "刷新版本";
+                        btnRefreshRemoteVer.Content = LangManager.GetLangFromResource("btnRefreshRemoteVer");
                         btnRefreshRemoteVer.IsEnabled = true;
                     }));
                 }
@@ -840,7 +793,7 @@ namespace BMCLV2
         {
             if (listRemoteVer.SelectedItem == null)
             {
-                MessageBox.Show("请先选择一个版本");
+                MessageBox.Show(LangManager.GetLangFromResource("RemoteVerErrorNoVersionSelect"));
                 return;
             }
             DataRowView SelectVer = listRemoteVer.SelectedItem as DataRowView;
@@ -856,7 +809,7 @@ namespace BMCLV2
 #if DEBUG
             MessageBox.Show(downpath.ToString()+"\n"+downurl.ToString());
 #endif
-            btnDownloadVer.Content = "下载中请稍候";
+            btnDownloadVer.Content = LangManager.GetLangFromResource("RemoteVerDownloading");
             btnDownloadVer.IsEnabled = false;
             if (!Directory.Exists(System.IO.Path.GetDirectoryName(downpath.ToString())))
             {
@@ -879,7 +832,7 @@ namespace BMCLV2
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message+"\n");
-                btnDownloadVer.Content = "下载";
+                btnDownloadVer.Content = LangManager.GetLangFromResource("btnDownloadVer");
                 btnDownloadVer.IsEnabled = true;
             }
 
@@ -891,7 +844,7 @@ namespace BMCLV2
             prsDown.Maximum = (int)e.TotalBytesToReceive;
             prsDown.Value = (int)e.BytesReceived;
             //            TaskbarManager.Instance.SetProgressValue((int)e.BytesReceived, (int)e.TotalBytesToReceive);
-            StringBuilder info = new StringBuilder("速度：");
+            StringBuilder info = new StringBuilder(LangManager.GetLangFromResource("DownloadSpeedInfo"));
             try
             {
                 info.Append(((double)(e.BytesReceived - downed) / (double)((Environment.TickCount - downedtime) / 1000) / 1024.0).ToString("F2")).Append("KB/s,");
@@ -904,8 +857,8 @@ namespace BMCLV2
         void downer_DownloadClientFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             Logger.Log("下载客户端文件成功", Logger.LogType.Info);
-            MessageBox.Show("下载成功");
-            btnDownloadVer.Content = "下载";
+            MessageBox.Show(LangManager.GetLangFromResource("RemoteVerDownloadSuccess"));
+            btnDownloadVer.Content = LangManager.GetLangFromResource("btnDownloadVer");
             btnDownloadVer.IsEnabled = true;
             ReFlushlistver();
             //            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
@@ -935,7 +888,7 @@ namespace BMCLV2
                 HtmlDocument ForgePage;
                 treeForgeVer.Items.Clear();
                 DownloadUrl.Clear();
-                treeForgeVer.Items.Add("正在获取列表，视网络情况可能需要数秒到数分钟，请耐心等待");
+                treeForgeVer.Items.Add(LangManager.GetLangFromResource("ForgeListGetting"));
                 thGet = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
                 {
                     HtmlWeb ForgePageGet = new HtmlWeb();
@@ -953,12 +906,12 @@ namespace BMCLV2
         delegate void GetForgeFinishDel(HtmlDocument ForgePage);
         private void btnReForge_Click(object sender, RoutedEventArgs e)
         {
-            btnReForge.Content = "正在获取";
+            btnReForge.Content = LangManager.GetLangFromResource("btnReForgeGetting");
             btnReForge.IsEnabled = false;
             HtmlDocument ForgePage;
             treeForgeVer.Items.Clear();
             DownloadUrl.Clear();
-            treeForgeVer.Items.Add("正在获取列表，视网络情况可能需要数秒到数分钟，请耐心等待");
+            treeForgeVer.Items.Add(LangManager.GetLangFromResource("ForgeListGetting"));
             thGet=new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate{
             HtmlWeb ForgePageGet = new HtmlWeb();
             ForgePage= ForgePageGet.Load("http://files.minecraftforge.net/");
@@ -1033,14 +986,14 @@ namespace BMCLV2
                 tree.Items.Add(ver);
             }
             treeForgeVer.Items.Add(tree);
-            btnReForge.Content = "刷新forge版本列表";
+            btnReForge.Content = LangManager.GetLangFromResource("btnReForge");
             btnReForge.IsEnabled = true;
         }
         private void DownloadForge(string ver)
         {
             if (!DownloadUrl.ContainsKey(ver))
             {
-                MessageBox.Show("该版本不支持自动安装");
+                MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotSupportInstaller"));
                 return;
             }
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { gridDown.Visibility = Visibility.Visible; }));
@@ -1061,16 +1014,16 @@ namespace BMCLV2
             try
             {
                 Clipboard.SetText(txtInsPath.Text);
-                MessageBox.Show("接下来弹出来的窗口里请选择路径为启动器这里的.minecraft目录。程序已经将目录复制到了剪贴板，直接在窗口里选择浏览，粘贴路径，确定即可");
+                MessageBox.Show(LangManager.GetLangFromResource("ForgeInstallInfo"));
             }
             catch
             {
-                MessageBox.Show("自动复制失败，请手动复制窗口里的安装路径，然后在安装窗口里粘贴路径即可");
+                MessageBox.Show(LangManager.GetLangFromResource("ForgeCopyError"));
             }
             Process ForgeIns = new Process();
             if (!File.Exists(cfg.javaw))
             {
-                MessageBox.Show("请先去启动设置设置好java相关信息并保存");
+                MessageBox.Show(LangManager.GetLangFromResource("ForgeJavaError"));
                 return;
             }
             ForgeIns.StartInfo.FileName = cfg.javaw;
@@ -1095,11 +1048,11 @@ namespace BMCLV2
             try
             {
                 Clipboard.SetText(txtInsPath.Text);
-                MessageBox.Show("复制安装路径成功");
+                MessageBox.Show(LangManager.GetLangFromResource("ForgeCopySuccess"));
             }
             catch
             {
-                MessageBox.Show("自动复制失败，请手动复制窗口里的安装路径，然后在安装窗口里粘贴路径即可");
+                MessageBox.Show(LangManager.GetLangFromResource("ForgeCopyError"));
             }
         }
         #endregion
@@ -1113,14 +1066,14 @@ namespace BMCLV2
             Thread thGetServerInfo = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
             {
                 DataTable dt=new DataTable();
-                dt.Columns.Add("服务器名");
-                dt.Columns.Add("隐藏地址");
-                dt.Columns.Add("地址");
-                dt.Columns.Add("服务器介绍");
-                dt.Columns.Add("版本");
-                dt.Columns.Add("在线人数");
-                dt.Columns.Add("延迟");
-                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnReflushServer.Content = "正在检测延迟"; }));
+                dt.Columns.Add("ServerName");
+                dt.Columns.Add("HiddenAddress");
+                dt.Columns.Add("ServerAddress");
+                dt.Columns.Add("ServerMotd");
+                dt.Columns.Add("ServerVer");
+                dt.Columns.Add("ServerOnline");
+                dt.Columns.Add("ServerDelay");
+                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnReflushServer.Content = LangManager.GetLangFromResource("ServerListGetting"); }));
                 if (File.Exists(@".minecraft\servers.dat"))
                 {
                     sl = new serverlist.serverlist();
@@ -1129,7 +1082,7 @@ namespace BMCLV2
                         DateTime start = DateTime.Now;
                         string[] server = new string[7];
                         server[0] = info.Name;
-                        server[1] = info.IsHide ? "是" : "否";
+                        server[1] = info.IsHide ? LangManager.GetLangFromResource("ServerListYes") : LangManager.GetLangFromResource("ServerListNo");
                         if (info.IsHide)
                             server[2] = string.Empty;
                         else
@@ -1149,7 +1102,7 @@ namespace BMCLV2
                             int bytes = con.Receive(recive);
                             if (recive[0] != 255)
                             {
-                                throw new Exception("服务器回复无效");
+                                throw new Exception(LangManager.GetLangFromResource("ServerListInvildReply"));
                             }
                             string message = Encoding.UTF8.GetString(recive, 4, bytes - 4);
                             StringBuilder remessage = new StringBuilder(30);
@@ -1225,7 +1178,7 @@ namespace BMCLV2
                             server[3] = " ";
                             server[4] = " ";
                             server[5] = " ";
-                            server[6] = "连接失败" + ex.Message;
+                            server[6] = LangManager.GetLangFromResource("ServerListSocketException") + ex.Message;
                             //server.SubItems[0].ForeColor = Color.Red;
                         }
                         catch (Exception ex)
@@ -1233,7 +1186,7 @@ namespace BMCLV2
                             server[3] = " ";
                             server[4] = " ";
                             server[5] = " ";
-                            server[6] = "无法识别的服务器" + ex.Message;
+                            server[6] = LangManager.GetLangFromResource("ServerListUnknowServer") + ex.Message;
                             //server.SubItems[0].ForeColor = Color.Red;
                         }
                         finally
@@ -1245,7 +1198,7 @@ namespace BMCLV2
                 }
                 else
                 {
-                    if (MessageBox.Show("服务器列表找不到，是否创建？", "找不到文件", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    if (MessageBox.Show(LangManager.GetLangFromResource("ServerListNotFound"), "", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                     {
                         if (!Directory.Exists(".minecraft"))
                         {
@@ -1299,7 +1252,27 @@ namespace BMCLV2
             }
             catch (ArgumentOutOfRangeException)
             {
-                MessageBox.Show("请先选择一个服务器");
+                MessageBox.Show(LangManager.GetLangFromResource("ServerListNoServerSelect"));
+            }
+        }
+
+        private void btnEditServer_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                int selected = this.listServer.SelectedIndex;
+                serverlist.AddServer FrmEdit = new serverlist.AddServer(ref sl, selected);
+                if (FrmEdit.ShowDialog() == true)
+                {
+                    serverlist.serverinfo info = FrmEdit.getEdit();
+                    sl.Edit(selected, info.Name, info.Address, info.IsHide);
+                    sl.Write();
+                    btnReflushServer_Click(null, null);
+                }
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                MessageBox.Show(LangManager.GetLangFromResource("ServerListNoServerSelect"));
             }
         }
 
@@ -1314,7 +1287,7 @@ namespace BMCLV2
                 if (!Directory.Exists(".minecraft"))
                 {
                     {
-                        MessageBox.Show("无法找到游戏文件夹");
+                        MessageBox.Show(LangManager.GetLangFromResource("NoClientFound"));
                         btnStart.IsEnabled = false;
                         btnDelete.IsEnabled = false;
                         btnModCfgMrg.IsEnabled = false;
@@ -1326,7 +1299,7 @@ namespace BMCLV2
                 }
                 if (!Directory.Exists(@".minecraft\versions\"))
                 {
-                    MessageBox.Show("无法找到版本文件夹，本启动器只支持1.6以后的目录结构");
+                    MessageBox.Show(LangManager.GetLangFromResource("InvidMinecratDir"));
                     btnStart.IsEnabled      = false;
                     btnDelete.IsEnabled     = false;
                     btnModCfgMrg.IsEnabled  = false;
@@ -1440,8 +1413,6 @@ namespace BMCLV2
             }
         }
 
-
-
         private void FrmMainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             NIcon.Visible = false;
@@ -1459,26 +1430,6 @@ namespace BMCLV2
             
         }
 
-        private void btnEditServer_Click(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                int selected = this.listServer.SelectedIndex;
-                serverlist.AddServer FrmEdit = new serverlist.AddServer(ref sl, selected);
-                if (FrmEdit.ShowDialog() == true)
-                {
-                    serverlist.serverinfo info = FrmEdit.getEdit();
-                    sl.Edit(selected, info.Name, info.Address, info.IsHide);
-                    sl.Write();
-                    btnReflushServer_Click(null, null);
-                }
-            }
-            catch (ArgumentOutOfRangeException)
-            {
-                MessageBox.Show("请先选择一个服务器");
-            }
-        }
-
         private void checkOptifine_Checked(object sender, RoutedEventArgs e)
         {
                 txtExtJArg.Text += " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
@@ -1492,10 +1443,10 @@ namespace BMCLV2
 
         private void ImportOldMC(string ImportName,string ImportFrom,FrmPrs prs)
         {
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH("导入主程序"); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportMain")); }));
             Directory.CreateDirectory(".minecraft\\versions\\" + ImportName);
             File.Copy(ImportFrom + "\\bin\\minecraft.jar", ".minecraft\\versions\\" + ImportName + "\\" + ImportName + ".jar");
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH("创建Json"); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportCreateJson")); }));
             gameinfo info = new gameinfo();
             info.id = ImportName;
             string timezone = DateTimeOffset.Now.Offset.ToString();
@@ -1508,7 +1459,7 @@ namespace BMCLV2
             info.type = portinfo;
             info.minecraftArguments = "${auth_player_name}";
             info.mainClass = "net.minecraft.client.Minecraft";
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH("处理native"); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportSolveNative")); }));
             ArrayList libs = new ArrayList();
             DirectoryInfo bin = new DirectoryInfo(ImportFrom + "\\bin");
             foreach (FileInfo file in bin.GetFiles("*.jar"))
@@ -1538,12 +1489,12 @@ namespace BMCLV2
             nativefile.extract = new libraries.extract();
             libs.Add(nativefile);
             info.libraries = (libraries.libraryies[])libs.ToArray(typeof(libraries.libraryies));
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH("写入Json"); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportWriteJson")); }));
             FileStream wcfg = new FileStream(".minecraft\\versions\\" + ImportName + "\\" + ImportName + ".json", FileMode.Create);
             DataContractJsonSerializer infojson = new DataContractJsonSerializer(typeof(gameinfo));
             infojson.WriteObject(wcfg, info);
             wcfg.Close();
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH("处理lib"); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportSolveLib")); }));
             if (Directory.Exists(ImportFrom + "\\lib"))
             {
                 if (!Directory.Exists(".minecraft\\lib"))
@@ -1558,7 +1509,7 @@ namespace BMCLV2
                     }
                 }
             }
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH("处理mods"); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportSolveMod")); }));
             if (Directory.Exists(ImportFrom + "\\mods"))
                 util.Dir.dircopy(ImportFrom + "\\mods", ".minecraft\\versions\\" + ImportName + "\\mods");
             else
@@ -1574,7 +1525,7 @@ namespace BMCLV2
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
             {
                 prs.Close();
-                MessageBox.Show("导入成功，如果这个版本的MC还有MOD在.minecraft下创建了文件夹（例如Flan's mod,Custom NPC等），请点击MOD独立文件夹按钮进行管理");
+                MessageBox.Show(LangManager.GetLangFromResource("ImportOldMCInfo"));
                 this.ReFlushlistver();
             }));
         }
@@ -1589,6 +1540,118 @@ namespace BMCLV2
             public string OtherInfo;
             public string Client_identifier;
         }
+
+        private void comboLang_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!loadOk)
+                return;
+            switch (comboLang.SelectedIndex)
+            {
+                case 0:
+                    LangManager.UseLanguage("zh-cn");break;
+                case 1:
+                    LangManager.UseLanguage("zh-tw");break;
+                default:
+                    LangManager.UseLanguage(Language[comboLang.SelectedItem as string]as string);break;
+            }
+            ChangeLanguage();
+        }
+
+        new Hashtable Language = new Hashtable();
+        private void LoadLanguage()
+        {
+            var Lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
+            Language.Add(Lang["DisplayName"], Lang["LangName"]);
+            comboLang.Items.Add(Lang["DisplayName"]);
+            LangManager.Add(Lang["LangName"] as string, "pack://application:,,,/Lang/zh-cn.xaml");
+            Lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-tw.xaml");
+            Language.Add(Lang["DisplayName"], Lang["LangName"]);
+            comboLang.Items.Add(Lang["DisplayName"]);
+            LangManager.Add(Lang["LangName"] as string, "pack://application:,,,/Lang/zh-tw.xaml");
+            if (Directory.Exists(Environment.CurrentDirectory + "\\Lang"))
+            {
+                foreach (string LangFile in Directory.GetFiles(Environment.CurrentDirectory + "\\Lang", "*.xaml", SearchOption.TopDirectoryOnly))
+                {
+                    try
+                    {
+                        Lang = LangManager.LoadLangFromResource(LangFile);
+                        Language.Add(Lang["DisplayName"], Lang["LangName"]);
+                        comboLang.Items.Add(Lang["DisplayName"]);
+                        LangManager.Add(Lang["LangName"] as string, LangFile);
+                    }
+                    catch { }
+                }
+            }
+            else
+            {
+                Directory.CreateDirectory(Environment.CurrentDirectory + "\\Lang");
+            }
+        }
+
+        private void ChangeLanguage()
+        {
+            listDownSource.Items[0] = LangManager.GetLangFromResource("listOfficalSource");
+            listDownSource.Items[1] = LangManager.GetLangFromResource("listAuthorSource");
+            LoadPlugin(LangManager.GetLangFromResource("LangName"));
+        }
+
+        private void LoadPlugin(string Language)
+        {
+            listAuth.Items.Clear();
+            Auths.Clear();
+            #region 加载新插件
+            listAuth.Items.Add(LangManager.GetLangFromResource("NoneAuth"));
+            if (Directory.Exists("auths"))
+            {
+                string[] authplugins = Directory.GetFiles(Environment.CurrentDirectory + @"\auths");
+                foreach (string auth in authplugins)
+                {
+                    if (auth.ToLower().EndsWith(".dll"))
+                    {
+                        try
+                        {
+                            Assembly AuthMethod = Assembly.LoadFrom(auth);
+                            Type[] types = AuthMethod.GetTypes();
+                            foreach (Type t in types)
+                            {
+                                try
+                                {
+                                    object Auth = AuthMethod.CreateInstance(t.FullName);
+                                    Type T = Auth.GetType();
+                                    MethodInfo AuthVer = T.GetMethod("GetVer");
+                                    if (AuthVer == null)
+                                    {
+                                        continue;
+                                    }
+                                    if ((long)AuthVer.Invoke(Auth, null) != 1)
+                                    {
+                                        continue;
+                                    }
+                                    MethodInfo MAuthName = T.GetMethod("GetName");
+                                    string AuthName = MAuthName.Invoke(Auth, new object[] { Language }).ToString();
+                                    Auths.Add(AuthName, Auth);
+                                    listAuth.Items.Add(AuthName);
+                                }
+                                catch (MissingMethodException) { }
+                                catch (ArgumentException) { }
+                            }
+                        }
+                        catch (NotSupportedException ex)
+                        {
+                            if (ex.Message.IndexOf("0x80131515") != -1)
+                            {
+                                MessageBox.Show(LangManager.GetLangFromResource("LoadPluginLockErrorInfo"), LangManager.GetLangFromResource("LoadPluginLockErrorTitle"));
+                            }
+                        }
+                    }
+                }
+            }
+            AuthList = listAuth;
+            #endregion
+            if (listAuth.SelectedIndex == -1)
+                listAuth.SelectedIndex = 0;
+        }
+
 
     }
 }

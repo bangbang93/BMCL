@@ -16,6 +16,8 @@ using System.Xml;
 using System.Data;
 using System.Threading;
 
+using BMCLV2.Lang;
+
 namespace BMCLV2
 {
     /// <summary>
@@ -38,10 +40,10 @@ namespace BMCLV2
         {
             try
             {
-                dt.Columns.Add("文件名");
-                dt.Columns.Add("修改时间");
-                dt.Columns.Add("大小");
-                dt.Columns.Add("状态");
+                dt.Columns.Add("FileName");
+                dt.Columns.Add("ModifyTime");
+                dt.Columns.Add("Size");
+                dt.Columns.Add("Status");
                 dt.Columns.Add("MD5");
                 byte[] buffer = (new WebClient()).DownloadData(URL_RESOURCE_BASE);
                 Stream RawXml = new MemoryStream(buffer);
@@ -60,13 +62,13 @@ namespace BMCLV2
                     long size = long.Parse(element.GetElementsByTagName("Size").Item(0).ChildNodes.Item(0).Value);
                     if (size <= 0L)
                         continue;
-                    dt.Rows.Add(new string[] { key, modtime, size.ToString(), "待检查", etag.Replace("\"", "").Trim() });
+                    dt.Rows.Add(new string[] { key, modtime, size.ToString(), LangManager.GetLangFromResource("ResWaitingForCheck"), etag.Replace("\"", "").Trim() });
                     listRes.DataContext = dt;
                 }
             }
             catch (WebException)
             {
-                MessageBox.Show("与文件服务器通信超时，请重试");
+                MessageBox.Show(LangManager.GetLangFromResource("ResServerTimeOut"));
                 this.Close();
             }
             catch (Exception)
@@ -113,7 +115,7 @@ namespace BMCLV2
                 {
                     lock (dt)
                     {
-                        dt.Rows[num]["状态"] = "已完成";
+                        dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResNoNeedForSync");
                         Logger.Log(string.Format("检查资源文件{0}，无需同步", dt.Rows[num]["文件名"]));
                     }
                 }
@@ -121,7 +123,7 @@ namespace BMCLV2
                 {
                     lock (dt)
                     {
-                        dt.Rows[num]["状态"] = "待同步";
+                        dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResWaitingForSync");
                         Logger.Log(string.Format("检查资源文件{0}，需要同步", dt.Rows[num]["文件名"]));
                     }
                     WaitingForSync++;
@@ -131,7 +133,7 @@ namespace BMCLV2
             {
                 lock (dt)
                 {
-                    dt.Rows[num]["状态"] = "待同步";
+                    dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResWaitingForSync");
                 }
                 WaitingForSync++;
             }
@@ -142,7 +144,7 @@ namespace BMCLV2
         {
             if (WaitingForSync == 0)
             {
-                MessageBox.Show("没有需要同步的文件");
+                MessageBox.Show(LangManager.GetLangFromResource("ResNoFileForSync"));
             }
             if (!ischecked)
                 btnCheck_Click(null, null);
@@ -152,13 +154,13 @@ namespace BMCLV2
             foreach (object item in listRes.Items)
             {
                 num++;
-                if (dt.Rows[num]["状态"].ToString() == "待同步")
+                if (dt.Rows[num]["Status"].ToString() == LangManager.GetLangFromResource("ResWaitingForSync"))
                 {
                     WebClient downer = new WebClient();
                     StringBuilder rpath = new StringBuilder(FrmMain.URL_RESOURCE_BASE);
                     StringBuilder lpath = new StringBuilder(Environment.CurrentDirectory + @"\.minecraft\assets\");
-                    rpath.Append(dt.Rows[num]["文件名"].ToString());
-                    lpath.Append(dt.Rows[num]["文件名"].ToString());
+                    rpath.Append(dt.Rows[num]["FileName"].ToString());
+                    lpath.Append(dt.Rows[num]["FileName"].ToString());
                     if (!Directory.Exists(System.IO.Path.GetDirectoryName(lpath.ToString())))
                     {
                         Directory.CreateDirectory(System.IO.Path.GetDirectoryName(lpath.ToString()));
@@ -178,15 +180,15 @@ namespace BMCLV2
         {
             InDownloading--;
             int num = (int)e.UserState;
-            Logger.Log(string.Format("下载资源文件{0}", dt.Rows[num]["文件名"]));
+            Logger.Log(string.Format("下载资源文件{0}", dt.Rows[num]["FileName"]));
             lock (dt)
             {
-                dt.Rows[num]["状态"] = "已同步";
+                dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResInSync");
             }
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
             if (InDownloading == 0)
             {
-                MessageBox.Show("同步完成");
+                MessageBox.Show(LangManager.GetLangFromResource("ResFinish"));
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Close(); }));
             }
         }

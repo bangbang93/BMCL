@@ -3,6 +3,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="FrmMain.xaml">
     <Application.Resources>
-         
+        <ResourceDictionary Source="Lang\zh-cn.xaml"/>
     </Application.Resources>
 </Application>

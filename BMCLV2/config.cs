@@ -24,6 +24,7 @@ namespace BMCLV2
         public double WindowTransparency;
         public bool Report;
         public int DownloadSource;
+        public string Lang;
 
         public config()
         {
@@ -37,6 +38,7 @@ namespace BMCLV2
             WindowTransparency = 1;
             Report = true;
             DownloadSource = 0;
+            Lang = "zh-cn";
         }
         object ICloneable.Clone()
         {
@@ -49,6 +51,8 @@ namespace BMCLV2
         public static config Load(string File)
         {
             FileStream fs = null;
+            if (!System.IO.File.Exists(File))
+                return new config();
             try
             {
                 fs = new FileStream(File, FileMode.Open);

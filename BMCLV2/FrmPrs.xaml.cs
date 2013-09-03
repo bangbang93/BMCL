@@ -20,13 +20,11 @@ namespace BMCLV2
     public partial class FrmPrs : Window
     {
         public delegate void changeHandel(string status);
-        public event changeHandel changeEvent;
 
         public FrmPrs(string Name)
         {
             InitializeComponent();
             labName.Content = Name;
-            changeEvent += changeEventH;
         }
 
         public void changeEventH(string status)

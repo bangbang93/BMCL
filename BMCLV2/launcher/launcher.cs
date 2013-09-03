@@ -9,6 +9,7 @@ using System.Net;
 
 using BMCLV2.libraries;
 using BMCLV2.util;
+using BMCLV2.Lang;
 
 using ICSharpCode.SharpZipLib.Zip;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
@@ -19,11 +20,10 @@ namespace BMCLV2
     {
 
         #region 异常
-        public static Exception NoJava = new Exception("找不到java");
-        public static Exception NoRam = new Exception("没有足够物理内存");
-        public static Exception NoMoreRam = new Exception("没有足够的可用内存");
-        public static Exception UnSupportVer = new Exception("启动器不支持这个版本");
-        public static Exception FailInLib = new Exception("无法获得所需的依赖");
+        public static Exception NoJava = new Exception(LangManager.GetLangFromResource("NoJavaException"));
+        public static Exception NoRam = new Exception(LangManager.GetLangFromResource("NoEnoughMemException"));
+        public static Exception UnSupportVer = new Exception(LangManager.GetLangFromResource("UnSupportVersionExcepton"));
+        public static Exception FailInLib = new Exception(LangManager.GetLangFromResource("FailInLibException"));
         #endregion
 
 
@@ -72,13 +72,13 @@ namespace BMCLV2
         public launcher(string JavaPath, string JavaXmx, string UserName, string name, gameinfo info, string extarg, ref FrmPrs prs, string session = "no")
         {
             this.prs = prs;
-            prs.changeEventH("检查Java");
+            prs.changeEventH(LangManager.GetLangFromResource("LauncherCheckJava"));
             if (!File.Exists(JavaPath))
             {
                 Logger.Log("找不到java",Logger.LogType.Error);
                 throw NoJava;
             }
-            prs.changeEventH("检查内存");
+            prs.changeEventH(LangManager.GetLangFromResource("LauncherCheckMem"));
             if (Convert.ToUInt64(JavaXmx) < 512M)
             {
                 Logger.Log("可用内存过小" + JavaXmx, Logger.LogType.Error);
@@ -98,7 +98,7 @@ namespace BMCLV2
             }
             game.StartInfo.UseShellExecute = false;
             Info = info;
-            prs.changeEventH("设置环境变量");
+            prs.changeEventH(LangManager.GetLangFromResource("LauncherSettingupEnvoriement"));
             StringBuilder arg = new StringBuilder("-Xincgc -Xmx");
             arg.Append(javaxmx);
             arg.Append("M ");
@@ -150,20 +150,14 @@ namespace BMCLV2
                         continue;
                     }
                 }
-                prs.changeEventH("处理依赖" + lib.name);
+                prs.changeEventH(LangManager.GetLangFromResource("LauncherSolveLib") + lib.name);
                 if (!File.Exists(buildLibPath(lib)))
                 {
                     Logger.Log("未找到依赖" + lib.name + "开始下载", Logger.LogType.Error);
                     if (lib.url == null)
                     {
-                        prs.changeEventH("下载依赖" + lib.name);
+                        prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
                         downloading++;
-                        /*
-                        DownLib downer = new DownLib(lib);
-                        downLibEvent(lib);
-                        downer.DownFinEvent += downfin;
-                        downer.startdownload();
-                         */
                         string libp = buildLibPath(lib);
                         if (!Directory.Exists(Path.GetDirectoryName(libp)))
                         {
@@ -178,7 +172,7 @@ namespace BMCLV2
                     else
                     {
                         string urlLib = lib.url;
-                        prs.changeEventH("下载依赖" + lib.name);
+                        prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
                         downloading++;
                         /*
                         DownLib downer = new DownLib(lib);
@@ -200,7 +194,7 @@ namespace BMCLV2
                 }
                 arg.Append(buildLibPath(lib) + ";");
             }
-            prs.changeEventH("传递MC参数");
+            prs.changeEventH(LangManager.GetLangFromResource("LauncherBuildMCArg"));
             StringBuilder mcpath = new StringBuilder(Environment.CurrentDirectory + @"\.minecraft\versions\");
             mcpath.Append(name).Append("\\").Append(version).Append(".jar\" ");
             mcpath.Append(info.mainClass);
@@ -229,7 +223,7 @@ namespace BMCLV2
         /// <returns>true:成功运行；false:失败</returns>
         public bool start()
         {
-            prs.changeEventH("创建依赖文件夹");
+            prs.changeEventH(LangManager.GetLangFromResource("LauncherCreateNativeDir"));
             StringBuilder NativePath = new StringBuilder(Environment.CurrentDirectory + @"\.minecraft\versions\");
             NativePath.Append(name).Append("\\");
             DirectoryInfo oldnative = new DirectoryInfo(NativePath.ToString());
@@ -289,7 +283,7 @@ namespace BMCLV2
                         continue;
                     }
                 }
-                prs.changeEventH("解压" + lib.name);
+                prs.changeEventH(LangManager.GetLangFromResource("LauncherUnpackNative") + lib.name);
                 string[] split = lib.name.Split(':');//0 包;1 名字；2 版本
                 if (split.Count() != 3)
                 {
@@ -301,12 +295,7 @@ namespace BMCLV2
                     Logger.Log("未找到依赖" + lib.name + "开始下载", Logger.LogType.Error);
                     if (lib.url == null)
                     {
-                        prs.changeEventH("下载依赖" + lib.name);
-                        /*
-                        DownNative downer = new DownNative(lib);
-                        downNativeEvent(lib);
-                        downer.startdownload();
-                         */
+                        prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
                         string nativep = buildNativePath(lib);
                         if (!Directory.Exists(Path.GetDirectoryName(nativep)))
                         {
@@ -321,7 +310,7 @@ namespace BMCLV2
                     else
                     {
                         string urlLib = lib.url;
-                        prs.changeEventH("下载依赖" + lib.name);
+                        prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
                         /*
                         DownNative downer = new DownNative(lib);
                         downNativeEvent(lib);
@@ -378,7 +367,7 @@ namespace BMCLV2
 
                 }
             }
-            prs.changeEventH("处理mods");
+            prs.changeEventH(LangManager.GetLangFromResource("LauncherSolveMod"));
             Logger.Log("处理Mods", Logger.LogType.Info);
             if (Directory.Exists(@".minecraft\versions\" + name + @"\mods"))
             {
@@ -431,7 +420,7 @@ namespace BMCLV2
                 }
             }
 
-            prs.changeEventH("走你");
+            prs.changeEventH(LangManager.GetLangFromResource("LauncherGo"));
             //game.StartInfo.WorkingDirectory = Environment.CurrentDirectory + "\\.minecraft\\versions\\" + version;
             Environment.SetEnvironmentVariable("APPDATA", Environment.CurrentDirectory);
             game.EnableRaisingEvents = true;

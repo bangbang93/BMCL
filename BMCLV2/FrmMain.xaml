@@ -8,7 +8,7 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Border BorderBrush="Black" CornerRadius="15,15,15,15" BorderThickness="2" HorizontalAlignment="Left" Height="504" VerticalAlignment="Top" Margin="0,0,0,-42" Width="900" x:Name="Top">
-            <Grid>
+            <Grid x:Name="gridMain">
                 <Grid.Background>
                     <ImageBrush/>
                 </Grid.Background>
@@ -17,31 +17,31 @@
                     <TabControl.Background>
                         <ImageBrush/>
                     </TabControl.Background>
-                    <TabItem x:Name="tabGameVersion" Header="游戏版本">
+                    <TabItem x:Name="tabGameVersion" Header="{DynamicResource tabGameVersion}">
                         <Grid x:Name="gridGame" Background="#50FFFFFF">
                             <ListBox x:Name="listVer" HorizontalAlignment="Left" Height="374" VerticalAlignment="Top" Width="243" SelectionChanged="listVer_SelectionChanged" Background="#A0FFFFFF" Margin="0,10,0,0"/>
-                            <Button x:Name="btnDelete" Content="删除" HorizontalAlignment="Left" Margin="255,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnDelete_Click"/>
-                            <Button x:Name="btnImportOldMc" Content="导入旧版MC" HorizontalAlignment="Left" Margin="365,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnImportOldMc_Click"/>
+                            <Button x:Name="btnDelete" Content="{DynamicResource btnDelete}" HorizontalAlignment="Left" Margin="255,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnDelete_Click"/>
+                            <Button x:Name="btnImportOldMc" Content="{DynamicResource btnImportOldMc}" HorizontalAlignment="Left" Margin="365,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnImportOldMc_Click"/>
                             <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="119" Margin="255,10,0,0" VerticalAlignment="Top" Width="567" Background="#A0FFFFFF">
                                 <Grid>
-                                    <Label Content="游戏版本" HorizontalAlignment="Left" Margin="2,-2,0,0" VerticalAlignment="Top"/>
-                                    <Label Content="上次打开时间" HorizontalAlignment="Left" Margin="2,29,0,0" VerticalAlignment="Top"/>
-                                    <Label Content="发布时间" HorizontalAlignment="Left" Margin="2,60,0,0" VerticalAlignment="Top"/>
-                                    <Label Content="发布类型" HorizontalAlignment="Left" Margin="2,91,0,0" VerticalAlignment="Top"/>
+                                    <Label x:Name="llabVer" Content="{DynamicResource llabVer}" HorizontalAlignment="Left" Margin="2,-2,0,0" VerticalAlignment="Top"/>
+                                    <Label x:Name="llabTime" Content="{DynamicResource llabTime}" HorizontalAlignment="Left" Margin="2,29,0,0" VerticalAlignment="Top"/>
+                                    <Label x:Name="llabRelTime" Content="{DynamicResource llabRelTime}" HorizontalAlignment="Left" Margin="2,60,0,0" VerticalAlignment="Top"/>
+                                    <Label x:Name="llabType" Content="{DynamicResource llabType}" HorizontalAlignment="Left" Margin="2,91,0,0" VerticalAlignment="Top"/>
                                     <Label x:Name="labTime" Content="" HorizontalAlignment="Left" Margin="89,29,0,0" VerticalAlignment="Top"/>
                                     <Label x:Name="labVer" Content="" HorizontalAlignment="Left" Margin="89,-2,0,0" VerticalAlignment="Top"/>
                                     <Label x:Name="labRelTime" Content="" HorizontalAlignment="Left" Margin="89,60,0,0" VerticalAlignment="Top"/>
                                     <Label x:Name="labType" Content="" HorizontalAlignment="Left" Margin="89,91,0,0" VerticalAlignment="Top"/>
                                 </Grid>
                             </Border>
-                            <Button x:Name="btnReName" Content="重命名" HorizontalAlignment="Left" Margin="475,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnReName_Click"/>
-                            <Button x:Name="btnModMrg" Content="Mod管理" HorizontalAlignment="Left" Margin="255,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModMrg_Click"/>
-                            <Button x:Name="btnCoreModMrg" Content="CoreMod管理" HorizontalAlignment="Left" Margin="365,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnCoreModMrg_Click" ToolTip="仅对1.6之前的版本有效"/>
-                            <Button x:Name="btnModdirMrg" Content="Mod独立文件夹" HorizontalAlignment="Left" Margin="475,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModdirMrg_Click" ToolTip="如果MOD在.minecraft下创建了文件夹（例如Flan's mod,Custom NPC等），请使用这个管理"/>
-                            <Button x:Name="btnModCfgMrg" Content="Mod设置管理" HorizontalAlignment="Left" Margin="585,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModCfgMrg_Click"/>
+                            <Button x:Name="btnReName" Content="{DynamicResource btnReName}" HorizontalAlignment="Left" Margin="475,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnReName_Click"/>
+                            <Button x:Name="btnModMrg" Content="{DynamicResource btnModMrg}" HorizontalAlignment="Left" Margin="255,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModMrg_Click"/>
+                            <Button x:Name="btnCoreModMrg" Content="{DynamicResource btnCoreModMrg}" HorizontalAlignment="Left" Margin="365,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnCoreModMrg_Click" ToolTip="仅对1.6之前的版本有效"/>
+                            <Button x:Name="btnModdirMrg" Content="{DynamicResource btnModdirMrg}" HorizontalAlignment="Left" Margin="475,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModdirMrg_Click" ToolTip="如果MOD在.minecraft下创建了文件夹（例如Flan's mod,Custom NPC等），请使用这个管理"/>
+                            <Button x:Name="btnModCfgMrg" Content="{DynamicResource btnModCfgMrg}" HorizontalAlignment="Left" Margin="585,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModCfgMrg_Click"/>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="tabLauncherCfg" Header="启动设置" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61">
+                    <TabItem x:Name="tabLauncherCfg" Header="{DynamicResource tabLauncherCfg}" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61">
                         <TabItem.Background>
                             <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                                 <GradientStop Color="#FFF3F3F3" Offset="0"/>
@@ -51,50 +51,53 @@
                             </LinearGradientBrush>
                         </TabItem.Background>
                         <Grid x:Name="gridLaunchCfg" Background="#50FFFFFF">
-                            <Label Content="用户名：" HorizontalAlignment="Left" Margin="26,22,0,0" VerticalAlignment="Top"/>
-                            <Label Content="密码：" HorizontalAlignment="Left" Margin="26,53,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="labUserName" Content="{DynamicResource labUserName}" HorizontalAlignment="Left" Margin="26,22,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="labPwd" Content="{DynamicResource labPwd}" HorizontalAlignment="Left" Margin="26,53,0,0" VerticalAlignment="Top"/>
                             <Popup x:Name="tip" HorizontalAlignment="Left" Margin="26,50,0,0" VerticalAlignment="Top" PlacementTarget="{Binding ElementName=txtUserName}"    >
                                 <Grid Background="White" >
-                                    <Label Content="请输入用户名" />
+                                    <Label x:Name="labPleaseInputUsername" Content="{DynamicResource labPleaseInputUsername}" />
                                 </Grid>
                             </Popup>
                             <TextBox x:Name="txtUserName" HorizontalAlignment="Left" Height="23" Margin="89,25,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="147" Background="#A0FFFFFF" TextChanged="txtUserName_TextChanged"/>
-                            <GroupBox Header="登陆方式" HorizontalAlignment="Left" Margin="26,84,0,0" VerticalAlignment="Top" Height="190" Width="210">
+                            <GroupBox x:Name="groupAuth" Header="{DynamicResource groupAuth}" HorizontalAlignment="Left" Margin="26,84,0,0" VerticalAlignment="Top" Height="190" Width="210">
                                 <GroupBox.Background>
                                     <ImageBrush/>
                                 </GroupBox.Background>
                                 <ListBox x:Name="listAuth" HorizontalAlignment="Left" Height="150" VerticalAlignment="Top" Width="200" Margin="0,10,-2,0" Background="#A0FFFFFF"/>
                             </GroupBox>
-                            <Label Content="Java路径" HorizontalAlignment="Left" Margin="391,25,0,0" VerticalAlignment="Top" Width="62"/>
+                            <Label x:Name="labJavaPath" Content="{DynamicResource labJavaPath}" HorizontalAlignment="Left" Margin="391,25,0,0" VerticalAlignment="Top" Width="62"/>
                             <TextBox x:Name="txtJavaPath" HorizontalAlignment="Left" Height="23" Margin="457,28,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="312" Background="#A0FFFFFF"/>
-                            <Label Content="Java内存" HorizontalAlignment="Left" Margin="391,56,0,0" VerticalAlignment="Top" Width="62"/>
+                            <Label x:Name="labJavaXmx" Content="{DynamicResource labJavaXmx}" HorizontalAlignment="Left" Margin="391,56,0,0" VerticalAlignment="Top" Width="62"/>
                             <TextBox x:Name="txtJavaXmx" HorizontalAlignment="Left" Height="23" Margin="457,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="128" Background="#A0FFFFFF"/>
                             <Slider x:Name="sliderJavaxmx" HorizontalAlignment="Left" Margin="391,87,0,0" VerticalAlignment="Top" Width="246" ValueChanged="sliderJavaxmx_ValueChanged" Minimum="512" Maximum="512"/>
                             <Label Content="MB" HorizontalAlignment="Left" Margin="589,56,0,0" VerticalAlignment="Top" Width="32"/>
-                            <Button x:Name="btnSelectJava" Content="浏览" HorizontalAlignment="Left" Margin="774,29,0,0" VerticalAlignment="Top" Width="48" Click="btnSelectJava_Click"/>
-                            <CheckBox x:Name="checkAutoStart" Content="下次自动启动" HorizontalAlignment="Left" Margin="391,114,0,0" VerticalAlignment="Top" Width="95"/>
-                            <Label Content="额外的JVM Arguements" HorizontalAlignment="Left" Margin="391,202,0,0" VerticalAlignment="Top" Width="153"/>
+                            <Button x:Name="btnSelectJava" Content="{DynamicResource btnSelectJava}" HorizontalAlignment="Left" Margin="774,29,0,0" VerticalAlignment="Top" Width="48" Click="btnSelectJava_Click"/>
+                            <CheckBox x:Name="checkAutoStart" Content="{DynamicResource checkAutoStart}" HorizontalAlignment="Left" Margin="391,114,0,0" VerticalAlignment="Top" Width="95"/>
+                            <Label x:Name="labExtJvmArg" Content="{DynamicResource labExtJvmArg}" HorizontalAlignment="Left" Margin="391,202,0,0" VerticalAlignment="Top" Width="153"/>
                             <TextBox x:Name="txtExtJArg" HorizontalAlignment="Left" Height="23" Margin="391,233,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="339" Background="#A0FFFFFF" ToolTip="1.6以前的版本请无视该设置"/>
-                            <Button x:Name="btnSaveConfig" Content="保存配置" HorizontalAlignment="Left" Margin="773,346,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnSaveConfig_Click"/>
+                            <Button x:Name="btnSaveConfig" Content="{DynamicResource btnSaveConfig}" HorizontalAlignment="Left" Margin="773,346,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnSaveConfig_Click"/>
                             <PasswordBox x:Name="txtPwd" HorizontalAlignment="Left" Margin="89,56,0,0" VerticalAlignment="Top" Width="147" Background="#A0FFFFFF"/>
-                            <Label Content="背景透明度" HorizontalAlignment="Left" Margin="391,135,0,0" VerticalAlignment="Top"/>
+                            <Label x:Name="labBGAlpha" Content="{DynamicResource labBGAlpha}" HorizontalAlignment="Left" Margin="391,135,0,0" VerticalAlignment="Top"/>
                             <Slider x:Name="sliderWindowTransparency" HorizontalAlignment="Left" Margin="391,166,0,0" VerticalAlignment="Top" Width="246" ValueChanged="sliderWindowTransparency_ValueChanged" Maximum="1"/>
-                            <CheckBox x:Name="checkReport" Content="发送匿名统计信息" HorizontalAlignment="Left" Margin="391,281,0,0" VerticalAlignment="Top"/>
+                            <CheckBox x:Name="checkReport" Content="{DynamicResource checkReport}" HorizontalAlignment="Left" Margin="391,281,0,0" VerticalAlignment="Top"/>
                             <Popup/>
                             <Popup/>
                             <Grid x:Name="popupSaveSuccess" Background="#B0FFFFFF" Margin="774,306,10,88" Height="0">
-                                <Label Content="保存成功！" HorizontalAlignment="Left" VerticalAlignment="Top" Width="104" Height="28" Background="{x:Null}"/>
+                                <Label x:Name="labSaveSucc" Content="{DynamicResource labSaveSucc}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="104" Height="28" Background="{x:Null}"/>
                             </Grid>
-                            <CheckBox x:Name="checkOptifine" Content="Optifine和中文补丁" HorizontalAlignment="Left" Height="23" Margin="735,233,0,0" VerticalAlignment="Top" Width="133" Checked="checkOptifine_Checked" Unchecked="checkOptifine_Unchecked"/>
-                            <GroupBox Header="选择下载源" HorizontalAlignment="Left" Height="105" Margin="26,279,0,0" VerticalAlignment="Top" Width="210">
+                            <CheckBox x:Name="checkOptifine" Content="{DynamicResource checkOptifine}" HorizontalAlignment="Left" Height="23" Margin="735,233,0,0" VerticalAlignment="Top" Width="133" Checked="checkOptifine_Checked" Unchecked="checkOptifine_Unchecked"/>
+                            <GroupBox x:Name="groupDownloadSource" Header="{DynamicResource groupDownloadSource}" HorizontalAlignment="Left" Height="105" Margin="26,279,0,0" VerticalAlignment="Top" Width="210">
                                 <ListBox x:Name="listDownSource" HorizontalAlignment="Left" Height="72" VerticalAlignment="Top" Width="200" Margin="0,10,-2,0" SelectionChanged="listDownSource_SelectionChanged" Background="#A0FFFFFF">
                                     <System:String>官方源（在国外，更新快）</System:String>
                                     <System:String>作者源（在国内，网络更稳定）</System:String>
                                 </ListBox>
                             </GroupBox>
+                            <ComboBox x:Name="comboLang" HorizontalAlignment="Left" Height="27" Margin="391,333,0,0" VerticalAlignment="Top" Width="153" SelectedIndex="0" SelectionChanged="comboLang_SelectionChanged">
+                            </ComboBox>
+                            <Label Content="语言 language" HorizontalAlignment="Left" Margin="391,302,0,0" VerticalAlignment="Top"/>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="tabRemoteVer" Header="版本管理" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61">
+                    <TabItem x:Name="tabRemoteVer" Header="{DynamicResource tabRemoteVer}" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61">
                         <Grid x:Name="gridRemoteVer" Background="#50FFFFFF">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="748"/>
@@ -103,25 +106,25 @@
                             <ListView x:Name="listRemoteVer" HorizontalAlignment="Left" Height="394" VerticalAlignment="Top" Width="748" Background="#A0FFFFFF" ItemsSource="{Binding}" MouseDoubleClick="listRemoteVer_MouseDoubleClick">
                                 <ListView.View>
                                     <GridView AllowsColumnReorder="True">
-                                        <GridViewColumn DisplayMemberBinding="{Binding 版本}" Header="版本" Width="80"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding 发布时间}" Header="发布时间" Width="250"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding 发布类型}" Header="发布类型" Width="70"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Ver}" Header="{DynamicResource VerColVer}" Width="80"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding RelTime}" Header="{DynamicResource VerColTime}" Width="250"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Type}" Header="{DynamicResource VerColType}" Width="70"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
-                            <Button x:Name="btnRefreshRemoteVer" Content="刷新版本" Grid.Column="1" HorizontalAlignment="Center" Margin="10,35,10,0" VerticalAlignment="Top" Width="120" Height="53" Click="btnRefreshRemoteVer_Click"/>
-                            <Button x:Name="btnDownloadVer" Content="下载" Grid.Column="1" HorizontalAlignment="Left" Margin="10,115,0,0" VerticalAlignment="Top" Width="120" Height="53" Click="btnDownloadVer_Click"/>
-                            <Button x:Name="btnCheckRes" Content="检查资源文件" HorizontalAlignment="Left" Margin="10,195,0,0" VerticalAlignment="Top" Width="120" Height="53" FontWeight="Thin" Click="btnCheckRes_Click" Grid.Column="1"/>
+                            <Button x:Name="btnRefreshRemoteVer" Content="{DynamicResource btnRefreshRemoteVer}" Grid.Column="1" HorizontalAlignment="Center" Margin="10,35,10,0" VerticalAlignment="Top" Width="120" Height="53" Click="btnRefreshRemoteVer_Click"/>
+                            <Button x:Name="btnDownloadVer" Content="{DynamicResource btnDownloadVer}" Grid.Column="1" HorizontalAlignment="Left" Margin="10,115,0,0" VerticalAlignment="Top" Width="120" Height="53" Click="btnDownloadVer_Click"/>
+                            <Button x:Name="btnCheckRes" Content="{DynamicResource btnCheckRes}" HorizontalAlignment="Left" Margin="10,195,0,0" VerticalAlignment="Top" Width="120" Height="53" FontWeight="Thin" Click="btnCheckRes_Click" Grid.Column="1"/>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="tabForge" Header="安装Forge" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="73">
+                    <TabItem x:Name="tabForge" Header="{DynamicResource tabForge}" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="73">
                         <Grid x:Name="gridForge" Background="#50FFFFFF">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="888"/>
                             </Grid.ColumnDefinitions>
-                            <Button x:Name="btnLastForge" Content="一键安装最新版Forge" HorizontalAlignment="Left" Margin="24,24,0,0" VerticalAlignment="Top" Width="158" Height="51" Click="btnLastForge_Click"/>
+                            <Button x:Name="btnLastForge" Content="{DynamicResource btnLastForge}" HorizontalAlignment="Left" Margin="24,24,0,0" VerticalAlignment="Top" Width="158" Height="51" Click="btnLastForge_Click"/>
                             <TextBox x:Name="txtInsPath" HorizontalAlignment="Left" Height="23" Margin="24,96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="208" Background="#A0FFFFFF" ToolTip="点击复制" IsReadOnly="True" MouseDown="txtInsPath_MouseDown"/>
-                            <Button x:Name="btnReForge" Content="刷新Forge版本列表" HorizontalAlignment="Left" Margin="24,142,0,0" VerticalAlignment="Top" Width="120" Height="38" Click="btnReForge_Click"/>
+                            <Button x:Name="btnReForge" Content="{DynamicResource btnReForge}" HorizontalAlignment="Left" Margin="24,142,0,0" VerticalAlignment="Top" Width="120" Height="38" Click="btnReForge_Click"/>
                             <TreeView x:Name="treeForgeVer" HorizontalAlignment="Left" Height="374" Margin="275,10,0,0" VerticalAlignment="Top" Width="246" Background="#A0FFFFFF" MouseDoubleClick="treeForgeVer_MouseDoubleClick" ToolTip="双击版本号下载相应版本"/>
                         </Grid>
                     </TabItem>
@@ -134,34 +137,34 @@
                             <ListView x:Name="listServer" HorizontalAlignment="Left" Height="394" VerticalAlignment="Top" Width="748" Background="#A0FFFFFF" ItemsSource="{Binding}">
                                 <ListView.View>
                                     <GridView AllowsColumnReorder="True">
-                                        <GridViewColumn DisplayMemberBinding="{Binding 服务器名}" Header="服务器名" Width="120"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding 隐藏地址}" Header="隐藏地址" Width="60"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding 地址}" Header="地址" Width="185"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding 服务器介绍}" Header="服务器介绍" Width="200"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding 版本}" Header="版本" Width="60"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding 在线人数}" Header="在线人数" Width="60"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding 延迟}" Header="延迟" Width="60"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding ServerName}" Header="{DynamicResource ServerName}" Width="120"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding HiddenAddress}" Header="{DynamicResource HiddenAddress}" Width="60"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding ServerAddress}" Header="{DynamicResource ServerAddress}" Width="185"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding ServerMotd}" Header="{DynamicResource ServerMotd}" Width="200"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding ServerVer}" Header="{DynamicResource ServerVer}" Width="60"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding ServerOnline}" Header="{DynamicResource ServerOnline}" Width="60"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding ServerDelay}" Header="{DynamicResource ServerDelay}" Width="60"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>
-                            <Button x:Name="btnReflushServer" Content="刷新服务器" Grid.Column="1" HorizontalAlignment="Left" Margin="20,29,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnReflushServer_Click"/>
-                            <Button x:Name="btnAddServer" Content="添加服务器" Grid.Column="1" HorizontalAlignment="Left" Margin="20,99,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnAddServer_Click"/>
-                            <Button x:Name="btnDeleteServer" Content="删除服务器" Grid.Column="1" HorizontalAlignment="Left" Margin="20,173,0,0" VerticalAlignment="Top" Width="95" RenderTransformOrigin="0.52,0.5" Height="42" Click="btnDeleteServer_Click"/>
-                            <Button x:Name="btnEditServer" Content="编辑服务器" Grid.Column="1" HorizontalAlignment="Left" Margin="20,248,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnEditServer_Click"/>
+                            <Button x:Name="btnReflushServer" Content="{DynamicResource btnReflushServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,29,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnReflushServer_Click"/>
+                            <Button x:Name="btnAddServer" Content="{DynamicResource btnAddServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,99,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnAddServer_Click"/>
+                            <Button x:Name="btnDeleteServer" Content="{DynamicResource btnDeleteServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,173,0,0" VerticalAlignment="Top" Width="95" RenderTransformOrigin="0.52,0.5" Height="42" Click="btnDeleteServer_Click"/>
+                            <Button x:Name="btnEditServer" Content="{DynamicResource btnEditServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,248,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnEditServer_Click"/>
                         </Grid>
                     </TabItem>
                     <TabItem x:Name="tabUpdateInfo" Header="更新信息" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61" Visibility="Hidden">
                         <Grid x:Name="gridUpdateInfo" Background="#FFE5E5E5"/>
                     </TabItem>
                 </TabControl>
-                <Button x:Name="btnStart" Content="开始" HorizontalAlignment="Left" Margin="781,452,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnStart_Click" IsDefault="True"/>
-                <Button x:Name="btnClose" Content="关闭" HorizontalAlignment="Left" Height="38" Margin="671,452,0,0" VerticalAlignment="Top" Width="105" Click="btnClose_Click" IsCancel="True"/>
-                <Button x:Name="btnChangeBg" Content="更换背景" HorizontalAlignment="Left" Height="38" Margin="557,452,0,0" VerticalAlignment="Top" Width="52" Click="btnChangeBg_Click" ToolTip="右键可以选择文件"/>
+                <Button x:Name="btnStart" Content="{DynamicResource btnStart}" HorizontalAlignment="Left" Margin="781,452,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnStart_Click" IsDefault="True"/>
+                <Button x:Name="btnClose" Content="{DynamicResource btnClose}" HorizontalAlignment="Left" Height="38" Margin="671,452,0,0" VerticalAlignment="Top" Width="105" Click="btnClose_Click" IsCancel="True"/>
+                <Button x:Name="btnChangeBg" Content="{DynamicResource btnChangeBg}" HorizontalAlignment="Left" Height="38" Margin="557,452,0,0" VerticalAlignment="Top" Width="52" Click="btnChangeBg_Click" ToolTip="右键可以选择文件"/>
                 <Grid x:Name="gridDown" HorizontalAlignment="Left" Height="38" Margin="10,452,0,0" VerticalAlignment="Top" Width="526" Background="#A0FFFFFF" Visibility="Hidden">
                     <ProgressBar x:Name="prsDown" HorizontalAlignment="Left" Height="18" Margin="10,10,0,0" VerticalAlignment="Top" Width="261"/>
                     <Label x:Name="labDownInfo" Content="" Margin="276,10,10,0"/>
                 </Grid>
-                <Button x:Name="btnMiniSize" Content="隐藏" HorizontalAlignment="Left" Height="38" Margin="614,452,0,0" VerticalAlignment="Top" Width="52" Click="btnMiniSize_Click"/>
+                <Button x:Name="btnMiniSize" Content="{DynamicResource btnMiniSize}" HorizontalAlignment="Left" Height="38" Margin="614,452,0,0" VerticalAlignment="Top" Width="52" Click="btnMiniSize_Click"/>
             </Grid>
         </Border>
     </Grid>
