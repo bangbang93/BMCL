@@ -82,10 +82,11 @@ namespace BMCLV2
             ischecked = true;
             prs.Maximum = listRes.Items.Count;
             prs.Value = 0;
+            checkedfile = 0;
             foreach (object item in listRes.Items)
             {
-                prs.Value++;
-                ThreadPool.QueueUserWorkItem(new WaitCallback(GetMD5HashFromFile), prs.Value);
+                checkedfile++;
+                ThreadPool.QueueUserWorkItem(new WaitCallback(GetMD5HashFromFile), checkedfile);
                 //GetMD5HashFromFile(prs.Value);
             }
             Thread thCount=new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
@@ -97,8 +98,8 @@ namespace BMCLV2
         }
         public void GetMD5HashFromFile(object obj)
         {
-            int num = (int)(double)obj - 1;
-            string fileName = Environment.CurrentDirectory + @"\.minecraft\assets\" + dt.Rows[num]["文件名"].ToString();
+            int num = (int)obj - 1;
+            string fileName = Environment.CurrentDirectory + @"\.minecraft\assets\" + dt.Rows[num]["FileName"].ToString();
             try
             {
                 FileStream file = new FileStream(fileName, FileMode.Open);
@@ -137,7 +138,7 @@ namespace BMCLV2
                 }
                 WaitingForSync++;
             }
-            checkedfile++;
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
         }
 
         private void btnSync_Click(object sender, RoutedEventArgs e)

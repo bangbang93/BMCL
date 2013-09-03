@@ -56,7 +56,7 @@ namespace BMCLV2
 
         public FrmMain()
         {
-            string ver = Application.ResourceAssembly.FullName.Split('=')[1];
+            ver = Application.ResourceAssembly.FullName.Split('=')[1];
             ver = ver.Substring(0, ver.IndexOf(','));
             Logger.Log("BMCL V2 Ver." + ver + "正在启动");
             InitializeComponent();
@@ -85,7 +85,7 @@ namespace BMCLV2
             SkinMenu.Items.Add(SelectFile);
             btnChangeBg.ContextMenu = SkinMenu;
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
-            LoadPlugin(LangManager.GetLangFromResource("LangName"));
+            LoadLanguage();
             #region 加载配置
             if (File.Exists(cfgfile))
             {
@@ -120,9 +120,12 @@ namespace BMCLV2
             checkReport.IsChecked = cfg.Report;
             txtInsPath.Text = Environment.CurrentDirectory + "\\.minecraft";
             listDownSource.SelectedIndex = cfg.DownloadSource;
+            LangManager.UseLanguage(cfg.Lang);
+            comboLang.SelectedItem = LangManager.GetLangFromResource("DisplayName");
             #endregion
+            LoadPlugin(LangManager.GetLangFromResource("LangName"));
             Logger.Log(cfg);
-            LoadLanguage();
+
             
             this.Title = "BMCL V2 Ver." + ver;
 #if DEBUG
@@ -684,7 +687,7 @@ namespace BMCLV2
             cfg.WindowTransparency = sliderWindowTransparency.Value;
             cfg.Report = checkReport.IsChecked.Value;
             cfg.DownloadSource = listDownSource.SelectedIndex;
-            cfg.Lang = LangManager.GetLangFromResource("Name");
+            cfg.Lang = LangManager.GetLangFromResource("LangName");
             config.Save(cfg, cfgfile);
             DoubleAnimationUsingKeyFrames dak = new DoubleAnimationUsingKeyFrames();
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(0)));

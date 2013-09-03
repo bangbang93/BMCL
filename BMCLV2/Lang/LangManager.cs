@@ -40,6 +40,11 @@ namespace BMCLV2.Lang
         }
         static public void UseLanguage(string LanguageName)
         {
+            if (!Language.ContainsKey(LanguageName))
+            {
+                Application.Current.Resources = DefaultLanguage;
+                return;
+            }
             Application.Current.Resources = (Language[LanguageName] as LangType).Language;
         }
     }
