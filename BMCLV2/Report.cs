@@ -105,14 +105,15 @@ namespace BMCLV2
 
             try  //系统版本
             {
-                ManagementClass searcher = new ManagementClass("Win32_OperatingSystem");
-                ManagementObjectCollection moc = searcher.GetInstances();
-                foreach (ManagementObject mo in moc)
-                {
-                    system += (mo["Name"].ToString().Trim()) + "\n";
-                    system += (mo["CSDVersion"].ToString().Trim()) + "\n";
-                    system += (mo["Version"].ToString().Trim()) + "\n";
-                }
+                //ManagementClass searcher = new ManagementClass("Win32_OperatingSystem");
+                //ManagementObjectCollection moc = searcher.GetInstances();
+                //foreach (ManagementObject mo in moc)
+                //{
+                //    system += (mo["Name"].ToString().Trim()) + "\n";
+                //    system += (mo["CSDVersion"].ToString().Trim()) + "\n";
+                //    system += (mo["Version"].ToString().Trim()) + "\n";
+                //}
+                system = Environment.OSVersion.VersionString;
             }
             catch { }
         }
