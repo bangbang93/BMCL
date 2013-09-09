@@ -79,7 +79,7 @@ namespace BMCLV2
                 throw NoJava;
             }
             prs.changeEventH(LangManager.GetLangFromResource("LauncherCheckMem"));
-            if (Convert.ToUInt64(JavaXmx) < 512M)
+            if (Convert.ToUInt64(JavaXmx) < 0)
             {
                 Logger.Log("可用内存过小" + JavaXmx, Logger.LogType.Error);
                 throw NoRam;

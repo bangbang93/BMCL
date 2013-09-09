@@ -113,7 +113,6 @@ namespace BMCLV2
             txtExtJArg.Text = cfg.extraJVMArg;
             checkAutoStart.IsChecked = cfg.autostart;
             listVer.SelectedItem = cfg.lastPlayVer;
-            listAuth.SelectedItem = cfg.login;
             if (listAuth.SelectedItem == null)
                 listAuth.SelectedIndex = 0;
             sliderWindowTransparency.Value = cfg.WindowTransparency;
@@ -124,6 +123,7 @@ namespace BMCLV2
             comboLang.SelectedItem = LangManager.GetLangFromResource("DisplayName");
             #endregion
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
+            listAuth.SelectedItem = cfg.login;
             Logger.Log(cfg);
 
             
@@ -417,7 +417,7 @@ namespace BMCLV2
                 return;
             }
             StringBuilder JsonFilePath = new StringBuilder();
-            JsonFilePath.Append(@".minecraft\versions\");
+            JsonFilePath.Append(Environment.CurrentDirectory + @"\.minecraft\versions\");
             JsonFilePath.Append(listVer.SelectedItem.ToString());
             JsonFilePath.Append(@"\");
             JsonFilePath.Append(listVer.SelectedItem.ToString());
@@ -666,7 +666,7 @@ namespace BMCLV2
             }
             Process explorer = new Process();
             explorer.StartInfo.FileName = "explorer.exe";
-            explorer.StartInfo.Arguments = moddirpath.ToString();
+            explorer.StartInfo.Arguments = configpath.ToString();
             explorer.Start();
         }
 
@@ -768,7 +768,7 @@ namespace BMCLV2
                     btnRefreshRemoteVer.Content = LangManager.GetLangFromResource("btnRefreshRemoteVer");
                     btnRefreshRemoteVer.IsEnabled = true;
                     listRemoteVer.DataContext = dt;
-                    listRemoteVer.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("Ver", System.ComponentModel.ListSortDirection.Ascending));
+                    listRemoteVer.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("RelTime", System.ComponentModel.ListSortDirection.Descending));
                 }));
                 }
                 catch (WebException ex)
@@ -1287,7 +1287,7 @@ namespace BMCLV2
         {
             listVer.Items.Clear();
 
-                if (!Directory.Exists(".minecraft"))
+                if (!Directory.Exists(Environment.CurrentDirectory + "\\.minecraft"))
                 {
                     {
                         MessageBox.Show(LangManager.GetLangFromResource("NoClientFound"));
@@ -1300,7 +1300,7 @@ namespace BMCLV2
                         return;
                     }
                 }
-                if (!Directory.Exists(@".minecraft\versions\"))
+                if (!Directory.Exists(Environment.CurrentDirectory + @"\.minecraft\versions\"))
                 {
                     MessageBox.Show(LangManager.GetLangFromResource("InvidMinecratDir"));
                     btnStart.IsEnabled      = false;
@@ -1311,8 +1311,8 @@ namespace BMCLV2
                     btnCoreModMrg.IsEnabled = false;
                     return;
                 }
-                DirectoryInfo mcdirinfo = new DirectoryInfo(".minecraft");
-                DirectoryInfo[] versions = new DirectoryInfo(@".minecraft\versions").GetDirectories();
+                DirectoryInfo mcdirinfo = new DirectoryInfo(Environment.CurrentDirectory + "\\.minecraft");
+                DirectoryInfo[] versions = new DirectoryInfo(Environment.CurrentDirectory + @"\.minecraft\versions").GetDirectories();
                 foreach (DirectoryInfo version in versions)
                 {
                     listVer.Items.Add(version.Name);
