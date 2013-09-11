@@ -66,14 +66,19 @@ namespace BMCLV2
                     listRes.DataContext = dt;
                 }
             }
-            catch (WebException)
+            catch (WebException ex)
             {
-                MessageBox.Show(LangManager.GetLangFromResource("ResServerTimeOut"));
+                MessageBox.Show(LangManager.GetLangFromResource("ResServerTimeOut") + ex.Message);
+                Logger.Log("与资源服务器通信出错");
+                Logger.Log(ex);
                 this.Close();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                MessageBox.Show(LangManager.GetLangFromResource("ResServerTimeOut") + ex.Message);
+                Logger.Log("与资源服务器通信出错");
+                Logger.Log(ex);
+                this.Close();
             }
         }
 

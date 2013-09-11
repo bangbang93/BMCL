@@ -94,5 +94,18 @@ namespace BMCLV2
             StreamReader sr = new StreamReader(s);
             Write(sr.ReadToEnd(), Type);
         }
+        static public void Log(Exception ex, LogType Type = LogType.Exception)
+        {
+            StringBuilder str = new StringBuilder();
+            str.AppendLine(ex.Message);
+            str.AppendLine(ex.StackTrace);
+            while (ex.InnerException != null)
+            {
+                ex = ex.InnerException;
+                str.AppendLine(ex.Message);
+                str.AppendLine(ex.StackTrace);
+            }
+            Write(str.ToString(), Type);
+        }
     }
 }

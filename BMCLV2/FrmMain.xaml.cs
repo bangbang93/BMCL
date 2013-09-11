@@ -125,7 +125,11 @@ namespace BMCLV2
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
             listAuth.SelectedItem = cfg.login;
             Logger.Log(cfg);
-
+            if (MessageBox.Show("可能是第一次启动，未找到资源文件，是否下载？") == MessageBoxResult.OK)
+            {
+                FrmCheckRes frmCheckRes = new FrmCheckRes();
+                frmCheckRes.Show();
+            }
             
             this.Title = "BMCL V2 Ver." + ver;
 #if DEBUG
@@ -871,7 +875,7 @@ namespace BMCLV2
         private void btnCheckRes_Click(object sender, RoutedEventArgs e)
         {
             FrmCheckRes checkres = new FrmCheckRes();
-            checkres.ShowDialog();
+            checkres.Show();
         }
         private void listRemoteVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
