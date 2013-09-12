@@ -1,0 +1,8 @@
+﻿<Window x:Class="BMCLV2.FrmLog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="FrmLog" Height="300" Width="691">
+    <Grid x:Name="gridBoard">
+        <ListBox x:Name="listLog"/>
+    </Grid>
+</Window>

@@ -138,5 +138,6 @@
     <s:String x:Key="ResInSync">已同步</s:String>
     <s:String x:Key="ResFinish">同步完成</s:String>
     <s:String x:Key="ResNoFileForSync">没有需要同步的文件</s:String>
+    <s:String x:Key="ResPlsWaitingForCheck">请先对比文件并且等待对比完成</s:String>
 
 </ResourceDictionary>

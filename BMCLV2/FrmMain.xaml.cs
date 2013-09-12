@@ -125,11 +125,12 @@ namespace BMCLV2
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
             listAuth.SelectedItem = cfg.login;
             Logger.Log(cfg);
-            if (MessageBox.Show("可能是第一次启动，未找到资源文件，是否下载？") == MessageBoxResult.OK)
-            {
-                FrmCheckRes frmCheckRes = new FrmCheckRes();
-                frmCheckRes.Show();
-            }
+            if (!Directory.Exists(Environment.CurrentDirectory+@"\.minecraft\assets"))
+                if (MessageBox.Show("可能是第一次启动，未找到资源文件，是否下载？","未找到资源文件",MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                {
+                    FrmCheckRes frmCheckRes = new FrmCheckRes();
+                    frmCheckRes.Show();
+                }
             
             this.Title = "BMCL V2 Ver." + ver;
 #if DEBUG
@@ -390,6 +391,12 @@ namespace BMCLV2
         }
         private void launcher_gameexit()
         {
+            if (Logger.Debug)
+            {
+                Logger.Log("游戏退出，Debug模式保留Log信息窗口，程序不退出");
+                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Show(); }));
+                return;
+            }
             if (!inscreen)
             {
                 Logger.Log("BMCL V2 Ver" + ver + DateTime.Now.ToString() + "由于游戏退出而退出");

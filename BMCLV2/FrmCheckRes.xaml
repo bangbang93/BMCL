@@ -21,6 +21,9 @@
         <Button x:Name="btnCheck" Content="{DynamicResource ResbtnCheck}" Grid.Column="1" HorizontalAlignment="Center" Height="43" Margin="29,50,25,0" VerticalAlignment="Top" Width="115" Click="btnCheck_Click"/>
         <ProgressBar x:Name="prs" HorizontalAlignment="Left" Height="31" Margin="0,376,0,0" VerticalAlignment="Top" Width="768" Grid.ColumnSpan="2"/>
         <Button x:Name="btnSync" Content="{DynamicResource ResbtnSync}" Grid.Column="1" HorizontalAlignment="Left" Margin="29,138,0,0" VerticalAlignment="Top" Width="115" Height="43" Click="btnSync_Click"/>
+        <Grid x:Name="gridGetting" HorizontalAlignment="Left" Height="407" VerticalAlignment="Top" Width="768" Background="#FFF0F0F0" Grid.ColumnSpan="2">
+            <Label Content="正在读取数据" Margin="320,187,320,194" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        </Grid>
 
     </Grid>
 </Window>

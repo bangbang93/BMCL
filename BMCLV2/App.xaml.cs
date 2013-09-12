@@ -19,10 +19,8 @@ namespace BMCLV2
                 Logger.Debug = false;
             else
                 if (Array.IndexOf(e.Args, "-Debug") != -1)
-                {
                     Logger.Debug = true;
-                    Logger.Start();
-                }
+            Logger.Start();
             base.OnStartup(e);
         }
 

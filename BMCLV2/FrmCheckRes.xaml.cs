@@ -15,6 +15,7 @@ using System.IO;
 using System.Xml;
 using System.Data;
 using System.Threading;
+using System.Windows.Media.Animation;
 
 using BMCLV2.Lang;
 
@@ -25,85 +26,118 @@ namespace BMCLV2
     /// </summary>
     public partial class FrmCheckRes : Window
     {
-        
+        public bool AutoStart = false;
         public FrmCheckRes()
         {
             InitializeComponent();
         }
         string URL_RESOURCE_BASE = FrmMain.URL_RESOURCE_BASE;
-        DataTable dt=new DataTable();
+        DataTable dt = new DataTable();
         int InDownloading = 0;
         int WaitingForSync = 0;
         bool ischecked = false;
         int checkedfile = 0;
+        delegate void GetInfoFinishEventHandle(DataTable dt);
+        event GetInfoFinishEventHandle GetInfoFinishEvent;
+        delegate void GetInfoFailedEventHandle();
+        event GetInfoFailedEventHandle GetInfoFailedEvent;
+
         private void frmCheckRes_Loaded(object sender, RoutedEventArgs e)
         {
-            try
+            GetInfoFinishEvent += FrmCheckRes_GetInfoFinishEvent;
+            GetInfoFailedEvent += FrmCheckRes_GetInfoFailedEvent;
+            Thread thGetInfo = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
             {
-                dt.Columns.Add("FileName");
-                dt.Columns.Add("ModifyTime");
-                dt.Columns.Add("Size");
-                dt.Columns.Add("Status");
-                dt.Columns.Add("MD5");
-                byte[] buffer = (new WebClient()).DownloadData(URL_RESOURCE_BASE);
-                Stream RawXml = new MemoryStream(buffer);
-                XmlDocument doc = new XmlDocument();
-                doc.Load(RawXml);
-                XmlNodeList nodeLst = doc.GetElementsByTagName("Contents");
-                for (int i = 0; i < nodeLst.Count; i++)
+                try
                 {
-                    XmlNode node = nodeLst.Item(i);
-                    if (node.GetType() == null)
-                        continue;
-                    XmlElement element = (XmlElement)node;
-                    String key = element.GetElementsByTagName("Key").Item(0).ChildNodes.Item(0).Value;
-                    String modtime = element.GetElementsByTagName("LastModified").Item(0).ChildNodes.Item(0).Value;
-                    String etag = element.GetElementsByTagName("ETag") == null ? "-" : element.GetElementsByTagName("ETag").Item(0).ChildNodes.Item(0).Value;
-                    long size = long.Parse(element.GetElementsByTagName("Size").Item(0).ChildNodes.Item(0).Value);
-                    if (size <= 0L)
-                        continue;
-                    dt.Rows.Add(new string[] { key, modtime, size.ToString(), LangManager.GetLangFromResource("ResWaitingForCheck"), etag.Replace("\"", "").Trim() });
-                    listRes.DataContext = dt;
+                    dt.Columns.Add("FileName");
+                    dt.Columns.Add("ModifyTime");
+                    dt.Columns.Add("Size");
+                    dt.Columns.Add("Status");
+                    dt.Columns.Add("MD5");
+                    byte[] buffer = (new WebClient()).DownloadData(URL_RESOURCE_BASE);
+                    Stream RawXml = new MemoryStream(buffer);
+                    XmlDocument doc = new XmlDocument();
+                    doc.Load(RawXml);
+                    XmlNodeList nodeLst = doc.GetElementsByTagName("Contents");
+                    for (int i = 0; i < nodeLst.Count; i++)
+                    {
+                        XmlNode node = nodeLst.Item(i);
+                        if (node.GetType() == null)
+                            continue;
+                        XmlElement element = (XmlElement)node;
+                        String key = element.GetElementsByTagName("Key").Item(0).ChildNodes.Item(0).Value;
+                        String modtime = element.GetElementsByTagName("LastModified").Item(0).ChildNodes.Item(0).Value;
+                        String etag = element.GetElementsByTagName("ETag") == null ? "-" : element.GetElementsByTagName("ETag").Item(0).ChildNodes.Item(0).Value;
+                        long size = long.Parse(element.GetElementsByTagName("Size").Item(0).ChildNodes.Item(0).Value);
+                        if (size <= 0L)
+                            continue;
+                        dt.Rows.Add(new string[] { key, modtime, size.ToString(), LangManager.GetLangFromResource("ResWaitingForCheck"), etag.Replace("\"", "").Trim() });
+                    }
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { GetInfoFinishEvent(dt); }));
                 }
-            }
-            catch (WebException ex)
-            {
-                MessageBox.Show(LangManager.GetLangFromResource("ResServerTimeOut") + ex.Message);
-                Logger.Log("与资源服务器通信出错");
-                Logger.Log(ex);
-                this.Close();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(LangManager.GetLangFromResource("ResServerTimeOut") + ex.Message);
-                Logger.Log("与资源服务器通信出错");
-                Logger.Log(ex);
-                this.Close();
-            }
+                catch (WebException ex)
+                {
+                    MessageBox.Show(LangManager.GetLangFromResource("ResServerTimeOut") + ex.Message);
+                    Logger.Log("与资源服务器通信出错");
+                    Logger.Log(ex);
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { GetInfoFailedEvent(); }));
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(LangManager.GetLangFromResource("ResServerTimeOut") + ex.Message);
+                    Logger.Log("与资源服务器通信出错");
+                    Logger.Log(ex);
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { GetInfoFailedEvent(); }));
+                }
+            })));
+            thGetInfo.Start();
         }
 
+        void FrmCheckRes_GetInfoFailedEvent()
+        {
+            this.Close();
+        }
+
+        void FrmCheckRes_GetInfoFinishEvent(DataTable dt)
+        {
+            listRes.DataContext = dt;
+            if (AutoStart)
+            {
+                btnSync_Click(null, null);
+            }
+            DoubleAnimation da1 = new DoubleAnimation(gridGetting.ActualHeight, 0, TimeSpan.FromMilliseconds(200));
+            DoubleAnimation da2 = new DoubleAnimation(gridGetting.ActualWidth, 0, TimeSpan.FromMilliseconds(200));
+            gridGetting.BeginAnimation(Grid.HeightProperty, da1);
+            gridGetting.BeginAnimation(Grid.WidthProperty, da2);
+        }
+        bool checking = false;
         private void btnCheck_Click(object sender, RoutedEventArgs e)
         {
-            ischecked = true;
+            if (checking)
+                return;
+            checking = true;
             prs.Maximum = listRes.Items.Count;
             prs.Value = 0;
             checkedfile = 0;
+            int nextcheck = -1;
             foreach (object item in listRes.Items)
             {
-                checkedfile++;
-                ThreadPool.QueueUserWorkItem(new WaitCallback(GetMD5HashFromFile), checkedfile);
+                nextcheck++;
+                ThreadPool.QueueUserWorkItem(new WaitCallback(GetMD5HashFromFile), nextcheck);
                 //GetMD5HashFromFile(prs.Value);
             }
             Thread thCount=new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
             {
                 while (checkedfile != dt.Rows.Count) { }
                 Logger.Log(string.Format("检查资源文件，共有{0}个文件待同步，共计{1}个文件", WaitingForSync, dt.Rows.Count));
+                ischecked = true;
             })));
             thCount.Start();
         }
         public void GetMD5HashFromFile(object obj)
         {
-            int num = (int)obj - 1;
+            int num = (int)obj;
             string fileName = Environment.CurrentDirectory + @"\.minecraft\assets\" + dt.Rows[num]["FileName"].ToString();
             try
             {
@@ -122,7 +156,7 @@ namespace BMCLV2
                     lock (dt)
                     {
                         dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResNoNeedForSync");
-                        Logger.Log(string.Format("检查资源文件{0}，无需同步", dt.Rows[num]["文件名"]));
+                        Logger.Log(string.Format("检查资源文件{0}，无需同步", dt.Rows[num]["FileName"]));
                     }
                 }
                 else
@@ -130,30 +164,35 @@ namespace BMCLV2
                     lock (dt)
                     {
                         dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResWaitingForSync");
-                        Logger.Log(string.Format("检查资源文件{0}，需要同步", dt.Rows[num]["文件名"]));
+                        Logger.Log(string.Format("检查资源文件{0}，需要同步，文件MD5{1}，目标MD5{2}", dt.Rows[num]["FileName"], lmd5.Trim(), dt.Rows[num]["MD5"]));
                     }
                     WaitingForSync++;
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 lock (dt)
                 {
                     dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResWaitingForSync");
+                    Logger.Log(string.Format("检查资源文件{0}，需要同步，由于", dt.Rows[num]["FileName"], ex.Message), Logger.LogType.Exception);
                 }
                 WaitingForSync++;
             }
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
+            checkedfile++;
         }
 
         private void btnSync_Click(object sender, RoutedEventArgs e)
         {
+            if (!ischecked)
+            {
+                btnCheck_Click(null, null);
+                MessageBox.Show(LangManager.GetLangFromResource("ResPlsWaitingForCheck"));
+            }
             if (WaitingForSync == 0)
             {
                 MessageBox.Show(LangManager.GetLangFromResource("ResNoFileForSync"));
             }
-            if (!ischecked)
-                btnCheck_Click(null, null);
             prs.Maximum = WaitingForSync;
             prs.Value = 0;
             int num = -1;
