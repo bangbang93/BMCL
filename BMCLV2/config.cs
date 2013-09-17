@@ -34,7 +34,7 @@ namespace BMCLV2
             passwd = null;
             login = "啥都没有";
             autostart = false;
-            extraJVMArg = "";
+            extraJVMArg = " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
             WindowTransparency = 1;
             Report = true;
             DownloadSource = 0;

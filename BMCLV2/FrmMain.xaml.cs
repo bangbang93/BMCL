@@ -53,6 +53,7 @@ namespace BMCLV2
         static public bool debug;
         System.Windows.Forms.NotifyIcon NIcon;
         public static string ver;
+        private int ClientCrashReportCount;
 
         public FrmMain()
         {
@@ -84,7 +85,6 @@ namespace BMCLV2
             SelectFile.Click += SelectFile_Click;
             SkinMenu.Items.Add(SelectFile);
             btnChangeBg.ContextMenu = SkinMenu;
-            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
             LoadLanguage();
             #region 加载配置
             if (File.Exists(cfgfile))
@@ -125,7 +125,7 @@ namespace BMCLV2
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
             listAuth.SelectedItem = cfg.login;
             Logger.Log(cfg);
-            if (!Directory.Exists(Environment.CurrentDirectory+@"\.minecraft\assets"))
+            if (!Directory.Exists(Environment.CurrentDirectory + @"\.minecraft\assets"))
                 if (MessageBox.Show("可能是第一次启动，未找到资源文件，是否下载？","未找到资源文件",MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                 {
                     FrmCheckRes frmCheckRes = new FrmCheckRes();
@@ -133,6 +133,7 @@ namespace BMCLV2
                 }
             
             this.Title = "BMCL V2 Ver." + ver;
+            launcher.gameexit += launcher_gameexit;
 #if DEBUG
 #else
             if (cfg.Report)
@@ -148,13 +149,6 @@ namespace BMCLV2
             Process.Start(Environment.CommandLine.Replace("\"", ""), "-Debug");
             NIcon.Visible = false;
             Environment.Exit(0);
-        }
-
-        void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
-        {
-            e.Handled = true;
-            var crash = new CrashHandle(e.Exception);
-            crash.Show();
         }
 
         #region 公共按钮
@@ -225,6 +219,14 @@ namespace BMCLV2
                 tabMain.SelectedIndex = 1;
                 txtUserName.Focus();
                 return;
+            }
+            if (Directory.Exists(Environment.CurrentDirectory + @"\.minecraft\crash-reports"))
+            {
+                ClientCrashReportCount = Directory.GetFiles(Environment.CurrentDirectory + @"\.minecraft\crash-reports").Count();
+            }
+            else
+            {
+                ClientCrashReportCount = 0;
             }
             FrmPrs starter = new FrmPrs("正在准备游戏环境及启动游戏");
             int SelectedIndex = listAuth.SelectedIndex; ;
@@ -347,7 +349,6 @@ namespace BMCLV2
                                 return;
                             }
                             game.start();
-                            launcher.gameexit += launcher_gameexit;
                             this.Hide();
                         }));
                     }
@@ -391,6 +392,30 @@ namespace BMCLV2
         }
         private void launcher_gameexit()
         {
+            if (Directory.Exists(Environment.CurrentDirectory + @"\.minecraft\crash-reports"))
+            {
+                if (ClientCrashReportCount != Directory.GetFiles(Environment.CurrentDirectory + @"\.minecraft\crash-reports").Count())
+                {
+                    Logger.Log("发现新的错误报告");
+                    DirectoryInfo ClientCrashReportDir = new DirectoryInfo(Environment.CurrentDirectory + @"\.minecraft\crash-reports");
+                    string LastClientCrashReportPath = "";
+                    DateTime LastClientCrashReportModifyTime=DateTime.MinValue;
+                    foreach (FileInfo ClientCrashReport in ClientCrashReportDir.GetFiles())
+                    {
+                        if (LastClientCrashReportModifyTime < ClientCrashReport.LastWriteTime)
+                        {
+                            LastClientCrashReportPath = ClientCrashReport.FullName;
+                        }
+                    }
+                    StreamReader CrashReportReader = new StreamReader(LastClientCrashReportPath);
+                    Logger.Log(CrashReportReader.ReadToEnd(),Logger.LogType.Crash);
+                    CrashReportReader.Close();
+                    if (MessageBox.Show("客户端好像崩溃了，是否查看崩溃报告？", "客户端崩溃", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    {
+                        Process.Start(LastClientCrashReportPath);
+                    }
+                }
+            }
             if (Logger.Debug)
             {
                 Logger.Log("游戏退出，Debug模式保留Log信息窗口，程序不退出");
@@ -1073,177 +1098,172 @@ namespace BMCLV2
 
 
         #region tabServerList
+
+        DataTable ServerListDataTable = new DataTable();
         private serverlist.serverlist sl;
         private void btnReflushServer_Click(object sender, RoutedEventArgs e)
         {
-            this.listServer.DataContext = null;
-            Thread thGetServerInfo = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
-            {
-                DataTable dt=new DataTable();
-                dt.Columns.Add("ServerName");
-                dt.Columns.Add("HiddenAddress");
-                dt.Columns.Add("ServerAddress");
-                dt.Columns.Add("ServerMotd");
-                dt.Columns.Add("ServerVer");
-                dt.Columns.Add("ServerOnline");
-                dt.Columns.Add("ServerDelay");
-                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnReflushServer.Content = LangManager.GetLangFromResource("ServerListGetting"); }));
-                if (File.Exists(@".minecraft\servers.dat"))
-                {
-                    sl = new serverlist.serverlist();
-                    foreach (serverlist.serverinfo info in sl.info)
-                    {
-                        DateTime start = DateTime.Now;
-                        string[] server = new string[7];
-                        server[0] = info.Name;
-                        server[1] = info.IsHide ? LangManager.GetLangFromResource("ServerListYes") : LangManager.GetLangFromResource("ServerListNo");
-                        if (info.IsHide)
-                            server[2] = string.Empty;
-                        else
-                            server[2] = info.Address;
-                        try
-                        {
-                            Socket con = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                            con.ReceiveTimeout = 3000;
-                            con.SendTimeout = 3000;
-                            if (info.Address.Split(':').Length == 1)
-                                con.Connect(Dns.GetHostAddresses(info.Address.Split(':')[0]), 25565);
-                            else
-                                con.Connect(Dns.GetHostAddresses(info.Address.Split(':')[0]), int.Parse(info.Address.Split(':')[1]));
-                            con.Send(new byte[1] { 254 });
-                            con.Send(new byte[1] { 1 });
-                            byte[] recive = new byte[512];
-                            int bytes = con.Receive(recive);
-                            if (recive[0] != 255)
-                            {
-                                throw new Exception(LangManager.GetLangFromResource("ServerListInvildReply"));
-                            }
-                            string message = Encoding.UTF8.GetString(recive, 4, bytes - 4);
-                            StringBuilder remessage = new StringBuilder(30);
-                            for (int i = 0; i <= message.Length; i += 2)
-                            {
-                                remessage.Append(message[i]);
-                            }
-                            message = remessage.ToString();
-                            con.Shutdown(SocketShutdown.Both);
-                            con.Close();
-                            DateTime end = DateTime.Now;
-                            char[] achar = message.ToCharArray();
+            ServerListDataTable.Clear();
+            ServerListDataTable.Columns.Clear();
+            ServerListDataTable.Rows.Clear();
+            ServerListDataTable.Columns.Add("ServerName");
+            ServerListDataTable.Columns.Add("HiddenAddress");
+            ServerListDataTable.Columns.Add("ServerAddress");
+            ServerListDataTable.Columns.Add("ServerMotd");
+            ServerListDataTable.Columns.Add("ServerVer");
+            ServerListDataTable.Columns.Add("ServerOnline");
+            ServerListDataTable.Columns.Add("ServerDelay");
+            this.listServer.DataContext = ServerListDataTable;
+            ThreadPool.QueueUserWorkItem(new WaitCallback(GetServerInfo));
+        }
 
-                            for (int i = 0; i < achar.Length; ++i)
-                            {
-                                if (achar[i] != 167 && achar[i] != 0 && char.IsControl(achar[i]))
-                                {
-                                    achar[i] = (char)63;
-                                }
-                            }
-                            message = new String(achar);
-                            if (message[0] == (char)253 || message[0] == (char)65533)
-                            {
-                                message = (char)167 + message.Substring(1);
-                            }
-                            string[] astring;
-                            if (message.StartsWith("\u00a7") && message.Length > 1)
-                            {
-                                astring = message.Substring(1).Split('\0');
-                                if (MathHelper.parseIntWithDefault(astring[0], 0) == 1)
-                                {
-                                    server[3] = astring[3];
-                                    server[4] = astring[2];
-                                    int online = MathHelper.parseIntWithDefault(astring[4], 0);
-                                    int maxplayer = MathHelper.parseIntWithDefault(astring[5], 0);
-                                    server[5] = online + "/" + maxplayer;
-                                }
-                            }
-                            else
-                            {
-                                server[3] = " ";
-                                server[4] = " ";
-                                server[5] = " ";
-                            }
-                            server[6] = (end - start).Milliseconds.ToString() + " ms";
-                            //    if (((end - start).Milliseconds < 200))
-                            //    {
-                            //        server.SubItems[0].ForeColor = Color.Green;
-                            //    }
-                            //    else
-                            //        if (((end - start).Milliseconds < 500))
-                            //        {
-                            //            server.SubItems[0].ForeColor = Color.Blue;
-                            //        }
-                            //        else
-                            //            if (((end - start).Milliseconds < 1000))
-                            //            {
-                            //                server.SubItems[0].ForeColor = Color.YellowGreen;
-                            //            }
-                            //            else
-                            //                if (((end - start).Milliseconds < 3000))
-                            //                {
-                            //                    server.SubItems[0].ForeColor = Color.Orange;
-                            //                }
-                            //                else
-                            //                    if (((end - start).Milliseconds > 3000))
-                            //                    {
-                            //                        server.SubItems[0].ForeColor = Color.OrangeRed;
-                            //                    }
+        private void GetServerInfo(object obj)
+        {
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnReflushServer.Content = LangManager.GetLangFromResource("ServerListGetting"); }));
+            if (File.Exists(@".minecraft\servers.dat"))
+            {
+                sl = new serverlist.serverlist();
+                foreach (serverlist.serverinfo info in sl.info)
+                {
+                    DateTime start = DateTime.Now;
+                    string[] server = new string[7];
+                    server[0] = info.Name;
+                    server[1] = info.IsHide ? LangManager.GetLangFromResource("ServerListYes") : LangManager.GetLangFromResource("ServerListNo");
+                    if (info.IsHide)
+                        server[2] = string.Empty;
+                    else
+                        server[2] = info.Address;
+                    try
+                    {
+                        Socket con = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                        con.ReceiveTimeout = 3000;
+                        con.SendTimeout = 3000;
+                        if (info.Address.Split(':').Length == 1)
+                            con.Connect(Dns.GetHostAddresses(info.Address.Split(':')[0]), 25565);
+                        else
+                            con.Connect(Dns.GetHostAddresses(info.Address.Split(':')[0]), int.Parse(info.Address.Split(':')[1]));
+                        con.Send(new byte[1] { 254 });
+                        con.Send(new byte[1] { 1 });
+                        byte[] recive = new byte[512];
+                        int bytes = con.Receive(recive);
+                        if (recive[0] != 255)
+                        {
+                            throw new Exception(LangManager.GetLangFromResource("ServerListInvildReply"));
                         }
-                        catch (SocketException ex)
+                        string message = Encoding.UTF8.GetString(recive, 4, bytes - 4);
+                        StringBuilder remessage = new StringBuilder(30);
+                        for (int i = 0; i <= message.Length; i += 2)
+                        {
+                            remessage.Append(message[i]);
+                        }
+                        message = remessage.ToString();
+                        con.Shutdown(SocketShutdown.Both);
+                        con.Close();
+                        DateTime end = DateTime.Now;
+                        char[] achar = message.ToCharArray();
+
+                        for (int i = 0; i < achar.Length; ++i)
+                        {
+                            if (achar[i] != 167 && achar[i] != 0 && char.IsControl(achar[i]))
+                            {
+                                achar[i] = (char)63;
+                            }
+                        }
+                        message = new String(achar);
+                        if (message[0] == (char)253 || message[0] == (char)65533)
+                        {
+                            message = (char)167 + message.Substring(1);
+                        }
+                        string[] astring;
+                        if (message.StartsWith("\u00a7") && message.Length > 1)
+                        {
+                            astring = message.Substring(1).Split('\0');
+                            if (MathHelper.parseIntWithDefault(astring[0], 0) == 1)
+                            {
+                                server[3] = astring[3];
+                                server[4] = astring[2];
+                                int online = MathHelper.parseIntWithDefault(astring[4], 0);
+                                int maxplayer = MathHelper.parseIntWithDefault(astring[5], 0);
+                                server[5] = online + "/" + maxplayer;
+                            }
+                        }
+                        else
                         {
                             server[3] = " ";
                             server[4] = " ";
                             server[5] = " ";
-                            server[6] = LangManager.GetLangFromResource("ServerListSocketException") + ex.Message;
-                            //server.SubItems[0].ForeColor = Color.Red;
                         }
-                        catch (Exception ex)
+                        server[6] = (end - start).Milliseconds.ToString() + " ms";
+                    }
+                    catch (SocketException ex)
+                    {
+                        server[3] = " ";
+                        server[4] = " ";
+                        server[5] = " ";
+                        server[6] = LangManager.GetLangFromResource("ServerListSocketException") + ex.Message;
+                        //server.SubItems[0].ForeColor = Color.Red;
+                    }
+                    catch (Exception ex)
+                    {
+                        server[3] = " ";
+                        server[4] = " ";
+                        server[5] = " ";
+                        server[6] = LangManager.GetLangFromResource("ServerListUnknowServer") + ex.Message;
+                        //server.SubItems[0].ForeColor = Color.Red;
+                    }
+                    finally
+                    {
+                        StringBuilder logger = new StringBuilder();
+                        foreach (string str in server)
                         {
-                            server[3] = " ";
-                            server[4] = " ";
-                            server[5] = " ";
-                            server[6] = LangManager.GetLangFromResource("ServerListUnknowServer") + ex.Message;
-                            //server.SubItems[0].ForeColor = Color.Red;
+                            logger.Append(str + ",");
                         }
-                        finally
+                        Logger.Log(logger.ToString());
+                        lock (ServerListDataTable)
                         {
-                            dt.Rows.Add(server);
+                            ServerListDataTable.Rows.Add(server);
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                            {
+                                listServer.DataContext = null;
+                                listServer.DataContext = ServerListDataTable;
+                            }));
                         }
                     }
-                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { listServer.DataContext = dt; btnReflushServer.Content = "刷新服务器"; }));
+                }
+                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnReflushServer.Content = "刷新服务器"; }));
+            }
+            else
+            {
+                if (MessageBox.Show(LangManager.GetLangFromResource("ServerListNotFound"), "", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                {
+                    if (!Directory.Exists(".minecraft"))
+                    {
+                        Directory.CreateDirectory(".minecraft");
+                    }
+                    FileStream serverdat = new FileStream(@".minecraft\servers.dat", FileMode.Create);
+                    serverdat.Write(Convert.FromBase64String(Resource.ServerDat.Header), 0, Convert.FromBase64String(Resource.ServerDat.Header).Length);
+                    serverdat.WriteByte(0);
+                    serverdat.Close();
+                    sl = new serverlist.serverlist();
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                    {
+                        btnAddServer.IsEnabled = true;
+                        btnDeleteServer.IsEnabled = true;
+                        btnEditServer.IsEnabled = true;
+                        btnReflushServer.IsEnabled = true;
+                    }));
                 }
                 else
                 {
-                    if (MessageBox.Show(LangManager.GetLangFromResource("ServerListNotFound"), "", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                     {
-                        if (!Directory.Exists(".minecraft"))
-                        {
-                            Directory.CreateDirectory(".minecraft");
-                        }
-                        FileStream serverdat = new FileStream(@".minecraft\servers.dat", FileMode.Create);
-                        serverdat.Write(Convert.FromBase64String(Resource.ServerDat.Header), 0, Convert.FromBase64String(Resource.ServerDat.Header).Length);
-                        serverdat.WriteByte(0);
-                        serverdat.Close();
-                        sl = new serverlist.serverlist();
-                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
-                        {
-                            btnAddServer.IsEnabled = true;
-                            btnDeleteServer.IsEnabled = true;
-                            btnEditServer.IsEnabled = true;
-                            btnReflushServer.IsEnabled = true;
-                        }));
-                    }
-                    else
-                    {
-                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
-                        {
-                            btnAddServer.IsEnabled = false;
-                            btnDeleteServer.IsEnabled = false;
-                            btnEditServer.IsEnabled = false;
-                            btnReflushServer.IsEnabled = false;
-                        }));
-                    }
+                        btnAddServer.IsEnabled = false;
+                        btnDeleteServer.IsEnabled = false;
+                        btnEditServer.IsEnabled = false;
+                        btnReflushServer.IsEnabled = false;
+                    }));
                 }
-            })));
-            thGetServerInfo.Start();
+            }
         }
 
         private void btnAddServer_Click(object sender, RoutedEventArgs e)
@@ -1574,10 +1594,12 @@ namespace BMCLV2
         new Hashtable Language = new Hashtable();
         private void LoadLanguage()
         {
-            var Lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
+            ResourceDictionary Lang;
+            Lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
             Language.Add(Lang["DisplayName"], Lang["LangName"]);
             comboLang.Items.Add(Lang["DisplayName"]);
             LangManager.Add(Lang["LangName"] as string, "pack://application:,,,/Lang/zh-cn.xaml");
+
             Lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-tw.xaml");
             Language.Add(Lang["DisplayName"], Lang["LangName"]);
             comboLang.Items.Add(Lang["DisplayName"]);

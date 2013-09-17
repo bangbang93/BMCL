@@ -137,13 +137,13 @@
                             <ListView x:Name="listServer" HorizontalAlignment="Left" Height="394" VerticalAlignment="Top" Width="748" Background="#A0FFFFFF" ItemsSource="{Binding}">
                                 <ListView.View>
                                     <GridView AllowsColumnReorder="True">
-                                        <GridViewColumn DisplayMemberBinding="{Binding ServerName}" Header="{DynamicResource ServerName}" Width="120"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding HiddenAddress}" Header="{DynamicResource HiddenAddress}" Width="60"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding ServerAddress}" Header="{DynamicResource ServerAddress}" Width="185"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding ServerMotd}" Header="{DynamicResource ServerMotd}" Width="200"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding ServerVer}" Header="{DynamicResource ServerVer}" Width="60"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding ServerOnline}" Header="{DynamicResource ServerOnline}" Width="60"/>
-                                        <GridViewColumn DisplayMemberBinding="{Binding ServerDelay}" Header="{DynamicResource ServerDelay}" Width="60"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=ServerName}" Header="{DynamicResource ServerName}" Width="120"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=HiddenAddress}" Header="{DynamicResource HiddenAddress}" Width="60"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=ServerAddress}" Header="{DynamicResource ServerAddress}" Width="185"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=ServerMotd}" Header="{DynamicResource ServerMotd}" Width="200"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=ServerVer}" Header="{DynamicResource ServerVer}" Width="60"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=ServerOnline}" Header="{DynamicResource ServerOnline}" Width="60"/>
+                                        <GridViewColumn DisplayMemberBinding="{Binding Path=ServerDelay}" Header="{DynamicResource ServerDelay}" Width="60"/>
                                     </GridView>
                                 </ListView.View>
                             </ListView>

@@ -15,6 +15,7 @@ namespace BMCLV2
     {
         protected override void OnStartup(StartupEventArgs e)
         {
+            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
             if (e.Args.Length == 0)
                 Logger.Debug = false;
             else
@@ -28,6 +29,13 @@ namespace BMCLV2
         {
             base.OnExit(e);
             Logger.Stop();
+        }
+
+        void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            e.Handled = true;
+            var crash = new CrashHandle(e.Exception);
+            crash.Show();
         }
     }
 }
