@@ -117,7 +117,7 @@ namespace BMCLV2
                 listAuth.SelectedIndex = 0;
             sliderWindowTransparency.Value = cfg.WindowTransparency;
             checkReport.IsChecked = cfg.Report;
-            txtInsPath.Text = Environment.CurrentDirectory + "\\.minecraft";
+            txtInsPath.Text = AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft";
             listDownSource.SelectedIndex = cfg.DownloadSource;
             LangManager.UseLanguage(cfg.Lang);
             comboLang.SelectedItem = LangManager.GetLangFromResource("DisplayName");
@@ -125,7 +125,7 @@ namespace BMCLV2
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
             listAuth.SelectedItem = cfg.login;
             Logger.Log(cfg);
-            if (!Directory.Exists(Environment.CurrentDirectory + @"\.minecraft\assets"))
+            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets"))
                 if (MessageBox.Show("可能是第一次启动，未找到资源文件，是否下载？","未找到资源文件",MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                 {
                     FrmCheckRes frmCheckRes = new FrmCheckRes();
@@ -154,19 +154,19 @@ namespace BMCLV2
         #region 公共按钮
         private void btnChangeBg_Click(object sender, RoutedEventArgs e)
         {
-            if (Directory.Exists(Environment.CurrentDirectory + "\\bg"))
+            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\bg"))
             {
                 Random rand = new Random();
                 ArrayList pics = new ArrayList();
-                foreach (string str in Directory.GetFiles(Environment.CurrentDirectory + "\\bg", "*.jpg", SearchOption.AllDirectories))
+                foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.jpg", SearchOption.AllDirectories))
                 {
                     pics.Add(str);
                 }
-                foreach (string str in Directory.GetFiles(Environment.CurrentDirectory + "\\bg", "*.png", SearchOption.AllDirectories))
+                foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.png", SearchOption.AllDirectories))
                 {
                     pics.Add(str);
                 }
-                foreach (string str in Directory.GetFiles(Environment.CurrentDirectory + "\\bg", "*.bmp", SearchOption.AllDirectories))
+                foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.bmp", SearchOption.AllDirectories))
                 {
                     pics.Add(str);
                 }
@@ -199,10 +199,10 @@ namespace BMCLV2
                 if (e == null)
                     return;
                 MessageBox.Show("请在启动启动其目录下新建bg文件夹，并放入图片文件，支持jpg,bmp,png等格式，比例请尽量接近16:9，否则会被拉伸");
-                Directory.CreateDirectory(Environment.CurrentDirectory + "\\bg");
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\bg");
                 Process explorer = new Process();
                 explorer.StartInfo.FileName = "explorer.exe";
-                explorer.StartInfo.Arguments = Environment.CurrentDirectory + "\\bg";
+                explorer.StartInfo.Arguments = AppDomain.CurrentDomain.BaseDirectory + "\\bg";
                 explorer.Start();
             }
         }
@@ -220,9 +220,9 @@ namespace BMCLV2
                 txtUserName.Focus();
                 return;
             }
-            if (Directory.Exists(Environment.CurrentDirectory + @"\.minecraft\crash-reports"))
+            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports"))
             {
-                ClientCrashReportCount = Directory.GetFiles(Environment.CurrentDirectory + @"\.minecraft\crash-reports").Count();
+                ClientCrashReportCount = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count();
             }
             else
             {
@@ -392,12 +392,12 @@ namespace BMCLV2
         }
         private void launcher_gameexit()
         {
-            if (Directory.Exists(Environment.CurrentDirectory + @"\.minecraft\crash-reports"))
+            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports"))
             {
-                if (ClientCrashReportCount != Directory.GetFiles(Environment.CurrentDirectory + @"\.minecraft\crash-reports").Count())
+                if (ClientCrashReportCount != Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count())
                 {
                     Logger.Log("发现新的错误报告");
-                    DirectoryInfo ClientCrashReportDir = new DirectoryInfo(Environment.CurrentDirectory + @"\.minecraft\crash-reports");
+                    DirectoryInfo ClientCrashReportDir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports");
                     string LastClientCrashReportPath = "";
                     DateTime LastClientCrashReportModifyTime=DateTime.MinValue;
                     foreach (FileInfo ClientCrashReport in ClientCrashReportDir.GetFiles())
@@ -453,7 +453,7 @@ namespace BMCLV2
                 return;
             }
             StringBuilder JsonFilePath = new StringBuilder();
-            JsonFilePath.Append(Environment.CurrentDirectory + @"\.minecraft\versions\");
+            JsonFilePath.Append(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions\");
             JsonFilePath.Append(listVer.SelectedItem.ToString());
             JsonFilePath.Append(@"\");
             JsonFilePath.Append(listVer.SelectedItem.ToString());
@@ -837,7 +837,7 @@ namespace BMCLV2
             }
             DataRowView SelectVer = listRemoteVer.SelectedItem as DataRowView;
             string selectver = SelectVer[0] as string;
-            StringBuilder downpath = new StringBuilder(Environment.CurrentDirectory + @"\.minecraft\versions\");
+            StringBuilder downpath = new StringBuilder(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions\");
             downpath.Append(selectver).Append("\\");
             downpath.Append(selectver).Append(".jar");
             WebClient downer = new WebClient();
@@ -918,15 +918,16 @@ namespace BMCLV2
 
 
         #region tabForge
-        Hashtable DownloadUrl = new Hashtable();
+        Hashtable ForgeDownloadUrl = new Hashtable();
+        Hashtable ForgeChangeLog = new Hashtable();
         Thread thGet;
         private void btnLastForge_Click(object sender, RoutedEventArgs e)
         {
-            if (DownloadUrl.Count == 0)
+            if (ForgeDownloadUrl.Count == 0)
             {
                 HtmlDocument ForgePage;
                 treeForgeVer.Items.Clear();
-                DownloadUrl.Clear();
+                ForgeDownloadUrl.Clear();
                 treeForgeVer.Items.Add(LangManager.GetLangFromResource("ForgeListGetting"));
                 thGet = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
                 {
@@ -949,7 +950,7 @@ namespace BMCLV2
             btnReForge.IsEnabled = false;
             HtmlDocument ForgePage;
             treeForgeVer.Items.Clear();
-            DownloadUrl.Clear();
+            ForgeDownloadUrl.Clear();
             treeForgeVer.Items.Add(LangManager.GetLangFromResource("ForgeListGetting"));
             thGet=new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate{
             HtmlWeb ForgePageGet = new HtmlWeb();
@@ -970,7 +971,8 @@ namespace BMCLV2
                 HtmlNode shortcut = shortcuts[i];
                 string ver = shortcut.SelectNodes("td")[0].InnerText;
                 HtmlNodeCollection urls = shortcut.SelectNodes("td")[4].SelectNodes("a");
-                string url = "none"; ;
+                string url = "none";
+                string changelogurl = "none";
                 foreach (HtmlNode maybeurl in urls)
                 {
                     string murl = maybeurl.GetAttributeValue("href","");
@@ -979,12 +981,18 @@ namespace BMCLV2
                         url = murl;
                         continue;
                     }
+                    if (murl.IndexOf("changelog") != -1)
+                    {
+                        changelogurl = murl;
+                        continue;
+                    }
                 }
                 if (url == "none")
                 {
                     continue;
                 }
-                DownloadUrl.Add(ver, url);
+                ForgeDownloadUrl.Add(ver, url);
+                ForgeChangeLog.Add(ver, changelogurl);
                 tree = new TreeViewItem();
                 tree.Header = ver;
                 tree.Items.Add(shortcut.SelectNodes("td")[1].InnerText);
@@ -1007,7 +1015,8 @@ namespace BMCLV2
                 }
                 string ver = shortcut.SelectNodes("td")[0].InnerText;
                 HtmlNodeCollection urls = shortcut.SelectNodes("td")[3].SelectNodes("a");
-                string url = "none"; ;
+                string url = "none";
+                string changelogurl = "none";
                 foreach (HtmlNode maybeurl in urls)
                 {
                     string murl = maybeurl.GetAttributeValue("href", "");
@@ -1016,12 +1025,18 @@ namespace BMCLV2
                         url = murl;
                         continue;
                     }
+                    if (murl.IndexOf("changelog") != -1)
+                    {
+                        changelogurl = murl;
+                        continue;
+                    }
                 }
                 if (url == "none")
                 {
                     continue;
                 }
-                DownloadUrl.Add(ver, url);
+                ForgeDownloadUrl.Add(ver, url);
+                ForgeChangeLog.Add(ver, changelogurl);
                 tree.Items.Add(ver);
             }
             treeForgeVer.Items.Add(tree);
@@ -1030,19 +1045,19 @@ namespace BMCLV2
         }
         private void DownloadForge(string ver)
         {
-            if (!DownloadUrl.ContainsKey(ver))
+            if (!ForgeDownloadUrl.ContainsKey(ver))
             {
                 MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotSupportInstaller"));
                 return;
             }
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { gridDown.Visibility = Visibility.Visible; }));
-            Uri url = new Uri(DownloadUrl[ver].ToString());
+            Uri url = new Uri(ForgeDownloadUrl[ver].ToString());
             WebClient downer = new WebClient();
             downer.DownloadProgressChanged+=downer_DownloadProgressChanged;
             downer.DownloadFileCompleted += downer_DownloadForgeCompleted;
             downedtime = Environment.TickCount - 1;
             downed = 0;
-            StreamWriter w = new StreamWriter(Environment.CurrentDirectory + "\\.minecraft\\launcher_profiles.json");
+            StreamWriter w = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft\\launcher_profiles.json");
             w.Write(Resource.NormalProfile.Profile);
             w.Close();
             downer.DownloadFileAsync(url, "forge.jar");
@@ -1066,7 +1081,7 @@ namespace BMCLV2
                 return;
             }
             ForgeIns.StartInfo.FileName = cfg.javaw;
-            ForgeIns.StartInfo.Arguments = "-jar " + Environment.CurrentDirectory + "\\forge.jar";
+            ForgeIns.StartInfo.Arguments = "-jar " + AppDomain.CurrentDomain.BaseDirectory + "\\forge.jar";
             ForgeIns.Start();
             ForgeIns.WaitForExit();
             ReFlushlistver();
@@ -1093,6 +1108,29 @@ namespace BMCLV2
             {
                 MessageBox.Show(LangManager.GetLangFromResource("ForgeCopyError"));
             }
+        }
+
+        private void treeForgeVer_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (this.treeForgeVer.SelectedItem == null)
+                return;
+            if (this.treeForgeVer.SelectedItem is string)
+            {
+                if (!ForgeChangeLog.ContainsKey(this.treeForgeVer.SelectedItem as string))
+                {
+                    MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotHaveChangeLog"));
+                    return;
+                }
+                txtChangeLog.Text = LangManager.GetLangFromResource("FetchingForgeChangeLog");
+                WebClient GetLog = new WebClient();
+                GetLog.DownloadStringCompleted += GetLog_DownloadStringCompleted;
+                GetLog.DownloadStringAsync(new Uri(ForgeChangeLog[this.treeForgeVer.SelectedItem as string] as string));
+            }
+        }
+
+        void GetLog_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            txtChangeLog.Text = e.Result;
         }
         #endregion
 
@@ -1318,7 +1356,7 @@ namespace BMCLV2
         {
             listVer.Items.Clear();
 
-                if (!Directory.Exists(Environment.CurrentDirectory + "\\.minecraft"))
+                if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft"))
                 {
                     {
                         MessageBox.Show(LangManager.GetLangFromResource("NoClientFound"));
@@ -1331,7 +1369,7 @@ namespace BMCLV2
                         return;
                     }
                 }
-                if (!Directory.Exists(Environment.CurrentDirectory + @"\.minecraft\versions\"))
+                if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions\"))
                 {
                     MessageBox.Show(LangManager.GetLangFromResource("InvidMinecratDir"));
                     btnStart.IsEnabled      = false;
@@ -1342,8 +1380,8 @@ namespace BMCLV2
                     btnCoreModMrg.IsEnabled = false;
                     return;
                 }
-                DirectoryInfo mcdirinfo = new DirectoryInfo(Environment.CurrentDirectory + "\\.minecraft");
-                DirectoryInfo[] versions = new DirectoryInfo(Environment.CurrentDirectory + @"\.minecraft\versions").GetDirectories();
+                DirectoryInfo mcdirinfo = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft");
+                DirectoryInfo[] versions = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions").GetDirectories();
                 foreach (DirectoryInfo version in versions)
                 {
                     listVer.Items.Add(version.Name);
@@ -1398,9 +1436,9 @@ namespace BMCLV2
             try
             {
                 Random rand = new Random();
-                int img = rand.Next(Directory.GetFiles(Environment.CurrentDirectory + "\\bg").Length);
+                int img = rand.Next(Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg").Length);
                 ImageBrush b = new ImageBrush();
-                b.ImageSource = new BitmapImage(new Uri((Directory.GetFiles(Environment.CurrentDirectory + "\\bg")[img])));
+                b.ImageSource = new BitmapImage(new Uri((Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg")[img])));
                 b.Stretch = Stretch.Fill;
                 this.Top.Background = b;
             }
@@ -1604,9 +1642,9 @@ namespace BMCLV2
             Language.Add(Lang["DisplayName"], Lang["LangName"]);
             comboLang.Items.Add(Lang["DisplayName"]);
             LangManager.Add(Lang["LangName"] as string, "pack://application:,,,/Lang/zh-tw.xaml");
-            if (Directory.Exists(Environment.CurrentDirectory + "\\Lang"))
+            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\Lang"))
             {
-                foreach (string LangFile in Directory.GetFiles(Environment.CurrentDirectory + "\\Lang", "*.xaml", SearchOption.TopDirectoryOnly))
+                foreach (string LangFile in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\Lang", "*.xaml", SearchOption.TopDirectoryOnly))
                 {
                     try
                     {
@@ -1620,7 +1658,7 @@ namespace BMCLV2
             }
             else
             {
-                Directory.CreateDirectory(Environment.CurrentDirectory + "\\Lang");
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\Lang");
             }
         }
 
@@ -1639,11 +1677,12 @@ namespace BMCLV2
             listAuth.Items.Add(LangManager.GetLangFromResource("NoneAuth"));
             if (Directory.Exists("auths"))
             {
-                string[] authplugins = Directory.GetFiles(Environment.CurrentDirectory + @"\auths");
+                string[] authplugins = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\auths");
                 foreach (string auth in authplugins)
                 {
                     if (auth.ToLower().EndsWith(".dll"))
                     {
+                        Logger.Log("尝试加载" + auth);
                         try
                         {
                             Assembly AuthMethod = Assembly.LoadFrom(auth);
@@ -1657,19 +1696,38 @@ namespace BMCLV2
                                     MethodInfo AuthVer = T.GetMethod("GetVer");
                                     if (AuthVer == null)
                                     {
+                                        Logger.Log(string.Format("未找到{0}的GetVer方法，放弃加载", auth));
                                         continue;
                                     }
                                     if ((long)AuthVer.Invoke(Auth, null) != 1)
                                     {
+                                        Logger.Log(string.Format("{0}的版本不为1，放弃加载", auth));
                                         continue;
                                     }
                                     MethodInfo MAuthName = T.GetMethod("GetName");
                                     string AuthName = MAuthName.Invoke(Auth, new object[] { Language }).ToString();
                                     Auths.Add(AuthName, Auth);
                                     listAuth.Items.Add(AuthName);
+                                    Logger.Log(string.Format("{0}加载成功，名称为{1}", auth, AuthName), Logger.LogType.Error);
                                 }
-                                catch (MissingMethodException) { }
-                                catch (ArgumentException) { }
+                                catch (MissingMethodException ex) 
+                                {
+                                    Logger.Log(string.Format("加载{0}的{1}失败", auth, t.ToString()), Logger.LogType.Error);
+                                    Logger.Log(ex, Logger.LogType.Exception);
+                                }
+                                catch (ArgumentException ex) 
+                                {
+                                    Logger.Log(string.Format("加载{0}的{1}失败", auth, t.ToString()), Logger.LogType.Error);
+                                    Logger.Log(ex, Logger.LogType.Exception);
+                                }
+                                catch (NotSupportedException ex)
+                                {
+                                    if (ex.Message.IndexOf("0x80131515") != -1)
+                                    {
+                                        MessageBox.Show(LangManager.GetLangFromResource("LoadPluginLockErrorInfo"), LangManager.GetLangFromResource("LoadPluginLockErrorTitle"));
+                                    }
+                                    else throw ex;
+                                }
                             }
                         }
                         catch (NotSupportedException ex)

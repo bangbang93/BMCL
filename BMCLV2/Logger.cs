@@ -18,7 +18,7 @@ namespace BMCLV2
         static FrmLog frmLog = new FrmLog();
         static public void Start()
         {
-            FileStream fs = new FileStream(Environment.CurrentDirectory + "\\bmcl.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bmcl.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
             fs.Close();
             if (Debug)
             {
@@ -35,7 +35,7 @@ namespace BMCLV2
 
         static private void WriteInfo(LogType Type = LogType.Info)
         {
-            FileStream fs = new FileStream(Environment.CurrentDirectory + "\\bmcl.log", FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bmcl.log", FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
             switch (Type)
             {
@@ -67,7 +67,7 @@ namespace BMCLV2
         static private void Write(string str, LogType Type = LogType.Info)
         {
             WriteInfo(Type);
-            FileStream fs = new FileStream(Environment.CurrentDirectory + "\\bmcl.log", FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bmcl.log", FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
             sw.WriteLine(str);
             sw.Close();

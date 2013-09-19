@@ -127,7 +127,7 @@ namespace BMCLV2
                 ThreadPool.QueueUserWorkItem(new WaitCallback(GetMD5HashFromFile), nextcheck);
                 //GetMD5HashFromFile(prs.Value);
             }
-            Thread thCount=new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
+            Thread thCount = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
             {
                 while (checkedfile != dt.Rows.Count) { }
                 Logger.Log(string.Format("检查资源文件，共有{0}个文件待同步，共计{1}个文件", WaitingForSync, dt.Rows.Count));
@@ -138,7 +138,7 @@ namespace BMCLV2
         public void GetMD5HashFromFile(object obj)
         {
             int num = (int)obj;
-            string fileName = Environment.CurrentDirectory + @"\.minecraft\assets\" + dt.Rows[num]["FileName"].ToString();
+            string fileName = AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets\" + dt.Rows[num]["FileName"].ToString();
             try
             {
                 FileStream file = new FileStream(fileName, FileMode.Open);
@@ -174,7 +174,7 @@ namespace BMCLV2
                 lock (dt)
                 {
                     dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResWaitingForSync");
-                    Logger.Log(string.Format("检查资源文件{0}，需要同步，由于", dt.Rows[num]["FileName"], ex.Message), Logger.LogType.Exception);
+                    Logger.Log(string.Format("检查资源文件{0}，需要同步，由于{1}", dt.Rows[num]["FileName"], ex.Message), Logger.LogType.Exception);
                 }
                 WaitingForSync++;
             }
@@ -186,8 +186,10 @@ namespace BMCLV2
         {
             if (!ischecked)
             {
-                btnCheck_Click(null, null);
+                if (!checking)
+                    btnCheck_Click(null, null);
                 MessageBox.Show(LangManager.GetLangFromResource("ResPlsWaitingForCheck"));
+                return;
             }
             if (WaitingForSync == 0)
             {
@@ -203,7 +205,7 @@ namespace BMCLV2
                 {
                     WebClient downer = new WebClient();
                     StringBuilder rpath = new StringBuilder(FrmMain.URL_RESOURCE_BASE);
-                    StringBuilder lpath = new StringBuilder(Environment.CurrentDirectory + @"\.minecraft\assets\");
+                    StringBuilder lpath = new StringBuilder(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets\");
                     rpath.Append(dt.Rows[num]["FileName"].ToString());
                     lpath.Append(dt.Rows[num]["FileName"].ToString());
                     if (!Directory.Exists(System.IO.Path.GetDirectoryName(lpath.ToString())))
@@ -212,20 +214,21 @@ namespace BMCLV2
                     }
                     downer.DownloadFileCompleted += downer_DownloadFileCompleted;
                     InDownloading++;
-                    ThreadPool.QueueUserWorkItem(a => Downer(new Uri(rpath.ToString()), lpath.ToString(), num, downer));
+                    int tnum = num;
+                    ThreadPool.QueueUserWorkItem(a => Downer(new Uri(rpath.ToString()), lpath.ToString(), tnum, ref downer));
                 }
             }
         }
-        void Downer(Uri url, string lpath, int num,WebClient downer)
+        void Downer(Uri url, string lpath, int num, ref WebClient downer)
         {
-            Logger.Log(string.Format("下载资源文件{0}", url.ToString()));
+            Logger.Log(string.Format("开始下载第{0}个资源文件{1}", num, url.ToString()));
             downer.DownloadFileAsync(url, lpath.ToString(), num);
         }
         void downer_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             InDownloading--;
             int num = (int)e.UserState;
-            Logger.Log(string.Format("下载资源文件{0}", dt.Rows[num]["FileName"]));
+            Logger.Log(string.Format("下载资源文件完成{0}", dt.Rows[num]["FileName"]));
             lock (dt)
             {
                 dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResInSync");
