@@ -31,5 +31,17 @@ namespace BMCLV2
         {
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { labStatus.Content = status; }));
         }
+
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                if (e.LeftButton == MouseButtonState.Pressed)
+                {
+                    this.DragMove();
+                }
+            }
+            catch { }
+        }
     }
 }

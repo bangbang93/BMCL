@@ -141,5 +141,6 @@
     <s:String x:Key="ResNoFileForSync">没有需要同步的文件</s:String>
     <s:String x:Key="ResPlsWaitingForCheck">请先对比文件并且等待对比完成</s:String>
     <s:String x:Key="FetchingForgeChangeLog">正在获取Forge的更新日志</s:String>
+    <s:String x:Key="MenuStartDebug">以Debug模式启动游戏</s:String>
 
 </ResourceDictionary>

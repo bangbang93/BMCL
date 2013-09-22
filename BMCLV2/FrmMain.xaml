@@ -19,7 +19,7 @@
                     </TabControl.Background>
                     <TabItem x:Name="tabGameVersion" Header="{DynamicResource tabGameVersion}">
                         <Grid x:Name="gridGame" Background="#50FFFFFF">
-                            <ListBox x:Name="listVer" HorizontalAlignment="Left" Height="374" VerticalAlignment="Top" Width="243" SelectionChanged="listVer_SelectionChanged" Background="#A0FFFFFF" Margin="0,10,0,0"/>
+                            <ListBox x:Name="listVer" HorizontalAlignment="Left" Height="374" VerticalAlignment="Top" Width="243" SelectionChanged="listVer_SelectionChanged" Background="#A0FFFFFF" Margin="0,10,0,0" MouseDoubleClick="listVer_MouseDoubleClick" ToolTip="双击版本号也可启动"/>
                             <Button x:Name="btnDelete" Content="{DynamicResource btnDelete}" HorizontalAlignment="Left" Margin="255,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnDelete_Click"/>
                             <Button x:Name="btnImportOldMc" Content="{DynamicResource btnImportOldMc}" HorizontalAlignment="Left" Margin="365,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnImportOldMc_Click"/>
                             <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="119" Margin="255,10,0,0" VerticalAlignment="Top" Width="567" Background="#A0FFFFFF">
@@ -58,7 +58,7 @@
                                     <Label x:Name="labPleaseInputUsername" Content="{DynamicResource labPleaseInputUsername}" />
                                 </Grid>
                             </Popup>
-                            <TextBox x:Name="txtUserName" HorizontalAlignment="Left" Height="23" Margin="89,25,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="147" Background="#A0FFFFFF" TextChanged="txtUserName_TextChanged"/>
+                            <TextBox x:Name="txtUserName" HorizontalAlignment="Left" Height="23" Margin="89,25,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="147" Background="#A0FFFFFF" TextChanged="txtUserName_TextChanged" TabIndex="0" KeyUp="txtUserName_KeyUp"/>
                             <GroupBox x:Name="groupAuth" Header="{DynamicResource groupAuth}" HorizontalAlignment="Left" Margin="26,84,0,0" VerticalAlignment="Top" Height="190" Width="210">
                                 <GroupBox.Background>
                                     <ImageBrush/>
@@ -66,17 +66,17 @@
                                 <ListBox x:Name="listAuth" HorizontalAlignment="Left" Height="150" VerticalAlignment="Top" Width="200" Margin="0,10,-2,0" Background="#A0FFFFFF"/>
                             </GroupBox>
                             <Label x:Name="labJavaPath" Content="{DynamicResource labJavaPath}" HorizontalAlignment="Left" Margin="391,25,0,0" VerticalAlignment="Top" Width="62"/>
-                            <TextBox x:Name="txtJavaPath" HorizontalAlignment="Left" Height="23" Margin="457,28,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="312" Background="#A0FFFFFF"/>
+                            <TextBox x:Name="txtJavaPath" HorizontalAlignment="Left" Height="23" Margin="457,28,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="312" Background="#A0FFFFFF" TabIndex="2"/>
                             <Label x:Name="labJavaXmx" Content="{DynamicResource labJavaXmx}" HorizontalAlignment="Left" Margin="391,56,0,0" VerticalAlignment="Top" Width="62"/>
-                            <TextBox x:Name="txtJavaXmx" HorizontalAlignment="Left" Height="23" Margin="457,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="128" Background="#A0FFFFFF"/>
-                            <Slider x:Name="sliderJavaxmx" HorizontalAlignment="Left" Margin="391,87,0,0" VerticalAlignment="Top" Width="246" ValueChanged="sliderJavaxmx_ValueChanged" Minimum="512" Maximum="512"/>
+                            <TextBox x:Name="txtJavaXmx" HorizontalAlignment="Left" Height="23" Margin="457,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="128" Background="#A0FFFFFF" TextChanged="txtJavaXmx_TextChanged" TabIndex="3"/>
+                            <Slider x:Name="sliderJavaxmx" HorizontalAlignment="Left" Margin="391,87,0,0" VerticalAlignment="Top" Width="246" ValueChanged="sliderJavaxmx_ValueChanged" Maximum="512"/>
                             <Label Content="MB" HorizontalAlignment="Left" Margin="589,56,0,0" VerticalAlignment="Top" Width="32"/>
                             <Button x:Name="btnSelectJava" Content="{DynamicResource btnSelectJava}" HorizontalAlignment="Left" Margin="774,29,0,0" VerticalAlignment="Top" Width="48" Click="btnSelectJava_Click"/>
                             <CheckBox x:Name="checkAutoStart" Content="{DynamicResource checkAutoStart}" HorizontalAlignment="Left" Margin="391,114,0,0" VerticalAlignment="Top" Width="95"/>
                             <Label x:Name="labExtJvmArg" Content="{DynamicResource labExtJvmArg}" HorizontalAlignment="Left" Margin="391,202,0,0" VerticalAlignment="Top" Width="153"/>
-                            <TextBox x:Name="txtExtJArg" HorizontalAlignment="Left" Height="23" Margin="391,233,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="339" Background="#A0FFFFFF" ToolTip="1.6以前的版本请无视该设置"/>
+                            <TextBox x:Name="txtExtJArg" HorizontalAlignment="Left" Height="23" Margin="391,233,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="339" Background="#A0FFFFFF" ToolTip="1.6以前的版本请无视该设置" TabIndex="4" TextChanged="txtExtJArg_TextChanged"/>
                             <Button x:Name="btnSaveConfig" Content="{DynamicResource btnSaveConfig}" HorizontalAlignment="Left" Margin="773,346,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnSaveConfig_Click"/>
-                            <PasswordBox x:Name="txtPwd" HorizontalAlignment="Left" Margin="89,56,0,0" VerticalAlignment="Top" Width="147" Background="#A0FFFFFF"/>
+                            <PasswordBox x:Name="txtPwd" HorizontalAlignment="Left" Margin="89,56,0,0" VerticalAlignment="Top" Width="147" Background="#A0FFFFFF" TabIndex="1"/>
                             <Label x:Name="labBGAlpha" Content="{DynamicResource labBGAlpha}" HorizontalAlignment="Left" Margin="391,135,0,0" VerticalAlignment="Top"/>
                             <Slider x:Name="sliderWindowTransparency" HorizontalAlignment="Left" Margin="391,166,0,0" VerticalAlignment="Top" Width="246" ValueChanged="sliderWindowTransparency_ValueChanged" Maximum="1"/>
                             <CheckBox x:Name="checkReport" Content="{DynamicResource checkReport}" HorizontalAlignment="Left" Margin="391,281,0,0" VerticalAlignment="Top"/>
@@ -103,7 +103,7 @@
                                 <ColumnDefinition Width="748"/>
                                 <ColumnDefinition Width="140"/>
                             </Grid.ColumnDefinitions>
-                            <ListView x:Name="listRemoteVer" HorizontalAlignment="Left" Height="394" VerticalAlignment="Top" Width="748" Background="#A0FFFFFF" ItemsSource="{Binding}" MouseDoubleClick="listRemoteVer_MouseDoubleClick">
+                            <ListView x:Name="listRemoteVer" HorizontalAlignment="Left" Height="394" VerticalAlignment="Top" Width="748" Background="#A0FFFFFF" ItemsSource="{Binding}" MouseDoubleClick="listRemoteVer_MouseDoubleClick" SelectionMode="Single">
                                 <ListView.View>
                                     <GridView AllowsColumnReorder="True">
                                         <GridViewColumn DisplayMemberBinding="{Binding Ver}" Header="{DynamicResource VerColVer}" Width="80"/>
@@ -137,7 +137,7 @@
                                 <ColumnDefinition Width="748*"/>
                                 <ColumnDefinition Width="140*"/>
                             </Grid.ColumnDefinitions>
-                            <ListView x:Name="listServer" HorizontalAlignment="Left" Height="394" VerticalAlignment="Top" Width="748" Background="#A0FFFFFF" ItemsSource="{Binding}">
+                            <ListView x:Name="listServer" HorizontalAlignment="Left" Height="394" VerticalAlignment="Top" Width="748" Background="#A0FFFFFF" ItemsSource="{Binding}" SelectionMode="Single">
                                 <ListView.View>
                                     <GridView AllowsColumnReorder="True">
                                         <GridViewColumn DisplayMemberBinding="{Binding Path=ServerName}" Header="{DynamicResource ServerName}" Width="120"/>

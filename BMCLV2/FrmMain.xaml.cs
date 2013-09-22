@@ -78,6 +78,7 @@ namespace BMCLV2
             DebugMode.Click += DebugMode_Click;
             NIcon.ContextMenu = NMenu;
             #endregion
+            #region 皮肤菜单
             System.Windows.Controls.ContextMenu SkinMenu = new System.Windows.Controls.ContextMenu();
             System.Windows.Controls.MenuItem SelectFile = new System.Windows.Controls.MenuItem();
             SelectFile.Name = "menuSelectFile";
@@ -85,6 +86,16 @@ namespace BMCLV2
             SelectFile.Click += SelectFile_Click;
             SkinMenu.Items.Add(SelectFile);
             btnChangeBg.ContextMenu = SkinMenu;
+            #endregion
+            #region 开始菜单
+            System.Windows.Controls.ContextMenu MenuStart = new System.Windows.Controls.ContextMenu();
+            System.Windows.Controls.MenuItem MenuItemDebugMode = new System.Windows.Controls.MenuItem();
+            MenuItemDebugMode.Name = "DebugMode";
+            MenuItemDebugMode.Header = LangManager.GetLangFromResource("MenuStartDebug");
+            MenuItemDebugMode.Click += MenuItemDebugMode_Click;
+            MenuStart.Items.Add(MenuItemDebugMode);
+            btnStart.ContextMenu = MenuStart;
+            #endregion
             LoadLanguage();
             #region 加载配置
             if (File.Exists(cfgfile))
@@ -142,6 +153,12 @@ namespace BMCLV2
                 thReport.Start();
             }
 #endif
+        }
+
+        void MenuItemDebugMode_Click(object sender, RoutedEventArgs e)
+        {
+            Logger.Debug = true;
+            btnStart_Click(null, null);
         }
 
         void DebugMode_Click(object sender, EventArgs e)
@@ -243,6 +260,7 @@ namespace BMCLV2
                     starter.Show();
                     starter.Activate();
                     starter.Focus();
+                    starter.Topmost = true;
                     starter.changeEventH("正在登陆");
                 }));
                 LoginInfo loginans = new LoginInfo();
@@ -452,6 +470,7 @@ namespace BMCLV2
                 listVer.SelectedIndex = 0;
                 return;
             }
+            this.listVer.ScrollIntoView(listVer.SelectedItem);
             StringBuilder JsonFilePath = new StringBuilder();
             JsonFilePath.Append(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions\");
             JsonFilePath.Append(listVer.SelectedItem.ToString());
@@ -705,7 +724,11 @@ namespace BMCLV2
             explorer.StartInfo.Arguments = configpath.ToString();
             explorer.Start();
         }
-
+        private void listVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (btnStart.IsEnabled)
+                btnStart_Click(null, null);
+        }
         #endregion
 
 
@@ -773,12 +796,58 @@ namespace BMCLV2
                     goto case 0;
             }
         }
+        private void txtJavaXmx_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            try
+            {
+                sliderJavaxmx.Value = Convert.ToInt32(txtJavaXmx.Text);
+            }
+            catch (FormatException ex)
+            {
+                Logger.Log(ex);
+                MessageBox.Show("请输入一个有效数字");
+                txtJavaXmx.Text = (config.getmem()/4).ToString();
+                txtJavaXmx.SelectAll();
+            }
+        }
+
+        private void txtUserName_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                txtPwd.Focus();
+                txtPwd.SelectAll();
+            }
+        }
+
+        private void txtExtJArg_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (txtExtJArg.Text.IndexOf("-Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true") != -1)
+            {
+                checkOptifine.IsChecked = true;
+            }
+        }
+
+        private void checkOptifine_Checked(object sender, RoutedEventArgs e)
+        {
+            if (txtExtJArg.Text.IndexOf("-Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true") != -1)
+                return;
+            txtExtJArg.Text += " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
+        }
+
+        private void checkOptifine_Unchecked(object sender, RoutedEventArgs e)
+        {
+            int t = txtExtJArg.Text.IndexOf(" -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true");
+            txtExtJArg.Text = txtExtJArg.Text.Replace(" -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true", "");
+        }
         #endregion
 
 
         #region tabRemoteVer
         private void btnRefreshRemoteVer_Click(object sender, RoutedEventArgs e)
         {
+            if (btnReflushServer.Content == LangManager.GetLangFromResource("RemoteVerGetting"))
+                return;
             listRemoteVer.DataContext = null;
             DataContractJsonSerializer RawJson = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(RawVersionListType));
             HttpWebRequest GetJson = (HttpWebRequest)WebRequest.Create(URL_DOWNLOAD_BASE + "versions/versions.json");
@@ -946,6 +1015,8 @@ namespace BMCLV2
         delegate void GetForgeFinishDel(HtmlDocument ForgePage);
         private void btnReForge_Click(object sender, RoutedEventArgs e)
         {
+            if (btnReForge.Content == LangManager.GetLangFromResource("btnReForgeGetting"))
+                return;
             btnReForge.Content = LangManager.GetLangFromResource("btnReForgeGetting");
             btnReForge.IsEnabled = false;
             HtmlDocument ForgePage;
@@ -1152,6 +1223,7 @@ namespace BMCLV2
             ServerListDataTable.Columns.Add("ServerOnline");
             ServerListDataTable.Columns.Add("ServerDelay");
             this.listServer.DataContext = ServerListDataTable;
+            this.btnReflushServer.IsEnabled = false;
             ThreadPool.QueueUserWorkItem(new WaitCallback(GetServerInfo));
         }
 
@@ -1268,7 +1340,7 @@ namespace BMCLV2
                         }
                     }
                 }
-                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnReflushServer.Content = "刷新服务器"; }));
+                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnReflushServer.Content = LangManager.GetLangFromResource("btnReflushServer"); btnReflushServer.IsEnabled = true; }));
             }
             else
             {
@@ -1475,9 +1547,9 @@ namespace BMCLV2
             {
                 case 0: gridGame.BeginAnimation(Grid.WidthProperty, da1); gridGame.BeginAnimation(Grid.HeightProperty, da2); break;
                 case 1: gridLaunchCfg.BeginAnimation(Grid.WidthProperty, da1); gridLaunchCfg.BeginAnimation(Grid.HeightProperty, da2); break;
-                case 2: gridRemoteVer.BeginAnimation(Grid.WidthProperty, da1); gridRemoteVer.BeginAnimation(Grid.HeightProperty, da2); if (listRemoteVer.DataContext==null) btnRefreshRemoteVer_Click(null, null); break;
-                case 3: gridForge.BeginAnimation(Grid.WidthProperty, da1); gridForge.BeginAnimation(Grid.HeightProperty, da2); if (treeForgeVer.Items.Count==0) btnReForge_Click(null, null); break;
-                case 4: gridServerList.BeginAnimation(Grid.WidthProperty, da1); gridServerList.BeginAnimation(Grid.HeightProperty, da2); if(listServer.DataContext==null) btnReflushServer_Click(null, null); break;
+                case 2: gridRemoteVer.BeginAnimation(Grid.WidthProperty, da1); gridRemoteVer.BeginAnimation(Grid.HeightProperty, da2); if (btnRefreshRemoteVer.IsEnabled && listRemoteVer.HasItems == false) btnRefreshRemoteVer_Click(null, null); break;
+                case 3: gridForge.BeginAnimation(Grid.WidthProperty, da1); gridForge.BeginAnimation(Grid.HeightProperty, da2); if (btnReForge.IsEnabled && treeForgeVer.HasItems == false) btnReForge_Click(null, null); break;
+                case 4: gridServerList.BeginAnimation(Grid.WidthProperty, da1); gridServerList.BeginAnimation(Grid.HeightProperty, da2); if(btnReflushServer.IsEnabled && listServer.HasItems == false) btnReflushServer_Click(null, null); break;
                 case 5:
                     gridUpdateInfo.BeginAnimation(Grid.WidthProperty, da1); 
                     gridUpdateInfo.BeginAnimation(Grid.HeightProperty, da2); 
@@ -1502,16 +1574,6 @@ namespace BMCLV2
             
         }
 
-        private void checkOptifine_Checked(object sender, RoutedEventArgs e)
-        {
-                txtExtJArg.Text += " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
-        }
-
-        private void checkOptifine_Unchecked(object sender, RoutedEventArgs e)
-        {
-            int t=txtExtJArg.Text.IndexOf(" -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true");
-            txtExtJArg.Text = txtExtJArg.Text.Replace(" -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true", "");
-        }
 
         private void ImportOldMC(string ImportName,string ImportFrom,FrmPrs prs)
         {
@@ -1745,6 +1807,7 @@ namespace BMCLV2
             if (listAuth.SelectedIndex == -1)
                 listAuth.SelectedIndex = 0;
         }
+
 
 
     }
