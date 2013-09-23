@@ -69,7 +69,7 @@
                             <TextBox x:Name="txtJavaPath" HorizontalAlignment="Left" Height="23" Margin="457,28,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="312" Background="#A0FFFFFF" TabIndex="2"/>
                             <Label x:Name="labJavaXmx" Content="{DynamicResource labJavaXmx}" HorizontalAlignment="Left" Margin="391,56,0,0" VerticalAlignment="Top" Width="62"/>
                             <TextBox x:Name="txtJavaXmx" HorizontalAlignment="Left" Height="23" Margin="457,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="128" Background="#A0FFFFFF" TextChanged="txtJavaXmx_TextChanged" TabIndex="3"/>
-                            <Slider x:Name="sliderJavaxmx" HorizontalAlignment="Left" Margin="391,87,0,0" VerticalAlignment="Top" Width="246" ValueChanged="sliderJavaxmx_ValueChanged" Maximum="512"/>
+                            <Slider x:Name="sliderJavaxmx" HorizontalAlignment="Left" Margin="391,87,0,0" VerticalAlignment="Top" Width="246" ValueChanged="sliderJavaxmx_ValueChanged"/>
                             <Label Content="MB" HorizontalAlignment="Left" Margin="589,56,0,0" VerticalAlignment="Top" Width="32"/>
                             <Button x:Name="btnSelectJava" Content="{DynamicResource btnSelectJava}" HorizontalAlignment="Left" Margin="774,29,0,0" VerticalAlignment="Top" Width="48" Click="btnSelectJava_Click"/>
                             <CheckBox x:Name="checkAutoStart" Content="{DynamicResource checkAutoStart}" HorizontalAlignment="Left" Margin="391,114,0,0" VerticalAlignment="Top" Width="95"/>

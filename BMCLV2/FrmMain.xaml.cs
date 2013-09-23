@@ -108,6 +108,7 @@ namespace BMCLV2
                 cfg = new config();
                 Logger.Log("加载默认配置");
             }
+            sliderJavaxmx.Maximum = config.getmem();
             if (cfg.javaw == "autosearch")
                 txtJavaPath.Text = config.getjavadir();
             else
@@ -116,7 +117,6 @@ namespace BMCLV2
                 txtJavaXmx.Text = (config.getmem() / 4).ToString();
             else
                 txtJavaXmx.Text = cfg.javaxmx;
-            sliderJavaxmx.Maximum = config.getmem();
             sliderJavaxmx.Value = int.Parse(txtJavaXmx.Text);
             txtUserName.Text = cfg.username;
             if (cfg.passwd != null)
@@ -136,12 +136,6 @@ namespace BMCLV2
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
             listAuth.SelectedItem = cfg.login;
             Logger.Log(cfg);
-            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets"))
-                if (MessageBox.Show("可能是第一次启动，未找到资源文件，是否下载？","未找到资源文件",MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                {
-                    FrmCheckRes frmCheckRes = new FrmCheckRes();
-                    frmCheckRes.Show();
-                }
             
             this.Title = "BMCL V2 Ver." + ver;
             launcher.gameexit += launcher_gameexit;
@@ -1484,6 +1478,15 @@ namespace BMCLV2
         bool loadOk = false;
         private void FrmMainWindow_Loaded(object sender, RoutedEventArgs e)
         {
+            if (!loadOk)
+            {
+                if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets"))
+                    if (MessageBox.Show("可能是第一次启动，未找到资源文件，是否下载？", "未找到资源文件", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    {
+                        FrmCheckRes frmCheckRes = new FrmCheckRes();
+                        frmCheckRes.Show();
+                    }
+            }
             if (cfg.username == "!!!")
             {
                 tabMain.SelectedIndex = 1;
