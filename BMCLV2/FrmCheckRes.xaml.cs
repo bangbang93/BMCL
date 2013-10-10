@@ -180,6 +180,10 @@ namespace BMCLV2
             }
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
             checkedfile++;
+            if (checkedfile == dt.Rows.Count)
+            {
+                MessageBox.Show(LangManager.GetLangFromResource("ResCheckComplete"));
+            }
         }
 
         private void btnSync_Click(object sender, RoutedEventArgs e)
@@ -198,6 +202,7 @@ namespace BMCLV2
             prs.Maximum = WaitingForSync;
             prs.Value = 0;
             int num = -1;
+            this.btnSync.IsEnabled = false;
             foreach (object item in listRes.Items)
             {
                 num++;

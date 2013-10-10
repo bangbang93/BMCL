@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Web;
+using System.IO;
 
 namespace BMCLV2
 {
@@ -33,45 +34,39 @@ namespace BMCLV2
                 txtMessage.Text += "\n" + iex.Message;
                 txtMessage.Text += "\n" + ex.StackTrace;
             }
+            txtMessage.Text += "\n\nBMCL LOG\n";
+            StreamReader sr = new StreamReader(AppDomain.CurrentDomain.BaseDirectory + "bmcl.log");
+            txtMessage.Text += sr.ReadToEnd();
+            sr.Close();
         }
 
         private void btnMyWeb_Click(object sender, RoutedEventArgs e)
         {
-            Process p = new Process();
-            p.StartInfo.FileName = "http://www.bangbang93.com/forum-bmcl-1.html";
-            p.Start();
+            Process.Start("http://www.bangbang93.com/forum-bmcl-1.html");
             Copy();
         }
 
         private void btnMcbbs_Click(object sender, RoutedEventArgs e)
         {
-            Process p = new Process();
-            p.StartInfo.FileName = "http://www.mcbbs.net/thread-137254-1-1.html";
-            p.Start();
+            Process.Start("http://www.mcbbs.net/thread-137254-1-1.html");
             Copy();
         }
 
         private void btnWeibo_Click(object sender, RoutedEventArgs e)
         {
-            Process p = new Process();
-            p.StartInfo.FileName = "http://weibo.com/bangbang93";
-            p.Start();
+            Process.Start("http://weibo.com/bangbang93");
             Copy();
         }
 
         private void btnTwitter_Click(object sender, RoutedEventArgs e)
         {
-            Process p = new Process();
-            p.StartInfo.FileName = "https://twitter.com/bangbangpal";
-            p.Start();
+            Process.Start("https://twitter.com/bangbangpal");
             Copy();
         }
 
         private void btnEmail_Click(object sender, RoutedEventArgs e)
         {
-            Process p = new Process();
-            p.StartInfo.FileName = "mailto:bangbang93@163.com?subject=" + HttpUtility.UrlEncode("BMCL崩溃报告") + "&body=" + HttpUtility.UrlEncode(txtMessage.Text);
-            p.Start();
+            Process.Start("mailto:bangbang93@163.com?subject=" + HttpUtility.UrlEncode("BMCL崩溃报告") + "&body=" + HttpUtility.UrlEncode(txtMessage.Text));
             Copy();
         }
 

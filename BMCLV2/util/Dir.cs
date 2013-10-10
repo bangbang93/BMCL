@@ -22,8 +22,7 @@ namespace BMCLV2.util
             }
             foreach (FileInfo file in dir.GetFiles())
             {
-                File.Delete(to + "\\" + file.Name);
-                File.Copy(file.FullName, to + "\\" + file.Name);
+                File.Copy(file.FullName, to + "\\" + file.Name, true);
             }
         }
     }

@@ -249,8 +249,10 @@ namespace BMCLV2
                 Auth = null;
             Thread thGO = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
             {
+                string tSelectVer = "";
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                 {
+                    tSelectVer = listVer.SelectedItem.ToString();
                     starter.Show();
                     starter.Activate();
                     starter.Focus();
@@ -303,53 +305,41 @@ namespace BMCLV2
                             }
                             MessageBox.Show("登录失败:" + loginans.Errinfo);
                         }
-                        if (loginans.Suc==true)
+                    }
+                    else
+                    {
+                        loginans.Suc = true;
+                        loginans.SID = "no";
+                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { loginans.UN = txtUserName.Text; }));
+                    }
+                    if (loginans.Suc == true)
+                    {
+                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnSaveConfig_Click(null, null); }));
+                        session = loginans.SID;
+                        string username = loginans.UN;
+                        try
                         {
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnSaveConfig_Click(null, null); }));
-                            session = loginans.SID;
-                            string username = loginans.UN;
-                            try
+                            string javaPath = "", javaXmx = "", selectVer = "", extArg = "";
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                             {
-                                string javaPath="", javaXmx="", selectVer="", extArg="";
-                                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { 
-                                    javaPath = txtJavaPath.Text;
-                                    javaXmx = txtJavaXmx.Text;
-                                    selectVer=listVer.SelectedItem.ToString();
-                                    extArg=txtExtJArg.Text;
-                                }));
-                                game = new launcher(javaPath, javaXmx, username,selectVer , info, extArg, ref starter, session);
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show("启动失败：" + ex.Message);
-                            }
+                                javaPath = txtJavaPath.Text;
+                                javaXmx = txtJavaXmx.Text;
+                                selectVer = tSelectVer;
+                                extArg = txtExtJArg.Text;
+                            }));
+                            game = new launcher(javaPath, javaXmx, username, selectVer, info, extArg, ref starter, session);
                         }
-                        else
+                        catch (Exception ex)
                         {
-                            MessageBox.Show("登录失败:" + loginans.Errinfo);
-                            return;
+                            MessageBox.Show("启动失败：" + ex.Message);
+                            Logger.Log(ex);
                         }
                     }
                     else
                     {
-                        try
-                        {
-                            string javaPath = "", javaXmx = "", selectVer = "", extArg = "", username = "";
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
-                            {
-                                btnSaveConfig_Click(null, null);
-                                username = txtUserName.Text;
-                                javaPath = txtJavaPath.Text;
-                                javaXmx = txtJavaXmx.Text;
-                                selectVer = listVer.SelectedItem.ToString();
-                                extArg = txtExtJArg.Text;
-                            }));
-                            game = new launcher(javaPath, javaXmx, username, selectVer, info, extArg, ref starter);
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show(ex.Message);
-                        }
+                        MessageBox.Show("登录失败:" + loginans.Errinfo);
+                        Logger.Log("登录失败" + loginans.Errinfo, Logger.LogType.Error);
+                        return;
                     }
                     try
                     {
