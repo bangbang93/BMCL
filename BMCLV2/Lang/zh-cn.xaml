@@ -143,5 +143,12 @@
     <s:String x:Key="ResCheckComplete">文件检查完成，可以开始同步了</s:String>
     <s:String x:Key="FetchingForgeChangeLog">正在获取Forge的更新日志</s:String>
     <s:String x:Key="MenuStartDebug">以Debug模式启动游戏</s:String>
+    <s:String x:Key="MenuDebugHint">Debug模式下BMCL会尝试获取Minecraft的日志输出信息，并且经行简单的分析处理。这可能会轻微影响游戏性能\n所有输出都在启动器目录下的bmcl.log文件内。\n要想使用完整的Debug模式，请右键任务栏托盘区中的图标，并选择“以Debug模式重启”</s:String>
+    <s:String x:Key="btnLibraries">库文件管理</s:String>
+    <s:String x:Key="LibColName">名字</s:String>
+    <s:String x:Key="LibColUrl">URL</s:String>
+    <s:String x:Key="LibMenuInsert">插入</s:String>
+    <s:String x:Key="LibMenuDelete">删除</s:String>
+    <s:String x:Key="LibIsSaveQuestion">内容已改变，是否保存？</s:String>
 
 </ResourceDictionary>

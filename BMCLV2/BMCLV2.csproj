@@ -95,6 +95,9 @@
     <Compile Include="FrmCheckRes.xaml.cs">
       <DependentUpon>FrmCheckRes.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FrmLibraries.xaml.cs">
+      <DependentUpon>FrmLibraries.xaml</DependentUpon>
+    </Compile>
     <Compile Include="FrmLog.xaml.cs">
       <DependentUpon>FrmLog.xaml</DependentUpon>
     </Compile>
@@ -219,6 +222,10 @@
     <Page Include="FrmCheckRes.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FrmLibraries.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="FrmLog.xaml">
       <SubType>Designer</SubType>

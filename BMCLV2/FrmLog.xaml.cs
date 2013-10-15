@@ -18,7 +18,6 @@ namespace BMCLV2
     /// </summary>
     public partial class FrmLog : Window
     {
-        long line = 0;
         public FrmLog()
         {
             InitializeComponent();

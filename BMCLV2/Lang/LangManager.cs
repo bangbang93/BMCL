@@ -13,7 +13,6 @@ namespace BMCLV2.Lang
         static private ResourceDictionary DefaultLanguage = LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
         static public void Add(string LanguageName,string LanguageUrl)
         {
-            int i = 0;
             if (Language.ContainsKey(LanguageName))
             {
                 Language[LanguageName] = new LangType(LanguageName,LanguageUrl);

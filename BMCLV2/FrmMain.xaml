@@ -39,6 +39,7 @@
                             <Button x:Name="btnCoreModMrg" Content="{DynamicResource btnCoreModMrg}" HorizontalAlignment="Left" Margin="365,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnCoreModMrg_Click" ToolTip="仅对1.6之前的版本有效"/>
                             <Button x:Name="btnModdirMrg" Content="{DynamicResource btnModdirMrg}" HorizontalAlignment="Left" Margin="475,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModdirMrg_Click" ToolTip="如果MOD在.minecraft下创建了文件夹（例如Flan's mod,Custom NPC等），请使用这个管理"/>
                             <Button x:Name="btnModCfgMrg" Content="{DynamicResource btnModCfgMrg}" HorizontalAlignment="Left" Margin="585,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModCfgMrg_Click"/>
+                            <Button x:Name="btnLibraries" Content="{DynamicResource btnLibraries}" HorizontalAlignment="Left" Margin="585,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnLibraries_Click"/>
                         </Grid>
                     </TabItem>
                     <TabItem x:Name="tabLauncherCfg" Header="{DynamicResource tabLauncherCfg}" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61">
@@ -160,7 +161,7 @@
                         <Grid x:Name="gridUpdateInfo" Background="#FFE5E5E5"/>
                     </TabItem>
                 </TabControl>
-                <Button x:Name="btnStart" Content="{DynamicResource btnStart}" HorizontalAlignment="Left" Margin="781,452,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnStart_Click" IsDefault="True"/>
+                <Button x:Name="btnStart" Content="{DynamicResource btnStart}" HorizontalAlignment="Left" Margin="781,452,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnStart_Click" IsDefault="True" ToolTip="右键可以使用Debug模式启动"/>
                 <Button x:Name="btnClose" Content="{DynamicResource btnClose}" HorizontalAlignment="Left" Height="38" Margin="671,452,0,0" VerticalAlignment="Top" Width="105" Click="btnClose_Click" IsCancel="True"/>
                 <Button x:Name="btnChangeBg" Content="{DynamicResource btnChangeBg}" HorizontalAlignment="Left" Height="38" Margin="557,452,0,0" VerticalAlignment="Top" Width="52" Click="btnChangeBg_Click" ToolTip="右键可以选择文件"/>
                 <Grid x:Name="gridDown" HorizontalAlignment="Left" Height="38" Margin="10,452,0,0" VerticalAlignment="Top" Width="526" Background="#A0FFFFFF" Visibility="Hidden">

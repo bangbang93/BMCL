@@ -1,0 +1,18 @@
+﻿<Window x:Class="BMCLV2.FrmLibraries"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource btnLibraries}" Height="315" Width="602" Closing="Window_Closing">
+    <Grid>
+        <DataGrid x:Name="dataLib" HorizontalAlignment="Left" VerticalAlignment="Top" Height="285" Width="539">
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="MenuLibMenuInsert" Header="{DynamicResource LibMenuInsert}" Click="MenuLibMenuInsert_Click"/>
+                    <MenuItem x:Name="MenuLibMenuDelete" Header="{DynamicResource LibMenuDelete}" Click="MenuLibMenuDelete_Click"/>
+
+                </ContextMenu>
+            </DataGrid.ContextMenu>
+
+        </DataGrid>
+
+    </Grid>
+</Window>

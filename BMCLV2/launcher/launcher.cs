@@ -375,33 +375,39 @@ namespace BMCLV2
                 {
                     Logger.Log("找到旧的配置文件，备份并应用新配置文件", Logger.LogType.Info);
                     Directory.Move(@".minecraft\config", @".minecraft\config" + timestamp);
-                    Dir.dircopy(@".minecraft\versions\" + name + @"\config", @".minecraft\config");
+                    if (Directory.Exists(@".minecraft\versions\" + name + @"\config"))
+                        Dir.dircopy(@".minecraft\versions\" + name + @"\config", @".minecraft\config");
                 }
                 else
                 {
                     Logger.Log("应用新配置文件", Logger.LogType.Info);
+                    if (Directory.Exists(@".minecraft\versions\" + name + @"\config"))
                     Dir.dircopy(@".minecraft\versions\" + name + @"\config", @".minecraft\config");
                 }
                 if (Directory.Exists(@".minecraft\mods"))
                 {
                     Logger.Log("找到旧的mod文件，备份并应用新mod文件", Logger.LogType.Info);
                     Directory.Move(@".minecraft\mods", @".minecraft\mods" + timestamp);
+                    if (Directory.Exists(@".minecraft\versions\" + name + @"\mods"))
                     Dir.dircopy(@".minecraft\versions\" + name + @"\mods", @".minecraft\mods");
                 }
                 else
                 {
                     Logger.Log("应用新mod文件", Logger.LogType.Info);
+                    if (Directory.Exists(@".minecraft\versions\" + name + @"\mods"))
                     Dir.dircopy(@".minecraft\versions\" + name + @"\mods", @".minecraft\mods");
                 }
                 if (Directory.Exists(@".minecraft\coremods"))
                 {
                     Logger.Log("找到旧的coremod文件，备份并应用新coremod文件", Logger.LogType.Info);
                     Directory.Move(@".minecraft\coremods", @".minecraft\coremods" + timestamp);
+                    if (Directory.Exists(@".minecraft\versions\" + name + @"\coremods"))
                     Dir.dircopy(@".minecraft\versions\" + name + @"\coremods", @".minecraft\coremods");
                 }
                 else
                 {
                     Logger.Log("应用新coremod文件", Logger.LogType.Info);
+                    if (Directory.Exists(@".minecraft\versions\" + name + @"\coremods"))
                     Dir.dircopy(@".minecraft\versions\" + name + @"\coremods", @".minecraft\coremods");
                 }
                 if (Directory.Exists(@".minecraft\versions\" + name + @"\moddir"))

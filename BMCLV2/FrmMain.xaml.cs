@@ -151,6 +151,7 @@ namespace BMCLV2
 
         void MenuItemDebugMode_Click(object sender, RoutedEventArgs e)
         {
+            MessageBox.Show(LangManager.GetLangFromResource("MenuDebugHint"));
             Logger.Debug = true;
             btnStart_Click(null, null);
         }
@@ -455,39 +456,8 @@ namespace BMCLV2
                 return;
             }
             this.listVer.ScrollIntoView(listVer.SelectedItem);
-            StringBuilder JsonFilePath = new StringBuilder();
-            JsonFilePath.Append(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions\");
-            JsonFilePath.Append(listVer.SelectedItem.ToString());
-            JsonFilePath.Append(@"\");
-            JsonFilePath.Append(listVer.SelectedItem.ToString());
-            JsonFilePath.Append(".json");
-            if (!File.Exists(JsonFilePath.ToString()))
-            {
-                DirectoryInfo mcpath = new DirectoryInfo(System.IO.Path.GetDirectoryName(JsonFilePath.ToString()));
-                bool find = false;
-                foreach (FileInfo js in mcpath.GetFiles())
-                {
-                    if (js.FullName.Contains("json"))
-                    {
-                        JsonFilePath = new StringBuilder(js.FullName);
-                        find = true;
-                    }
-                }
-                if (!find)
-                {
-                    MessageBox.Show(LangManager.GetLangFromResource("CantFindVersionJsonInfo"));
-                    btnStart.IsEnabled = false;
-                    return;
-                }
-                else
-                {
-                    btnStart.IsEnabled = true;
-                }
-            }
-            StreamReader JsonFile = new StreamReader(JsonFilePath.ToString());
-            DataContractJsonSerializer InfoReader = new DataContractJsonSerializer(typeof(gameinfo));
-            info = InfoReader.ReadObject(JsonFile.BaseStream) as gameinfo;
-            JsonFile.Close();
+            string JsonFilePath = gameinfo.GetGameInfoJsonPath(listVer.SelectedItem.ToString());
+            info = gameinfo.Read(JsonFilePath);
             labVer.Content = info.id;
             labTime.Content = info.time;
             labRelTime.Content = info.releaseTime;
@@ -713,6 +683,19 @@ namespace BMCLV2
             if (btnStart.IsEnabled)
                 btnStart_Click(null, null);
         }
+        private void btnLibraries_Click(object sender, RoutedEventArgs e)
+        {
+            FrmLibraries f = new FrmLibraries(info.libraries);
+            if (f.ShowDialog() == true)
+            {
+                info.libraries = f.GetChange();
+                string JsonFile = gameinfo.GetGameInfoJsonPath(listVer.SelectedItem.ToString());
+                File.Delete(JsonFile + ".bak");
+                File.Move(JsonFile, JsonFile + ".bak");
+                gameinfo.Write(info, JsonFile);
+                this.listVer_SelectionChanged(null, null);
+            }
+        }
         #endregion
 
 
@@ -830,7 +813,7 @@ namespace BMCLV2
         #region tabRemoteVer
         private void btnRefreshRemoteVer_Click(object sender, RoutedEventArgs e)
         {
-            if (btnReflushServer.Content == LangManager.GetLangFromResource("RemoteVerGetting"))
+            if (btnReflushServer.Content.ToString() == LangManager.GetLangFromResource("RemoteVerGetting"))
                 return;
             listRemoteVer.DataContext = null;
             DataContractJsonSerializer RawJson = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(RawVersionListType));
@@ -999,7 +982,7 @@ namespace BMCLV2
         delegate void GetForgeFinishDel(HtmlDocument ForgePage);
         private void btnReForge_Click(object sender, RoutedEventArgs e)
         {
-            if (btnReForge.Content == LangManager.GetLangFromResource("btnReForgeGetting"))
+            if (btnReForge.Content.ToString() == LangManager.GetLangFromResource("btnReForgeGetting"))
                 return;
             btnReForge.Content = LangManager.GetLangFromResource("btnReForgeGetting");
             btnReForge.IsEnabled = false;
@@ -1800,6 +1783,9 @@ namespace BMCLV2
             if (listAuth.SelectedIndex == -1)
                 listAuth.SelectedIndex = 0;
         }
+
+        
+
 
 
 
