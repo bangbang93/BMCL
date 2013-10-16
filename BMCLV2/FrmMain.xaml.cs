@@ -43,7 +43,6 @@ namespace BMCLV2
         public static String URL_RESOURCE_BASE = "https://s3.amazonaws.com/Minecraft.Resources/";
         private Hashtable  Auths = new Hashtable();
         public static config cfg;
-        static DataContractSerializer Cfg = new DataContractSerializer(typeof(config));
         static public gameinfo info;
         string session;
         launcher game;
@@ -77,24 +76,6 @@ namespace BMCLV2
             DebugMode.Name = "DebugMode";
             DebugMode.Click += DebugMode_Click;
             NIcon.ContextMenu = NMenu;
-            #endregion
-            #region 皮肤菜单
-            System.Windows.Controls.ContextMenu SkinMenu = new System.Windows.Controls.ContextMenu();
-            System.Windows.Controls.MenuItem SelectFile = new System.Windows.Controls.MenuItem();
-            SelectFile.Name = "menuSelectFile";
-            SelectFile.Header = LangManager.GetLangFromResource("MenuSelectFile");
-            SelectFile.Click += SelectFile_Click;
-            SkinMenu.Items.Add(SelectFile);
-            btnChangeBg.ContextMenu = SkinMenu;
-            #endregion
-            #region 开始菜单
-            System.Windows.Controls.ContextMenu MenuStart = new System.Windows.Controls.ContextMenu();
-            System.Windows.Controls.MenuItem MenuItemDebugMode = new System.Windows.Controls.MenuItem();
-            MenuItemDebugMode.Name = "DebugMode";
-            MenuItemDebugMode.Header = LangManager.GetLangFromResource("MenuStartDebug");
-            MenuItemDebugMode.Click += MenuItemDebugMode_Click;
-            MenuStart.Items.Add(MenuItemDebugMode);
-            btnStart.ContextMenu = MenuStart;
             #endregion
             LoadLanguage();
             #region 加载配置
@@ -147,13 +128,6 @@ namespace BMCLV2
                 thReport.Start();
             }
 #endif
-        }
-
-        void MenuItemDebugMode_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show(LangManager.GetLangFromResource("MenuDebugHint"));
-            Logger.Debug = true;
-            btnStart_Click(null, null);
         }
 
         void DebugMode_Click(object sender, EventArgs e)
@@ -220,6 +194,12 @@ namespace BMCLV2
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
+            if (game!=null)
+                if (game.IsRunning())
+                {
+                    this.btnMiniSize_Click(null, null);
+                    return;
+                }
             Logger.Log(string.Format("BMCL V2 Ver.{0} 正在退出", ver));
             this.Close();
         }
@@ -373,26 +353,6 @@ namespace BMCLV2
             thGO.Start();
 
         }
-        private void SelectFile_Click(object sender, RoutedEventArgs e)
-        {
-            System.Windows.Forms.OpenFileDialog ofbg = new System.Windows.Forms.OpenFileDialog();
-            ofbg.CheckFileExists = true;
-            ofbg.Filter = "支持的图片|*.jpg;*.png;*.bmp";
-            ofbg.Multiselect = false;
-            string pic;
-            if (ofbg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                pic = ofbg.FileName;
-            else
-                return;
-            ImageBrush b = new ImageBrush();
-            b.ImageSource = new BitmapImage(new Uri((pic)));
-            b.Stretch = Stretch.Fill;
-            DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
-            this.BeginAnimation(FrmMain.OpacityProperty, da);
-            this.Top.Background = b;
-            da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
-            this.BeginAnimation(FrmMain.OpacityProperty, da);
-        }
         private void launcher_gameexit()
         {
             if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports"))
@@ -444,6 +404,26 @@ namespace BMCLV2
             this.Hide();
             NIcon.ShowBalloonTip(2000, "BMCL", LangManager.GetLangFromResource("BMCLHiddenInfo"), System.Windows.Forms.ToolTipIcon.Info);
         }
+        private void MenuSelectFile_Click(object sender, RoutedEventArgs e)
+        {
+            System.Windows.Forms.OpenFileDialog ofbg = new System.Windows.Forms.OpenFileDialog();
+            ofbg.CheckFileExists = true;
+            ofbg.Filter = "支持的图片|*.jpg;*.png;*.bmp";
+            ofbg.Multiselect = false;
+            string pic;
+            if (ofbg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                pic = ofbg.FileName;
+            else
+                return;
+            ImageBrush b = new ImageBrush();
+            b.ImageSource = new BitmapImage(new Uri((pic)));
+            b.Stretch = Stretch.Fill;
+            DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
+            this.BeginAnimation(FrmMain.OpacityProperty, da);
+            this.Top.Background = b;
+            da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
+            this.BeginAnimation(FrmMain.OpacityProperty, da);
+        }
         #endregion
 
 
@@ -457,6 +437,16 @@ namespace BMCLV2
             }
             this.listVer.ScrollIntoView(listVer.SelectedItem);
             string JsonFilePath = gameinfo.GetGameInfoJsonPath(listVer.SelectedItem.ToString());
+            if (string.IsNullOrEmpty(JsonFilePath))
+            {
+                MessageBox.Show(LangManager.GetLangFromResource("ErrorNoGameJson"));
+                btnStart.IsEnabled = false;
+                return;
+            }
+            else
+            {
+                btnStart.IsEnabled = true;
+            }
             info = gameinfo.Read(JsonFilePath);
             labVer.Content = info.id;
             labTime.Content = info.time;
@@ -1783,6 +1773,15 @@ namespace BMCLV2
             if (listAuth.SelectedIndex == -1)
                 listAuth.SelectedIndex = 0;
         }
+
+        private void MenuStartDebug_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show(LangManager.GetLangFromResource("MenuDebugHint"));
+            Logger.Debug = true;
+            btnStart_Click(null, null);
+        }
+
+
 
         
 

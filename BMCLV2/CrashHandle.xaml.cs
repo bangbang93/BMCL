@@ -25,16 +25,19 @@ namespace BMCLV2
         {
             InitializeComponent();
             txtMessage.Text = "BMCL," + FrmMain.ver + "\n";
+            txtMessage.Text += ex.Source;
             txtMessage.Text += ex.Message;
             txtMessage.Text += "\n" + ex.StackTrace;
             var iex = ex;
             while (iex.InnerException != null)
             {
+                txtMessage.Text += "\n------------------------\n";
                 iex = iex.InnerException;
+                txtMessage.Text += ex.Source;
                 txtMessage.Text += "\n" + iex.Message;
                 txtMessage.Text += "\n" + ex.StackTrace;
             }
-            txtMessage.Text += "\n\nBMCL LOG\n";
+            txtMessage.Text += "\n\n-----------------BMCL LOG----------------------\n";
             StreamReader sr = new StreamReader(AppDomain.CurrentDomain.BaseDirectory + "bmcl.log");
             txtMessage.Text += sr.ReadToEnd();
             sr.Close();

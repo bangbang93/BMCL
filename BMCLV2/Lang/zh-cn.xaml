@@ -150,5 +150,6 @@
     <s:String x:Key="LibMenuInsert">插入</s:String>
     <s:String x:Key="LibMenuDelete">删除</s:String>
     <s:String x:Key="LibIsSaveQuestion">内容已改变，是否保存？</s:String>
+    <s:String x:Key="ErrorNoGameJson">无法找到版本对应的Json信息文件</s:String>
 
 </ResourceDictionary>

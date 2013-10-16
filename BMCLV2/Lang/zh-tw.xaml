@@ -95,6 +95,7 @@
     <s:String x:Key="ForgeCopyError">自動複製失敗，請手動複製窗口裡的安裝路徑，然後在安裝窗口裡粘貼路徑即可</s:String>
     <s:String x:Key="ForgeJavaError">請先去啟動設置設置好java相關信息並保存</s:String>
     <s:String x:Key="ForgeCopySuccess">覆製安裝路徑成功</s:String>
+    <s:String x:Key="ForgeDoNotHaveChangeLog">該版本沒有發布更新日誌</s:String>
     <s:String x:Key="ServerListGetting">正在檢測延遲</s:String>
     <s:String x:Key="ServerListYes">是</s:String>
     <s:String x:Key="ServerListNo">否</s:String>
@@ -138,5 +139,17 @@
     <s:String x:Key="ResInSync">已同步</s:String>
     <s:String x:Key="ResFinish">同步完成</s:String>
     <s:String x:Key="ResNoFileForSync">沒有需要同步的文件</s:String>
+    <s:String x:Key="ResPlsWaitingForCheck">請先對比文件並且等待對比完成</s:String>
+    <s:String x:Key="ResCheckComplete">文件檢查完成，可以開始同步了</s:String>
+    <s:String x:Key="FetchingForgeChangeLog">正在獲取Forge的更新日誌</s:String>
+    <s:String x:Key="MenuStartDebug">以Debug模式啟動遊戲</s:String>
+    <s:String x:Key="MenuDebugHint">Debug模式下BMCL會嘗試獲取Minecraft的日誌輸出信息，並且經行簡單的分析處理。這可能會輕微影響遊戲性能\n所有輸出都在啟動器目錄下的bmcl.log文件內。\n要想使用完整的Debug模式，請右鍵任務欄托盤區中的圖標，並選擇“以Debug模式重啟”</s:String>
+    <s:String x:Key="btnLibraries">庫文件管理</s:String>
+    <s:String x:Key="LibColName">名字</s:String>
+    <s:String x:Key="LibColUrl">URL</s:String>
+    <s:String x:Key="LibMenuInsert">插入</s:String>
+    <s:String x:Key="LibMenuDelete">刪除</s:String>
+    <s:String x:Key="LibIsSaveQuestion">內容已改變，是否保存？</s:String>
+    <s:String x:Key="ErrorNoGameJson">無法找到版本對應的Json信息文件</s:String>
 
 </ResourceDictionary>

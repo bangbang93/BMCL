@@ -161,9 +161,21 @@
                         <Grid x:Name="gridUpdateInfo" Background="#FFE5E5E5"/>
                     </TabItem>
                 </TabControl>
-                <Button x:Name="btnStart" Content="{DynamicResource btnStart}" HorizontalAlignment="Left" Margin="781,452,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnStart_Click" IsDefault="True" ToolTip="右键可以使用Debug模式启动"/>
+                <Button x:Name="btnStart" Content="{DynamicResource btnStart}" HorizontalAlignment="Left" Margin="781,452,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnStart_Click" IsDefault="True" ToolTip="右键可以使用Debug模式启动">
+                    <Button.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem x:Name="MenuStartDebug" Header="{DynamicResource MenuStartDebug}" Click="MenuStartDebug_Click"/>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
                 <Button x:Name="btnClose" Content="{DynamicResource btnClose}" HorizontalAlignment="Left" Height="38" Margin="671,452,0,0" VerticalAlignment="Top" Width="105" Click="btnClose_Click" IsCancel="True"/>
-                <Button x:Name="btnChangeBg" Content="{DynamicResource btnChangeBg}" HorizontalAlignment="Left" Height="38" Margin="557,452,0,0" VerticalAlignment="Top" Width="52" Click="btnChangeBg_Click" ToolTip="右键可以选择文件"/>
+                <Button x:Name="btnChangeBg" Content="{DynamicResource btnChangeBg}" HorizontalAlignment="Left" Height="38" Margin="557,452,0,0" VerticalAlignment="Top" Width="52" Click="btnChangeBg_Click" ToolTip="右键可以选择文件">
+                    <Button.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem x:Name="MenuSelectFile" Header="{DynamicResource MenuSelectFile}" Click="MenuSelectFile_Click"/>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
                 <Grid x:Name="gridDown" HorizontalAlignment="Left" Height="38" Margin="10,452,0,0" VerticalAlignment="Top" Width="526" Background="#A0FFFFFF" Visibility="Hidden">
                     <ProgressBar x:Name="prsDown" HorizontalAlignment="Left" Height="18" Margin="10,10,0,0" VerticalAlignment="Top" Width="261"/>
                     <Label x:Name="labDownInfo" Content="" Margin="276,10,10,0"/>
