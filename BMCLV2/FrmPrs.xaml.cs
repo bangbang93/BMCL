@@ -29,7 +29,10 @@ namespace BMCLV2
 
         public void changeEventH(string status)
         {
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { labStatus.Content = status; }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { 
+                labStatus.Content = status;
+                Logger.Log(status);
+            }));
         }
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)

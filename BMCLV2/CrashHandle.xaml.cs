@@ -13,6 +13,7 @@ using System.Windows.Shapes;
 using System.Diagnostics;
 using System.Web;
 using System.IO;
+using System.Collections;
 
 namespace BMCLV2
 {
@@ -24,23 +25,31 @@ namespace BMCLV2
         public CrashHandle(Exception ex)
         {
             InitializeComponent();
-            txtMessage.Text = "BMCL," + FrmMain.ver + "\n";
-            txtMessage.Text += ex.Source;
-            txtMessage.Text += ex.Message;
-            txtMessage.Text += "\n" + ex.StackTrace;
+            StringBuilder Message = new StringBuilder();
+            Message.AppendLine("BMCL," + FrmMain.ver);
+            Message.AppendLine(ex.Source);
+            Message.AppendLine(ex.ToString());
+            Message.AppendLine(ex.Message);
+            foreach (DictionaryEntry data in ex.Data)
+                Message.AppendLine(string.Format("Key:{0}\nValue:{1}", data.Key, data.Value));
+            Message.AppendLine(ex.StackTrace);
             var iex = ex;
             while (iex.InnerException != null)
             {
                 txtMessage.Text += "\n------------------------\n";
                 iex = iex.InnerException;
-                txtMessage.Text += ex.Source;
-                txtMessage.Text += "\n" + iex.Message;
-                txtMessage.Text += "\n" + ex.StackTrace;
+                Message.AppendLine(iex.Source);
+                Message.AppendLine(iex.ToString());
+                Message.AppendLine(iex.Message);
+                foreach (DictionaryEntry data in ex.Data)
+                    Message.AppendLine(string.Format("Key:{0}\nValue:{1}", data.Key, data.Value));
+                Message.AppendLine(iex.StackTrace);
             }
-            txtMessage.Text += "\n\n-----------------BMCL LOG----------------------\n";
+            Message.AppendLine("\n\n-----------------BMCL LOG----------------------\n");
             StreamReader sr = new StreamReader(AppDomain.CurrentDomain.BaseDirectory + "bmcl.log");
-            txtMessage.Text += sr.ReadToEnd();
+            Message.AppendLine(sr.ReadToEnd());
             sr.Close();
+            txtMessage.Text = Message.ToString();
         }
 
         private void btnMyWeb_Click(object sender, RoutedEventArgs e)

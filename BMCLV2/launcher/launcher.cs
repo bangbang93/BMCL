@@ -290,8 +290,8 @@ namespace BMCLV2
                     throw UnSupportVer;
                 }
                 string libp = buildNativePath(lib);
-                if (!File.Exists(libp) && File.OpenRead(libp).Length!=0)
-                {
+                if (!File.Exists(libp))
+                    {
                     Logger.Log("未找到依赖" + lib.name + "开始下载", Logger.LogType.Error);
                     if (lib.url == null)
                     {

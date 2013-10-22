@@ -331,13 +331,16 @@ namespace BMCLV2
                                 Logger.Log("启动器初始化失败，放弃启动", Logger.LogType.Crash);
                                 return;
                             }
-                            game.start();
-                            this.Hide();
                         }));
+                        game.start();
+                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Hide(); }));
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show(ex.Message);
+                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                        {
+                            throw ex;
+                        }));
                     }
                 }
                 finally
