@@ -6,6 +6,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Net;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Collections;
 
 using BMCLV2.libraries;
 using BMCLV2.util;
@@ -69,7 +72,7 @@ namespace BMCLV2
         /// <param name="ver"></param>
         /// <param name="info"></param>
         /// <param name="session"></param>
-        public launcher(string JavaPath, string JavaXmx, string UserName, string name, gameinfo info, string extarg, ref FrmPrs prs, string session = "no")
+        public launcher(string JavaPath, string JavaXmx, string UserName, string name, gameinfo info, string extarg, ref FrmPrs prs, FrmMain.LoginInfo LI)
         {
             this.prs = prs;
             prs.changeEventH(LangManager.GetLangFromResource("LauncherCheckJava"));
@@ -203,10 +206,29 @@ namespace BMCLV2
             //" --username ${auth_player_name} --session ${auth_session} --version ${version_name} --gameDir ${game_directory} --assetsDir ${game_assets}"
             mcarg = new StringBuilder(info.minecraftArguments);
             mcarg.Replace("${auth_player_name}", username);
-            mcarg.Replace("${auth_session}", session);
             mcarg.Replace("${version_name}", version);
             mcarg.Replace("${game_directory}", ".minecraft");
             mcarg.Replace("${game_assets}", @".minecraft\assets");
+            if (!string.IsNullOrEmpty(LI.OutInfo))
+            {
+                //DataContractJsonSerializer ArgSerializer = new DataContractJsonSerializer(typeof(SortedList));
+                //MemoryStream ArgStream = new MemoryStream(Encoding.UTF8.GetBytes(LI.OtherInfo));
+                //SortedList MCARG = ArgSerializer.ReadObject(ArgStream) as SortedList;
+                //foreach (DictionaryEntry aMCARG in MCARG)
+                //{
+                //    mcarg.Replace(aMCARG.Key.ToString(), aMCARG.Value.ToString());
+                //}
+                string[] replace = LI.OutInfo.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (string str in replace)
+                {
+                    mcarg.Replace(str.Split(':')[0], str.Split(':')[1]);
+                    mcarg=new StringBuilder(Microsoft.VisualBasic.Strings.Replace(mcarg.ToString(), str.Split(':')[0], str.Split(':')[1], 1, -1, Microsoft.VisualBasic.CompareMethod.Text));
+                }
+            }
+            else
+            {
+                mcarg.Replace("{auth_session}", LI.SID);
+            }
             arg.Append(" ");
             arg.Append(mcarg);
             game.StartInfo.Arguments = arg.ToString();
@@ -546,17 +568,7 @@ namespace BMCLV2
 
         public bool IsRunning()
         {
-            try
-            {
-                if (game.Id != -1)
-                    return true;
-                else
-                    return false;
-            }
-            catch (InvalidOperationException)
-            {
-                return false;
-            }
+            return !game.HasExited;
         }
 
         private void logger()

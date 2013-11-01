@@ -44,15 +44,16 @@ namespace BMCLV2
         private Hashtable  Auths = new Hashtable();
         public static config cfg;
         static public gameinfo info;
-        string session;
         launcher game;
         bool inscreen;
+        bool IsLaunchering;
         static public ListBox AuthList;
         static public string portinfo = "Port By BMCL";
         static public bool debug;
         System.Windows.Forms.NotifyIcon NIcon;
         public static string ver;
         private int ClientCrashReportCount;
+        private FrmPrs starter;
 
         public FrmMain()
         {
@@ -202,9 +203,16 @@ namespace BMCLV2
                 }
             Logger.Log(string.Format("BMCL V2 Ver.{0} 正在退出", ver));
             this.Close();
+            if (!Logger.Debug)
+            {
+                Application.Current.Shutdown(0);
+            }
         }
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
+            if (this.IsLaunchering)
+                return;
+            IsLaunchering = true;
             if (txtUserName.Text == "!!!")
             {
                 MessageBox.Show("请先修改用户名");
@@ -220,7 +228,7 @@ namespace BMCLV2
             {
                 ClientCrashReportCount = 0;
             }
-            FrmPrs starter = new FrmPrs("正在准备游戏环境及启动游戏");
+            starter = new FrmPrs("正在准备游戏环境及启动游戏");
             int SelectedIndex = listAuth.SelectedIndex; ;
             Logger.Log(string.Format("正在启动{0},使用的登陆方式为{1}", listVer.SelectedItem.ToString(), AuthList.SelectedItem.ToString()));
             object Auth;
@@ -234,10 +242,10 @@ namespace BMCLV2
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                 {
                     tSelectVer = listVer.SelectedItem.ToString();
+                    starter.ShowInTaskbar = false;
                     starter.Show();
                     starter.Activate();
                     starter.Focus();
-                    starter.Topmost = true;
                     starter.changeEventH("正在登陆");
                 }));
                 LoginInfo loginans = new LoginInfo();
@@ -257,7 +265,7 @@ namespace BMCLV2
                                 username = txtUserName.Text;
                                 pwd = txtPwd.Password;
                             }));
-                                loginansobj= Login.Invoke(Auth, new object[] { username, pwd, "", "zh-cn" });
+                                loginansobj= Login.Invoke(Auth, new object[] { username, pwd, System.Guid.NewGuid().ToString(), "zh-cn" });
                                 Li = loginansobj.GetType();
                                 loginans.Suc = (bool)Li.GetField("Suc").GetValue(loginansobj);
                                 if (loginans.Suc == true)
@@ -266,17 +274,24 @@ namespace BMCLV2
                                     loginans.SID = Li.GetField("SID").GetValue(loginansobj)as string;
                                     loginans.Client_identifier = Li.GetField("Client_identifier").GetValue(loginansobj) as string;
                                     loginans.UID = Li.GetField("UID").GetValue(loginansobj) as string;
+                                    loginans.OtherInfo = Li.GetField("OtherInfo").GetValue(loginansobj) as string;
+                                    if (Li.GetField("OutInfo") != null)
+                                    {
+                                        loginans.OutInfo = Li.GetField("OutInfo").GetValue(loginansobj) as string;
+                                    }
                                     Logger.Log(string.Format("登陆成功，使用用户名{0},sid{1},Client_identifier{2},uid{3}", loginans.UN != null ? loginans.UN : "", loginans.SID != null ? loginans.SID : "", loginans.Client_identifier != null ? loginans.Client_identifier : "", loginans.UID != null ? loginans.UID : ""));
                                 }
                                 else
                                 {
                                     loginans.Errinfo = Li.GetField("Errinfo").GetValue(loginansobj)as string;
                                     loginans.OtherInfo = Li.GetField("OtherInfo").GetValue(loginansobj)as string;
+                                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { starter.Topmost = false; }));
                                     Logger.Log(string.Format("登陆失败，错误信息:{0}，其他信息:{1}", loginans.Errinfo != null ? loginans.Errinfo : "", loginans.OtherInfo != null ? loginans.OtherInfo : ""));
                                 }
                         }
                         catch (Exception ex)
                         {
+                            Logger.Log(ex);
                             loginans.Suc = false;
                             loginans.Errinfo = ex.Message;
                             while (ex.InnerException != null)
@@ -284,6 +299,7 @@ namespace BMCLV2
                                 ex = ex.InnerException;
                                 loginans.Errinfo += "\n" + ex.Message;
                             }
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { starter.Topmost = false; }));
                             MessageBox.Show("登录失败:" + loginans.Errinfo);
                         }
                     }
@@ -296,7 +312,6 @@ namespace BMCLV2
                     if (loginans.Suc == true)
                     {
                         Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnSaveConfig_Click(null, null); }));
-                        session = loginans.SID;
                         string username = loginans.UN;
                         try
                         {
@@ -308,32 +323,34 @@ namespace BMCLV2
                                 selectVer = tSelectVer;
                                 extArg = txtExtJArg.Text;
                             }));
-                            game = new launcher(javaPath, javaXmx, username, selectVer, info, extArg, ref starter, session);
+                            game = new launcher(javaPath, javaXmx, username, selectVer, info, extArg, ref starter, loginans);
                         }
                         catch (Exception ex)
                         {
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { starter.Topmost = false; }));
                             MessageBox.Show("启动失败：" + ex.Message);
                             Logger.Log(ex);
                         }
                     }
                     else
                     {
+                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { starter.Topmost = false; }));
                         MessageBox.Show("登录失败:" + loginans.Errinfo);
                         Logger.Log("登录失败" + loginans.Errinfo, Logger.LogType.Error);
                         return;
                     }
                     try
                     {
-                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                        if (game == null)
                         {
-                            if (game == null)
-                            {
-                                Logger.Log("启动器初始化失败，放弃启动", Logger.LogType.Crash);
-                                return;
-                            }
-                        }));
-                        game.start();
-                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Hide(); }));
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { starter.Topmost = false; }));
+                            Logger.Log("启动器初始化失败，放弃启动", Logger.LogType.Crash);
+                        }
+                        else
+                        {
+                            game.start();
+                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Hide(); }));
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -351,6 +368,7 @@ namespace BMCLV2
                     else
                         NIcon.ShowBalloonTip(10000, "BMCL", "已启动" + cfg.lastPlayVer, System.Windows.Forms.ToolTipIcon.Info);
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { starter.Close(); }));
+                    IsLaunchering = false;
                 }
             })));
             thGO.Start();
@@ -1642,6 +1660,7 @@ namespace BMCLV2
             public string Errinfo;
             public string OtherInfo;
             public string Client_identifier;
+            public string OutInfo;
         }
 
         private void comboLang_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1735,6 +1754,15 @@ namespace BMCLV2
                                         Logger.Log(string.Format("{0}的版本不为1，放弃加载", auth));
                                         continue;
                                     }
+                                    MethodInfo AuthVersion = T.GetMethod("GetVersion");
+                                    if (AuthVersion == null)
+                                    {
+                                        Logger.Log(string.Format("{0}为第一代插件", auth));
+                                    }
+                                    else if ((long)AuthVersion.Invoke(Auth, new object[]{2}) != 2)
+                                        {
+                                            Logger.Log(string.Format("{0}版本高于启动器，放弃加载", auth));
+                                        }
                                     MethodInfo MAuthName = T.GetMethod("GetName");
                                     string AuthName = MAuthName.Invoke(Auth, new object[] { Language }).ToString();
                                     Auths.Add(AuthName, Auth);
@@ -1782,6 +1810,22 @@ namespace BMCLV2
             MessageBox.Show(LangManager.GetLangFromResource("MenuDebugHint"));
             Logger.Debug = true;
             btnStart_Click(null, null);
+        }
+
+        private void FrmMainWindow_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (this.IsLaunchering && starter != null)
+            {
+                starter.Activate();
+            }
+        }
+
+        private void FrmMainWindow_Activated(object sender, EventArgs e)
+        {
+            if (this.IsLaunchering && starter != null)
+            {
+                starter.Activate();
+            }
         }
 
 
