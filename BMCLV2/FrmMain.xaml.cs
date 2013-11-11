@@ -744,6 +744,7 @@ namespace BMCLV2
         private void btnSelectJava_Click(object sender, RoutedEventArgs e)
         {
             System.Windows.Forms.OpenFileDialog ofJava = new System.Windows.Forms.OpenFileDialog();
+            ofJava.RestoreDirectory = true;
             ofJava.Filter = "Javaw.exe|Javaw.exe";
             ofJava.Multiselect = false;
             ofJava.CheckFileExists = true;
