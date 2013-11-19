@@ -30,6 +30,7 @@
     <s:String x:Key="labExtJvmArg">额外的JVM Arguements</s:String>
     <s:String x:Key="checkOptifine">Optifine和中文补丁</s:String>
     <s:String x:Key="checkReport">发送匿名统计信息</s:String>
+    <s:String x:Key="checkCheckUpdate">检查更新</s:String>
     <s:String x:Key="btnSaveConfig">保存配置</s:String>
     <s:String x:Key="labSaveSucc">保存成功！</s:String>
     <s:String x:Key="listOfficalSource">官方源（在国外，更新快）</s:String>
@@ -141,6 +142,7 @@
     <s:String x:Key="ResNoFileForSync">没有需要同步的文件</s:String>
     <s:String x:Key="ResPlsWaitingForCheck">请先对比文件并且等待对比完成</s:String>
     <s:String x:Key="ResCheckComplete">文件检查完成，可以开始同步了</s:String>
+    <s:String x:Key="ResbtnNewMusic">获取新音效</s:String>
     <s:String x:Key="FetchingForgeChangeLog">正在获取Forge的更新日志</s:String>
     <s:String x:Key="MenuStartDebug">以Debug模式启动游戏</s:String>
     <s:String x:Key="MenuDebugHint">Debug模式下BMCL会尝试获取Minecraft的日志输出信息，并且经行简单的分析处理。这可能会轻微影响游戏性能\n所有输出都在启动器目录下的bmcl.log文件内。\n要想使用完整的Debug模式，请右键任务栏托盘区中的图标，并选择“以Debug模式重启”</s:String>
@@ -151,5 +153,9 @@
     <s:String x:Key="LibMenuDelete">删除</s:String>
     <s:String x:Key="LibIsSaveQuestion">内容已改变，是否保存？</s:String>
     <s:String x:Key="ErrorNoGameJson">无法找到版本对应的Json信息文件</s:String>
+    <s:String x:Key="FrmDownload">下载</s:String>
+    <s:String x:Key="DownloadFinish">下载完成</s:String>
+    <s:String x:Key="StartupDuplicate">请勿同时启动两个启动器</s:String>
+    
 
 </ResourceDictionary>

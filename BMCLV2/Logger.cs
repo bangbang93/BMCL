@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
+using System.Collections;
 
 namespace BMCLV2
 {
@@ -108,16 +109,26 @@ namespace BMCLV2
         }
         static public void Log(Exception ex, LogType Type = LogType.Exception)
         {
-            StringBuilder str = new StringBuilder();
-            str.AppendLine(ex.Message);
-            str.AppendLine(ex.StackTrace);
-            while (ex.InnerException != null)
+            StringBuilder Message = new StringBuilder();
+            Message.AppendLine(ex.Source);
+            Message.AppendLine(ex.ToString());
+            Message.AppendLine(ex.Message);
+            foreach (DictionaryEntry data in ex.Data)
+                Message.AppendLine(string.Format("Key:{0}\nValue:{1}", data.Key, data.Value));
+            Message.AppendLine(ex.StackTrace);
+            var iex = ex;
+            while (iex.InnerException != null)
             {
-                ex = ex.InnerException;
-                str.AppendLine(ex.Message);
-                str.AppendLine(ex.StackTrace);
+                Message.AppendLine("------------------------");
+                iex = iex.InnerException;
+                Message.AppendLine(iex.Source);
+                Message.AppendLine(iex.ToString());
+                Message.AppendLine(iex.Message);
+                foreach (DictionaryEntry data in ex.Data)
+                    Message.AppendLine(string.Format("Key:{0}\nValue:{1}", data.Key, data.Value));
+                Message.AppendLine(iex.StackTrace);
             }
-            Write(str.ToString(), Type);
+            Write(Message.ToString(), Type);
         }
     }
 }

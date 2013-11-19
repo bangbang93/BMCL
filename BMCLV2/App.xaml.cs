@@ -5,6 +5,9 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.IO;
+
+using BMCLV2.Lang;
 
 namespace BMCLV2
 {
@@ -13,8 +16,20 @@ namespace BMCLV2
     /// </summary>
     public partial class App : Application
     {
+        FileStream AppLock;
         protected override void OnStartup(StartupEventArgs e)
         {
+            
+            try
+            {
+                AppLock = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "BMCL.lck", FileMode.Create);
+            }
+            catch (IOException)
+            {
+                MessageBox.Show(LangManager.GetLangFromResource("StartupDuplicate"));
+                MessageBox.Show(LangManager.GetLangFromResource("StartupDuplicate"));
+                Environment.Exit(3);
+            }
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
             if (e.Args.Length == 0)
                 Logger.Debug = false;
@@ -27,6 +42,7 @@ namespace BMCLV2
 
         protected override void OnExit(ExitEventArgs e)
         {
+            AppLock.Close();
             base.OnExit(e);
             Logger.Stop();
         }

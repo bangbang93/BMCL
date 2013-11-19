@@ -48,6 +48,7 @@ namespace BMCLV2
         Thread thError;
         Thread thOutput;
         FrmPrs prs;
+        FileStream GameLock;
         
         #endregion
 

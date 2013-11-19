@@ -36,7 +36,7 @@ namespace BMCLV2
             var iex = ex;
             while (iex.InnerException != null)
             {
-                txtMessage.Text += "\n------------------------\n";
+                Message.AppendLine("------------------------");
                 iex = iex.InnerException;
                 Message.AppendLine(iex.Source);
                 Message.AppendLine(iex.ToString());

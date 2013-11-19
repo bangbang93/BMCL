@@ -88,7 +88,7 @@ namespace BMCLV2.Resource {
         }
         
         /// <summary>
-        ///   查找类似 https://s3.amazonaws.com/Minecraft.Resources/ 的本地化字符串。
+        ///   查找类似 http://resources.download.minecraft.net/ 的本地化字符串。
         /// </summary>
         internal static string URL_RESOURCE_BASE {
             get {

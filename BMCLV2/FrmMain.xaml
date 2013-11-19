@@ -42,7 +42,7 @@
                             <Button x:Name="btnLibraries" Content="{DynamicResource btnLibraries}" HorizontalAlignment="Left" Margin="585,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnLibraries_Click"/>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="tabLauncherCfg" Header="{DynamicResource tabLauncherCfg}" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61">
+                    <TabItem x:Name="tabLauncherCfg" Header="{DynamicResource tabLauncherCfg}" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top">
                         <TabItem.Background>
                             <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
                                 <GradientStop Color="#FFF3F3F3" Offset="0"/>
@@ -96,9 +96,10 @@
                             <ComboBox x:Name="comboLang" HorizontalAlignment="Left" Height="27" Margin="391,333,0,0" VerticalAlignment="Top" Width="153" SelectedIndex="0" SelectionChanged="comboLang_SelectionChanged">
                             </ComboBox>
                             <Label Content="语言 language" HorizontalAlignment="Left" Margin="391,302,0,0" VerticalAlignment="Top"/>
+                            <CheckBox x:Name="checkCheckUpdate" Content="{DynamicResource checkCheckUpdate}" HorizontalAlignment="Left" Height="18" Margin="640,279,0,0" VerticalAlignment="Top" Width="129" Checked="checkCheckUpdate_Checked"/>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="tabRemoteVer" Header="{DynamicResource tabRemoteVer}" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61">
+                    <TabItem x:Name="tabRemoteVer" Header="{DynamicResource tabRemoteVer}" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top">
                         <Grid x:Name="gridRemoteVer" Background="#50FFFFFF">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="748"/>
@@ -118,7 +119,7 @@
                             <Button x:Name="btnCheckRes" Content="{DynamicResource btnCheckRes}" HorizontalAlignment="Left" Margin="10,195,0,0" VerticalAlignment="Top" Width="120" Height="53" FontWeight="Thin" Click="btnCheckRes_Click" Grid.Column="1"/>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="tabForge" Header="{DynamicResource tabForge}" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="73">
+                    <TabItem x:Name="tabForge" Header="{DynamicResource tabForge}" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top">
                         <Grid x:Name="gridForge" Background="#50FFFFFF">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="888"/>
@@ -132,7 +133,7 @@
                             </ScrollViewer>
                         </Grid>
                     </TabItem>
-                    <TabItem x:Name="tabServerlist" Header="服务器列表" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="79">
+                    <TabItem x:Name="tabServerlist" Header="服务器列表" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top">
                         <Grid x:Name="gridServerList" Background="#50FFFFFF">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="748*"/>

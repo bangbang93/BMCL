@@ -30,6 +30,7 @@
     <s:String x:Key="labExtJvmArg">額外的JVM Arguements</s:String>
     <s:String x:Key="checkOptifine">Optifine和中文補丁</s:String>
     <s:String x:Key="checkReport">發送匿名統計信息</s:String>
+    <s:String x:Key="checkCheckUpdate">檢查更新</s:String>
     <s:String x:Key="btnSaveConfig">保存配置</s:String>
     <s:String x:Key="labSaveSucc">保存成功！</s:String>
     <s:String x:Key="listOfficalSource">官方源（在國外，更新快）</s:String>

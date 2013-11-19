@@ -69,6 +69,7 @@
     <Reference Include="System.Management" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -94,6 +95,9 @@
     </Compile>
     <Compile Include="FrmCheckRes.xaml.cs">
       <DependentUpon>FrmCheckRes.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FrmDownload.xaml.cs">
+      <DependentUpon>FrmDownload.xaml</DependentUpon>
     </Compile>
     <Compile Include="FrmLibraries.xaml.cs">
       <DependentUpon>FrmLibraries.xaml</DependentUpon>
@@ -140,6 +144,7 @@
     <Compile Include="HtmlAgilityPack\Trace.cs" />
     <Compile Include="HtmlAgilityPack\Trace.FullFramework.cs" />
     <Compile Include="HtmlAgilityPack\Utilities.cs" />
+    <Compile Include="JsonClass\soundsJson.cs" />
     <Compile Include="Lang\LangManager.cs" />
     <Compile Include="Lang\LangType.cs" />
     <Compile Include="launcher\gameinfo.cs" />
@@ -170,6 +175,7 @@
     </Compile>
     <Compile Include="serverlist\serverinfo.cs" />
     <Compile Include="serverlist\serverlist.cs" />
+    <Compile Include="UpdateChecker.cs" />
     <Compile Include="util\Dir.cs" />
     <Compile Include="util\MathHelper.cs" />
     <Compile Include="Versions\RawVersionListType.cs" />
@@ -222,6 +228,10 @@
     <Page Include="FrmCheckRes.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="FrmDownload.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="FrmLibraries.xaml">
       <SubType>Designer</SubType>

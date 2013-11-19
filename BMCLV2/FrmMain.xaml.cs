@@ -39,8 +39,8 @@ namespace BMCLV2
     public partial class FrmMain : Window
     {
         static private string cfgfile = "bmcl.xml";
-        public static String URL_DOWNLOAD_BASE = "https://s3.amazonaws.com/Minecraft.Download/";
-        public static String URL_RESOURCE_BASE = "https://s3.amazonaws.com/Minecraft.Resources/";
+        public static String URL_DOWNLOAD_BASE = BMCLV2.Resource.Url.URL_DOWNLOAD_BASE;
+        public static String URL_RESOURCE_BASE = BMCLV2.Resource.Url.URL_RESOURCE_BASE;
         private Hashtable  Auths = new Hashtable();
         public static config cfg;
         static public gameinfo info;
@@ -117,6 +117,7 @@ namespace BMCLV2
             #endregion
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
             listAuth.SelectedItem = cfg.login;
+            checkCheckUpdate.IsChecked = cfg.CheckUpdate;
             Logger.Log(cfg);
             
             this.Title = "BMCL V2 Ver." + ver;
@@ -129,6 +130,11 @@ namespace BMCLV2
                 thReport.Start();
             }
 #endif
+            if (cfg.CheckUpdate)
+            {
+                Thread thCheckUpdate = new Thread(new ThreadStart(funcCheckUpdate));
+                thCheckUpdate.Start();
+            }
         }
 
         void DebugMode_Click(object sender, EventArgs e)
@@ -818,6 +824,11 @@ namespace BMCLV2
         {
             int t = txtExtJArg.Text.IndexOf(" -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true");
             txtExtJArg.Text = txtExtJArg.Text.Replace(" -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true", "");
+        }
+
+        private void checkCheckUpdate_Checked(object sender, RoutedEventArgs e)
+        {
+            cfg.CheckUpdate = checkCheckUpdate.IsChecked == true ? true : false;
         }
         #endregion
 
@@ -1826,6 +1837,18 @@ namespace BMCLV2
             if (this.IsLaunchering && starter != null)
             {
                 starter.Activate();
+            }
+        }
+
+        private void funcCheckUpdate()
+        {
+            UpdateChecker check = new UpdateChecker();
+            if (check.HasUpdate)
+            {
+                if (MessageBox.Show(check.UpdateInfo, "更新", MessageBoxButton.OKCancel, MessageBoxImage.Information) == MessageBoxResult.OK)
+                {
+                    Process.Start(check.LastestDownloadUrl);
+                }
             }
         }
 

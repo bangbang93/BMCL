@@ -10,21 +10,19 @@ using System.Windows;
 
 namespace BMCLV2
 {
-    [Serializable]
+    [DataContract]
     public class config : ICloneable
     {
-        public string javaw;
-        public string username;
-        public string javaxmx;
+        [DataMember]
+        public string javaw,username,javaxmx,login,lastPlayVer,extraJVMArg,Lang;
+        [DataMember]
         public byte[] passwd;
-        public string login;
-        public bool autostart;
-        public string lastPlayVer;
-        public string extraJVMArg;
+        [DataMember]
+        public bool autostart, Report,CheckUpdate;
+        [DataMember]
         public double WindowTransparency;
-        public bool Report;
+        [DataMember]
         public int DownloadSource;
-        public string Lang;
 
         public config()
         {
@@ -39,6 +37,7 @@ namespace BMCLV2
             Report = true;
             DownloadSource = 0;
             Lang = "zh-cn";
+            CheckUpdate = true;
         }
         object ICloneable.Clone()
         {

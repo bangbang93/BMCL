@@ -16,6 +16,9 @@ using System.Xml;
 using System.Data;
 using System.Threading;
 using System.Windows.Media.Animation;
+using System.Runtime.Serialization.Json;
+using System.Web.Script.Serialization;
+using System.Collections;
 
 using BMCLV2.Lang;
 
@@ -41,6 +44,7 @@ namespace BMCLV2
         event GetInfoFinishEventHandle GetInfoFinishEvent;
         delegate void GetInfoFailedEventHandle();
         event GetInfoFailedEventHandle GetInfoFailedEvent;
+        string SoundsJsonString;
 
         private void frmCheckRes_Loaded(object sender, RoutedEventArgs e)
         {
@@ -75,6 +79,7 @@ namespace BMCLV2
                         dt.Rows.Add(new string[] { key, modtime, size.ToString(), LangManager.GetLangFromResource("ResWaitingForCheck"), etag.Replace("\"", "").Trim() });
                     }
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { GetInfoFinishEvent(dt); }));
+                    SoundsJsonString = (new WebClient()).DownloadString(this.URL_RESOURCE_BASE + "sounds.json");
                 }
                 catch (WebException ex)
                 {
@@ -244,6 +249,84 @@ namespace BMCLV2
                 MessageBox.Show(LangManager.GetLangFromResource("ResFinish"));
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Close(); }));
             }
+        }
+
+        private void btnNewMusic_Click(object sender, RoutedEventArgs e)
+        {
+            JavaScriptSerializer SoundsJsonSerizlizer = new JavaScriptSerializer();
+            var sounds = SoundsJsonSerizlizer.Deserialize<Dictionary<string, Dictionary<string, object>>>(SoundsJsonString);
+            Hashtable DownloadFile = new Hashtable();
+            int FileCount=0;
+            int DuplicateFileCount=0;
+            int JsonDuplicateFileCount = 0;
+            foreach (KeyValuePair<string, Dictionary<string, object>> SoundEntity in sounds)
+            {
+                switch (SoundEntity.Value["category"] as string)
+                {
+                    case "ambient":
+                    case "weather":
+                    case "player":
+                    case "neutral":
+                    case "hostile":
+                    case "block":
+                    case "master":
+                        //arraylist
+                        var SoundFile = SoundEntity.Value["sounds"] as ArrayList;
+                        if (SoundFile==null) goto case "music";
+                        foreach (string FileName in SoundFile)
+                        {
+                            FileCount++;
+                            string Url = this.URL_RESOURCE_BASE + "sounds/" + FileName + ".ogg";
+                            string SoundName = AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets\sounds\" + FileName + ".ogg";
+                            DataRow[] result = dt.Select("FileName = " + "'sounds/" + FileName + ".ogg'");
+                            if (result.Count() != 0)
+                            {
+                                DuplicateFileCount++;
+                                continue;
+                            }
+                            if (DownloadFile.ContainsKey(Url))
+                            {
+                                JsonDuplicateFileCount++;
+                                continue;
+                            }
+                            DownloadFile.Add(Url, SoundName);
+                        }
+                        break;
+                    case "music":
+                        var MusicFile = SoundEntity.Value["sounds"] as ArrayList;
+                        foreach (Dictionary<string,object> music in MusicFile)
+                        {
+                            if (!music.ContainsKey("stream")) continue;
+                            if ((bool)music["stream"] == false) continue;
+                            FileCount++;
+                            string Url = this.URL_RESOURCE_BASE + "sounds/" + music["name"] + ".ogg";
+                            string SoundName = AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets\sounds\" + music["name"] + ".ogg";
+                            DataRow[] result = dt.Select("FileName = " + "'sounds/" + music["name"] as string + ".ogg'");
+                            if (result.Count() != 0)
+                            {
+                                DuplicateFileCount++;
+                                continue;
+                            }
+                            if (DownloadFile.ContainsKey(Url))
+                            {
+                                JsonDuplicateFileCount++;
+                                continue;
+                            }
+                            DownloadFile.Add(Url, SoundName);
+                        }
+                        break;
+                    case "record":
+                        var RecordFile = SoundEntity.Value["sounds"] as ArrayList;
+                        if (RecordFile[0] is string)
+                            goto case "master";
+                        else
+                            goto case "music";
+
+                }
+            }
+            Logger.Log(string.Format("共计{0}个文件，{1}个文件重复,{2}个文件json内部重复，{3}个文件待下载",FileCount,DuplicateFileCount,JsonDuplicateFileCount,DownloadFile.Count));
+            FrmDownload frmDownload = new FrmDownload(DownloadFile);
+            frmDownload.Show();
         }
     }
 }

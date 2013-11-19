@@ -1,0 +1,11 @@
+﻿<Window x:Class="BMCLV2.FrmDownload"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="{DynamicResource FrmDownload}" Height="528.358" Width="695.522" Loaded="Window_Loaded" Icon="tofu.ico">
+    <Grid>
+        <ListBox x:Name="listLog" Margin="0,0,10,132"/>
+        <Label x:Name="labCount" Content="0/0" HorizontalAlignment="Left" Height="28" Margin="10,392,0,0" VerticalAlignment="Top" Width="121"/>
+        <ProgressBar x:Name="prsCount" HorizontalAlignment="Left" Margin="10,0,0,37" Width="668" Height="36" VerticalAlignment="Bottom"/>
+
+    </Grid>
+</Window>

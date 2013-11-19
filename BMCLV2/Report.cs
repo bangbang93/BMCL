@@ -42,7 +42,10 @@ namespace BMCLV2
 
 
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Logger.Log(ex);
+            }
         }
         public static String ParsToString(Hashtable Pars)
         {
