@@ -170,10 +170,11 @@
                     </Button.ContextMenu>
                 </Button>
                 <Button x:Name="btnClose" Content="{DynamicResource btnClose}" HorizontalAlignment="Left" Height="38" Margin="671,452,0,0" VerticalAlignment="Top" Width="105" Click="btnClose_Click" IsCancel="True"/>
-                <Button x:Name="btnChangeBg" Content="{DynamicResource btnChangeBg}" HorizontalAlignment="Left" Height="38" Margin="557,452,0,0" VerticalAlignment="Top" Width="52" Click="btnChangeBg_Click" ToolTip="右键可以选择文件">
+                <Button x:Name="btnChangeBg" Content="{DynamicResource btnChangeBg}" HorizontalAlignment="Left" Height="38" Margin="557,452,0,0" VerticalAlignment="Top" Width="52" Click="btnChangeBg_Click" ToolTip="右键可以选择文件甚至材质包">
                     <Button.ContextMenu>
                         <ContextMenu>
                             <MenuItem x:Name="MenuSelectFile" Header="{DynamicResource MenuSelectFile}" Click="MenuSelectFile_Click"/>
+                            <MenuItem x:Name="MenuSelectTexturePack" Header="{DynamicResource MenuSelectTexturePack}"/>
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>

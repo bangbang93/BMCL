@@ -50,6 +50,7 @@
     <s:String x:Key="tabForge">安装Forge</s:String>
     <s:String x:Key="btnLastForge">一键安装最新版Forge</s:String>
     <s:String x:Key="btnReForge">刷新Forge版本列表</s:String>
+    <s:String x:Key="ForgeNotReady">Forge列表尚未准备完毕</s:String>
     <s:String x:Key="ServerName">服务器名</s:String>
     <s:String x:Key="HiddenAddress">隐藏地址</s:String>
     <s:String x:Key="ServerAddress">服务器地址</s:String>
@@ -67,6 +68,7 @@
     <s:String x:Key="MenuShowMainWindow">显示主窗口</s:String>
     <s:String x:Key="MenuUseDebugMode">以Debug模式重启</s:String>
     <s:String x:Key="MenuSelectFile">选择文件</s:String>
+    <s:String x:Key="MenuSelectTexturePack">选择材质包</s:String>
     <s:String x:Key="BMCLHiddenInfo">BMCL隐藏在这里了</s:String>
     <s:String x:Key="CantFindVersionJsonInfo">找不到版本所需的json文件</s:String>
     <s:String x:Key="DeleteMessageBoxInfo">你确定要删除当前版本？这个操作不能恢复，1.5.1之后的版本可去版本管理里重新下载</s:String>

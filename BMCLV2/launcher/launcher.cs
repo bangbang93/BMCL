@@ -158,42 +158,52 @@ namespace BMCLV2
                 if (!File.Exists(buildLibPath(lib)))
                 {
                     Logger.Log("未找到依赖" + lib.name + "开始下载", Logger.LogType.Error);
-                    if (lib.url == null)
+                    try
                     {
-                        prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
-                        downloading++;
-                        string libp = buildLibPath(lib);
-                        if (!Directory.Exists(Path.GetDirectoryName(libp)))
+                        if (lib.url == null)
                         {
-                            Directory.CreateDirectory(Path.GetDirectoryName(libp));
-                        }
+                            prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
+                            downloading++;
+                            string libp = buildLibPath(lib);
+                            if (!Directory.Exists(Path.GetDirectoryName(libp)))
+                            {
+                                Directory.CreateDirectory(Path.GetDirectoryName(libp));
+                            }
 #if DEBUG
-                        System.Windows.MessageBox.Show(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
+                            System.Windows.MessageBox.Show(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
 #endif
-                        Logger.Log(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), Logger.LogType.Info);
-                        downer.DownloadFile(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
+                            Logger.Log(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), Logger.LogType.Info);
+                            downer.DownloadFile(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
+                        }
+                        else
+                        {
+                            string urlLib = lib.url;
+                            prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
+                            downloading++;
+                            /*
+                            DownLib downer = new DownLib(lib);
+                            downLibEvent(lib);
+                            downer.DownFinEvent += downfin;
+                            downer.startdownload();
+                             */
+                            string libp = buildLibPath(lib);
+                            if (!Directory.Exists(Path.GetDirectoryName(libp)))
+                            {
+                                Directory.CreateDirectory(Path.GetDirectoryName(libp));
+                            }
+#if DEBUG
+                            System.Windows.MessageBox.Show(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
+#endif
+                            Logger.Log(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), Logger.LogType.Info);
+                            downer.DownloadFile(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
+                        }
                     }
-                    else
+                    catch (WebException ex)
                     {
-                        string urlLib = lib.url;
-                        prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
-                        downloading++;
-                        /*
-                        DownLib downer = new DownLib(lib);
-                        downLibEvent(lib);
-                        downer.DownFinEvent += downfin;
-                        downer.startdownload();
-                         */
+                        Logger.Log(ex);
+                        Logger.Log("原地址下载失败，尝试作者源");
                         string libp = buildLibPath(lib);
-                        if (!Directory.Exists(Path.GetDirectoryName(libp)))
-                        {
-                            Directory.CreateDirectory(Path.GetDirectoryName(libp));
-                        }
-#if DEBUG
-                        System.Windows.MessageBox.Show(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
-#endif
-                        Logger.Log(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), Logger.LogType.Info);
-                        downer.DownloadFile(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
+                        downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
                     }
                 }
                 arg.Append(buildLibPath(lib) + ";");
@@ -564,6 +574,17 @@ namespace BMCLV2
             libp.Append(split[2]).Append("\\");
             libp.Append(split[1]).Append("-").Append(split[2]).Append("-").Append(lib.natives.windows);
             libp.Append(".jar");
+            if (split[0] == "tv.twitch")
+            {
+                if (Environment.Is64BitOperatingSystem)
+                {
+                    libp.Replace("${arch}", "64");
+                }
+                else
+                {
+                    libp.Replace("${arch}", "32");
+                }
+            }
             return libp.ToString();
         }
 

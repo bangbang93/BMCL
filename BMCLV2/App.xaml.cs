@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
+using System.Diagnostics;
 
 using BMCLV2.Lang;
 
@@ -23,6 +24,10 @@ namespace BMCLV2
             try
             {
                 AppLock = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "BMCL.lck", FileMode.Create);
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(Process.GetCurrentProcess().Id.ToString());
+                AppLock.Write(buffer, 0, buffer.Length);
+                AppLock.Close();
+                AppLock = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "BMCL.lck", FileMode.Open);
             }
             catch (IOException)
             {
@@ -30,7 +35,10 @@ namespace BMCLV2
                 MessageBox.Show(LangManager.GetLangFromResource("StartupDuplicate"));
                 Environment.Exit(3);
             }
+#if DEBUG
+#else
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+#endif
             if (e.Args.Length == 0)
                 Logger.Debug = false;
             else

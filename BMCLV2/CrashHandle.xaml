@@ -2,14 +2,14 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="BMCL遇到了无法处理的错误" Height="306" Width="468" WindowStartupLocation="CenterScreen" WindowStyle="ToolWindow">
-    <Grid Height="273" VerticalAlignment="Top">
+    <Grid Margin="0,0,0,0">
         <TextBox x:Name="txtMessage" Margin="10,10,10,115" TextWrapping="Wrap" Text="TextBox" HorizontalScrollBarVisibility="Auto" IsReadOnly="True" IsReadOnlyCaretVisible="True"/>
         <Button x:Name="btnMyWeb" Content="作者论坛" HorizontalAlignment="Left" Margin="10,192,0,46" Width="95" Click="btnMyWeb_Click"/>
         <Label x:Name="labTip" Content="你可以通过以下方式举报bug，请复制以上信息发贴（点击这里复制）" HorizontalAlignment="Left" Margin="10,0,0,81" VerticalAlignment="Bottom" Width="440" Height="29" MouseDown="labTip_MouseDown"/>
         <Button x:Name="btnMcbbs" Content="mcbbs发布贴" Margin="0,192,10,46" Click="btnMcbbs_Click" HorizontalAlignment="Right" Width="95"/>
         <Button x:Name="btnWeibo" Content="作者新浪微博" Margin="110,192,0,46" Click="btnWeibo_Click" HorizontalAlignment="Left" Width="95"/>
         <Button x:Name="btnTwitter" Content="作者推特" Margin="0,192,110,46" Click="btnTwitter_Click" HorizontalAlignment="Right" Width="95"/>
-        <Button x:Name="btnEmail" Content="作者邮箱" HorizontalAlignment="Left" Margin="182,0,0,6" Width="95" Click="btnEmail_Click" Height="35" VerticalAlignment="Bottom"/>
+        <Button x:Name="btnEmail" Content="作者邮箱" Margin="182,0,183,6" Click="btnEmail_Click" Height="35" VerticalAlignment="Bottom"/>
 
     </Grid>
 </Window>

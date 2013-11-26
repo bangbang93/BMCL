@@ -28,6 +28,7 @@ using System.Net.Sockets;
 using BMCLV2.Versions;
 using BMCLV2.util;
 using BMCLV2.Lang;
+using BMCLV2.Forge;
 
 using HtmlAgilityPack;
 
@@ -977,142 +978,51 @@ namespace BMCLV2
 
 
         #region tabForge
-        Hashtable ForgeDownloadUrl = new Hashtable();
-        Hashtable ForgeChangeLog = new Hashtable();
-        Thread thGet;
+        ForgeVersionList ForgeVer = new ForgeVersionList();
+        private void RefreshForgeVersionList()
+        {
+            treeForgeVer.Items.Add(LangManager.GetLangFromResource("ForgeListGetting"));
+            ForgeVer.ForgePageReadyEvent += ForgeVer_ForgePageReadyEvent;
+            ForgeVer.GetVersion();
+        }
+
+        void ForgeVer_ForgePageReadyEvent()
+        {
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(() =>
+            {
+                treeForgeVer.Items.Clear();
+                treeForgeVer.Items.Add(ForgeVer.GetLastForge());
+                foreach (TreeViewItem t in ForgeVer.GetAllBuild())
+                {
+                    treeForgeVer.Items.Add(t);
+                }
+                btnReForge.Content = LangManager.GetLangFromResource("btnReForge");
+                btnReForge.IsEnabled = true;
+                btnLastForge.IsEnabled = true;
+            }));
+        }
         private void btnLastForge_Click(object sender, RoutedEventArgs e)
         {
-            if (ForgeDownloadUrl.Count == 0)
-            {
-                HtmlDocument ForgePage;
-                treeForgeVer.Items.Clear();
-                ForgeDownloadUrl.Clear();
-                treeForgeVer.Items.Add(LangManager.GetLangFromResource("ForgeListGetting"));
-                thGet = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
-                {
-                    HtmlWeb ForgePageGet = new HtmlWeb();
-                    ForgePage = ForgePageGet.Load("http://files.minecraftforge.net/");
-                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { treeForgeVer.Items.Clear(); }));
-                    GetForgeFinishDel GetForgePageFin = new GetForgeFinishDel(GetForgeFinish);
-                    Dispatcher.Invoke(GetForgePageFin, ForgePage);
-                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { DownloadForge("Latest"); }));
-                })));
-                thGet.Start();
-                return;
-            }
             DownloadForge("Latest");
         }
-        delegate void GetForgeFinishDel(HtmlDocument ForgePage);
         private void btnReForge_Click(object sender, RoutedEventArgs e)
         {
             if (btnReForge.Content.ToString() == LangManager.GetLangFromResource("btnReForgeGetting"))
                 return;
             btnReForge.Content = LangManager.GetLangFromResource("btnReForgeGetting");
             btnReForge.IsEnabled = false;
-            HtmlDocument ForgePage;
-            treeForgeVer.Items.Clear();
-            ForgeDownloadUrl.Clear();
-            treeForgeVer.Items.Add(LangManager.GetLangFromResource("ForgeListGetting"));
-            thGet=new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate{
-            HtmlWeb ForgePageGet = new HtmlWeb();
-            ForgePage= ForgePageGet.Load("http://files.minecraftforge.net/");
-            GetForgeFinishDel GetForgePageFin = new GetForgeFinishDel(GetForgeFinish);
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { treeForgeVer.Items.Clear(); }));
-            Dispatcher.Invoke(GetForgePageFin, ForgePage);
-            })));
-            thGet.Start();
-        }
-        private void GetForgeFinish(HtmlDocument ForgePage)
-        {
-            HtmlNode promtions = ForgePage.GetElementbyId("promotions_table");
-            HtmlNodeCollection shortcuts = promtions.SelectNodes("tr");
-            TreeViewItem tree = new TreeViewItem();
-            for (int i = 1; i < shortcuts.Count; i++)
-            {
-                HtmlNode shortcut = shortcuts[i];
-                string ver = shortcut.SelectNodes("td")[0].InnerText;
-                HtmlNodeCollection urls = shortcut.SelectNodes("td")[4].SelectNodes("a");
-                string url = "none";
-                string changelogurl = "none";
-                foreach (HtmlNode maybeurl in urls)
-                {
-                    string murl = maybeurl.GetAttributeValue("href","");
-                    if (murl.IndexOf("adf.ly") == -1 && murl.IndexOf("installer")!=-1)
-                    {
-                        url = murl;
-                        continue;
-                    }
-                    if (murl.IndexOf("changelog") != -1)
-                    {
-                        changelogurl = murl;
-                        continue;
-                    }
-                }
-                if (url == "none")
-                {
-                    continue;
-                }
-                ForgeDownloadUrl.Add(ver, url);
-                ForgeChangeLog.Add(ver, changelogurl);
-                tree = new TreeViewItem();
-                tree.Header = ver;
-                tree.Items.Add(shortcut.SelectNodes("td")[1].InnerText);
-                treeForgeVer.Items.Add(tree);
-            }
-            HtmlNode all_builds = ForgePage.GetElementbyId("all_builds");
-            HtmlNode Alltable = all_builds.SelectSingleNode("table");
-            HtmlNodeCollection All = Alltable.SelectNodes("tr");
-            tree = new TreeViewItem();
-            tree.Header = All[1].SelectNodes("td")[1].InnerText;
-            for (int i = 1; i < All.Count; i++)
-            {
-                HtmlNode shortcut = All[i];
-                if (shortcut.SelectSingleNode("th") != null)
-                {
-                    treeForgeVer.Items.Add(tree);
-                    tree = new TreeViewItem();
-                    tree.Header = All[i + 1].SelectNodes("td")[1].InnerText;
-                    continue;
-                }
-                string ver = shortcut.SelectNodes("td")[0].InnerText;
-                HtmlNodeCollection urls = shortcut.SelectNodes("td")[3].SelectNodes("a");
-                string url = "none";
-                string changelogurl = "none";
-                foreach (HtmlNode maybeurl in urls)
-                {
-                    string murl = maybeurl.GetAttributeValue("href", "");
-                    if (murl.IndexOf("adf.ly") == -1 && murl.IndexOf("installer") != -1)
-                    {
-                        url = murl;
-                        continue;
-                    }
-                    if (murl.IndexOf("changelog") != -1)
-                    {
-                        changelogurl = murl;
-                        continue;
-                    }
-                }
-                if (url == "none")
-                {
-                    continue;
-                }
-                ForgeDownloadUrl.Add(ver, url);
-                ForgeChangeLog.Add(ver, changelogurl);
-                tree.Items.Add(ver);
-            }
-            treeForgeVer.Items.Add(tree);
-            btnReForge.Content = LangManager.GetLangFromResource("btnReForge");
-            btnReForge.IsEnabled = true;
+            btnLastForge.IsEnabled = false;
+            RefreshForgeVersionList();
         }
         private void DownloadForge(string ver)
         {
-            if (!ForgeDownloadUrl.ContainsKey(ver))
+            if (!ForgeVer.ForgeDownloadUrl.ContainsKey(ver))
             {
                 MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotSupportInstaller"));
                 return;
             }
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { gridDown.Visibility = Visibility.Visible; }));
-            Uri url = new Uri(ForgeDownloadUrl[ver].ToString());
+            Uri url = new Uri(ForgeVer.ForgeDownloadUrl[ver].ToString());
             WebClient downer = new WebClient();
             downer.DownloadProgressChanged+=downer_DownloadProgressChanged;
             downer.DownloadFileCompleted += downer_DownloadForgeCompleted;
@@ -1177,7 +1087,7 @@ namespace BMCLV2
                 return;
             if (this.treeForgeVer.SelectedItem is string)
             {
-                if (!ForgeChangeLog.ContainsKey(this.treeForgeVer.SelectedItem as string))
+                if (!ForgeVer.ForgeChangeLogUrl.ContainsKey(this.treeForgeVer.SelectedItem as string))
                 {
                     MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotHaveChangeLog"));
                     return;
@@ -1185,7 +1095,7 @@ namespace BMCLV2
                 txtChangeLog.Text = LangManager.GetLangFromResource("FetchingForgeChangeLog");
                 WebClient GetLog = new WebClient();
                 GetLog.DownloadStringCompleted += GetLog_DownloadStringCompleted;
-                GetLog.DownloadStringAsync(new Uri(ForgeChangeLog[this.treeForgeVer.SelectedItem as string] as string));
+                GetLog.DownloadStringAsync(new Uri(ForgeVer.ForgeChangeLogUrl[this.treeForgeVer.SelectedItem as string] as string));
             }
         }
 
