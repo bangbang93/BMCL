@@ -232,7 +232,8 @@ namespace BMCLV2
                 string[] replace = LI.OutInfo.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string str in replace)
                 {
-                    mcarg.Replace(str.Split(':')[0], str.Split(':')[1]);
+                    int sp = str.IndexOf(":");
+                    mcarg.Replace(str.Substring(0,sp), str.Substring(sp+1));
                     mcarg=new StringBuilder(Microsoft.VisualBasic.Strings.Replace(mcarg.ToString(), str.Split(':')[0], str.Split(':')[1], 1, -1, Microsoft.VisualBasic.CompareMethod.Text));
                 }
             }

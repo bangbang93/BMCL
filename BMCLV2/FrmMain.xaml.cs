@@ -42,7 +42,7 @@ namespace BMCLV2
         static private string cfgfile = "bmcl.xml";
         public static String URL_DOWNLOAD_BASE = BMCLV2.Resource.Url.URL_DOWNLOAD_BASE;
         public static String URL_RESOURCE_BASE = BMCLV2.Resource.Url.URL_RESOURCE_BASE;
-        private Hashtable  Auths = new Hashtable();
+        private Dictionary<object, object> Auths = new Dictionary<object, object>();
         public static config cfg;
         static public gameinfo info;
         launcher game;
@@ -1760,6 +1760,11 @@ namespace BMCLV2
                     Process.Start(check.LastestDownloadUrl);
                 }
             }
+        }
+
+        private void MenuSelectTexturePack_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
 

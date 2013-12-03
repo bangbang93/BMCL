@@ -69,6 +69,22 @@ namespace yggdrasil
                 OutInfo.Append("${auth_session}:").AppendLine(Response.getAccessToken());
                 OutInfo.Append("${auth_uuid}:").AppendLine(Response.getSelectedProfile().getId());
                 OutInfo.Append("${auth_access_token}:").AppendLine(Response.getAccessToken());
+                if (Response.getUser() != null)
+                {
+                    if (Response.getUser().getId()!=null)
+                    {
+                        AuthenticationResponse.Properties[] properties = Response.getUser().getProperties();
+                        Dictionary<string, string[]> PropertiesObj = new Dictionary<string, string[]>();
+                        foreach (AuthenticationResponse.Properties p in properties)
+                        {
+                            PropertiesObj.Add(p.getName(), new string[] { p.getValue() });
+
+                        }
+                        System.Web.Script.Serialization.JavaScriptSerializer PJsonSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                        string PJsonStr = PJsonSerializer.Serialize(PropertiesObj);
+                        OutInfo.Append("${user_properties}:").AppendLine(PJsonStr);
+                    }
+                }
                 LI.OtherInfo = LI.SID;
                 LI.OutInfo = OutInfo.ToString();
                 return LI;

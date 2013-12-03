@@ -174,7 +174,7 @@
                     <Button.ContextMenu>
                         <ContextMenu>
                             <MenuItem x:Name="MenuSelectFile" Header="{DynamicResource MenuSelectFile}" Click="MenuSelectFile_Click"/>
-                            <MenuItem x:Name="MenuSelectTexturePack" Header="{DynamicResource MenuSelectTexturePack}"/>
+                            <MenuItem x:Name="MenuSelectTexturePack" Header="{DynamicResource MenuSelectTexturePack}" Click="MenuSelectTexturePack_Click"/>
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>
