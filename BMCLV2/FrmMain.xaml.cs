@@ -452,6 +452,32 @@ namespace BMCLV2
             da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
             this.BeginAnimation(FrmMain.OpacityProperty, da);
         }
+        private void MenuSelectTexturePack_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("这是个正在试验的功能，请不要报告有关任何该功能的bug");
+            FrmTexturepack frmTexturepack = new FrmTexturepack();
+            frmTexturepack.ShowDialog();
+            Texturepack.TexturePackEntity Texture = frmTexturepack.GetSelected();
+            ImageBrush b = new ImageBrush();
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.StreamSource = Texture.GuiBackground;
+            bitmap.EndInit();
+            b.ImageSource = bitmap;
+            b.ViewportUnits = BrushMappingMode.Absolute;
+            b.Viewport = new Rect(0, 0, bitmap.Width, bitmap.Height);
+            b.Stretch = Stretch.None;
+            b.TileMode = TileMode.Tile;
+            ImageBrush button = new ImageBrush();
+            button.ImageSource = Texture.GuiButton.Source;
+
+            DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
+            this.BeginAnimation(FrmMain.OpacityProperty, da);
+            this.Top.Background = b;
+            btnStart.Background = button;
+            da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
+            this.BeginAnimation(FrmMain.OpacityProperty, da);
+        }
         #endregion
 
 
@@ -1760,11 +1786,6 @@ namespace BMCLV2
                     Process.Start(check.LastestDownloadUrl);
                 }
             }
-        }
-
-        private void MenuSelectTexturePack_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
 

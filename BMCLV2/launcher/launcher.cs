@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Diagnostics;
 using System.IO;
-using System.Threading;
+using System.Linq;
 using System.Net;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.Collections;
-
+using System.Text;
+using System.Threading;
+using BMCLV2.Lang;
 using BMCLV2.libraries;
 using BMCLV2.util;
-using BMCLV2.Lang;
-
 using ICSharpCode.SharpZipLib.Zip;
-using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 
 namespace BMCLV2
 {
@@ -155,7 +148,7 @@ namespace BMCLV2
                     }
                 }
                 prs.changeEventH(LangManager.GetLangFromResource("LauncherSolveLib") + lib.name);
-                if (!File.Exists(buildLibPath(lib)))
+                if (!File.Exists(buildLibPath(lib))&&(new FileInfo(buildLibPath(lib))).Length>0)
                 {
                     Logger.Log("未找到依赖" + lib.name + "开始下载", Logger.LogType.Error);
                     try
@@ -201,7 +194,7 @@ namespace BMCLV2
                     catch (WebException ex)
                     {
                         Logger.Log(ex);
-                        Logger.Log("原地址下载失败，尝试作者源");
+                        Logger.Log("原地址下载失败，尝试作者源"+lib.name);
                         string libp = buildLibPath(lib);
                         downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
                     }
@@ -222,13 +215,6 @@ namespace BMCLV2
             mcarg.Replace("${game_assets}", @".minecraft\assets");
             if (!string.IsNullOrEmpty(LI.OutInfo))
             {
-                //DataContractJsonSerializer ArgSerializer = new DataContractJsonSerializer(typeof(SortedList));
-                //MemoryStream ArgStream = new MemoryStream(Encoding.UTF8.GetBytes(LI.OtherInfo));
-                //SortedList MCARG = ArgSerializer.ReadObject(ArgStream) as SortedList;
-                //foreach (DictionaryEntry aMCARG in MCARG)
-                //{
-                //    mcarg.Replace(aMCARG.Key.ToString(), aMCARG.Value.ToString());
-                //}
                 string[] replace = LI.OutInfo.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string str in replace)
                 {
@@ -324,42 +310,62 @@ namespace BMCLV2
                     throw UnSupportVer;
                 }
                 string libp = buildNativePath(lib);
-                if (!File.Exists(libp))
+                if (!File.Exists(libp) && (new FileInfo(libp)).Length>0)
                     {
                     Logger.Log("未找到依赖" + lib.name + "开始下载", Logger.LogType.Error);
                     if (lib.url == null)
                     {
-                        prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
-                        string nativep = buildNativePath(lib);
-                        if (!Directory.Exists(Path.GetDirectoryName(nativep)))
+                        try
                         {
-                            Directory.CreateDirectory(Path.GetDirectoryName(nativep));
-                        }
+                            prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
+                            string nativep = buildNativePath(lib);
+                            if (!Directory.Exists(Path.GetDirectoryName(nativep)))
+                            {
+                                Directory.CreateDirectory(Path.GetDirectoryName(nativep));
+                            }
 #if DEBUG
                         System.Windows.MessageBox.Show(urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
                         Logger.Log(urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), Logger.LogType.Info);
 #endif
-                        downer.DownloadFile(urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), nativep);
+                            downer.DownloadFile(urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), nativep);
+                        }
+                        catch (WebException ex)
+                        {
+                            Logger.Log(ex);
+                            Logger.Log("原地址下载失败，尝试作者源"+lib.name);
+                            string nativep = buildLibPath(lib);
+                            downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), nativep);
+                        }
                     }
                     else
                     {
-                        string urlLib = lib.url;
-                        prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
-                        /*
-                        DownNative downer = new DownNative(lib);
-                        downNativeEvent(lib);
-                        downer.startdownload();
-                         */
-                        string nativep = buildNativePath(lib);
-                        if (!Directory.Exists(Path.GetDirectoryName(nativep)))
+                        try
                         {
-                            Directory.CreateDirectory(Path.GetDirectoryName(nativep));
-                        }
+                            string urlLib = lib.url;
+                            prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
+                            /*
+                            DownNative downer = new DownNative(lib);
+                            downNativeEvent(lib);
+                            downer.startdownload();
+                             */
+                            string nativep = buildNativePath(lib);
+                            if (!Directory.Exists(Path.GetDirectoryName(nativep)))
+                            {
+                                Directory.CreateDirectory(Path.GetDirectoryName(nativep));
+                            }
 #if DEBUG
                         System.Windows.MessageBox.Show(urlLib.Replace("\\", "/"));
                         Logger.Log(urlLib.Replace("\\", "/"), Logger.LogType.Info);
 #endif
-                        downer.DownloadFile(urlLib + nativep.Replace("/", "\\"), nativep);
+                            downer.DownloadFile(urlLib + nativep.Replace("/", "\\"), nativep);
+                        }
+                        catch (WebException ex)
+                        {
+                            Logger.Log(ex);
+                            Logger.Log("原地址下载失败，尝试作者源" + lib.name);
+                            string nativep = buildLibPath(lib);
+                            downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + nativep.Replace("/", "\\"), nativep);
+                        }
                     }
                 }
                 Logger.Log("解压native", Logger.LogType.Info);
@@ -390,7 +396,7 @@ namespace BMCLV2
                         size = zipfile.Read(data, 0, data.Length);
                         if (size > 0)
                         {
-                            fileWriter.Write(data, 0, data.Length);
+                            fileWriter.Write(data, 0, size);
                         }
                         else
                         {

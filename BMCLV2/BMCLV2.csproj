@@ -110,6 +110,9 @@
     <Compile Include="FrmPrs.xaml.cs">
       <DependentUpon>FrmPrs.xaml</DependentUpon>
     </Compile>
+    <Compile Include="FrmTexturepack.xaml.cs">
+      <DependentUpon>FrmTexturepack.xaml</DependentUpon>
+    </Compile>
     <Compile Include="HtmlAgilityPack\crc32.cs" />
     <Compile Include="HtmlAgilityPack\EncodingFoundException.cs" />
     <Compile Include="HtmlAgilityPack\HtmlAttribute.cs" />
@@ -177,6 +180,10 @@
     </Compile>
     <Compile Include="serverlist\serverinfo.cs" />
     <Compile Include="serverlist\serverlist.cs" />
+    <Compile Include="Texturepack\NoResourcePackDirException.cs" />
+    <Compile Include="Texturepack\TextureInfo.cs" />
+    <Compile Include="Texturepack\TexturePack.cs" />
+    <Compile Include="Texturepack\TexturePackEntity.cs" />
     <Compile Include="UpdateChecker.cs" />
     <Compile Include="util\Dir.cs" />
     <Compile Include="util\MathHelper.cs" />
@@ -256,6 +263,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="FrmPrs.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="FrmTexturepack.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

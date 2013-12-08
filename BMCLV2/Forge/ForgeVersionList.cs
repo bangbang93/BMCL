@@ -216,8 +216,11 @@ namespace BMCLV2.Forge
                 {
                     continue;
                 }
-                ForgeDownloadUrl.Add(ver, url);
-                ForgeChangeLogUrl.Add(ver, changelogurl);
+                if (!ForgeDownloadUrl.ContainsKey(ver))
+                {
+                    ForgeDownloadUrl.Add(ver, url);
+                    ForgeChangeLogUrl.Add(ver, changelogurl);
+                }
                 tree.Items.Add(ver);
             }
             trees.Add(tree);

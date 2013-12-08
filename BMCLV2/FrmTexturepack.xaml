@@ -1,0 +1,15 @@
+﻿<Window x:Class="BMCLV2.FrmTexturepack"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="FrmTexturepack" Height="546.269" Width="435.821">
+    <Grid>
+        <ListView Margin="0,0,0,124">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+
+    </Grid>
+</Window>
