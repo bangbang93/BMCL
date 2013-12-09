@@ -74,15 +74,21 @@ namespace yggdrasil
                     if (Response.getUser().getId()!=null)
                     {
                         AuthenticationResponse.Properties[] properties = Response.getUser().getProperties();
-                        Dictionary<string, string[]> PropertiesObj = new Dictionary<string, string[]>();
-                        foreach (AuthenticationResponse.Properties p in properties)
+                        if (properties != null)
                         {
-                            PropertiesObj.Add(p.getName(), new string[] { p.getValue() });
+                            Dictionary<string, string[]> PropertiesObj = new Dictionary<string, string[]>();
+                            foreach (AuthenticationResponse.Properties p in properties)
+                            {
+                                PropertiesObj.Add(p.getName(), new string[] { p.getValue() });
 
+                            }
+                            System.Web.Script.Serialization.JavaScriptSerializer PJsonSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+                            string PJsonStr = PJsonSerializer.Serialize(PropertiesObj);
+                            OutInfo.Append("${user_properties}:").AppendLine(PJsonStr);
                         }
-                        System.Web.Script.Serialization.JavaScriptSerializer PJsonSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                        string PJsonStr = PJsonSerializer.Serialize(PropertiesObj);
-                        OutInfo.Append("${user_properties}:").AppendLine(PJsonStr);
+                        else
+                        {
+                        }
                     }
                 }
                 LI.OtherInfo = LI.SID;

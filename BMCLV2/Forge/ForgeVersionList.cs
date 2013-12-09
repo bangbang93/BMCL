@@ -5,6 +5,8 @@ using System.Text;
 using System.Windows.Controls;
 using System.Collections;
 using System.Threading;
+using System.Net;
+using System.IO;
 
 using HtmlAgilityPack;
 
@@ -12,8 +14,7 @@ namespace BMCLV2.Forge
 {
     class ForgeVersionList
     {
-        private HtmlDocument ForgeOldPage, ForgeNewPage;
-        private HtmlWeb ForgeOldPageGet = new HtmlWeb(), ForgeNewPageGet = new HtmlWeb();
+        private HtmlDocument ForgeOldPage = new HtmlDocument(), ForgeNewPage = new HtmlDocument();
         private string OldPageUrl = "http://files.minecraftforge.net/minecraftforge/index_legacy.html";
         private string NewPageUrl = "http://files.minecraftforge.net/";
         public delegate void ForgePageReadyHandle();
@@ -21,11 +22,26 @@ namespace BMCLV2.Forge
         public Dictionary<string, string> ForgeDownloadUrl = new Dictionary<string, string>(), ForgeChangeLogUrl = new Dictionary<string, string>();
         public void GetVersion()
         {
-            Thread thOldPage = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() => ForgeOldPage = ForgeOldPageGet.Load(OldPageUrl))));
-            Thread thNewPage = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() => ForgeNewPage = ForgeNewPageGet.Load(NewPageUrl))));
+            bool NewPageReady = false, OldPageReady = false;
+            Thread thOldPage = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() => 
+                {
+                    WebClient wc = new WebClient();
+                    byte[] buffer = wc.DownloadData(OldPageUrl);
+                    MemoryStream ms = new MemoryStream(buffer);
+                    ForgeOldPage.Load(ms);
+                    OldPageReady = true;
+                })));
+            Thread thNewPage = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() =>
+                {
+                    WebClient wc = new WebClient();
+                    byte[] buffer = wc.DownloadData(NewPageUrl);
+                    MemoryStream ms = new MemoryStream(buffer);
+                    ForgeNewPage.Load(ms);
+                    NewPageReady = true;
+                })));
             Thread thWaiting = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() =>
             {
-                while (ForgeOldPage == null || ForgeNewPage == null) ;
+                while (!NewPageReady || !OldPageReady) ;
                 if (ForgePageReadyEvent != null)
                     ForgePageReadyEvent();
             })));
