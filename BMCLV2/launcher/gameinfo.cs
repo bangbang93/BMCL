@@ -14,22 +14,24 @@ namespace BMCLV2
     [DataContract]
     public class gameinfo : ICloneable
     {
-        [DataMember(Order = 0, IsRequired = true)]
+        [DataMember(IsRequired = true)]
         public string id = "";
-        [DataMember(Order = 1, IsRequired = false)]
+        [DataMember(IsRequired = false)]
         public string time = "";
-        [DataMember(Order = 2, IsRequired = false)]
+        [DataMember(IsRequired = false)]
         public string releaseTime = "";
-        [DataMember(Order = 3, IsRequired = false)]
+        [DataMember(IsRequired = false)]
         public string type = "";
-        [DataMember(Order = 4, IsRequired = true)]
+        [DataMember(IsRequired = true)]
         public string minecraftArguments = "";
-        [DataMember(Order = 5, IsRequired = true)]
+        [DataMember(IsRequired = true)]
         public string mainClass = "";
-        [DataMember(Order = 6, IsRequired = true)]
+        [DataMember(IsRequired = true)]
         public libraryies[] libraries = null;
-        [DataMember(Order = 7, IsRequired = false)]
+        [DataMember(IsRequired = false)]
         public int minimumLauncherVersion = 0;
+        [DataMember(IsRequired = false)]
+        public string assets;
         object ICloneable.Clone()
         {
             return this.clone();

@@ -79,6 +79,24 @@ namespace BMCLV2.Resource {
         }
         
         /// <summary>
+        ///   查找类似 http://www.bangbang93.com/bmcl/download/ 的本地化字符串。
+        /// </summary>
+        internal static string URL_LIBRARIES_bangbang93 {
+            get {
+                return ResourceManager.GetString("URL_LIBRARIES_bangbang93", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 https://libraries.minecraft.net/ 的本地化字符串。
+        /// </summary>
+        internal static string URL_LIBRARIES_BASE {
+            get {
+                return ResourceManager.GetString("URL_LIBRARIES_BASE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 http://www.bangbang93.com/bmcl/resources/ 的本地化字符串。
         /// </summary>
         internal static string URL_RESOURCE_bangbang93 {

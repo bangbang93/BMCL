@@ -50,6 +50,7 @@
     <s:String x:Key="tabForge">安裝Forge</s:String>
     <s:String x:Key="btnLastForge">一鍵安裝最新版Forge</s:String>
     <s:String x:Key="btnReForge">刷新Forge版本列表</s:String>
+    <s:String x:Key="ForgeNotReady">Forge列表尚未準備完畢</s:String>
     <s:String x:Key="ServerName">服務器名</s:String>
     <s:String x:Key="HiddenAddress">隱藏地址</s:String>
     <s:String x:Key="ServerAddress">服務器地址</s:String>
@@ -67,6 +68,7 @@
     <s:String x:Key="MenuShowMainWindow">顯示主窗口</s:String>
     <s:String x:Key="MenuUseDebugMode">以Debug模式重啟</s:String>
     <s:String x:Key="MenuSelectFile">選擇文件</s:String>
+    <s:String x:Key="MenuSelectTexturePack">選擇材質包</s:String>
     <s:String x:Key="BMCLHiddenInfo">BMCL隱藏在這裡了</s:String>
     <s:String x:Key="CantFindVersionJsonInfo">找不到版本所需的json文件</s:String>
     <s:String x:Key="DeleteMessageBoxInfo">你確定要刪除當前版本？這個操作不能恢復，1.5.1之後的版本可去版本管理裡重新下載</s:String>
@@ -142,6 +144,7 @@
     <s:String x:Key="ResNoFileForSync">沒有需要同步的文件</s:String>
     <s:String x:Key="ResPlsWaitingForCheck">請先對比文件並且等待對比完成</s:String>
     <s:String x:Key="ResCheckComplete">文件檢查完成，可以開始同步了</s:String>
+    <s:String x:Key="ResbtnNewMusic">獲取新音效</s:String>
     <s:String x:Key="FetchingForgeChangeLog">正在獲取Forge的更新日誌</s:String>
     <s:String x:Key="MenuStartDebug">以Debug模式啟動遊戲</s:String>
     <s:String x:Key="MenuDebugHint">Debug模式下BMCL會嘗試獲取Minecraft的日誌輸出信息，並且經行簡單的分析處理。這可能會輕微影響遊戲性能\n所有輸出都在啟動器目錄下的bmcl.log文件內。\n要想使用完整的Debug模式，請右鍵任務欄托盤區中的圖標，並選擇“以Debug模式重啟”</s:String>
@@ -152,5 +155,11 @@
     <s:String x:Key="LibMenuDelete">刪除</s:String>
     <s:String x:Key="LibIsSaveQuestion">內容已改變，是否保存？</s:String>
     <s:String x:Key="ErrorNoGameJson">無法找到版本對應的Json信息文件</s:String>
+    <s:String x:Key="FrmDownload">下載</s:String>
+    <s:String x:Key="DownloadFinish">下載完成</s:String>
+    <s:String x:Key="StartupDuplicate">請勿同時啟動兩個啟動器</s:String>
+    <s:String x:Key="FoundAssetsModify">發現資源文件修改，正在同步</s:String>
+    <s:String x:Key="SyncAssetsFinish">同步資源文件完畢，若未生效，請重啟客戶端</s:String>
+
 
 </ResourceDictionary>

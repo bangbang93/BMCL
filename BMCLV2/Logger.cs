@@ -130,5 +130,25 @@ namespace BMCLV2
             }
             Write(Message.ToString(), Type);
         }
+
+        static public void Log(LogType Type = LogType.Info, params string[] Messages)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (string str in Messages)
+            {
+                sb.Append(str);
+            }
+            Write(sb.ToString(), Type);
+        }
+
+        static public void Log(params string[] Messages)
+        {
+            StringBuilder sb = new StringBuilder();
+            foreach (string str in Messages)
+            {
+                sb.Append(str);
+            }
+            Write(sb.ToString(), LogType.Info);
+        }
     }
 }

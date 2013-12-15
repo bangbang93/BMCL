@@ -89,6 +89,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="assets\assets.cs" />
+    <Compile Include="assets\AssetsEntity.cs" />
     <Compile Include="config.cs" />
     <Compile Include="CrashHandle.xaml.cs">
       <DependentUpon>CrashHandle.xaml</DependentUpon>
@@ -185,8 +187,9 @@
     <Compile Include="Texturepack\TexturePack.cs" />
     <Compile Include="Texturepack\TexturePackEntity.cs" />
     <Compile Include="UpdateChecker.cs" />
-    <Compile Include="util\Dir.cs" />
+    <Compile Include="util\FileHelper.cs" />
     <Compile Include="util\MathHelper.cs" />
+    <Compile Include="util\MD5.cs" />
     <Compile Include="Versions\RawVersionListType.cs" />
     <Compile Include="Versions\RemoteVerType.cs" />
     <Compile Include="zip\Checksums\Adler32.cs" />

@@ -42,6 +42,7 @@ namespace BMCLV2
         static private string cfgfile = "bmcl.xml";
         public static String URL_DOWNLOAD_BASE = BMCLV2.Resource.Url.URL_DOWNLOAD_BASE;
         public static String URL_RESOURCE_BASE = BMCLV2.Resource.Url.URL_RESOURCE_BASE;
+        public static string URL_LIBRARIES_BASE = BMCLV2.Resource.Url.URL_LIBRARIES_BASE;
         private Dictionary<object, object> Auths = new Dictionary<object, object>();
         public static config cfg;
         static public gameinfo info;
@@ -51,7 +52,7 @@ namespace BMCLV2
         static public ListBox AuthList;
         static public string portinfo = "Port By BMCL";
         static public bool debug;
-        System.Windows.Forms.NotifyIcon NIcon;
+        public static System.Windows.Forms.NotifyIcon NIcon;
         public static string ver;
         private int ClientCrashReportCount;
         private FrmPrs starter;
@@ -376,6 +377,15 @@ namespace BMCLV2
                         NIcon.ShowBalloonTip(10000, "BMCL", "已启动" + cfg.lastPlayVer, System.Windows.Forms.ToolTipIcon.Info);
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { starter.Close(); }));
                     IsLaunchering = false;
+                    if (info.assets != null)
+                    {
+                        Thread thAssets = new Thread(new ThreadStart(() => 
+                        {
+                            new assets.assets(info);
+                        }));
+                        thAssets.IsBackground = true;
+                        thAssets.Start();
+                    }
                 }
             })));
             thGO.Start();
@@ -799,10 +809,12 @@ namespace BMCLV2
                 case 0:
                     FrmMain.URL_DOWNLOAD_BASE = Resource.Url.URL_DOWNLOAD_BASE;
                     FrmMain.URL_RESOURCE_BASE = Resource.Url.URL_RESOURCE_BASE;
+                    FrmMain.URL_LIBRARIES_BASE = Resource.Url.URL_LIBRARIES_BASE;
                     break;
                 case 1:
                     FrmMain.URL_DOWNLOAD_BASE = Resource.Url.URL_DOWNLOAD_bangbang93;
                     FrmMain.URL_RESOURCE_BASE = Resource.Url.URL_RESOURCE_bangbang93;
+                    FrmMain.URL_LIBRARIES_BASE = Resource.Url.URL_LIBRARIES_bangbang93;
                     break;
                 default:
                     goto case 0;
@@ -1580,15 +1592,15 @@ namespace BMCLV2
             }
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportSolveMod")); }));
             if (Directory.Exists(ImportFrom + "\\mods"))
-                util.Dir.dircopy(ImportFrom + "\\mods", ".minecraft\\versions\\" + ImportName + "\\mods");
+                util.FileHelper.dircopy(ImportFrom + "\\mods", ".minecraft\\versions\\" + ImportName + "\\mods");
             else
                 Directory.CreateDirectory(".minecraft\\versions\\" + ImportName + "\\mods");
             if (Directory.Exists(ImportFrom + "\\coremods"))
-                util.Dir.dircopy(ImportFrom + "\\coremods", ".minecraft\\versions\\" + ImportName + "\\coremods");
+                util.FileHelper.dircopy(ImportFrom + "\\coremods", ".minecraft\\versions\\" + ImportName + "\\coremods");
             else
                 Directory.CreateDirectory(".minecraft\\versions\\" + ImportName + "\\coremods");
             if (Directory.Exists(ImportFrom + "\\config"))
-                util.Dir.dircopy(ImportFrom + "\\config", ".minecraft\\versions\\" + ImportName + "\\config");
+                util.FileHelper.dircopy(ImportFrom + "\\config", ".minecraft\\versions\\" + ImportName + "\\config");
             else
                 Directory.CreateDirectory(".minecraft\\versions\\" + ImportName + "\\configmods");
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
