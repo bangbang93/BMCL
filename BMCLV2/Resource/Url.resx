@@ -130,7 +130,7 @@
     <value>http://resources.download.minecraft.net/</value>
   </data>
   <data name="URL_LIBRARIES_bangbang93" xml:space="preserve">
-    <value>http://www.bangbang93.com/bmcl/download/</value>
+    <value>http://www.bangbang93.com/bmcl/download/libraries/</value>
   </data>
   <data name="URL_LIBRARIES_BASE" xml:space="preserve">
     <value>https://libraries.minecraft.net/</value>
