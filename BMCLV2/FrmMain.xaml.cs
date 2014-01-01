@@ -1029,8 +1029,11 @@ namespace BMCLV2
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(() =>
             {
                 treeForgeVer.Items.Clear();
-                treeForgeVer.Items.Add(ForgeVer.GetLastForge());
-                foreach (TreeViewItem t in ForgeVer.GetAllBuild())
+                foreach (TreeViewItem t in ForgeVer.GetNew())
+                {
+                    treeForgeVer.Items.Add(t);
+                }
+                foreach (TreeViewItem t in ForgeVer.GetLegacy())
                 {
                     treeForgeVer.Items.Add(t);
                 }

@@ -151,6 +151,7 @@
     <Compile Include="HtmlAgilityPack\Trace.cs" />
     <Compile Include="HtmlAgilityPack\Trace.FullFramework.cs" />
     <Compile Include="HtmlAgilityPack\Utilities.cs" />
+    <Compile Include="JsonClass\ForgeVersion.cs" />
     <Compile Include="JsonClass\soundsJson.cs" />
     <Compile Include="Lang\LangManager.cs" />
     <Compile Include="Lang\LangType.cs" />

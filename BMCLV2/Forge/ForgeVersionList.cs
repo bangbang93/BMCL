@@ -7,18 +7,23 @@ using System.Collections;
 using System.Threading;
 using System.Net;
 using System.IO;
+using System.Runtime.Serialization.Json;
 
 using HtmlAgilityPack;
+
+using BMCLV2.JsonClass;
 
 namespace BMCLV2.Forge
 {
     class ForgeVersionList
     {
         private HtmlDocument ForgeOldPage = new HtmlDocument(), ForgeNewPage = new HtmlDocument();
-        private string OldPageUrl = "http://files.minecraftforge.net/minecraftforge/index_legacy.html";
-        private string NewPageUrl = "http://files.minecraftforge.net/";
+        private string OldPageUrl = "http://bmclapi.bangbang93.com/forge/legacylist";  //这两个API允许对外开放，如果有人想要用的话就用吧。
+        private string NewPageUrl = "http://bmclapi.bangbang93.com/forge/versionlist";
         public delegate void ForgePageReadyHandle();
         public event ForgePageReadyHandle ForgePageReadyEvent;
+        private DataContractJsonSerializer ForgeVerJsonParse = new DataContractJsonSerializer(typeof(ForgeVersion[]));
+        private ForgeVersion[] ForgeNew, ForgeLegacy;
         public Dictionary<string, string> ForgeDownloadUrl = new Dictionary<string, string>(), ForgeChangeLogUrl = new Dictionary<string, string>();
         public void GetVersion()
         {
@@ -28,7 +33,7 @@ namespace BMCLV2.Forge
                     WebClient wc = new WebClient();
                     byte[] buffer = wc.DownloadData(OldPageUrl);
                     MemoryStream ms = new MemoryStream(buffer);
-                    ForgeOldPage.Load(ms);
+                    ForgeLegacy = ForgeVerJsonParse.ReadObject(ms) as ForgeVersion[];
                     OldPageReady = true;
                 })));
             Thread thNewPage = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() =>
@@ -36,7 +41,7 @@ namespace BMCLV2.Forge
                     WebClient wc = new WebClient();
                     byte[] buffer = wc.DownloadData(NewPageUrl);
                     MemoryStream ms = new MemoryStream(buffer);
-                    ForgeNewPage.Load(ms);
+                    ForgeNew = ForgeVerJsonParse.ReadObject(ms) as ForgeVersion[];
                     NewPageReady = true;
                 })));
             Thread thWaiting = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() =>
@@ -244,6 +249,70 @@ namespace BMCLV2.Forge
 
 
             return trees.ToArray(typeof(TreeViewItem)) as TreeViewItem[];
+        }
+
+        public TreeViewItem[] GetNew()
+        {
+            ArrayList r = new ArrayList(ForgeNew.Length);
+            TreeViewItem t = new TreeViewItem();
+            foreach (ForgeVersion Forge in ForgeNew)
+            {
+                if (Forge.installer == null)
+                {
+                    continue;
+                }
+                if (t.Header == null)
+                {
+                    t.Header = Forge.mcver;
+                }
+                if (t.Header.ToString() != Forge.mcver)
+                {
+                    t = new TreeViewItem();
+                    r.Add(t);
+                }
+                if (ForgeDownloadUrl.ContainsKey(Forge.vername))
+                    ForgeDownloadUrl[Forge.vername] = Forge.installer[1];
+                else
+                    ForgeDownloadUrl.Add(Forge.vername, Forge.installer[1]);
+                if (ForgeChangeLogUrl.ContainsKey(Forge.vername))
+                    ForgeChangeLogUrl[Forge.vername] = Forge.installer[1];
+                else
+                    ForgeChangeLogUrl.Add(Forge.vername, Forge.changlog);
+                t.Items.Add(Forge.vername);
+            }
+            return r.ToArray(typeof(TreeViewItem)) as TreeViewItem[];
+        }
+
+        public TreeViewItem[] GetLegacy()
+        {
+            ArrayList r = new ArrayList(ForgeLegacy.Length);
+            TreeViewItem t = new TreeViewItem();
+            foreach (ForgeVersion Forge in ForgeLegacy)
+            {
+                if (Forge.installer == null)
+                {
+                    continue;
+                }
+                if (t.Header == null)
+                {
+                    t.Header = Forge.mcver;
+                }
+                if (t.Header.ToString() != Forge.mcver)
+                {
+                    t = new TreeViewItem();
+                    r.Add(t);
+                }
+                if (ForgeDownloadUrl.ContainsKey(Forge.vername))
+                    ForgeDownloadUrl[Forge.vername] = Forge.installer[1];
+                else
+                    ForgeDownloadUrl.Add(Forge.vername, Forge.installer[1]);
+                if (ForgeChangeLogUrl.ContainsKey(Forge.vername))
+                    ForgeChangeLogUrl[Forge.vername] = Forge.installer[1];
+                else
+                    ForgeChangeLogUrl.Add(Forge.vername, Forge.changlog);
+                t.Items.Add(Forge.vername);
+            }
+            return r.ToArray(typeof(TreeViewItem)) as TreeViewItem[];
         }
     }
 }
