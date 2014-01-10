@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using System.Diagnostics;
+using System.Net;
 
 using BMCLV2.Lang;
 
@@ -28,6 +29,7 @@ namespace BMCLV2
                 AppLock.Write(buffer, 0, buffer.Length);
                 AppLock.Close();
                 AppLock = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "BMCL.lck", FileMode.Open);
+                WebRequest.DefaultWebProxy = null;
             }
             catch (IOException)
             {

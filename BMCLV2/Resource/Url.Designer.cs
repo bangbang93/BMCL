@@ -61,7 +61,7 @@ namespace BMCLV2.Resource {
         }
         
         /// <summary>
-        ///   查找类似 http://www.bangbang93.com/bmcl/download/ 的本地化字符串。
+        ///   查找类似 http://bmclapi.bangbang93.com/mc 的本地化字符串。
         /// </summary>
         internal static string URL_DOWNLOAD_bangbang93 {
             get {

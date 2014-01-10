@@ -27,14 +27,23 @@ namespace BMCLV2.Forge
         public Dictionary<string, string> ForgeDownloadUrl = new Dictionary<string, string>(), ForgeChangeLogUrl = new Dictionary<string, string>();
         public void GetVersion()
         {
+            
             bool NewPageReady = false, OldPageReady = false;
             Thread thOldPage = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() => 
                 {
                     WebClient wc = new WebClient();
+                    wc.Proxy = null;
                     byte[] buffer = wc.DownloadData(OldPageUrl);
                     MemoryStream ms = new MemoryStream(buffer);
                     ForgeLegacy = ForgeVerJsonParse.ReadObject(ms) as ForgeVersion[];
                     OldPageReady = true;
+                    Logger.Log("获取Legcy Forge列表成功");
+                    if (OldPageReady && NewPageReady)
+                    {
+                        Logger.Log("开始解析Forge");
+                        if (ForgePageReadyEvent != null)
+                            ForgePageReadyEvent();
+                    }
                 })));
             Thread thNewPage = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() =>
                 {
@@ -43,14 +52,14 @@ namespace BMCLV2.Forge
                     MemoryStream ms = new MemoryStream(buffer);
                     ForgeNew = ForgeVerJsonParse.ReadObject(ms) as ForgeVersion[];
                     NewPageReady = true;
+                    Logger.Log("获取new Forge列表成功");
+                    if (OldPageReady && NewPageReady)
+                    {
+                        Logger.Log("开始解析Forge");
+                        if (ForgePageReadyEvent != null)
+                            ForgePageReadyEvent();
+                    }
                 })));
-            Thread thWaiting = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() =>
-            {
-                while (!NewPageReady || !OldPageReady) ;
-                if (ForgePageReadyEvent != null)
-                    ForgePageReadyEvent();
-            })));
-            thWaiting.Start();
             thOldPage.Start();
             thNewPage.Start();
         }
@@ -279,6 +288,7 @@ namespace BMCLV2.Forge
                 else
                     ForgeChangeLogUrl.Add(Forge.vername, Forge.changlog);
                 t.Items.Add(Forge.vername);
+                Logger.Log("获取Forge"+Forge.vername);
             }
             return r.ToArray(typeof(TreeViewItem)) as TreeViewItem[];
         }
@@ -311,6 +321,7 @@ namespace BMCLV2.Forge
                 else
                     ForgeChangeLogUrl.Add(Forge.vername, Forge.changlog);
                 t.Items.Add(Forge.vername);
+                Logger.Log("获取Forge" + Forge.vername);
             }
             return r.ToArray(typeof(TreeViewItem)) as TreeViewItem[];
         }
