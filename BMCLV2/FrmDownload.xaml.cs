@@ -67,6 +67,12 @@ namespace BMCLV2
                 listLog.ScrollIntoView(listLog.Items[listLog.Items.Count - 1]);
                 labCount.Content = FinishFileCount + "/" + FileTable.Count;
                 prsCount.Value = FinishFileCount;
+                if (FinishFileCount == FileTable.Count)
+                {
+                    MessageBox.Show(LangManager.GetLangFromResource("DownloadFinish"));
+                    Logger.Log("下载文件完毕");
+                    this.Close();
+                }
             }));
         }
     }
