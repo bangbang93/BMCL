@@ -62,7 +62,7 @@ namespace BMCLV2
             ver = ver.Substring(0, ver.IndexOf(','));
             Logger.Log("BMCL V2 Ver." + ver + "正在启动");
             InitializeComponent();
-            ReFlushlistver();
+            LoadLanguage();
             #region 图标
             NIcon = new System.Windows.Forms.NotifyIcon();
             NIcon.Visible = true;
@@ -79,7 +79,6 @@ namespace BMCLV2
             DebugMode.Click += DebugMode_Click;
             NIcon.ContextMenu = NMenu;
             #endregion
-            LoadLanguage();
             #region 加载配置
             if (File.Exists(cfgfile))
             {
@@ -117,6 +116,7 @@ namespace BMCLV2
             comboLang.SelectedItem = LangManager.GetLangFromResource("DisplayName");
             #endregion
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
+            ReFlushlistver();
             listAuth.SelectedItem = cfg.login;
             checkCheckUpdate.IsChecked = cfg.CheckUpdate;
             Logger.Log(cfg);
@@ -1427,7 +1427,7 @@ namespace BMCLV2
             if (!loadOk)
             {
                 if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets"))
-                    if (MessageBox.Show("可能是第一次启动，未找到资源文件，是否下载？", "未找到资源文件", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    if (MessageBox.Show(LangManager.GetLangFromResource("ResourceTipForFirstLauncher"), LangManager.GetLangFromResource("ResourceTipTitleForFirstLauncher"), MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                     {
                         FrmCheckRes frmCheckRes = new FrmCheckRes();
                         frmCheckRes.Show();

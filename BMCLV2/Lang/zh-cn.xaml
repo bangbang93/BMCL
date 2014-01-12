@@ -160,4 +160,6 @@
     <s:String x:Key="StartupDuplicate">请勿同时启动两个启动器</s:String>
     <s:String x:Key="FoundAssetsModify">发现资源文件修改，正在同步</s:String>
     <s:String x:Key="SyncAssetsFinish">同步资源文件完毕，若未生效，请重启客户端</s:String>
+    <s:String x:Key="ResourceTipForFirstLauncher">可能是第一次启动，未找到资源文件，是否下载？</s:String>
+    <s:String x:Key="ResourceTipTitleForFirstLauncher">未找到资源文件</s:String>
 </ResourceDictionary>
