@@ -30,7 +30,6 @@ using BMCLV2.util;
 using BMCLV2.Lang;
 using BMCLV2.Forge;
 
-using HtmlAgilityPack;
 
 namespace BMCLV2
 {
