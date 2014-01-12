@@ -79,7 +79,7 @@ namespace BMCLV2.Resource {
         }
         
         /// <summary>
-        ///   查找类似 http://www.bangbang93.com/bmcl/download/libraries/ 的本地化字符串。
+        ///   查找类似 http://bmclapi.bangbang93.com/mclibraries/ 的本地化字符串。
         /// </summary>
         internal static string URL_LIBRARIES_bangbang93 {
             get {
@@ -97,7 +97,7 @@ namespace BMCLV2.Resource {
         }
         
         /// <summary>
-        ///   查找类似 http://www.bangbang93.com/bmcl/resources/ 的本地化字符串。
+        ///   查找类似 http://bmclapi.bangbang93.com/mcassets/ 的本地化字符串。
         /// </summary>
         internal static string URL_RESOURCE_bangbang93 {
             get {

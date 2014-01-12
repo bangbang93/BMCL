@@ -24,7 +24,8 @@ namespace BMCLV2.assets
             string GameVersion = GameInfo.assets;
             try
             {
-                Downloader.DownloadStringAsync(new Uri("https://s3.amazonaws.com/Minecraft.Download/indexes/" + GameVersion + ".json"));
+                Downloader.DownloadStringAsync(new Uri(FrmMain.URL_DOWNLOAD_BASE + "indexes/" + GameVersion + ".json"));
+                Logger.Log(FrmMain.URL_DOWNLOAD_BASE + "indexes/" + GameVersion + ".json");
             }
             catch (WebException ex)
             {

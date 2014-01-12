@@ -124,13 +124,13 @@
     <value>https://s3.amazonaws.com/Minecraft.Download/</value>
   </data>
   <data name="URL_RESOURCE_bangbang93" xml:space="preserve">
-    <value>http://www.bangbang93.com/bmcl/resources/</value>
+    <value>http://bmclapi.bangbang93.com/mcassets/</value>
   </data>
   <data name="URL_RESOURCE_BASE" xml:space="preserve">
     <value>http://resources.download.minecraft.net/</value>
   </data>
   <data name="URL_LIBRARIES_bangbang93" xml:space="preserve">
-    <value>http://www.bangbang93.com/bmcl/download/libraries/</value>
+    <value>http://bmclapi.bangbang93.com/mclibraries/</value>
   </data>
   <data name="URL_LIBRARIES_BASE" xml:space="preserve">
     <value>https://libraries.minecraft.net/</value>

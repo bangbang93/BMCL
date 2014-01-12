@@ -34,7 +34,7 @@ namespace BMCLV2
         {
             InitializeComponent();
         }
-        string URL_RESOURCE_BASE = Resource.Url.URL_RESOURCE_bangbang93;
+        string URL_RESOURCE_BASE = "http://www.bangbang93.com/bmcl/resources/";
         DataTable dt = new DataTable();
         int InDownloading = 0;
         int WaitingForSync = 0;
