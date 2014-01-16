@@ -184,7 +184,7 @@ namespace BMCLV2
                 b.Stretch = Stretch.Fill;
                 DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
                 this.BeginAnimation(FrmMain.OpacityProperty, da);
-                this.Top.Background = b;
+                this.top.Background = b;
                 da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
                 this.BeginAnimation(FrmMain.OpacityProperty, da);
             }
@@ -457,7 +457,7 @@ namespace BMCLV2
             b.Stretch = Stretch.Fill;
             DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
             this.BeginAnimation(FrmMain.OpacityProperty, da);
-            this.Top.Background = b;
+            this.top.Background = b;
             da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
             this.BeginAnimation(FrmMain.OpacityProperty, da);
         }
@@ -482,7 +482,7 @@ namespace BMCLV2
 
             DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
             this.BeginAnimation(FrmMain.OpacityProperty, da);
-            this.Top.Background = b;
+            this.top.Background = b;
             btnStart.Background = button;
             da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
             this.BeginAnimation(FrmMain.OpacityProperty, da);
@@ -797,8 +797,8 @@ namespace BMCLV2
         }
         private void sliderWindowTransparency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (Top.Background != null)
-                Top.Background.Opacity = e.NewValue;
+            if (top.Background != null)
+                top.Background.Opacity = e.NewValue;
         }
 
         private void listDownSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1461,12 +1461,12 @@ namespace BMCLV2
                 ImageBrush b = new ImageBrush();
                 b.ImageSource = new BitmapImage(new Uri((Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg")[img])));
                 b.Stretch = Stretch.Fill;
-                this.Top.Background = b;
+                this.top.Background = b;
             }
             catch
             {
                 SolidColorBrush b=new SolidColorBrush(Color.FromRgb(255,255,255));
-                this.Top.Background = b;
+                this.top.Background = b;
             }
             loadOk = true;
         }
