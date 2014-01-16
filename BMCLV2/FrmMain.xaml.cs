@@ -62,23 +62,6 @@ namespace BMCLV2
             ver = ver.Substring(0, ver.IndexOf(','));
             Logger.Log("BMCL V2 Ver." + ver + "正在启动");
             InitializeComponent();
-            LoadLanguage();
-            #region 图标
-            NIcon = new System.Windows.Forms.NotifyIcon();
-            NIcon.Visible = true;
-            System.Windows.Resources.StreamResourceInfo s = Application.GetResourceStream(new Uri("pack://application:,,,/screenLaunch.png"));
-            NIcon.Icon = System.Drawing.Icon.FromHandle(new System.Drawing.Bitmap(s.Stream).GetHicon());
-            System.Windows.Forms.ContextMenu NMenu = new System.Windows.Forms.ContextMenu();
-            System.Windows.Forms.MenuItem MenuItem = NMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
-            MenuItem.Name = "ShowMainWindow";
-            MenuItem.DefaultItem = true;
-            MenuItem.Click += NMenu_ShowMainWindows_Click;
-            NIcon.DoubleClick += NIcon_DoubleClick;
-            System.Windows.Forms.MenuItem DebugMode = NMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuUseDebugMode"));
-            DebugMode.Name = "DebugMode";
-            DebugMode.Click += DebugMode_Click;
-            NIcon.ContextMenu = NMenu;
-            #endregion
             #region 加载配置
             if (File.Exists(cfgfile))
             {
@@ -112,15 +95,31 @@ namespace BMCLV2
             checkReport.IsChecked = cfg.Report;
             txtInsPath.Text = AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft";
             listDownSource.SelectedIndex = cfg.DownloadSource;
-            LangManager.UseLanguage(cfg.Lang);
             comboLang.SelectedItem = LangManager.GetLangFromResource("DisplayName");
+            #endregion
+            LoadLanguage();
+            LangManager.UseLanguage(cfg.Lang);
+            #region 图标
+            NIcon = new System.Windows.Forms.NotifyIcon();
+            NIcon.Visible = true;
+            System.Windows.Resources.StreamResourceInfo s = Application.GetResourceStream(new Uri("pack://application:,,,/screenLaunch.png"));
+            NIcon.Icon = System.Drawing.Icon.FromHandle(new System.Drawing.Bitmap(s.Stream).GetHicon());
+            System.Windows.Forms.ContextMenu NMenu = new System.Windows.Forms.ContextMenu();
+            System.Windows.Forms.MenuItem MenuItem = NMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
+            MenuItem.Name = "ShowMainWindow";
+            MenuItem.DefaultItem = true;
+            MenuItem.Click += NMenu_ShowMainWindows_Click;
+            NIcon.DoubleClick += NIcon_DoubleClick;
+            System.Windows.Forms.MenuItem DebugMode = NMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuUseDebugMode"));
+            DebugMode.Name = "DebugMode";
+            DebugMode.Click += DebugMode_Click;
+            NIcon.ContextMenu = NMenu;
             #endregion
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
             ReFlushlistver();
             listAuth.SelectedItem = cfg.login;
             checkCheckUpdate.IsChecked = cfg.CheckUpdate;
             Logger.Log(cfg);
-            
             this.Title = "BMCL V2 Ver." + ver;
             launcher.gameexit += launcher_gameexit;
 #if DEBUG
