@@ -140,7 +140,7 @@ namespace BMCLV2
 
         void DebugMode_Click(object sender, EventArgs e)
         {
-            Process.Start(Environment.CommandLine.Replace("\"", ""), "-Debug");
+            Process.Start(Process.GetCurrentProcess().MainModule.FileName, "-Debug");
             NIcon.Visible = false;
             Environment.Exit(0);
         }
