@@ -7,7 +7,7 @@
         <Grid.RowDefinitions>
             <RowDefinition/>
         </Grid.RowDefinitions>
-        <Border BorderBrush="Black" CornerRadius="15,15,15,15" BorderThickness="2" HorizontalAlignment="Left" Height="504" VerticalAlignment="Top" Margin="0,0,0,-42" Width="900" x:Name="Top">
+        <Border BorderBrush="Black" CornerRadius="15,15,15,15" BorderThickness="2" HorizontalAlignment="Left" Height="504" VerticalAlignment="Top" Margin="0,0,0,-42" Width="900" x:Name="top">
             <Grid x:Name="gridMain">
                 <Grid.Background>
                     <ImageBrush/>

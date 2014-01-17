@@ -62,23 +62,6 @@ namespace BMCLV2
             ver = ver.Substring(0, ver.IndexOf(','));
             Logger.Log("BMCL V2 Ver." + ver + "正在启动");
             InitializeComponent();
-            LoadLanguage();
-            #region 图标
-            NIcon = new System.Windows.Forms.NotifyIcon();
-            NIcon.Visible = true;
-            System.Windows.Resources.StreamResourceInfo s = Application.GetResourceStream(new Uri("pack://application:,,,/screenLaunch.png"));
-            NIcon.Icon = System.Drawing.Icon.FromHandle(new System.Drawing.Bitmap(s.Stream).GetHicon());
-            System.Windows.Forms.ContextMenu NMenu = new System.Windows.Forms.ContextMenu();
-            System.Windows.Forms.MenuItem MenuItem = NMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
-            MenuItem.Name = "ShowMainWindow";
-            MenuItem.DefaultItem = true;
-            MenuItem.Click += NMenu_ShowMainWindows_Click;
-            NIcon.DoubleClick += NIcon_DoubleClick;
-            System.Windows.Forms.MenuItem DebugMode = NMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuUseDebugMode"));
-            DebugMode.Name = "DebugMode";
-            DebugMode.Click += DebugMode_Click;
-            NIcon.ContextMenu = NMenu;
-            #endregion
             #region 加载配置
             if (File.Exists(cfgfile))
             {
@@ -112,15 +95,31 @@ namespace BMCLV2
             checkReport.IsChecked = cfg.Report;
             txtInsPath.Text = AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft";
             listDownSource.SelectedIndex = cfg.DownloadSource;
-            LangManager.UseLanguage(cfg.Lang);
             comboLang.SelectedItem = LangManager.GetLangFromResource("DisplayName");
+            #endregion
+            LoadLanguage();
+            LangManager.UseLanguage(cfg.Lang);
+            #region 图标
+            NIcon = new System.Windows.Forms.NotifyIcon();
+            NIcon.Visible = true;
+            System.Windows.Resources.StreamResourceInfo s = Application.GetResourceStream(new Uri("pack://application:,,,/screenLaunch.png"));
+            NIcon.Icon = System.Drawing.Icon.FromHandle(new System.Drawing.Bitmap(s.Stream).GetHicon());
+            System.Windows.Forms.ContextMenu NMenu = new System.Windows.Forms.ContextMenu();
+            System.Windows.Forms.MenuItem MenuItem = NMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
+            MenuItem.Name = "ShowMainWindow";
+            MenuItem.DefaultItem = true;
+            MenuItem.Click += NMenu_ShowMainWindows_Click;
+            NIcon.DoubleClick += NIcon_DoubleClick;
+            System.Windows.Forms.MenuItem DebugMode = NMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuUseDebugMode"));
+            DebugMode.Name = "DebugMode";
+            DebugMode.Click += DebugMode_Click;
+            NIcon.ContextMenu = NMenu;
             #endregion
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
             ReFlushlistver();
             listAuth.SelectedItem = cfg.login;
             checkCheckUpdate.IsChecked = cfg.CheckUpdate;
             Logger.Log(cfg);
-            
             this.Title = "BMCL V2 Ver." + ver;
             launcher.gameexit += launcher_gameexit;
 #if DEBUG
@@ -140,7 +139,7 @@ namespace BMCLV2
 
         void DebugMode_Click(object sender, EventArgs e)
         {
-            Process.Start(Environment.CommandLine.Replace("\"", ""), "-Debug");
+            Process.Start(Process.GetCurrentProcess().MainModule.FileName, "-Debug");
             NIcon.Visible = false;
             Environment.Exit(0);
         }
@@ -184,7 +183,7 @@ namespace BMCLV2
                 b.Stretch = Stretch.Fill;
                 DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
                 this.BeginAnimation(FrmMain.OpacityProperty, da);
-                this.Top.Background = b;
+                this.top.Background = b;
                 da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
                 this.BeginAnimation(FrmMain.OpacityProperty, da);
             }
@@ -457,7 +456,7 @@ namespace BMCLV2
             b.Stretch = Stretch.Fill;
             DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
             this.BeginAnimation(FrmMain.OpacityProperty, da);
-            this.Top.Background = b;
+            this.top.Background = b;
             da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
             this.BeginAnimation(FrmMain.OpacityProperty, da);
         }
@@ -482,7 +481,7 @@ namespace BMCLV2
 
             DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
             this.BeginAnimation(FrmMain.OpacityProperty, da);
-            this.Top.Background = b;
+            this.top.Background = b;
             btnStart.Background = button;
             da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
             this.BeginAnimation(FrmMain.OpacityProperty, da);
@@ -797,8 +796,8 @@ namespace BMCLV2
         }
         private void sliderWindowTransparency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (Top.Background != null)
-                Top.Background.Opacity = e.NewValue;
+            if (top.Background != null)
+                top.Background.Opacity = e.NewValue;
         }
 
         private void listDownSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1461,12 +1460,12 @@ namespace BMCLV2
                 ImageBrush b = new ImageBrush();
                 b.ImageSource = new BitmapImage(new Uri((Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg")[img])));
                 b.Stretch = Stretch.Fill;
-                this.Top.Background = b;
+                this.top.Background = b;
             }
             catch
             {
                 SolidColorBrush b=new SolidColorBrush(Color.FromRgb(255,255,255));
-                this.Top.Background = b;
+                this.top.Background = b;
             }
             loadOk = true;
         }
