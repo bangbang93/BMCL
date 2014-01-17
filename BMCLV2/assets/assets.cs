@@ -80,7 +80,13 @@ namespace BMCLV2.assets
                         }
                         //Downloader.DownloadFileAsync(new Uri(Url), File,Url);
                         Downloader.DownloadFile(new Uri(Url), File);
-                        Logger.Log(i.ToString(), obj.Count.ToString(), File.Substring(AppDomain.CurrentDomain.BaseDirectory.Length), "下载完毕");
+                        FrmMain.NIcon.Text = "BMCLV2 Solving Assets" + i.ToString() + "/" + obj.Count;
+                        Logger.Log(i.ToString(), "/", obj.Count.ToString(), File.Substring(AppDomain.CurrentDomain.BaseDirectory.Length), "下载完毕");
+                        if (i == obj.Count)
+                        {
+                            Logger.Log("assets下载完毕");
+                            FrmMain.NIcon.ShowBalloonTip(3000, "BMCL", Lang.LangManager.GetLangFromResource("SyncAssetsFinish"), System.Windows.Forms.ToolTipIcon.Info);
+                        }
                     }
                     catch (WebException ex)
                     {
