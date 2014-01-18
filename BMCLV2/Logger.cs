@@ -34,48 +34,36 @@ namespace BMCLV2
             }
         }
 
-        static private void WriteInfo(LogType Type = LogType.Info)
+        static private string WriteInfo(LogType Type = LogType.Info)
         {
-            FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bmcl.log", FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
-            StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
             switch (Type)
             {
                 case LogType.Error:
-                    sw.Write(DateTime.Now.ToString() + "错误:");
-                    break;
+                    return (DateTime.Now.ToString() + "错误:");
                 case LogType.Info:
-                    sw.Write(DateTime.Now.ToString() + "信息:");
-                    break;
+                    return (DateTime.Now.ToString() + "信息:");
                 case LogType.Crash:
-                    sw.Write(DateTime.Now.ToString() + "崩溃:");
-                    break;
+                    return (DateTime.Now.ToString() + "崩溃:");
                 case LogType.Exception:
-                    sw.Write(DateTime.Now.ToString() + "异常:");
-                    break;
+                    return (DateTime.Now.ToString() + "异常:");
                 case LogType.Game:
-                    sw.Write(DateTime.Now.ToString() + "游戏:");
-                    break;
+                    return (DateTime.Now.ToString() + "游戏:");
                 case LogType.Fml:
-                    sw.Write(DateTime.Now.ToString() + "FML :");
-                    break;
+                    return (DateTime.Now.ToString() + "FML :");
                 default:
-                    sw.Write(DateTime.Now.ToString() + "信息:");
-                    break;
+                    return (DateTime.Now.ToString() + "信息:");
             }
-            sw.Close();
-            fs.Close();
         }
         static private void Write(string str, LogType Type = LogType.Info)
         {
-            WriteInfo(Type);
             FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bmcl.log", FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
-            sw.WriteLine(str);
+            sw.WriteLine(WriteInfo(Type) + str);
             sw.Close();
             fs.Close();
             if (Debug)
             {
-                frmLog.WriteLine(str,Type);
+                frmLog.WriteLine(WriteInfo(Type) + str, Type);
             }
         }
         static private void Write(Stream s, LogType Type = LogType.Info)
