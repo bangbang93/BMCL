@@ -250,8 +250,10 @@ namespace BMCLV2
                     dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResInSync");
                 }
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
+                Logger.Log(string.Format("下载资源文件成功{0}，远程路径为{1}", dt.Rows[num]["FileName"], (sender as WebClient).BaseAddress));
                 if (InDownloading == 0)
                 {
+                    Logger.Log(string.Format("下载资源文件完毕"));
                     MessageBox.Show(LangManager.GetLangFromResource("ResFinish"));
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Close(); }));
                 }
