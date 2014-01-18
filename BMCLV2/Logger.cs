@@ -63,7 +63,7 @@ namespace BMCLV2
             fs.Close();
             if (Debug)
             {
-                frmLog.WriteLine(WriteInfo(Type) + str, Type);
+                frmLog.WriteLine(str, Type);
             }
         }
         static private void Write(Stream s, LogType Type = LogType.Info)

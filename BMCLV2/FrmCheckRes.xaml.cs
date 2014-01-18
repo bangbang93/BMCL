@@ -214,7 +214,7 @@ namespace BMCLV2
                 if (dt.Rows[num]["Status"].ToString() == LangManager.GetLangFromResource("ResWaitingForSync"))
                 {
                     WebClient downer = new WebClient();
-                    StringBuilder rpath = new StringBuilder(FrmMain.URL_RESOURCE_BASE);
+                    StringBuilder rpath = new StringBuilder(URL_RESOURCE_BASE);
                     StringBuilder lpath = new StringBuilder(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets\");
                     rpath.Append(dt.Rows[num]["FileName"].ToString());
                     lpath.Append(dt.Rows[num]["FileName"].ToString());
@@ -240,7 +240,7 @@ namespace BMCLV2
             int num = (int)e.UserState;
             if (e.Error != null)
             {
-                Logger.Log(string.Format("下载资源文件失败{0}", dt.Rows[num]["FileName"]));
+                Logger.Log(string.Format("下载资源文件失败{0}，远程路径为{1}", dt.Rows[num]["FileName"],(sender as WebClient).BaseAddress));
                 Logger.Log(e.Error);
             }
             else
