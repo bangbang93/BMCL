@@ -238,16 +238,23 @@ namespace BMCLV2
         {
             InDownloading--;
             int num = (int)e.UserState;
-            Logger.Log(string.Format("下载资源文件完成{0}", dt.Rows[num]["FileName"]));
-            lock (dt)
+            if (e.Error != null)
             {
-                dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResInSync");
+                Logger.Log(string.Format("下载资源文件失败{0}", dt.Rows[num]["FileName"]));
+                Logger.Log(e.Error);
             }
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
-            if (InDownloading == 0)
+            else
             {
-                MessageBox.Show(LangManager.GetLangFromResource("ResFinish"));
-                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Close(); }));
+                lock (dt)
+                {
+                    dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResInSync");
+                }
+                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
+                if (InDownloading == 0)
+                {
+                    MessageBox.Show(LangManager.GetLangFromResource("ResFinish"));
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Close(); }));
+                }
             }
         }
 
