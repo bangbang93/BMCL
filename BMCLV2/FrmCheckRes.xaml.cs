@@ -214,7 +214,7 @@ namespace BMCLV2
                 if (dt.Rows[num]["Status"].ToString() == LangManager.GetLangFromResource("ResWaitingForSync"))
                 {
                     WebClient downer = new WebClient();
-                    StringBuilder rpath = new StringBuilder(FrmMain.URL_RESOURCE_BASE);
+                    StringBuilder rpath = new StringBuilder(URL_RESOURCE_BASE);
                     StringBuilder lpath = new StringBuilder(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets\");
                     rpath.Append(dt.Rows[num]["FileName"].ToString());
                     lpath.Append(dt.Rows[num]["FileName"].ToString());
@@ -238,16 +238,25 @@ namespace BMCLV2
         {
             InDownloading--;
             int num = (int)e.UserState;
-            Logger.Log(string.Format("下载资源文件完成{0}", dt.Rows[num]["FileName"]));
-            lock (dt)
+            if (e.Error != null)
             {
-                dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResInSync");
+                Logger.Log(string.Format("下载资源文件失败{0}，远程路径为{1}", dt.Rows[num]["FileName"],(sender as WebClient).BaseAddress));
+                Logger.Log(e.Error);
             }
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
-            if (InDownloading == 0)
+            else
             {
-                MessageBox.Show(LangManager.GetLangFromResource("ResFinish"));
-                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Close(); }));
+                lock (dt)
+                {
+                    dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResInSync");
+                }
+                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
+                Logger.Log(string.Format("下载资源文件成功{0}，远程路径为{1}", dt.Rows[num]["FileName"], (sender as WebClient).BaseAddress));
+                if (InDownloading == 0)
+                {
+                    Logger.Log(string.Format("下载资源文件完毕"));
+                    MessageBox.Show(LangManager.GetLangFromResource("ResFinish"));
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Close(); }));
+                }
             }
         }
 
