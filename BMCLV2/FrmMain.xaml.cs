@@ -117,6 +117,7 @@ namespace BMCLV2
             #endregion
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
             ReFlushlistver();
+            listVer.SelectedItem = cfg.lastPlayVer;
             listAuth.SelectedItem = cfg.login;
             checkCheckUpdate.IsChecked = cfg.CheckUpdate;
             Logger.Log(cfg);
