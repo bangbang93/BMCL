@@ -1127,10 +1127,11 @@ namespace BMCLV2
             if (this.treeForgeVer.SelectedItem is string)
             {
                 if (!ForgeVer.ForgeChangeLogUrl.ContainsKey(this.treeForgeVer.SelectedItem as string))
-                {
-                    MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotHaveChangeLog"));
-                    return;
-                }
+                    if(ForgeVer.ForgeChangeLogUrl[this.treeForgeVer.SelectedItem as string] !=null)
+                    {
+                        MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotHaveChangeLog"));
+                        return;
+                    }
                 txtChangeLog.Text = LangManager.GetLangFromResource("FetchingForgeChangeLog");
                 WebClient GetLog = new WebClient();
                 GetLog.DownloadStringCompleted += GetLog_DownloadStringCompleted;
