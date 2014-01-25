@@ -147,57 +147,7 @@ namespace BMCLV2
         #region 公共按钮
         private void btnChangeBg_Click(object sender, RoutedEventArgs e)
         {
-            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\bg"))
-            {
-                Random rand = new Random();
-                ArrayList pics = new ArrayList();
-                foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.jpg", SearchOption.AllDirectories))
-                {
-                    pics.Add(str);
-                }
-                foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.png", SearchOption.AllDirectories))
-                {
-                    pics.Add(str);
-                }
-                foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.bmp", SearchOption.AllDirectories))
-                {
-                    pics.Add(str);
-                }
-                int imgTotal = pics.Count; 
-                if (imgTotal == 0)
-                {
-                    if (e != null)
-                        MessageBox.Show("没有可用的背景图");
-                    return;
-                }
-                if (imgTotal == 1)
-                {
-                    if (e != null)
-                        MessageBox.Show("只有一张可用的背景图哦");
-                    return;
-                }
-                ImageBrush b;
-                int img = rand.Next(imgTotal);
-                b = new ImageBrush();
-                b.ImageSource = new BitmapImage(new Uri((pics[img] as string)));
-                b.Stretch = Stretch.Fill;
-                DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
-                this.BeginAnimation(FrmMain.OpacityProperty, da);
-                this.top.Background = b;
-                da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
-                this.BeginAnimation(FrmMain.OpacityProperty, da);
-            }
-            else
-            {
-                if (e == null)
-                    return;
-                MessageBox.Show("请在启动启动其目录下新建bg文件夹，并放入图片文件，支持jpg,bmp,png等格式，比例请尽量接近16:9，否则会被拉伸");
-                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\bg");
-                Process explorer = new Process();
-                explorer.StartInfo.FileName = "explorer.exe";
-                explorer.StartInfo.Arguments = AppDomain.CurrentDomain.BaseDirectory + "\\bg";
-                explorer.Start();
-            }
+
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
@@ -442,23 +392,6 @@ namespace BMCLV2
         }
         private void MenuSelectFile_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.OpenFileDialog ofbg = new System.Windows.Forms.OpenFileDialog();
-            ofbg.CheckFileExists = true;
-            ofbg.Filter = "支持的图片|*.jpg;*.png;*.bmp";
-            ofbg.Multiselect = false;
-            string pic;
-            if (ofbg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                pic = ofbg.FileName;
-            else
-                return;
-            ImageBrush b = new ImageBrush();
-            b.ImageSource = new BitmapImage(new Uri((pic)));
-            b.Stretch = Stretch.Fill;
-            DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
-            this.BeginAnimation(FrmMain.OpacityProperty, da);
-            this.top.Background = b;
-            da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
-            this.BeginAnimation(FrmMain.OpacityProperty, da);
         }
         private void MenuSelectTexturePack_Click(object sender, RoutedEventArgs e)
         {
@@ -481,7 +414,7 @@ namespace BMCLV2
 
             DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
             this.BeginAnimation(FrmMain.OpacityProperty, da);
-            this.top.Background = b;
+            //this.top.Background = b;
             btnStart.Background = button;
             da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
             this.BeginAnimation(FrmMain.OpacityProperty, da);
@@ -796,8 +729,7 @@ namespace BMCLV2
         }
         private void sliderWindowTransparency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (top.Background != null)
-                top.Background.Opacity = e.NewValue;
+
         }
 
         private void listDownSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -1453,20 +1385,7 @@ namespace BMCLV2
             da.To = 1;
             da.Duration = TimeSpan.FromSeconds(0.8);
             this.FrmMainWindow.BeginAnimation(Window.OpacityProperty, da);
-            try
-            {
-                Random rand = new Random();
-                int img = rand.Next(Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg").Length);
-                ImageBrush b = new ImageBrush();
-                b.ImageSource = new BitmapImage(new Uri((Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg")[img])));
-                b.Stretch = Stretch.Fill;
-                this.top.Background = b;
-            }
-            catch
-            {
-                SolidColorBrush b=new SolidColorBrush(Color.FromRgb(255,255,255));
-                this.top.Background = b;
-            }
+
             loadOk = true;
         }
         private void FrmMainWindow_MouseDown(object sender, MouseButtonEventArgs e)
