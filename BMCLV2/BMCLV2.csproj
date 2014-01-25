@@ -314,6 +314,9 @@
   <ItemGroup>
     <SplashScreen Include="screenLaunch.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resource\Konachan.com - 168776 barefoot blonde_hair blue_eyes book drink food long_hair original twintails yuuki_tatsuya.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>F:\Code\VS\IncBuildNo.exe "$(PROJECTDIR)\Properties\AssemblyInfo.cs" "\[assembly: AssemblyVersion\(\"\d+\.\d+\.\d+\.(\d+)" 1
