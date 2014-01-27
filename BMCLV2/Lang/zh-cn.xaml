@@ -12,7 +12,7 @@
     <s:String x:Key="llabType">发布类型</s:String>
     <s:String x:Key="btnImportOldMc">导入旧版MC</s:String>
     <s:String x:Key="btnReName">重命名</s:String>
-    <s:String x:Key="btnModMrg">mod管理</s:String>
+    <s:String x:Key="btnModMrg">Mod管理</s:String>
     <s:String x:Key="btnCoreModMrg">CoreMod管理</s:String>
     <s:String x:Key="btnModdirMrg">Mod独立文件夹</s:String>
     <s:String x:Key="btnModCfgMrg">Mod设置管理</s:String>
