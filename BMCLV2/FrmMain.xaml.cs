@@ -93,7 +93,7 @@ namespace BMCLV2
                 listAuth.SelectedIndex = 0;
             sliderWindowTransparency.Value = cfg.WindowTransparency;
             checkReport.IsChecked = cfg.Report;
-            txtInsPath.Text = AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft";
+            txtInsPath.Text = AppDomain.CurrentDomain.BaseDirectory + ".minecraft";
             listDownSource.SelectedIndex = cfg.DownloadSource;
             comboLang.SelectedItem = LangManager.GetLangFromResource("DisplayName");
             #endregion
@@ -1092,7 +1092,8 @@ namespace BMCLV2
                 return;
             }
             ForgeIns.StartInfo.FileName = cfg.javaw;
-            ForgeIns.StartInfo.Arguments = "-jar " + AppDomain.CurrentDomain.BaseDirectory + "\\forge.jar";
+            ForgeIns.StartInfo.Arguments = "-jar \"" + AppDomain.CurrentDomain.BaseDirectory + "\\forge.jar\"";
+            Logger.Log(ForgeIns.StartInfo.Arguments);
             ForgeIns.Start();
             ForgeIns.WaitForExit();
             ReFlushlistver();
