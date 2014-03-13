@@ -511,6 +511,11 @@ namespace BMCLV2
                 btnStart.IsEnabled = true;
             }
             info = gameinfo.Read(JsonFilePath);
+            if (info == null)
+            {
+                MessageBox.Show(LangManager.GetLangFromResource("ErrorJsonEncoding"));
+                return;
+            }
             labVer.Content = info.id;
             labTime.Content = info.time;
             labRelTime.Content = info.releaseTime;
