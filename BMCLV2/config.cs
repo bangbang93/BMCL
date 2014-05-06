@@ -105,17 +105,27 @@ namespace BMCLV2
         /// <returns>系统物理内存大小，支持64bit,单位MB</returns>
         public static ulong getmem()
         {
-            double capacity = 0.0;
-            ManagementClass cimobject1 = new ManagementClass("Win32_PhysicalMemory");
-            ManagementObjectCollection moc1 = cimobject1.GetInstances();
-            foreach (ManagementObject mo1 in moc1)
+            try
             {
-                capacity += ((Math.Round(Int64.Parse(mo1.Properties["Capacity"].Value.ToString()) / 1024 / 1024.0, 1)));
+                double capacity = 0.0;
+                ManagementClass cimobject1 = new ManagementClass("Win32_PhysicalMemory");
+                ManagementObjectCollection moc1 = cimobject1.GetInstances();
+                foreach (ManagementObject mo1 in moc1)
+                {
+                    capacity += ((Math.Round(Int64.Parse(mo1.Properties["Capacity"].Value.ToString()) / 1024 / 1024.0, 1)));
+                }
+                moc1.Dispose();
+                cimobject1.Dispose();
+                UInt64 qmem = Convert.ToUInt64(capacity.ToString());
+                return qmem;
             }
-            moc1.Dispose();
-            cimobject1.Dispose();
-            UInt64 qmem = Convert.ToUInt64(capacity.ToString());
-            return qmem;
+            catch (System.Runtime.InteropServices.COMException ex)
+            {
+                Logger.Log("获取内存失败");
+                Logger.Log(ex);
+                return ulong.MaxValue;
+
+            }
         }
     }
 }
