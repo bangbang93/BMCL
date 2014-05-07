@@ -93,7 +93,7 @@ namespace BMCLV2
                 listAuth.SelectedIndex = 0;
             sliderWindowTransparency.Value = cfg.WindowTransparency;
             checkReport.IsChecked = cfg.Report;
-            txtInsPath.Text = AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft";
+            txtInsPath.Text = AppDomain.CurrentDomain.BaseDirectory + ".minecraft";
             listDownSource.SelectedIndex = cfg.DownloadSource;
             comboLang.SelectedItem = LangManager.GetLangFromResource("DisplayName");
             #endregion
@@ -117,6 +117,7 @@ namespace BMCLV2
             #endregion
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
             ReFlushlistver();
+            listVer.SelectedItem = cfg.lastPlayVer;
             listAuth.SelectedItem = cfg.login;
             checkCheckUpdate.IsChecked = cfg.CheckUpdate;
             Logger.Log(cfg);
@@ -510,6 +511,11 @@ namespace BMCLV2
                 btnStart.IsEnabled = true;
             }
             info = gameinfo.Read(JsonFilePath);
+            if (info == null)
+            {
+                MessageBox.Show(LangManager.GetLangFromResource("ErrorJsonEncoding"));
+                return;
+            }
             labVer.Content = info.id;
             labTime.Content = info.time;
             labRelTime.Content = info.releaseTime;
@@ -1091,7 +1097,8 @@ namespace BMCLV2
                 return;
             }
             ForgeIns.StartInfo.FileName = cfg.javaw;
-            ForgeIns.StartInfo.Arguments = "-jar " + AppDomain.CurrentDomain.BaseDirectory + "\\forge.jar";
+            ForgeIns.StartInfo.Arguments = "-jar \"" + AppDomain.CurrentDomain.BaseDirectory + "\\forge.jar\"";
+            Logger.Log(ForgeIns.StartInfo.Arguments);
             ForgeIns.Start();
             ForgeIns.WaitForExit();
             ReFlushlistver();
@@ -1127,10 +1134,11 @@ namespace BMCLV2
             if (this.treeForgeVer.SelectedItem is string)
             {
                 if (!ForgeVer.ForgeChangeLogUrl.ContainsKey(this.treeForgeVer.SelectedItem as string))
-                {
-                    MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotHaveChangeLog"));
-                    return;
-                }
+                    if(ForgeVer.ForgeChangeLogUrl[this.treeForgeVer.SelectedItem as string] !=null)
+                    {
+                        MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotHaveChangeLog"));
+                        return;
+                    }
                 txtChangeLog.Text = LangManager.GetLangFromResource("FetchingForgeChangeLog");
                 WebClient GetLog = new WebClient();
                 GetLog.DownloadStringCompleted += GetLog_DownloadStringCompleted;

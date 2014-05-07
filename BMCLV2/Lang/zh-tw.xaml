@@ -147,7 +147,9 @@
     <s:String x:Key="ResbtnNewMusic">獲取新音效</s:String>
     <s:String x:Key="FetchingForgeChangeLog">正在獲取Forge的更新日誌</s:String>
     <s:String x:Key="MenuStartDebug">以Debug模式啟動遊戲</s:String>
-    <s:String x:Key="MenuDebugHint">Debug模式下BMCL會嘗試獲取Minecraft的日誌輸出信息，並且經行簡單的分析處理。這可能會輕微影響遊戲性能\n所有輸出都在啟動器目錄下的bmcl.log文件內。\n要想使用完整的Debug模式，請右鍵任務欄托盤區中的圖標，並選擇“以Debug模式重啟”</s:String>
+    <s:String x:Key="MenuDebugHint">Debug模式下BMCL會嘗試獲取Minecraft的日誌輸出信息，並且經行簡單的分析處理。這可能會輕微影響遊戲性能
+        所有輸出都在啟動器目錄下的bmcl.log文件內。
+        要想使用完整的Debug模式，請右鍵任務欄托盤區中的圖標，並選擇“以Debug模式重啟”</s:String>
     <s:String x:Key="btnLibraries">庫文件管理</s:String>
     <s:String x:Key="LibColName">名字</s:String>
     <s:String x:Key="LibColUrl">URL</s:String>
@@ -155,6 +157,7 @@
     <s:String x:Key="LibMenuDelete">刪除</s:String>
     <s:String x:Key="LibIsSaveQuestion">內容已改變，是否保存？</s:String>
     <s:String x:Key="ErrorNoGameJson">無法找到版本對應的Json信息文件</s:String>
+    <s:String x:Key="ErrorJsonEncoding">JSON文件編碼錯誤，請使用UTF8編碼保存文件</s:String>
     <s:String x:Key="FrmDownload">下載</s:String>
     <s:String x:Key="DownloadFinish">下載完成</s:String>
     <s:String x:Key="StartupDuplicate">請勿同時啟動兩個啟動器</s:String>
