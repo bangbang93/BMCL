@@ -3,8 +3,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Mime;
 using System.Text;
 using System.Threading;
+using System.Windows;
 using BMCLV2.Lang;
 using BMCLV2.libraries;
 using BMCLV2.util;
@@ -478,6 +480,7 @@ namespace BMCLV2
             Environment.SetEnvironmentVariable("APPDATA", Environment.CurrentDirectory);
             game.EnableRaisingEvents = true;
             game.Exited += game_Exited;
+            game.StartInfo.WorkingDirectory = Environment.CurrentDirectory + "\\.minecraft";
             try
             {
                 bool fin = game.Start();
