@@ -204,7 +204,7 @@ namespace BMCLV2
             mcarg = new StringBuilder(info.minecraftArguments);
             mcarg.Replace("${auth_player_name}", username);
             mcarg.Replace("${version_name}", version);
-            mcarg.Replace("${game_directory}", ".minecraft");
+            mcarg.Replace("${game_directory}", @".");
             mcarg.Replace("${game_assets}", @"assets");
             mcarg.Replace("${assets_root}", @"assets");
             mcarg.Replace("${user_type}", "Legacy");
