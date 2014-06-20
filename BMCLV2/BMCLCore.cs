@@ -12,7 +12,6 @@ using MessageBox = System.Windows.MessageBox;
 
 namespace BMCLV2
 {
-// ReSharper disable once InconsistentNaming
     public static class BmclCore
     {
         public static String bmclVersion;

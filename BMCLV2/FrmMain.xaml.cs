@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -11,7 +10,6 @@ using System.IO;
 using System.Collections;
 using System.Runtime.Serialization.Json;
 using System.Windows.Media.Animation;
-using System.Reflection;
 using System.Diagnostics;
 using System.Net;
 using System.Data;
@@ -200,7 +198,7 @@ namespace BMCLV2
             }
             _clientCrashReportCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count() : 0;
             _starter = new FrmPrs("正在准备游戏环境及启动游戏");
-            Logger.info(string.Format("正在启动{0},使用的登陆方式为{1}", listVer.SelectedItem.ToString(), listAuth.SelectedItem.ToString()));
+            Logger.info(string.Format("正在启动{0},使用的登陆方式为{1}", listVer.SelectedItem, listAuth.SelectedItem));
             var tSelectVer = listVer.SelectedItem.ToString();
             _starter.ShowInTaskbar = false;
             _starter.Show();
@@ -217,11 +215,10 @@ namespace BMCLV2
                     var username = loginInfo.UN;
                     try
                     {
-                        string javaPath = "", javaXmx = "", selectVer = "", extArg = "";
-                        javaPath = txtJavaPath.Text;
-                        javaXmx = txtJavaXmx.Text;
-                        selectVer = tSelectVer;
-                        extArg = txtExtJArg.Text;
+                        var javaPath = txtJavaPath.Text;
+                        var javaXmx = txtJavaXmx.Text;
+                        var selectVer = tSelectVer;
+                        var extArg = txtExtJArg.Text;
                         BmclCore.game = new Launcher(javaPath, javaXmx, username, selectVer, info, extArg, loginInfo);
                     }
                     catch (Exception ex)
