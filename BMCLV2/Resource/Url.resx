@@ -118,19 +118,19 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="URL_DOWNLOAD_bangbang93" xml:space="preserve">
-    <value>http://bmclapi.bangbang93.com/mc</value>
+    <value>http://bmclapi.bangbang93.com/</value>
   </data>
   <data name="URL_DOWNLOAD_BASE" xml:space="preserve">
     <value>https://s3.amazonaws.com/Minecraft.Download/</value>
   </data>
   <data name="URL_RESOURCE_bangbang93" xml:space="preserve">
-    <value>http://bmclapi.bangbang93.com/mcassets/</value>
+    <value>http://bmclapi.bangbang93.com/assets/</value>
   </data>
   <data name="URL_RESOURCE_BASE" xml:space="preserve">
     <value>http://resources.download.minecraft.net/</value>
   </data>
   <data name="URL_LIBRARIES_bangbang93" xml:space="preserve">
-    <value>http://bmclapi.bangbang93.com/mclibraries/</value>
+    <value>http://bmclapi.bangbang93.com/libraries/</value>
   </data>
   <data name="URL_LIBRARIES_BASE" xml:space="preserve">
     <value>https://libraries.minecraft.net/</value>
