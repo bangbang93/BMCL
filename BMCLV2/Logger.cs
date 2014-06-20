@@ -147,6 +147,11 @@ namespace BMCLV2
         {
             Logger.log(message, LogType.Error);
         }
+
+        static public void error(Exception ex)
+        {
+            Logger.log(ex);
+        }
         
 
     }

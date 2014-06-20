@@ -31,7 +31,7 @@ namespace BMCLV2
         {
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { 
                 labStatus.Content = status;
-                Logger.Log(status);
+                Logger.log(status);
             }));
         }
 

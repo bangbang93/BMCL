@@ -7,12 +7,13 @@ using System.Text;
 using System.Threading;
 using BMCLV2.Lang;
 using BMCLV2.libraries;
+using BMCLV2.Login;
 using BMCLV2.util;
 using ICSharpCode.SharpZipLib.Zip;
 
-namespace BMCLV2
+namespace BMCLV2.launcher
 {
-    class launcher
+    public sealed class Launcher
     {
 
         #region 异常
@@ -24,83 +25,104 @@ namespace BMCLV2
 
 
         #region 属性
-        private Process game = new Process();
-        private string java = "";
-        private string javaxmx = "";
-        private string username = "";
-        private string version;
-        private string name;
-        private gameinfo Info;
-        long timestamp = DateTime.Now.Ticks;
-        private string urlLib = FrmMain.URL_LIBRARIES_BASE;
+        private readonly Process _game = new Process();
+        private readonly string _javaxmx = "";
+        private readonly string _username = "";
+        private readonly string _version;
+        private readonly string _name;
+        private readonly gameinfo _info;
+        private readonly long _timestamp = DateTime.Now.Ticks;
+        private readonly string _urlLib = BmclCore.urlLibrariesBase;
         public int downloading = 0;
-        WebClient downer = new WebClient();
-        StreamReader gameoutput;
-        StreamReader gameerror;
-        Thread logthread;
-        Thread thError;
-        Thread thOutput;
-        FrmPrs prs;
-        FileStream GameLock;
+        private readonly WebClient _downer = new WebClient();
+        StreamReader _gameoutput;
+        StreamReader _gameerror;
+        Thread _logthread;
+        Thread _thError;
+        Thread _thOutput;
+        private LoginInfo _li;
+        public string extarg;
         
         #endregion
 
         #region 委托
-        delegate void downThread();
-        public delegate void gameExitEvent();
+        delegate void DownThread();
+        public delegate void GameExitEvent();
+        public delegate void StateChangeEventHandler(string state);
         #endregion
 
 
         #region 事件
-        public static event gameExitEvent gameexit;
+        public static event GameExitEvent gameexit;
+        public event StateChangeEventHandler stateChangeEvent;
+
+        private void onStateChangeEvent(string state)
+        {
+            var handler = stateChangeEvent;
+            if (handler != null) handler(state);
+        }
+
         #endregion
 
 
         #region 方法
+
         /// <summary>
         /// 初始化启动器
         /// </summary>
-        /// <param name="JavaPath"></param>
-        /// <param name="JavaXmx"></param>
-        /// <param name="UserName"></param>
-        /// <param name="ver"></param>
+        /// <param name="javaPath"></param>
+        /// <param name="javaXmx"></param>
+        /// <param name="userName"></param>
+        /// <param name="name"></param>
         /// <param name="info"></param>
-        /// <param name="session"></param>
-        public launcher(string JavaPath, string JavaXmx, string UserName, string name, gameinfo info, string extarg, ref FrmPrs prs, FrmMain.LoginInfo LI)
+        /// <param name="extarg"></param>
+        /// <param name="li"></param>
+        public Launcher(string javaPath, string javaXmx, string userName, string name, gameinfo info, string extarg, LoginInfo li)
         {
-            this.prs = prs;
-            prs.changeEventH(LangManager.GetLangFromResource("LauncherCheckJava"));
-            if (!File.Exists(JavaPath))
+            onStateChangeEvent(LangManager.GetLangFromResource("LauncherCheckJava"));
+            if (!File.Exists(javaPath))
             {
                 Logger.log("找不到java",Logger.LogType.Error);
                 throw NoJava;
             }
-            prs.changeEventH(LangManager.GetLangFromResource("LauncherCheckMem"));
-            java = JavaPath;
-            javaxmx = JavaXmx;
-            username = UserName;
-            version = info.id;
-            this.name = name;
-            game.StartInfo.FileName = java;
+            onStateChangeEvent(LangManager.GetLangFromResource("LauncherCheckMem"));
+            _javaxmx = javaXmx;
+            _username = userName;
+            _version = info.id;
+            this._name = name;
+            _game.StartInfo.FileName = javaPath;
             if (Logger.debug)
             {
-                game.StartInfo.CreateNoWindow = true;
-                game.StartInfo.RedirectStandardOutput = true;
-                game.StartInfo.RedirectStandardError = true;
+                _game.StartInfo.CreateNoWindow = true;
+                _game.StartInfo.RedirectStandardOutput = true;
+                _game.StartInfo.RedirectStandardError = true;
             }
-            game.StartInfo.UseShellExecute = false;
-            Info = info;
-            prs.changeEventH(LangManager.GetLangFromResource("LauncherSettingupEnvoriement"));
+            _info = info;
+            this._li = li;
+            this.extarg = extarg;
+            this._info = info;
+        }
+
+
+
+        /// <summary>
+        /// 释放依赖并运行游戏
+        /// </summary>
+        /// <returns>true:成功运行；false:失败</returns>
+        public bool start()
+        {
+            _game.StartInfo.UseShellExecute = false;
+            onStateChangeEvent(LangManager.GetLangFromResource("LauncherSettingupEnvoriement"));
             StringBuilder arg = new StringBuilder("-Xincgc -Xmx");
-            arg.Append(javaxmx);
+            arg.Append(_javaxmx);
             arg.Append("M ");
             arg.Append(extarg);
             arg.Append(" ");
             arg.Append("-Djava.library.path=\"");
             arg.Append(Environment.CurrentDirectory).Append(@"\.minecraft\versions\");
-            arg.Append(name).Append("\\").Append(version).Append("-natives-").Append(timestamp.ToString());
+            arg.Append(_name).Append("\\").Append(_version).Append("-natives-").Append(_timestamp.ToString());
             arg.Append("\" -cp \"");
-            foreach (libraries.libraryies lib in info.libraries)
+            foreach (libraries.libraryies lib in _info.libraries)
             {
                 if (lib.natives != null)
                 {
@@ -142,7 +164,7 @@ namespace BMCLV2
                         continue;
                     }
                 }
-                prs.changeEventH(LangManager.GetLangFromResource("LauncherSolveLib") + lib.name);
+                onStateChangeEvent(LangManager.GetLangFromResource("LauncherSolveLib") + lib.name);
                 string libp = buildLibPath(lib);
                 if (GetFileLength(libp) == 0)
                 {
@@ -151,22 +173,22 @@ namespace BMCLV2
                     {
                         if (lib.url == null)
                         {
-                            prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
+                            onStateChangeEvent(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
                             downloading++;
                             if (!Directory.Exists(Path.GetDirectoryName(libp)))
                             {
                                 Directory.CreateDirectory(Path.GetDirectoryName(libp));
                             }
 #if DEBUG
-                        System.Windows.MessageBox.Show(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
+                            System.Windows.MessageBox.Show(_urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
 #endif
-                            Logger.log(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), Logger.LogType.Info);
-                            downer.DownloadFile(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
+                            Logger.log(_urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), Logger.LogType.Info);
+                            _downer.DownloadFile(_urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
                         }
                         else
                         {
                             string urlLib = lib.url;
-                            prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
+                            onStateChangeEvent(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
                             downloading++;
                             /*
                             DownLib downer = new DownLib(lib);
@@ -179,72 +201,63 @@ namespace BMCLV2
                                 Directory.CreateDirectory(Path.GetDirectoryName(libp));
                             }
 #if DEBUG
-                        System.Windows.MessageBox.Show(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
+                            System.Windows.MessageBox.Show(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
 #endif
                             Logger.log(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), Logger.LogType.Info);
-                            downer.DownloadFile(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), libp);
+                            _downer.DownloadFile(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), libp);
                         }
                     }
                     catch (WebException ex)
                     {
                         Logger.log(ex);
                         Logger.log("原地址下载失败，尝试作者源" + lib.name);
-                        downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
+                        _downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
                     }
                 }
                 arg.Append(buildLibPath(lib) + ";");
             }
-            prs.changeEventH(LangManager.GetLangFromResource("LauncherBuildMCArg"));
+            onStateChangeEvent(LangManager.GetLangFromResource("LauncherBuildMCArg"));
             StringBuilder mcpath = new StringBuilder(Environment.CurrentDirectory + @"\.minecraft\versions\");
-            mcpath.Append(name).Append("\\").Append(version).Append(".jar\" ");
-            mcpath.Append(info.mainClass);
+            mcpath.Append(_name).Append("\\").Append(_version).Append(".jar\" ");
+            mcpath.Append(_info.mainClass);
             arg.Append(mcpath);
             StringBuilder mcarg;
             //" --username ${auth_player_name} --session ${auth_session} --version ${version_name} --gameDir ${game_directory} --assetsDir ${game_assets}"
-            mcarg = new StringBuilder(info.minecraftArguments);
-            mcarg.Replace("${auth_player_name}", username);
-            mcarg.Replace("${version_name}", version);
+            mcarg = new StringBuilder(_info.minecraftArguments);
+            mcarg.Replace("${auth_player_name}", _username);
+            mcarg.Replace("${version_name}", _version);
             mcarg.Replace("${game_directory}", @".");
             mcarg.Replace("${game_assets}", @"assets");
             mcarg.Replace("${assets_root}", @"assets");
             mcarg.Replace("${user_type}", "Legacy");
-            mcarg.Replace("${assets_index_name}", info.assets);
+            mcarg.Replace("${assets_index_name}", _info.assets);
             mcarg.Replace("${auth_uuid}", "{}");
             mcarg.Replace("${auth_access_token}", "{}");
             mcarg.Replace("${user_properties}", "{}");
-            if (!string.IsNullOrEmpty(LI.OutInfo))
+            if (!string.IsNullOrEmpty(_li.OutInfo))
             {
-                string[] replace = LI.OutInfo.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] replace = _li.OutInfo.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
                 foreach (string str in replace)
                 {
                     int sp = str.IndexOf(":");
-                    mcarg.Replace(str.Substring(0,sp), str.Substring(sp+1));
-                    mcarg=new StringBuilder(Microsoft.VisualBasic.Strings.Replace(mcarg.ToString(), str.Split(':')[0], str.Split(':')[1], 1, -1, Microsoft.VisualBasic.CompareMethod.Text));
+                    mcarg.Replace(str.Substring(0, sp), str.Substring(sp + 1));
+                    mcarg = new StringBuilder(Microsoft.VisualBasic.Strings.Replace(mcarg.ToString(), str.Split(':')[0], str.Split(':')[1], 1, -1, Microsoft.VisualBasic.CompareMethod.Text));
                 }
             }
             else
             {
-                mcarg.Replace("{auth_session}", LI.SID);
+                mcarg.Replace("{auth_session}", _li.SID);
             }
             arg.Append(" ");
             arg.Append(mcarg);
-            game.StartInfo.Arguments = arg.ToString();
+            _game.StartInfo.Arguments = arg.ToString();
 #if DEBUG
-            System.Windows.MessageBox.Show(game.StartInfo.Arguments);
+            System.Windows.MessageBox.Show(_game.StartInfo.Arguments);
 #endif
-            Logger.log(game.StartInfo.Arguments, Logger.LogType.Info);
-        }
-
-
-        /// <summary>
-        /// 释放依赖并运行游戏
-        /// </summary>
-        /// <returns>true:成功运行；false:失败</returns>
-        public bool start()
-        {
-            prs.changeEventH(LangManager.GetLangFromResource("LauncherCreateNativeDir"));
+            Logger.log(_game.StartInfo.Arguments, Logger.LogType.Info);
+            onStateChangeEvent(LangManager.GetLangFromResource("LauncherCreateNativeDir"));
             StringBuilder NativePath = new StringBuilder(Environment.CurrentDirectory + @"\.minecraft\versions\");
-            NativePath.Append(name).Append("\\");
+            NativePath.Append(_name).Append("\\");
             DirectoryInfo oldnative = new DirectoryInfo(NativePath.ToString());
             foreach (DirectoryInfo dir in oldnative.GetDirectories())
             {
@@ -257,12 +270,12 @@ namespace BMCLV2
                     catch { }
                 }
             }
-            NativePath.Append(version).Append("-natives-").Append(timestamp);
+            NativePath.Append(_version).Append("-natives-").Append(_timestamp);
             if (!Directory.Exists(NativePath.ToString()))
             {
                 Directory.CreateDirectory(NativePath.ToString());
             }
-            foreach (libraries.libraryies lib in Info.libraries)
+            foreach (libraries.libraryies lib in _info.libraries)
             {
                 if (lib.natives == null)
                     continue;
@@ -302,7 +315,7 @@ namespace BMCLV2
                         continue;
                     }
                 }
-                prs.changeEventH(LangManager.GetLangFromResource("LauncherUnpackNative") + lib.name);
+                onStateChangeEvent(LangManager.GetLangFromResource("LauncherUnpackNative") + lib.name);
                 string[] split = lib.name.Split(':');//0 包;1 名字；2 版本
                 if (split.Count() != 3)
                 {
@@ -317,24 +330,24 @@ namespace BMCLV2
                         {
                             try
                             {
-                                prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
+                                onStateChangeEvent(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
                                 string nativep = buildNativePath(lib);
                                 if (!Directory.Exists(Path.GetDirectoryName(nativep)))
                                 {
                                     Directory.CreateDirectory(Path.GetDirectoryName(nativep));
                                 }
 #if DEBUG
-                    System.Windows.MessageBox.Show(urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
-                    Logger.log(urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), Logger.LogType.Info);
+                    System.Windows.MessageBox.Show(_urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
+                    Logger.log(_urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), Logger.LogType.Info);
 #endif
-                                downer.DownloadFile(urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), nativep);
+                                _downer.DownloadFile(_urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), nativep);
                             }
                             catch (WebException ex)
                             {
                                 Logger.log(ex);
                                 Logger.log("原地址下载失败，尝试作者源" + lib.name);
                                 string nativep = buildLibPath(lib);
-                                downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), nativep);
+                                _downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), nativep);
                             }
                         }
                         else
@@ -342,7 +355,7 @@ namespace BMCLV2
                             try
                             {
                                 string urlLib = lib.url;
-                                prs.changeEventH(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
+                                onStateChangeEvent(LangManager.GetLangFromResource("LauncherDownloadLib") + lib.name);
                                 /*
                                 DownNative downer = new DownNative(lib);
                                 downNativeEvent(lib);
@@ -357,14 +370,14 @@ namespace BMCLV2
                     System.Windows.MessageBox.Show(urlLib.Replace("\\", "/"));
                     Logger.log(urlLib.Replace("\\", "/"), Logger.LogType.Info);
 #endif
-                                downer.DownloadFile(urlLib + nativep.Replace("/", "\\"), nativep);
+                                _downer.DownloadFile(urlLib + nativep.Replace("/", "\\"), nativep);
                             }
                             catch (WebException ex)
                             {
                                 Logger.log(ex);
                                 Logger.log("原地址下载失败，尝试作者源" + lib.name);
                                 string nativep = buildLibPath(lib);
-                                downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + nativep.Replace("/", "\\"), nativep);
+                                _downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + nativep.Replace("/", "\\"), nativep);
                             }
                         }
                     }
@@ -409,52 +422,52 @@ namespace BMCLV2
 
                 }
             }
-            prs.changeEventH(LangManager.GetLangFromResource("LauncherSolveMod"));
+            onStateChangeEvent(LangManager.GetLangFromResource("LauncherSolveMod"));
             Logger.log("处理Mods", Logger.LogType.Info);
-            if (Directory.Exists(@".minecraft\versions\" + name + @"\mods"))
+            if (Directory.Exists(@".minecraft\versions\" + _name + @"\mods"))
             {
                 if (Directory.Exists(@".minecraft\Config"))
                 {
                     Logger.log("找到旧的配置文件，备份并应用新配置文件", Logger.LogType.Info);
-                    Directory.Move(@".minecraft\Config", @".minecraft\Config" + timestamp);
-                    if (Directory.Exists(@".minecraft\versions\" + name + @"\Config"))
-                        FileHelper.dircopy(@".minecraft\versions\" + name + @"\Config", @".minecraft\Config");
+                    Directory.Move(@".minecraft\Config", @".minecraft\Config" + _timestamp);
+                    if (Directory.Exists(@".minecraft\versions\" + _name + @"\Config"))
+                        FileHelper.dircopy(@".minecraft\versions\" + _name + @"\Config", @".minecraft\Config");
                 }
                 else
                 {
                     Logger.log("应用新配置文件", Logger.LogType.Info);
-                    if (Directory.Exists(@".minecraft\versions\" + name + @"\Config"))
-                    FileHelper.dircopy(@".minecraft\versions\" + name + @"\Config", @".minecraft\Config");
+                    if (Directory.Exists(@".minecraft\versions\" + _name + @"\Config"))
+                    FileHelper.dircopy(@".minecraft\versions\" + _name + @"\Config", @".minecraft\Config");
                 }
                 if (Directory.Exists(@".minecraft\mods"))
                 {
                     Logger.log("找到旧的mod文件，备份并应用新mod文件", Logger.LogType.Info);
-                    Directory.Move(@".minecraft\mods", @".minecraft\mods" + timestamp);
-                    if (Directory.Exists(@".minecraft\versions\" + name + @"\mods"))
-                    FileHelper.dircopy(@".minecraft\versions\" + name + @"\mods", @".minecraft\mods");
+                    Directory.Move(@".minecraft\mods", @".minecraft\mods" + _timestamp);
+                    if (Directory.Exists(@".minecraft\versions\" + _name + @"\mods"))
+                    FileHelper.dircopy(@".minecraft\versions\" + _name + @"\mods", @".minecraft\mods");
                 }
                 else
                 {
                     Logger.log("应用新mod文件", Logger.LogType.Info);
-                    if (Directory.Exists(@".minecraft\versions\" + name + @"\mods"))
-                    FileHelper.dircopy(@".minecraft\versions\" + name + @"\mods", @".minecraft\mods");
+                    if (Directory.Exists(@".minecraft\versions\" + _name + @"\mods"))
+                    FileHelper.dircopy(@".minecraft\versions\" + _name + @"\mods", @".minecraft\mods");
                 }
                 if (Directory.Exists(@".minecraft\coremods"))
                 {
                     Logger.log("找到旧的coremod文件，备份并应用新coremod文件", Logger.LogType.Info);
-                    Directory.Move(@".minecraft\coremods", @".minecraft\coremods" + timestamp);
-                    if (Directory.Exists(@".minecraft\versions\" + name + @"\coremods"))
-                    FileHelper.dircopy(@".minecraft\versions\" + name + @"\coremods", @".minecraft\coremods");
+                    Directory.Move(@".minecraft\coremods", @".minecraft\coremods" + _timestamp);
+                    if (Directory.Exists(@".minecraft\versions\" + _name + @"\coremods"))
+                    FileHelper.dircopy(@".minecraft\versions\" + _name + @"\coremods", @".minecraft\coremods");
                 }
                 else
                 {
                     Logger.log("应用新coremod文件", Logger.LogType.Info);
-                    if (Directory.Exists(@".minecraft\versions\" + name + @"\coremods"))
-                    FileHelper.dircopy(@".minecraft\versions\" + name + @"\coremods", @".minecraft\coremods");
+                    if (Directory.Exists(@".minecraft\versions\" + _name + @"\coremods"))
+                    FileHelper.dircopy(@".minecraft\versions\" + _name + @"\coremods", @".minecraft\coremods");
                 }
-                if (Directory.Exists(@".minecraft\versions\" + name + @"\moddir"))
+                if (Directory.Exists(@".minecraft\versions\" + _name + @"\moddir"))
                 {
-                    DirectoryInfo moddirs = new DirectoryInfo(@".minecraft\versions\" + name + @"\moddir");
+                    DirectoryInfo moddirs = new DirectoryInfo(@".minecraft\versions\" + _name + @"\moddir");
                     foreach (DirectoryInfo moddir in moddirs.GetDirectories())
                     {
                         Logger.log("复制ModDir " + moddir.Name, Logger.LogType.Info);
@@ -468,21 +481,21 @@ namespace BMCLV2
                 }
             }
 
-            prs.changeEventH(LangManager.GetLangFromResource("LauncherGo"));
+            onStateChangeEvent(LangManager.GetLangFromResource("LauncherGo"));
             //game.StartInfo.WorkingDirectory = Environment.CurrentDirectory + "\\.minecraft\\versions\\" + version;
             Environment.SetEnvironmentVariable("APPDATA", Environment.CurrentDirectory);
-            game.EnableRaisingEvents = true;
-            game.Exited += game_Exited;
-            game.StartInfo.WorkingDirectory = Environment.CurrentDirectory + "\\.minecraft";
+            _game.EnableRaisingEvents = true;
+            _game.Exited += game_Exited;
+            _game.StartInfo.WorkingDirectory = Environment.CurrentDirectory + "\\.minecraft";
             try
             {
-                bool fin = game.Start();
+                bool fin = _game.Start();
                 if (Logger.debug)
                 {
-                    gameoutput = game.StandardOutput;
-                    gameerror = game.StandardError;
-                    logthread = new Thread(new ThreadStart(logger));
-                    logthread.Start();
+                    _gameoutput = _game.StandardOutput;
+                    _gameerror = _game.StandardError;
+                    _logthread = new Thread(new ThreadStart(logger));
+                    _logthread.Start();
                 }
                 return fin;
             }
@@ -494,14 +507,14 @@ namespace BMCLV2
 
         void game_Exited(object sender, EventArgs e)
         {
-            if (game.ExitCode != 0)
+            if (_game.ExitCode != 0)
             {
 #if DEBUG
-                System.Windows.MessageBox.Show(game.ExitCode.ToString());
+                System.Windows.MessageBox.Show(_game.ExitCode.ToString());
 #endif
             }
             StringBuilder NativePath = new StringBuilder(Environment.CurrentDirectory + @"\.minecraft\versions\");
-            NativePath.Append(name).Append("\\");
+            NativePath.Append(_name).Append("\\");
             DirectoryInfo oldnative = new DirectoryInfo(NativePath.ToString());
             if (!Logger.debug)
             {
@@ -517,21 +530,21 @@ namespace BMCLV2
                     }
                 }
             }
-            if (Directory.Exists(@".minecraft\versions\" + name + @"\mods"))
+            if (Directory.Exists(@".minecraft\versions\" + _name + @"\mods"))
             {
-                Directory.Delete(@".minecraft\versions\" + name + @"\mods", true);  
-                FileHelper.dircopy(@".minecraft\mods", @".minecraft\versions\" + name + @"\mods");
+                Directory.Delete(@".minecraft\versions\" + _name + @"\mods", true);  
+                FileHelper.dircopy(@".minecraft\mods", @".minecraft\versions\" + _name + @"\mods");
                 Directory.Delete(@".minecraft\mods", true);
-                Directory.Delete(@".minecraft\versions\" + name + @"\coremods", true);
-                FileHelper.dircopy(@".minecraft\coremods", @".minecraft\versions\" + name + @"\coremods");
+                Directory.Delete(@".minecraft\versions\" + _name + @"\coremods", true);
+                FileHelper.dircopy(@".minecraft\coremods", @".minecraft\versions\" + _name + @"\coremods");
                 Directory.Delete(@".minecraft\coremods", true);
-                Directory.Delete(@".minecraft\versions\" + name + @"\Config", true);
-                FileHelper.dircopy(@".minecraft\Config", @".minecraft\versions\" + name + @"\Config");
+                Directory.Delete(@".minecraft\versions\" + _name + @"\Config", true);
+                FileHelper.dircopy(@".minecraft\Config", @".minecraft\versions\" + _name + @"\Config");
                 Directory.Delete(@".minecraft\Config", true);
             }
-            if (Directory.Exists(@".minecraft\versions\" + name + @"\moddir"))
+            if (Directory.Exists(@".minecraft\versions\" + _name + @"\moddir"))
             {
-                DirectoryInfo moddirs = new DirectoryInfo(@".minecraft\versions\" + name + @"\moddir");
+                DirectoryInfo moddirs = new DirectoryInfo(@".minecraft\versions\" + _name + @"\moddir");
                 foreach (DirectoryInfo moddir in moddirs.GetDirectories())
                 {
                     moddir.Delete(true);
@@ -541,11 +554,11 @@ namespace BMCLV2
             }
             if (Logger.debug)
             {
-                logthread.Abort();
-                thError.Abort();
-                thOutput.Abort();
-                gameerror.Close();
-                gameoutput.Close();
+                _logthread.Abort();
+                _thError.Abort();
+                _thOutput.Abort();
+                _gameerror.Close();
+                _gameoutput.Close();
             }
             gameexit();
         }
@@ -603,20 +616,20 @@ namespace BMCLV2
 
         public bool IsRunning()
         {
-            return !game.HasExited;
+            return !_game.HasExited;
         }
 
         private void logger()
         {
-            thOutput = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
+            _thOutput = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
             {
                 while (true)
                 {
                     try
                     {
-                        if (!gameoutput.EndOfStream)
+                        if (!_gameoutput.EndOfStream)
                         {
-                            string line = gameoutput.ReadLine();
+                            string line = _gameoutput.ReadLine();
                             Logger.log(line, Logger.LogType.Game);
                         }
                     }
@@ -626,15 +639,15 @@ namespace BMCLV2
                     }
                 }
             })));
-            thError = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
+            _thError = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
             {
                 while (true)
                 {
                     try
                     {
-                        if (!gameerror.EndOfStream)
+                        if (!_gameerror.EndOfStream)
                         {
-                            string line = gameerror.ReadLine();
+                            string line = _gameerror.ReadLine();
                             Logger.log(line, Logger.LogType.Fml);
                         }
                     }
@@ -644,10 +657,10 @@ namespace BMCLV2
                     }
                 }
             })));
-            thOutput.IsBackground = true;
-            thError.IsBackground = true;
-            thOutput.Start();
-            thError.Start();
+            _thOutput.IsBackground = true;
+            _thError.IsBackground = true;
+            _thOutput.Start();
+            _thError.Start();
 
         }
 

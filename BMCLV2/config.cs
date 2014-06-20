@@ -142,8 +142,8 @@ namespace BMCLV2
             }
             catch (System.Runtime.InteropServices.COMException ex)
             {
-                Logger.Log("获取内存失败");
-                Logger.Log(ex);
+                Logger.error("获取内存失败");
+                Logger.error(ex);
                 return ulong.MaxValue;
 
             }

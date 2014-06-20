@@ -17,20 +17,24 @@ namespace BMCLV2.assets
         WebClient Downloader = new WebClient();
         bool init = true;
         gameinfo GameInfo;
-        Dictionary<string, string> DownloadUrlPathPair = new Dictionary<string, string>();
-        public assets(gameinfo GameInfo)
+        Dictionary<string, string> _downloadUrlPathPair = new Dictionary<string, string>();
+        private string _urlDownloadBase;
+        private string _urlResourceBase;
+        public assets(gameinfo GameInfo, string urlDownloadBase = null, string urlResourceBase = null)
         {
             this.GameInfo = GameInfo;
-            string GameVersion = GameInfo.assets;
+            string gameVersion = GameInfo.assets;
+            this._urlDownloadBase = urlDownloadBase ?? BmclCore.urlDownloadBase;
+            this._urlResourceBase = urlResourceBase ?? BmclCore.urlResourceBase;
             try
             {
-                Downloader.DownloadStringAsync(new Uri(FrmMain.URL_DOWNLOAD_BASE + "indexes/" + GameVersion + ".json"));
-                Logger.Log(FrmMain.URL_DOWNLOAD_BASE + "indexes/" + GameVersion + ".json");
+                Downloader.DownloadStringAsync(new Uri(BmclCore.urlDownloadBase + "indexes/" + gameVersion + ".json"));
+                Logger.info(BmclCore.urlDownloadBase + "indexes/" + gameVersion + ".json");
             }
             catch (WebException ex)
             {
-                Logger.Log("游戏版本" + GameVersion);
-                Logger.Log(ex);
+                Logger.info("游戏版本" + gameVersion);
+                Logger.error(ex);
             }
             Downloader.DownloadStringCompleted += Downloader_DownloadStringCompleted;
             Downloader.DownloadFileCompleted += Downloader_DownloadFileCompleted;
@@ -40,8 +44,8 @@ namespace BMCLV2.assets
         {
             if (e.Error != null)
             {
-                Logger.Log(Logger.LogType.Error, e.UserState.ToString());
-                Logger.Log(e.Error);
+                Logger.error(e.UserState.ToString());
+                Logger.error(e.Error);
             }
         }
 
@@ -50,24 +54,24 @@ namespace BMCLV2.assets
             Downloader.DownloadStringCompleted -= Downloader_DownloadStringCompleted;
             if (e.Error != null)
             {
-                Logger.Log(e.Error);
+                Logger.error(e.Error);
             }
             else
             {
-                string GameVersion = GameInfo.assets;
-                FileHelper.CreateDirectoryForFile(AppDomain.CurrentDomain.BaseDirectory + ".minecraft/assets/indexes/" + GameVersion + ".json");
-                StreamWriter sw = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + ".minecraft/assets/indexes/" + GameVersion + ".json");
+                string gameVersion = GameInfo.assets;
+                FileHelper.CreateDirectoryForFile(AppDomain.CurrentDomain.BaseDirectory + ".minecraft/assets/indexes/" + gameVersion + ".json");
+                StreamWriter sw = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + ".minecraft/assets/indexes/" + gameVersion + ".json");
                 sw.Write(e.Result);
                 sw.Close();
                 JavaScriptSerializer JSSerializer = new JavaScriptSerializer();
                 Dictionary<string, Dictionary<string, AssetsEntity>> AssetsObject = JSSerializer.Deserialize<Dictionary<string, Dictionary<string, AssetsEntity>>>(e.Result);
                 Dictionary<string, AssetsEntity> obj = AssetsObject["objects"];
-                Logger.Log("共", obj.Count.ToString(), "项assets");
+                Logger.log("共", obj.Count.ToString(), "项assets");
                 int i = 0;
                 foreach (KeyValuePair<string, AssetsEntity> entity in obj)
                 {
                     i++;
-                    string Url = FrmMain.URL_RESOURCE_BASE + entity.Value.hash.Substring(0, 2) + "/" + entity.Value.hash;
+                    string Url = BmclCore.urlResourceBase + entity.Value.hash.Substring(0, 2) + "/" + entity.Value.hash;
                     string File = AppDomain.CurrentDomain.BaseDirectory + @".minecraft\assets\objects\" + entity.Value.hash.Substring(0, 2) + "\\" + entity.Value.hash;
                     FileHelper.CreateDirectoryForFile(File);
                     try
@@ -75,27 +79,27 @@ namespace BMCLV2.assets
                         if (FileHelper.IfFileVaild(File, entity.Value.size)) continue;
                         if (init)
                         {
-                            FrmMain.NIcon.ShowBalloonTip(3000, "BMCL", Lang.LangManager.GetLangFromResource("FoundAssetsModify"), System.Windows.Forms.ToolTipIcon.Info);
+                            BmclCore.nIcon.ShowBalloonTip(3000, "BMCL", Lang.LangManager.GetLangFromResource("FoundAssetsModify"), System.Windows.Forms.ToolTipIcon.Info);
                             init = false;
                         }
                         //Downloader.DownloadFileAsync(new Uri(Url), File,Url);
                         Downloader.DownloadFile(new Uri(Url), File);
-                        FrmMain.NIcon.Text = "BMCLV2 Solving Assets" + i.ToString() + "/" + obj.Count;
-                        Logger.Log(i.ToString(), "/", obj.Count.ToString(), File.Substring(AppDomain.CurrentDomain.BaseDirectory.Length), "下载完毕");
+                        BmclCore.nIcon.Text = "BMCLV2 Solving Assets" + i.ToString() + "/" + obj.Count;
+                        Logger.log(i.ToString(), "/", obj.Count.ToString(), File.Substring(AppDomain.CurrentDomain.BaseDirectory.Length), "下载完毕");
                         if (i == obj.Count)
                         {
-                            Logger.Log("assets下载完毕");
-                            FrmMain.NIcon.ShowBalloonTip(3000, "BMCL", Lang.LangManager.GetLangFromResource("SyncAssetsFinish"), System.Windows.Forms.ToolTipIcon.Info);
+                            Logger.log("assets下载完毕");
+                            BmclCore.nIcon.ShowBalloonTip(3000, "BMCL", Lang.LangManager.GetLangFromResource("SyncAssetsFinish"), System.Windows.Forms.ToolTipIcon.Info);
                         }
                     }
                     catch (WebException ex)
                     {
-                        Logger.Log(ex);
+                        Logger.error(ex);
                     }
                 }
                 if (init)
                 {
-                    Logger.Log("无需更新assets");
+                    Logger.info("无需更新assets");
                 }
             }
             

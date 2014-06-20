@@ -127,6 +127,8 @@
     <Compile Include="libraries\ros.cs" />
     <Compile Include="libraries\rules.cs" />
     <Compile Include="Logger.cs" />
+    <Compile Include="Login\LoginInfo.cs" />
+    <Compile Include="Login\LoginThread.cs" />
     <Compile Include="Report.cs" />
     <Compile Include="Resource\NormalProfile.Designer.cs">
       <AutoGen>True</AutoGen>

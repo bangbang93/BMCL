@@ -58,7 +58,7 @@ namespace BMCLV2
             if (e.Error != null)
             {
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { listLog.Items.Add(FileName + e.Error.Message); }));
-                Logger.Log(e.Error);
+                Logger.log(e.Error);
             }
             FinishFileCount++;
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
@@ -70,7 +70,7 @@ namespace BMCLV2
                 if (FinishFileCount == FileTable.Count)
                 {
                     MessageBox.Show(LangManager.GetLangFromResource("DownloadFinish"));
-                    Logger.Log("下载文件完毕");
+                    Logger.log("下载文件完毕");
                     this.Close();
                 }
             }));

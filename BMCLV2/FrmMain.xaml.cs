@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Windows;
@@ -16,8 +17,8 @@ using System.Net;
 using System.Data;
 using System.Threading;
 using System.Net.Sockets;
-
-
+using BMCLV2.launcher;
+using BMCLV2.Login;
 using BMCLV2.Versions;
 using BMCLV2.util;
 using BMCLV2.Lang;
@@ -31,15 +32,11 @@ namespace BMCLV2
     /// </summary>
     public partial class FrmMain
     {
-        public static String urlDownloadBase = BMCLV2.Resource.Url.URL_DOWNLOAD_BASE;
-        public static String urlResourceBase = BMCLV2.Resource.Url.URL_RESOURCE_BASE;
-        public static string urlLibrariesBase = BMCLV2.Resource.Url.URL_LIBRARIES_BASE;
         public static gameinfo info;
         private bool _inscreen;
         private bool _isLaunchering;
-        public ListBox authList;
         public bool debug;
-        public static System.Windows.Forms.NotifyIcon nIcon;
+        
         private int _clientCrashReportCount;
         private FrmPrs _starter;
 
@@ -50,26 +47,30 @@ namespace BMCLV2
             this.loadConfig();
             this.LoadLanguage();
             #region 图标
-            nIcon = new System.Windows.Forms.NotifyIcon();
-            nIcon.Visible = true;
-            System.Windows.Resources.StreamResourceInfo s = Application.GetResourceStream(new Uri("pack://application:,,,/screenLaunch.png"));
-            if (s != null) nIcon.Icon = System.Drawing.Icon.FromHandle(new System.Drawing.Bitmap(s.Stream).GetHicon());
-            System.Windows.Forms.ContextMenu nMenu = new System.Windows.Forms.ContextMenu();
-            System.Windows.Forms.MenuItem menuItem = nMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
+            BmclCore.nIcon = new System.Windows.Forms.NotifyIcon {Visible = true};
+            var s = Application.GetResourceStream(new Uri("pack://application:,,,/screenLaunch.png"));
+            if (s != null) BmclCore.nIcon.Icon = System.Drawing.Icon.FromHandle(new System.Drawing.Bitmap(s.Stream).GetHicon());
+            var nMenu = new System.Windows.Forms.ContextMenu();
+            var menuItem = nMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
             menuItem.Name = "ShowMainWindow";
             menuItem.DefaultItem = true;
             menuItem.Click += NMenu_ShowMainWindows_Click;
-            nIcon.DoubleClick += NIcon_DoubleClick;
+            BmclCore.nIcon.DoubleClick += NIcon_DoubleClick;
             System.Windows.Forms.MenuItem debugMode = nMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuUseDebugMode"));
             debugMode.Name = "DebugMode";
             debugMode.Click += DebugMode_Click;
-            nIcon.ContextMenu = nMenu;
+            BmclCore.nIcon.ContextMenu = nMenu;
             #endregion
+            listAuth.Items.Add(LangManager.GetLangFromResource("NoneAuth"));
+            foreach (var auth in BmclCore.Auths)
+            {
+                listAuth.Items.Add(auth.Key);
+            }
             ReFlushlistver();
             listVer.SelectedItem = BmclCore.config.lastPlayVer;
             listAuth.SelectedItem = BmclCore.config.login;
             checkCheckUpdate.IsChecked = BmclCore.config.checkUpdate;
-            launcher.gameexit += launcher_gameexit;
+            Launcher.gameexit += launcher_gameexit;
 #if DEBUG
 #else
             if (cfg.Report)
@@ -108,7 +109,7 @@ namespace BMCLV2
         void DebugMode_Click(object sender, EventArgs e)
         {
             Process.Start(Process.GetCurrentProcess().MainModule.FileName + "-Debug");
-            nIcon.Visible = false;
+            BmclCore.nIcon.Visible = false;
             Environment.Exit(0);
         }
 
@@ -117,8 +118,8 @@ namespace BMCLV2
         {
             if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\bg"))
             {
-                Random rand = new Random();
-                ArrayList pics = new ArrayList();
+                var rand = new Random();
+                var pics = new ArrayList();
                 foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.jpg", SearchOption.AllDirectories))
                 {
                     pics.Add(str);
@@ -144,12 +145,13 @@ namespace BMCLV2
                         MessageBox.Show("只有一张可用的背景图哦");
                     return;
                 }
-                ImageBrush b;
                 int img = rand.Next(imgTotal);
-                b = new ImageBrush();
-                b.ImageSource = new BitmapImage(new Uri(((string)pics[img])));
-                b.Stretch = Stretch.Fill;
-                DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
+                var b = new ImageBrush
+                {
+                    ImageSource = new BitmapImage(new Uri(((string) pics[img]))),
+                    Stretch = Stretch.Fill
+                };
+                var da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
                 this.BeginAnimation(UIElement.OpacityProperty, da);
                 this.top.Background = b;
                 da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
@@ -161,9 +163,10 @@ namespace BMCLV2
                     return;
                 MessageBox.Show("请在启动启动其目录下新建bg文件夹，并放入图片文件，支持jpg,bmp,png等格式，比例请尽量接近16:9，否则会被拉伸");
                 Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\bg");
-                Process explorer = new Process();
-                explorer.StartInfo.FileName = "explorer.exe";
-                explorer.StartInfo.Arguments = AppDomain.CurrentDomain.BaseDirectory + "\\bg";
+                var explorer = new Process
+                {
+                    StartInfo = {FileName = "explorer.exe", Arguments = AppDomain.CurrentDomain.BaseDirectory + "\\bg"}
+                };
                 explorer.Start();
             }
         }
@@ -184,202 +187,117 @@ namespace BMCLV2
         }
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if (this._isLaunchering)
-                return;
-            _isLaunchering = true;
+            if (BmclCore.gameRunning)
+            {
+                MessageBox.Show(this, "同时只能运行一个客户端", "运行冲突", MessageBoxButton.OK, MessageBoxImage.Stop);
+            }
             if (txtUserName.Text == "!!!")
             {
-                MessageBox.Show("请先修改用户名");
+                MessageBox.Show(this, "请先修改用户名");
                 tabMain.SelectedIndex = 1;
                 txtUserName.Focus();
                 return;
             }
-            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports"))
-            {
-                _clientCrashReportCount = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count();
-            }
-            else
-            {
-                _clientCrashReportCount = 0;
-            }
+            _clientCrashReportCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count() : 0;
             _starter = new FrmPrs("正在准备游戏环境及启动游戏");
-            int SelectedIndex = listAuth.SelectedIndex; ;
-            Logger.log(string.Format("正在启动{0},使用的登陆方式为{1}", listVer.SelectedItem.ToString(), authList.SelectedItem.ToString()));
-            object Auth;
-            if (SelectedIndex != 0)
-                Auth = BmclCore.Auths[authList.SelectedItem.ToString()];
-            else
-                Auth = null;
-            Thread thGO = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
+            Logger.info(string.Format("正在启动{0},使用的登陆方式为{1}", listVer.SelectedItem.ToString(), listAuth.SelectedItem.ToString()));
+            var tSelectVer = listVer.SelectedItem.ToString();
+            _starter.ShowInTaskbar = false;
+            _starter.Show();
+            _starter.Activate();
+            _starter.Focus();
+            _starter.changeEventH("正在登陆");
+            var loginThread = new LoginThread(this.txtUserName.Text, this.txtPwd.Password, this.listAuth.SelectedItem.ToString(), this.listAuth.SelectedIndex);
+            //loginThread.start();  在下面呢
+            loginThread.loginFinishEvent += delegate(LoginInfo loginInfo)
             {
-                string tSelectVer = "";
-                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                if (loginInfo.Suc)
                 {
-                    tSelectVer = listVer.SelectedItem.ToString();
-                    _starter.ShowInTaskbar = false;
-                    _starter.Show();
-                    _starter.Activate();
-                    _starter.Focus();
-                    _starter.changeEventH("正在登陆");
-                }));
-                LoginInfo loginans = new LoginInfo();
-                try
-                {
-                    if (SelectedIndex != 0)
-                    {
-                        Type T = Auth.GetType();
-                        MethodInfo Login = T.GetMethod("Login");
-                        try
-                        {
-                            object loginansobj;
-                            Type Li;
-                            string username = "", pwd = "";
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
-                            {
-                                username = txtUserName.Text;
-                                pwd = txtPwd.Password;
-                            }));
-                                loginansobj= Login.Invoke(Auth, new object[] { username, pwd, System.Guid.NewGuid().ToString(), "zh-cn" });
-                                Li = loginansobj.GetType();
-                                loginans.Suc = (bool)Li.GetField("Suc").GetValue(loginansobj);
-                                if (loginans.Suc == true)
-                                {
-                                    loginans.UN = Li.GetField("UN").GetValue(loginansobj) as string;
-                                    loginans.SID = Li.GetField("SID").GetValue(loginansobj)as string;
-                                    loginans.Client_identifier = Li.GetField("Client_identifier").GetValue(loginansobj) as string;
-                                    loginans.UID = Li.GetField("UID").GetValue(loginansobj) as string;
-                                    loginans.OtherInfo = Li.GetField("OtherInfo").GetValue(loginansobj) as string;
-                                    if (Li.GetField("OutInfo") != null)
-                                    {
-                                        loginans.OutInfo = Li.GetField("OutInfo").GetValue(loginansobj) as string;
-                                    }
-                                    Logger.log(string.Format("登陆成功，使用用户名{0},sid{1},Client_identifier{2},uid{3}", loginans.UN != null ? loginans.UN : "", loginans.SID != null ? loginans.SID : "", loginans.Client_identifier != null ? loginans.Client_identifier : "", loginans.UID != null ? loginans.UID : ""));
-                                }
-                                else
-                                {
-                                    loginans.Errinfo = Li.GetField("Errinfo").GetValue(loginansobj)as string;
-                                    loginans.OtherInfo = Li.GetField("OtherInfo").GetValue(loginansobj)as string;
-                                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { _starter.Topmost = false; }));
-                                    Logger.log(string.Format("登陆失败，错误信息:{0}，其他信息:{1}", loginans.Errinfo != null ? loginans.Errinfo : "", loginans.OtherInfo != null ? loginans.OtherInfo : ""));
-                                }
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.log(ex);
-                            loginans.Suc = false;
-                            loginans.Errinfo = ex.Message;
-                            while (ex.InnerException != null)
-                            {
-                                ex = ex.InnerException;
-                                loginans.Errinfo += "\n" + ex.Message;
-                            }
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { _starter.Topmost = false; }));
-                            MessageBox.Show("登录失败:" + loginans.Errinfo);
-                        }
-                    }
-                    else
-                    {
-                        loginans.Suc = true;
-                        loginans.SID = "no";
-                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { loginans.UN = txtUserName.Text; }));
-                    }
-                    if (loginans.Suc == true)
-                    {
-                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnSaveConfig_Click(null, null); }));
-                        string username = loginans.UN;
-                        try
-                        {
-                            string javaPath = "", javaXmx = "", selectVer = "", extArg = "";
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
-                            {
-                                javaPath = txtJavaPath.Text;
-                                javaXmx = txtJavaXmx.Text;
-                                selectVer = tSelectVer;
-                                extArg = txtExtJArg.Text;
-                            }));
-                            BmclCore.game = new launcher(javaPath, javaXmx, username, selectVer, info, extArg, ref _starter, loginans);
-                        }
-                        catch (Exception ex)
-                        {
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { _starter.Topmost = false; }));
-                            MessageBox.Show("启动失败：" + ex.Message);
-                            Logger.log(ex);
-                        }
-                    }
-                    else
-                    {
-                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { _starter.Topmost = false; }));
-                        MessageBox.Show("登录失败:" + loginans.Errinfo);
-                        Logger.log("登录失败" + loginans.Errinfo, Logger.LogType.Error);
-                        return;
-                    }
+                    btnSaveConfig_Click(null, null);
+                    var username = loginInfo.UN;
                     try
                     {
-                        if (BmclCore.game == null)
-                        {
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { _starter.Topmost = false; }));
-                            Logger.log("启动器初始化失败，放弃启动", Logger.LogType.Crash);
-                        }
-                        else
-                        {
-                            BmclCore.game.start();
-                            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Hide(); }));
-                        }
+                        string javaPath = "", javaXmx = "", selectVer = "", extArg = "";
+                        javaPath = txtJavaPath.Text;
+                        javaXmx = txtJavaXmx.Text;
+                        selectVer = tSelectVer;
+                        extArg = txtExtJArg.Text;
+                        BmclCore.game = new Launcher(javaPath, javaXmx, username, selectVer, info, extArg, loginInfo);
                     }
                     catch (Exception ex)
                     {
-                        Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
-                        {
-                            throw ex;
-                        }));
+                        _starter.Topmost = false;
+                        _starter.Close();
+                        MessageBox.Show("启动失败：" + ex.Message);
+                        Logger.log(ex);
+                        return;
                     }
                 }
-                finally
+                else
                 {
-                    nIcon.Visible = true;
-                    if ((loginans.Suc == false && SelectedIndex != 0) || BmclCore.game == null)
-                        nIcon.ShowBalloonTip(10000, "BMCL", "启动失败" + BmclCore.config.lastPlayVer, System.Windows.Forms.ToolTipIcon.Error);
-                    else
-                        nIcon.ShowBalloonTip(10000, "BMCL", "已启动" + BmclCore.config.lastPlayVer, System.Windows.Forms.ToolTipIcon.Info);
-                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { _starter.Close(); }));
-                    _isLaunchering = false;
-                    if (info.assets != null)
-                    {
-                        Thread thAssets = new Thread(new ThreadStart(() => 
-                        {
-                            new assets.assets(info);
-                        }));
-                        thAssets.IsBackground = true;
-                        thAssets.Start();
-                    }
+                    _starter.Topmost = false;
+                    MessageBox.Show("登录失败:" + loginInfo.Errinfo);
+                    Logger.log("登录失败" + loginInfo.Errinfo, Logger.LogType.Error);
                 }
-            })));
-            thGO.Start();
+                if (BmclCore.game == null)
+                {
+                    _starter.Topmost = false;
+                    Logger.log("启动器初始化失败，放弃启动", Logger.LogType.Crash);
+                }
+                else
+                {
+                    BmclCore.game.start();
+                    this.Hide();
+                }
+                BmclCore.nIcon.Visible = true;
+                if (BmclCore.game == null)
+                    BmclCore.nIcon.ShowBalloonTip(10000, "BMCL", "启动失败" + BmclCore.config.lastPlayVer,
+                        System.Windows.Forms.ToolTipIcon.Error);
+                else
+                {
+                    BmclCore.nIcon.ShowBalloonTip(10000, "BMCL", "已启动" + BmclCore.config.lastPlayVer,
+                        System.Windows.Forms.ToolTipIcon.Info);
+                    BmclCore.gameRunning = true;
+                }
+                _starter.Close();
+                _isLaunchering = false;
+                if (info.assets != null)
+                {
+                    var thAssets = new Thread(() =>
+                    {
+                        new assets.assets(info);
+                    }) {IsBackground = true};
+                    thAssets.Start();
+                }
+            };
+            loginThread.start();
+            
 
         }
         private void launcher_gameexit()
         {
+            BmclCore.gameRunning = false;
             if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports"))
             {
                 if (_clientCrashReportCount != Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count())
                 {
                     Logger.log("发现新的错误报告");
-                    DirectoryInfo ClientCrashReportDir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports");
-                    string LastClientCrashReportPath = "";
-                    DateTime LastClientCrashReportModifyTime=DateTime.MinValue;
-                    foreach (FileInfo ClientCrashReport in ClientCrashReportDir.GetFiles())
+                    var clientCrashReportDir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports");
+                    var lastClientCrashReportPath = "";
+                    var lastClientCrashReportModifyTime=DateTime.MinValue;
+                    foreach (var clientCrashReport in clientCrashReportDir.GetFiles())
                     {
-                        if (LastClientCrashReportModifyTime < ClientCrashReport.LastWriteTime)
+                        if (lastClientCrashReportModifyTime < clientCrashReport.LastWriteTime)
                         {
-                            LastClientCrashReportPath = ClientCrashReport.FullName;
+                            lastClientCrashReportPath = clientCrashReport.FullName;
                         }
                     }
-                    StreamReader CrashReportReader = new StreamReader(LastClientCrashReportPath);
-                    Logger.log(CrashReportReader.ReadToEnd(),Logger.LogType.Crash);
-                    CrashReportReader.Close();
+                    var crashReportReader = new StreamReader(lastClientCrashReportPath);
+                    Logger.log(crashReportReader.ReadToEnd(),Logger.LogType.Crash);
+                    crashReportReader.Close();
                     if (MessageBox.Show("客户端好像崩溃了，是否查看崩溃报告？", "客户端崩溃", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                     {
-                        Process.Start(LastClientCrashReportPath);
+                        Process.Start(lastClientCrashReportPath);
                     }
                 }
             }
@@ -406,7 +324,7 @@ namespace BMCLV2
         private void btnMiniSize_Click(object sender, RoutedEventArgs e)
         {
             this.Hide();
-            nIcon.ShowBalloonTip(2000, "BMCL", LangManager.GetLangFromResource("BMCLHiddenInfo"), System.Windows.Forms.ToolTipIcon.Info);
+            BmclCore.nIcon.ShowBalloonTip(2000, "BMCL", LangManager.GetLangFromResource("BMCLHiddenInfo"), System.Windows.Forms.ToolTipIcon.Info);
         }
         private void MenuSelectFile_Click(object sender, RoutedEventArgs e)
         {
@@ -739,7 +657,7 @@ namespace BMCLV2
             BmclCore.config.report = checkReport.IsChecked.Value;
             BmclCore.config.downloadSource = listDownSource.SelectedIndex;
             BmclCore.config.lang = LangManager.GetLangFromResource("LangName");
-            Config.Save(null, null);
+            Config.Save();
             DoubleAnimationUsingKeyFrames dak = new DoubleAnimationUsingKeyFrames();
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(0)));
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(30, TimeSpan.FromSeconds(0.3)));
@@ -778,14 +696,14 @@ namespace BMCLV2
             switch (listDownSource.SelectedIndex)
             {
                 case 0:
-                    FrmMain.urlDownloadBase = Resource.Url.URL_DOWNLOAD_BASE;
-                    FrmMain.urlResourceBase = Resource.Url.URL_RESOURCE_BASE;
-                    FrmMain.urlLibrariesBase = Resource.Url.URL_LIBRARIES_BASE;
+                    BmclCore.urlDownloadBase = Resource.Url.URL_DOWNLOAD_BASE;
+                    BmclCore.urlResourceBase = Resource.Url.URL_RESOURCE_BASE;
+                    BmclCore.urlLibrariesBase = Resource.Url.URL_LIBRARIES_BASE;
                     break;
                 case 1:
-                    FrmMain.urlDownloadBase = Resource.Url.URL_DOWNLOAD_bangbang93;
-                    FrmMain.urlResourceBase = Resource.Url.URL_RESOURCE_bangbang93;
-                    FrmMain.urlLibrariesBase = Resource.Url.URL_LIBRARIES_bangbang93;
+                    BmclCore.urlDownloadBase = Resource.Url.URL_DOWNLOAD_bangbang93;
+                    BmclCore.urlResourceBase = Resource.Url.URL_RESOURCE_bangbang93;
+                    BmclCore.urlLibrariesBase = Resource.Url.URL_LIBRARIES_bangbang93;
                     break;
                 default:
                     goto case 0;
@@ -850,7 +768,7 @@ namespace BMCLV2
                 return;
             listRemoteVer.DataContext = null;
             DataContractJsonSerializer RawJson = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(RawVersionListType));
-            HttpWebRequest GetJson = (HttpWebRequest)WebRequest.Create(urlDownloadBase + "versions/versions.json");
+            HttpWebRequest GetJson = (HttpWebRequest)WebRequest.Create(BmclCore.urlDownloadBase + "versions/versions.json");
             GetJson.Timeout = 10000;
             GetJson.ReadWriteTimeout = 10000;
             Thread thGet = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
@@ -910,7 +828,7 @@ namespace BMCLV2
             downpath.Append(selectver).Append("\\");
             downpath.Append(selectver).Append(".jar");
             WebClient downer = new WebClient();
-            StringBuilder downurl = new StringBuilder(urlDownloadBase);
+            StringBuilder downurl = new StringBuilder(BmclCore.urlDownloadBase);
             downurl.Append(@"versions\");
             downurl.Append(selectver).Append("\\");
             downurl.Append(selectver).Append(".jar");
@@ -1482,7 +1400,7 @@ namespace BMCLV2
 
         private void FrmMainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            nIcon.Visible = false;
+            BmclCore.nIcon.Visible = false;
         }
 
         private void FrmMainWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
@@ -1587,17 +1505,7 @@ namespace BMCLV2
             }));
         }
 
-        public struct LoginInfo
-        {
-            public string UN;
-            public string UID;
-            public string SID;
-            public bool Suc;
-            public string Errinfo;
-            public string OtherInfo;
-            public string Client_identifier;
-            public string OutInfo;
-        }
+
 
         private void comboLang_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1616,6 +1524,7 @@ namespace BMCLV2
         }
 
         new Hashtable Language = new Hashtable();
+
         private void LoadLanguage()
         {
             ResourceDictionary Lang;
