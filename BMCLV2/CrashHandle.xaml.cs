@@ -26,7 +26,7 @@ namespace BMCLV2
         {
             InitializeComponent();
             StringBuilder Message = new StringBuilder();
-            Message.AppendLine("BMCL," + FrmMain.ver);
+            Message.AppendLine("BMCL," + BmclCore.bmclVersion);
             Message.AppendLine(ex.Source);
             Message.AppendLine(ex.ToString());
             Message.AppendLine(ex.Message);

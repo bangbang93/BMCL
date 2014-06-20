@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Globalization;
 using System.Management;
 using Microsoft.Win32;
 using System.Runtime.Serialization;
@@ -11,65 +9,88 @@ using System.Windows;
 namespace BMCLV2
 {
     [DataContract]
-    public class config : ICloneable
+    public class Config : ICloneable
     {
         [DataMember]
-        public string javaw,username,javaxmx,login,lastPlayVer,extraJVMArg,Lang;
+        public string javaw;
+
+        [DataMember]
+        public string username;
+
+        [DataMember]
+        public string javaxmx;
+
+        [DataMember]
+        public string login;
+
+        [DataMember]
+        public string lastPlayVer;
+
+        [DataMember]
+        public string extraJvmArg;
+
+        [DataMember]
+        public string lang;
+
         [DataMember]
         public byte[] passwd;
         [DataMember]
-        public bool autostart, Report,CheckUpdate;
+        public bool autostart, report,checkUpdate;
         [DataMember]
-        public double WindowTransparency;
+        public double windowTransparency;
         [DataMember]
-        public int DownloadSource;
+        public int downloadSource;
 
-        public config()
+        public Config()
         {
-            javaw = (getjavadir() != null) ? getjavadir() : "javaw.exe";
+            javaw = getjavadir() ?? "javaw.exe";
             username = "!!!";
-            javaxmx = (getmem() / 4).ToString();
-            passwd = null;
+            javaxmx = (getmem() / 4).ToString(CultureInfo.InvariantCulture);
+            passwd = new byte[0];
             login = "啥都没有";
             autostart = false;
-            extraJVMArg = " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
-            WindowTransparency = 1;
-            Report = true;
-            DownloadSource = 0;
-            Lang = "zh-cn";
-            CheckUpdate = true;
+            extraJvmArg = " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
+            windowTransparency = 1;
+            report = true;
+            downloadSource = 0;
+            lang = "zh-cn";
+            checkUpdate = true;
         }
         object ICloneable.Clone()
         {
             return this.clone();
         }
-        public config clone()
+        public Config clone()
         {
-            return (config)this.MemberwiseClone();
+            return (Config)this.MemberwiseClone();
         }
-        public static config Load(string File)
+        public static Config Load(string File)
         {
             FileStream fs = null;
             if (!System.IO.File.Exists(File))
-                return new config();
+                return new Config();
             try
             {
                 fs = new FileStream(File, FileMode.Open);
-                DataContractSerializer ser = new DataContractSerializer(typeof(config));
-                config cfg = ser.ReadObject(fs) as config;
+                DataContractSerializer ser = new DataContractSerializer(typeof(Config));
+                Config cfg = ser.ReadObject(fs) as Config;
                 fs.Close();
                 return cfg;
             }
             catch
             {
                 MessageBox.Show("加载配置文件遇到错误，使用默认配置");
-                return new config();
+                return new Config();
             }
         }
-        public static void Save(config cfg,string File)
+        public static void Save(Config cfg = null ,string File = "bmcl.xml")
         {
+            if (cfg == null)
+            {
+                cfg = BmclCore.config;
+            }
             FileStream fs = new FileStream(File, FileMode.Create);
-            DataContractSerializer ser = new DataContractSerializer(typeof(config));
+            DataContractSerializer ser = new DataContractSerializer(typeof(Config));
             ser.WriteObject(fs, cfg);
             fs.Close();
         }

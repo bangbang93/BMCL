@@ -26,9 +26,9 @@ namespace BMCLV2
                 StreamReader SysinfoJsonReader = new StreamReader(SysinfoJsonStream);
                 string SysinfoJson = SysinfoJsonReader.ReadToEnd();
                 Hashtable ht = new Hashtable();
-                ht.Add("id", FrmMain.cfg.username);
+                ht.Add("id", BmclCore.config.username);
                 ht.Add("sysinfo", SysinfoJson);
-                ht.Add("version", FrmMain.ver);
+                ht.Add("version", BmclCore.bmclVersion);
                 string postdata = ParsToString(ht);
                 HttpWebRequest req = (HttpWebRequest)WebRequest.Create("http://www.bangbang93.com/bmcl/bmcllog.php");
                 req.Method = "POST";
@@ -44,7 +44,7 @@ namespace BMCLV2
             }
             catch (Exception ex)
             {
-                Logger.Log(ex);
+                Logger.log(ex);
             }
         }
         public static String ParsToString(Hashtable Pars)

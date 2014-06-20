@@ -91,7 +91,8 @@
     </ApplicationDefinition>
     <Compile Include="assets\assets.cs" />
     <Compile Include="assets\AssetsEntity.cs" />
-    <Compile Include="config.cs" />
+    <Compile Include="BMCLCore.cs" />
+    <Compile Include="Config.cs" />
     <Compile Include="CrashHandle.xaml.cs">
       <DependentUpon>CrashHandle.xaml</DependentUpon>
     </Compile>
