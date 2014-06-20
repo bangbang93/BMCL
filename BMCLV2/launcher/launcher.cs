@@ -76,11 +76,6 @@ namespace BMCLV2
                 throw NoJava;
             }
             prs.changeEventH(LangManager.GetLangFromResource("LauncherCheckMem"));
-            if (Convert.ToUInt64(JavaXmx) < 0)
-            {
-                Logger.Log("可用内存过小" + JavaXmx, Logger.LogType.Error);
-                throw NoRam;
-            }
             java = JavaPath;
             javaxmx = JavaXmx;
             username = UserName;
@@ -209,9 +204,9 @@ namespace BMCLV2
             mcarg = new StringBuilder(info.minecraftArguments);
             mcarg.Replace("${auth_player_name}", username);
             mcarg.Replace("${version_name}", version);
-            mcarg.Replace("${game_directory}", ".minecraft");
-            mcarg.Replace("${game_assets}", @".minecraft\assets");
-            mcarg.Replace("${assets_root}", @".minecraft\assets");
+            mcarg.Replace("${game_directory}", @".");
+            mcarg.Replace("${game_assets}", @"assets");
+            mcarg.Replace("${assets_root}", @"assets");
             mcarg.Replace("${user_type}", "Legacy");
             mcarg.Replace("${assets_index_name}", info.assets);
             mcarg.Replace("${auth_uuid}", "{}");
@@ -478,6 +473,7 @@ namespace BMCLV2
             Environment.SetEnvironmentVariable("APPDATA", Environment.CurrentDirectory);
             game.EnableRaisingEvents = true;
             game.Exited += game_Exited;
+            game.StartInfo.WorkingDirectory = Environment.CurrentDirectory + "\\.minecraft";
             try
             {
                 bool fin = game.Start();
