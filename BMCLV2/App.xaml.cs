@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using System.Diagnostics;
 using System.Net;
 
 using BMCLV2.Lang;
+using BMCLV2.Windows;
 
 namespace BMCLV2
 {
@@ -21,6 +23,8 @@ namespace BMCLV2
 #if DEBUG
 #else
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+            
 #endif
             try
             {
@@ -47,6 +51,8 @@ namespace BMCLV2
             base.OnStartup(e);
         }
 
+
+
         protected override void OnExit(ExitEventArgs e)
         {
             _appLock.Close();
@@ -54,6 +60,17 @@ namespace BMCLV2
             Logger.stop();
         }
 
+// ReSharper disable once UnusedMember.Local
+// ReSharper disable once UnusedParameter.Local
+        void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            e.SetObserved();
+            var crash = new CrashHandle(e.Exception);
+            crash.Show();
+        }
+
+        // ReSharper disable once UnusedMember.Local
+        // ReSharper disable once UnusedParameter.Local
         private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;

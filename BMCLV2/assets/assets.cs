@@ -10,34 +10,34 @@ using System.IO;
 
 using BMCLV2.util;
 
-namespace BMCLV2.assets
+namespace BMCLV2.Assets
 {
-    public class assets
+    public class Assets
     {
-        WebClient Downloader = new WebClient();
-        bool init = true;
+        private readonly WebClient _downloader = new WebClient();
+        bool _init = true;
         gameinfo GameInfo;
         Dictionary<string, string> _downloadUrlPathPair = new Dictionary<string, string>();
         private string _urlDownloadBase;
         private string _urlResourceBase;
-        public assets(gameinfo GameInfo, string urlDownloadBase = null, string urlResourceBase = null)
+        public Assets(gameinfo GameInfo, string urlDownloadBase = null, string urlResourceBase = null)
         {
             this.GameInfo = GameInfo;
             string gameVersion = GameInfo.assets;
-            this._urlDownloadBase = urlDownloadBase ?? BmclCore.urlDownloadBase;
-            this._urlResourceBase = urlResourceBase ?? BmclCore.urlResourceBase;
+            this._urlDownloadBase = urlDownloadBase ?? BmclCore.UrlDownloadBase;
+            this._urlResourceBase = urlResourceBase ?? BmclCore.UrlResourceBase;
             try
             {
-                Downloader.DownloadStringAsync(new Uri(BmclCore.urlDownloadBase + "indexes/" + gameVersion + ".json"));
-                Logger.info(BmclCore.urlDownloadBase + "indexes/" + gameVersion + ".json");
+                _downloader.DownloadStringAsync(new Uri(BmclCore.UrlDownloadBase + "indexes/" + gameVersion + ".json"));
+                Logger.info(BmclCore.UrlDownloadBase + "indexes/" + gameVersion + ".json");
             }
             catch (WebException ex)
             {
                 Logger.info("游戏版本" + gameVersion);
                 Logger.error(ex);
             }
-            Downloader.DownloadStringCompleted += Downloader_DownloadStringCompleted;
-            Downloader.DownloadFileCompleted += Downloader_DownloadFileCompleted;
+            _downloader.DownloadStringCompleted += Downloader_DownloadStringCompleted;
+            _downloader.DownloadFileCompleted += Downloader_DownloadFileCompleted;
         }
 
         void Downloader_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
@@ -51,7 +51,7 @@ namespace BMCLV2.assets
 
         void Downloader_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            Downloader.DownloadStringCompleted -= Downloader_DownloadStringCompleted;
+            _downloader.DownloadStringCompleted -= Downloader_DownloadStringCompleted;
             if (e.Error != null)
             {
                 Logger.error(e.Error);
@@ -71,25 +71,24 @@ namespace BMCLV2.assets
                 foreach (KeyValuePair<string, AssetsEntity> entity in obj)
                 {
                     i++;
-                    string Url = BmclCore.urlResourceBase + entity.Value.hash.Substring(0, 2) + "/" + entity.Value.hash;
+                    string Url = BmclCore.UrlResourceBase + entity.Value.hash.Substring(0, 2) + "/" + entity.Value.hash;
                     string File = AppDomain.CurrentDomain.BaseDirectory + @".minecraft\assets\objects\" + entity.Value.hash.Substring(0, 2) + "\\" + entity.Value.hash;
                     FileHelper.CreateDirectoryForFile(File);
                     try
                     {
                         if (FileHelper.IfFileVaild(File, entity.Value.size)) continue;
-                        if (init)
+                        if (_init)
                         {
-                            BmclCore.nIcon.ShowBalloonTip(3000, "BMCL", Lang.LangManager.GetLangFromResource("FoundAssetsModify"), System.Windows.Forms.ToolTipIcon.Info);
-                            init = false;
+                            BmclCore.NIcon.ShowBalloonTip(3000, Lang.LangManager.GetLangFromResource("FoundAssetsModify"), System.Windows.Forms.ToolTipIcon.Info);
+                            _init = false;
                         }
                         //Downloader.DownloadFileAsync(new Uri(Url), File,Url);
-                        Downloader.DownloadFile(new Uri(Url), File);
-                        BmclCore.nIcon.Text = "BMCLV2 Solving Assets" + i.ToString() + "/" + obj.Count;
+                        _downloader.DownloadFile(new Uri(Url), File);
                         Logger.log(i.ToString(), "/", obj.Count.ToString(), File.Substring(AppDomain.CurrentDomain.BaseDirectory.Length), "下载完毕");
                         if (i == obj.Count)
                         {
                             Logger.log("assets下载完毕");
-                            BmclCore.nIcon.ShowBalloonTip(3000, "BMCL", Lang.LangManager.GetLangFromResource("SyncAssetsFinish"), System.Windows.Forms.ToolTipIcon.Info);
+                            BmclCore.NIcon.ShowBalloonTip(3000, Lang.LangManager.GetLangFromResource("SyncAssetsFinish"), System.Windows.Forms.ToolTipIcon.Info);
                         }
                     }
                     catch (WebException ex)
@@ -97,7 +96,7 @@ namespace BMCLV2.assets
                         Logger.error(ex);
                     }
                 }
-                if (init)
+                if (_init)
                 {
                     Logger.info("无需更新assets");
                 }

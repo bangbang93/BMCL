@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
+using System.Threading;
 using System.Web;
 using System.Runtime.Serialization.Json;
 using System.Collections;
@@ -14,49 +15,55 @@ namespace BMCLV2
 {
     class Report
     {
-        public void Main()
+        public Report()
+        {
+            var thread = new Thread(run);
+            thread.Start();
+        }
+
+        private void run()
         {
             try
             {
-                DataContractJsonSerializer SysinfoJsonSerializer = new DataContractJsonSerializer(typeof(sysinfo));
-                Stream SysinfoJsonStream = new MemoryStream();
-                sysinfo systeminfo = new sysinfo();
-                SysinfoJsonSerializer.WriteObject(SysinfoJsonStream, systeminfo);
-                SysinfoJsonStream.Position = 0;
-                StreamReader SysinfoJsonReader = new StreamReader(SysinfoJsonStream);
-                string SysinfoJson = SysinfoJsonReader.ReadToEnd();
-                Hashtable ht = new Hashtable();
-                ht.Add("id", BmclCore.config.username);
-                ht.Add("sysinfo", SysinfoJson);
-                ht.Add("version", BmclCore.bmclVersion);
+                var sysinfoJsonSerializer = new DataContractJsonSerializer(typeof(sysinfo));
+                var sysinfoJsonStream = new MemoryStream();
+                var systeminfo = new sysinfo();
+                sysinfoJsonSerializer.WriteObject(sysinfoJsonStream, systeminfo);
+                sysinfoJsonStream.Position = 0;
+                var sysinfoJsonReader = new StreamReader(sysinfoJsonStream);
+                string sysinfoJson = sysinfoJsonReader.ReadToEnd();
+                var ht = new Hashtable
+                {
+                    {"id", BmclCore.Config.Username},
+                    {"sysinfo", sysinfoJson},
+                    {"version", BmclCore.BmclVersion}
+                };
                 string postdata = ParsToString(ht);
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create("http://www.bangbang93.com/bmcl/bmcllog.php");
+                var req = (HttpWebRequest)WebRequest.Create("http://www.bangbang93.com/bmcl/bmcllog.php");
                 req.Method = "POST";
                 req.ContentType = "application/x-www-form-urlencoded";
                 byte[] buffer = Encoding.UTF8.GetBytes(postdata);
                 req.ContentLength = buffer.Length;
-                Stream s = req.GetRequestStream();
+                var s = req.GetRequestStream();
                 s.Write(buffer, 0, buffer.Length);
                 s.Close();
-                HttpWebResponse res = (HttpWebResponse)req.GetResponse();
-
-
+                req.GetResponse();
             }
             catch (Exception ex)
             {
                 Logger.log(ex);
             }
         }
-        public static String ParsToString(Hashtable Pars)
+        public static String ParsToString(Hashtable pars)
         {
             StringBuilder sb = new StringBuilder();
-            foreach (string k in Pars.Keys)
+            foreach (string k in pars.Keys)
             {
                 if (sb.Length > 0)
                 {
                     sb.Append("&");
                 }
-                sb.Append(HttpUtility.UrlEncode(k) + "=" + HttpUtility.UrlEncode(Pars[k].ToString()));
+                sb.Append(HttpUtility.UrlEncode(k) + "=" + HttpUtility.UrlEncode(pars[k].ToString()));
             }
             return sb.ToString();
         }

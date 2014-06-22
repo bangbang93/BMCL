@@ -12,68 +12,68 @@ namespace BMCLV2
     public class Config : ICloneable
     {
         [DataMember]
-        public string javaw;
+        public string Javaw;
 
         [DataMember]
-        public string username;
+        public string Username;
 
         [DataMember]
-        public string javaxmx;
+        public string Javaxmx;
 
         [DataMember]
-        public string login;
+        public string Login;
 
         [DataMember]
-        public string lastPlayVer;
+        public string LastPlayVer;
 
         [DataMember]
-        public string extraJvmArg;
+        public string ExtraJvmArg;
 
         [DataMember]
-        public string lang;
+        public string Lang;
 
         [DataMember]
-        public byte[] passwd;
+        public byte[] Passwd;
         [DataMember]
-        public bool autostart, report,checkUpdate;
+        public bool Autostart, Report,CheckUpdate;
         [DataMember]
-        public double windowTransparency;
+        public double WindowTransparency;
         [DataMember]
-        public int downloadSource;
+        public int DownloadSource;
 
         public Config()
         {
-            javaw = getjavadir() ?? "javaw.exe";
-            username = "!!!";
-            javaxmx = (getmem() / 4).ToString(CultureInfo.InvariantCulture);
-            passwd = new byte[0];
-            login = "啥都没有";
-            autostart = false;
-            extraJvmArg = " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
-            windowTransparency = 1;
-            report = true;
-            downloadSource = 0;
-            lang = "zh-cn";
-            checkUpdate = true;
+            Javaw = GetJavaDir() ?? "javaw.exe";
+            Username = "!!!";
+            Javaxmx = (GetMemory() / 4).ToString(CultureInfo.InvariantCulture);
+            Passwd = new byte[0];
+            Login = "啥都没有";
+            Autostart = false;
+            ExtraJvmArg = " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
+            WindowTransparency = 1;
+            Report = true;
+            DownloadSource = 0;
+            Lang = "zh-cn";
+            CheckUpdate = true;
         }
         object ICloneable.Clone()
         {
             return this.clone();
         }
+
         public Config clone()
         {
             return (Config)this.MemberwiseClone();
         }
-        public static Config Load(string File)
+        public static Config Load(string file)
         {
-            FileStream fs = null;
-            if (!System.IO.File.Exists(File))
+            if (!System.IO.File.Exists(file))
                 return new Config();
             try
             {
-                fs = new FileStream(File, FileMode.Open);
-                DataContractSerializer ser = new DataContractSerializer(typeof(Config));
-                Config cfg = ser.ReadObject(fs) as Config;
+                var fs = new FileStream(file, FileMode.Open);
+                var ser = new DataContractSerializer(typeof(Config));
+                var cfg = ser.ReadObject(fs) as Config;
                 fs.Close();
                 return cfg;
             }
@@ -83,14 +83,14 @@ namespace BMCLV2
                 return new Config();
             }
         }
-        public static void Save(Config cfg = null ,string File = "bmcl.xml")
+        public static void Save(Config cfg = null ,string file = "bmcl.xml")
         {
             if (cfg == null)
             {
-                cfg = BmclCore.config;
+                cfg = BmclCore.Config;
             }
-            FileStream fs = new FileStream(File, FileMode.Create);
-            DataContractSerializer ser = new DataContractSerializer(typeof(Config));
+            var fs = new FileStream(file, FileMode.Create);
+            var ser = new DataContractSerializer(typeof(Config));
             ser.WriteObject(fs, cfg);
             fs.Close();
         }
@@ -98,23 +98,33 @@ namespace BMCLV2
         /// 读取注册表，寻找安装的java路径
         /// </summary>
         /// <returns>javaw.exe路径</returns>
-        public static string getjavadir()
+        public static string GetJavaDir()
         {
             try
             {
                 RegistryKey reg = Registry.LocalMachine;
-                reg = reg.OpenSubKey("SOFTWARE").OpenSubKey("JavaSoft").OpenSubKey("Java Runtime Environment");
-                foreach (string ver in reg.GetSubKeyNames())
+                var openSubKey = reg.OpenSubKey("SOFTWARE");
+                if (openSubKey != null)
                 {
-                    try
-                    {
-                        RegistryKey command = reg.OpenSubKey(ver);
-                        string str = command.GetValue("JavaHome").ToString();
-                        if (str != "")
-                            return str + @"\bin\javaw.exe";
-                    }
-                    catch { return null; }
+                    var registryKey = openSubKey.OpenSubKey("JavaSoft");
+                    if (registryKey != null)
+                        reg = registryKey.OpenSubKey("Java Runtime Environment");
                 }
+                if (reg != null)
+                    foreach (string ver in reg.GetSubKeyNames())
+                    {
+                        try
+                        {
+                            RegistryKey command = reg.OpenSubKey(ver);
+                            if (command != null)
+                            {
+                                string str = command.GetValue("JavaHome").ToString();
+                                if (str != "")
+                                    return str + @"\bin\javaw.exe";
+                            }
+                        }
+                        catch { return null; }
+                    }
                 return null;
             }
             catch { return null; }
@@ -124,20 +134,21 @@ namespace BMCLV2
         /// 获取系统物理内存大小
         /// </summary>
         /// <returns>系统物理内存大小，支持64bit,单位MB</returns>
-        public static ulong getmem()
+        public static ulong GetMemory()
         {
             try
             {
                 double capacity = 0.0;
-                ManagementClass cimobject1 = new ManagementClass("Win32_PhysicalMemory");
+                var cimobject1 = new ManagementClass("Win32_PhysicalMemory");
                 ManagementObjectCollection moc1 = cimobject1.GetInstances();
-                foreach (ManagementObject mo1 in moc1)
+                foreach (var o in moc1)
                 {
+                    var mo1 = (ManagementObject) o;
                     capacity += ((Math.Round(Int64.Parse(mo1.Properties["Capacity"].Value.ToString()) / 1024 / 1024.0, 1)));
                 }
                 moc1.Dispose();
                 cimobject1.Dispose();
-                UInt64 qmem = Convert.ToUInt64(capacity.ToString());
+                UInt64 qmem = Convert.ToUInt64(capacity.ToString(CultureInfo.InvariantCulture));
                 return qmem;
             }
             catch (System.Runtime.InteropServices.COMException ex)

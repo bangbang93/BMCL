@@ -93,27 +93,27 @@
     <Compile Include="assets\AssetsEntity.cs" />
     <Compile Include="BmclCore.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="CrashHandle.xaml.cs">
+    <Compile Include="Windows\CrashHandle.xaml.cs">
       <DependentUpon>CrashHandle.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forge\ForgeListNotReadyException.cs" />
     <Compile Include="Forge\ForgeVersionList.cs" />
-    <Compile Include="FrmCheckRes.xaml.cs">
+    <Compile Include="Windows\FrmCheckRes.xaml.cs">
       <DependentUpon>FrmCheckRes.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FrmDownload.xaml.cs">
+    <Compile Include="Windows\FrmDownload.xaml.cs">
       <DependentUpon>FrmDownload.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FrmLibraries.xaml.cs">
+    <Compile Include="Windows\FrmLibraries.xaml.cs">
       <DependentUpon>FrmLibraries.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FrmLog.xaml.cs">
+    <Compile Include="Windows\FrmLog.xaml.cs">
       <DependentUpon>FrmLog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FrmPrs.xaml.cs">
+    <Compile Include="Windows\FrmPrs.xaml.cs">
       <DependentUpon>FrmPrs.xaml</DependentUpon>
     </Compile>
-    <Compile Include="FrmTexturepack.xaml.cs">
+    <Compile Include="Windows\FrmTexturepack.xaml.cs">
       <DependentUpon>FrmTexturepack.xaml</DependentUpon>
     </Compile>
     <Compile Include="JsonClass\ForgeVersion.cs" />
@@ -160,6 +160,7 @@
     <Compile Include="util\MD5.cs" />
     <Compile Include="Versions\RawVersionListType.cs" />
     <Compile Include="Versions\RemoteVerType.cs" />
+    <Compile Include="Windows\NotiIcon.cs" />
     <Compile Include="zip\Checksums\Adler32.cs" />
     <Compile Include="zip\Checksums\CRC32.cs" />
     <Compile Include="zip\Checksums\IChecksum.cs" />
@@ -201,27 +202,27 @@
     <Compile Include="zip\ZipInputStream.cs" />
     <Compile Include="zip\ZipNameTransform.cs" />
     <Compile Include="zip\ZipOutputStream.cs" />
-    <Page Include="CrashHandle.xaml">
+    <Page Include="Windows\CrashHandle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FrmCheckRes.xaml">
+    <Page Include="Windows\FrmCheckRes.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="FrmDownload.xaml">
+    <Page Include="Windows\FrmDownload.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FrmLibraries.xaml">
+    <Page Include="Windows\FrmLibraries.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FrmLog.xaml">
+    <Page Include="Windows\FrmLog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FrmMain.xaml">
+    <Page Include="Windows\FrmMain.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -229,15 +230,15 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FrmMain.xaml.cs">
+    <Compile Include="Windows\FrmMain.xaml.cs">
       <DependentUpon>FrmMain.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="FrmPrs.xaml">
+    <Page Include="Windows\FrmPrs.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="FrmTexturepack.xaml">
+    <Page Include="Windows\FrmTexturepack.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -1,12 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
+using System.Windows;
 using BMCLV2.Lang;
 using BMCLV2.launcher;
 using BMCLV2.Resource;
+using BMCLV2.Windows;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 
@@ -14,55 +18,83 @@ namespace BMCLV2
 {
     public static class BmclCore
     {
-        public static String bmclVersion;
+        public static String BmclVersion;
         private const string Cfgfile = "bmcl.xml";
-        public static Config config;
+        public static Config Config;
         public static Dictionary<string, object> Auths = new Dictionary<string, object>();
-        public static Launcher game;
-        public static bool gameRunning = false;
-        public static String urlDownloadBase = Url.URL_DOWNLOAD_BASE;
-        public static String urlResourceBase = Url.URL_RESOURCE_BASE;
-        public static string urlLibrariesBase = Url.URL_LIBRARIES_BASE;
-        public static System.Windows.Forms.NotifyIcon nIcon;
+        public static Launcher Game;
+        public static bool GameRunning = false;
+        public static String UrlDownloadBase = Url.URL_DOWNLOAD_BASE;
+        public static String UrlResourceBase = Url.URL_RESOURCE_BASE;
+        public static string UrlLibrariesBase = Url.URL_LIBRARIES_BASE;
+        public static NotiIcon NIcon = new NotiIcon();
+        public static Window MainWindow = null;
 
         static BmclCore()
         {
-            bmclVersion = Application.ResourceAssembly.FullName.Split('=')[1];
-            bmclVersion = bmclVersion.Substring(0, bmclVersion.IndexOf(','));
-            Logger.log("BMCL V3 Ver." + bmclVersion + "正在启动");
+            BmclVersion = Application.ResourceAssembly.FullName.Split('=')[1];
+            BmclVersion = BmclVersion.Substring(0, BmclVersion.IndexOf(','));
+            Logger.log("BMCL V3 Ver." + BmclVersion + "正在启动");
             if (File.Exists(Cfgfile))
             {
-                config = Config.Load(Cfgfile);
-                if (config.passwd == null)
+                Config = Config.Load(Cfgfile);
+                if (Config.Passwd == null)
                 {
-                    config.passwd = new byte[0];   //V2的密码存储兼容
+                    Config.Passwd = new byte[0];   //V2的密码存储兼容
                 }
                 Logger.log(String.Format("加载{0}文件", Cfgfile));
-                Logger.log(config);
+                Logger.log(Config);
             }
             else
             {
-                config = new Config();
+                Config = new Config();
                 Logger.log("加载默认配置");
             }
-            if (config.javaw == "autosearch")
+            if (Config.Javaw == "autosearch")
             {
-                config.javaw = Config.getjavadir();
+                Config.Javaw = Config.GetJavaDir();
             }
-            if (config.javaxmx == "autosearch")
+            if (Config.Javaxmx == "autosearch")
             {
-                config.javaxmx = (Config.getmem() / 4).ToString(CultureInfo.InvariantCulture);
+                Config.Javaxmx = (Config.GetMemory() / 4).ToString(CultureInfo.InvariantCulture);
             }
-            LangManager.UseLanguage(config.lang);
-            loadPlugin(LangManager.GetLangFromResource("LangName"));
+            LangManager.UseLanguage(Config.Lang);
+            LoadPlugin(LangManager.GetLangFromResource("LangName"));
+            ReleaseCheck();
         }
 
-        public static void changeLanguate(string lang)
+        private static void ReleaseCheck()
+        {
+            if (BmclCore.Config.Report)
+            {
+                new Report();
+            }
+            if (BmclCore.Config.CheckUpdate)
+            {
+                var updateChecker = new UpdateChecker();
+                updateChecker.CheckUpdateFinishEvent += UpdateCheckerOnCheckUpdateFinishEvent;
+            }
+        }
+
+        private static void UpdateCheckerOnCheckUpdateFinishEvent(bool hasUpdate, string updateAddr, string updateInfo)
+        {
+            if (hasUpdate)
+            {
+                if (
+                    MessageBox.Show(BmclCore.MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
+                        MessageBoxImage.Information) == MessageBoxResult.OK)
+                {
+                    Process.Start(updateAddr);
+                }
+            }
+        }
+
+        public static void ChangeLanguate(string lang)
         {
             LangManager.UseLanguage(lang);
         }
 
-        public static void loadPlugin(string language)
+        public static void LoadPlugin(string language)
         {
             Auths.Clear();
             #region 加载新插件
@@ -141,5 +173,6 @@ namespace BMCLV2
 
             #endregion
         }
+        
     }
 }

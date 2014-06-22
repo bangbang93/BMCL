@@ -8,21 +8,37 @@ namespace BMCLV2
 {
     class UpdateChecker
     {
+        public delegate void CheckUpdateFinishEventHandler(bool hasUpdate, string updateAddr, string updateInfo);
+
+        public event CheckUpdateFinishEventHandler CheckUpdateFinishEvent;
+
+        protected virtual void OnCheckUpdateFinishEvent(bool hasupdate, string updateaddr, string updateinfo)
+        {
+            CheckUpdateFinishEventHandler handler = CheckUpdateFinishEvent;
+            if (handler != null) handler(hasupdate, updateaddr, updateinfo);
+        }
+
+
         private const string CheckUrl = @"http://www.bangbang93.com/bmcl/checkupdate.php";
         public bool HasUpdate {get; private set; }
         public string UpdateInfo {get; private set; }
         public string LastestDownloadUrl {get; private set; }
         public UpdateChecker()
         {
+            this.Run();
+        }
+
+        private void Run()
+        {
             try
             {
-                int build = Convert.ToInt32(BmclCore.bmclVersion.Split('.')[3]);
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(CheckUrl + "?ver=" + build);
+                int build = Convert.ToInt32(BmclCore.BmclVersion.Split('.')[3]);
+                var req = (HttpWebRequest)WebRequest.Create(CheckUrl + "?ver=" + build);
                 req.Method = "GET";
-                HttpWebResponse res = (HttpWebResponse)req.GetResponse();
-                DataContractJsonSerializer verJsonSerializer = new DataContractJsonSerializer(typeof(VerList));
-                VerList verTable = (VerList)verJsonSerializer.ReadObject(res.GetResponseStream());
-                if (verTable.Lastest.Build==0 )
+                var res = (HttpWebResponse)req.GetResponse();
+                var verJsonSerializer = new DataContractJsonSerializer(typeof(VerList));
+                var verTable = (VerList)verJsonSerializer.ReadObject(res.GetResponseStream());
+                if (verTable.Lastest.Build == 0)
                 {
                     Logger.log("解析返回的更新日志失败", Logger.LogType.Error);
                     HasUpdate = false;
@@ -40,17 +56,17 @@ namespace BMCLV2
                     HasUpdate = false;
                     Logger.log("无需更新");
                 }
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 foreach (UpdateInfo verInfo in verTable.Update)
                 {
-                    if ( verInfo.Build > Convert.ToInt32(build))
+                    if (verInfo.Build > Convert.ToInt32(build))
                     {
                         sb.AppendLine(verInfo.Version);
                         sb.AppendLine(verInfo.Info);
                     }
                 }
                 UpdateInfo = sb.ToString();
-
+                OnCheckUpdateFinishEvent(HasUpdate, LastestDownloadUrl, UpdateInfo);
             }
             catch (Exception ex)
             {

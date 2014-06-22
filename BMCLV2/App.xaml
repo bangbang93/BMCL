@@ -1,7 +1,7 @@
 ﻿<Application x:Class="BMCLV2.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="FrmMain.xaml">
+             StartupUri="Windows\FrmMain.xaml">
     <Application.Resources>
         <ResourceDictionary Source="Lang\zh-cn.xaml"/>
     </Application.Resources>
