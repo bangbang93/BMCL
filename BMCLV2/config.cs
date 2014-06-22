@@ -73,7 +73,7 @@ namespace BMCLV2
             {
                 var fs = new FileStream(file, FileMode.Open);
                 var ser = new DataContractSerializer(typeof(Config));
-                var cfg = ser.ReadObject(fs) as Config;
+                var cfg = (Config)ser.ReadObject(fs);
                 fs.Close();
                 return cfg;
             }

@@ -1,7 +1,7 @@
 ﻿<Window x:Name="frmPrs" x:Class="BMCLV2.FrmPrs"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="FrmPrs" Height="113" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" Icon="screenLaunch.png">
+        Title="FrmPrs" Height="113" Width="300" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" Icon="..\screenLaunch.png">
     <Grid MouseDown="Grid_MouseDown">
         <Label x:Name="labName" Content="" HorizontalAlignment="Center" Height="48" Margin="10,25,10,0" VerticalAlignment="Top" Width="280" FontSize="16" HorizontalContentAlignment="Center"/>
         <Label x:Name="labStatus" Content="" HorizontalAlignment="Center" Margin="10,78,10,0" VerticalAlignment="Top" HorizontalContentAlignment="Center" Width="280"/>

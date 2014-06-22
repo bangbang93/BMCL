@@ -9,16 +9,16 @@ namespace BMCLV2.Lang
 {
     static class LangManager
     {
-        static private Hashtable Language = new Hashtable();
-        static private ResourceDictionary DefaultLanguage = LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
-        static public void Add(string LanguageName,string LanguageUrl)
+        static private readonly Hashtable Language = new Hashtable();
+        static private readonly ResourceDictionary DefaultLanguage = LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
+        static public void Add(string languageName,string languageUrl)
         {
-            if (Language.ContainsKey(LanguageName))
+            if (Language.ContainsKey(languageName))
             {
-                Language[LanguageName] = new LangType(LanguageName,LanguageUrl);
+                Language[languageName] = new LangType(languageName,languageUrl);
                 return;
             }
-            Language.Add(LanguageName, new LangType(LanguageName, LanguageUrl));
+            Language.Add(languageName, new LangType(languageName, languageUrl));
 
         }
         static public string GetLangFromResource(string key)
@@ -37,14 +37,16 @@ namespace BMCLV2.Lang
             Lang.Source = new Uri(path);
             return Lang;
         }
-        static public void UseLanguage(string LanguageName)
+        static public void UseLanguage(string languageName)
         {
-            if (!Language.ContainsKey(LanguageName))
+            if (!Language.ContainsKey(languageName))
             {
                 Application.Current.Resources = DefaultLanguage;
                 return;
             }
-            Application.Current.Resources = (Language[LanguageName] as LangType).Language;
+            var langType = Language[languageName] as LangType;
+            if (langType != null)
+                Application.Current.Resources = langType.Language;
         }
     }
 }

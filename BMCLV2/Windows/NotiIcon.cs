@@ -32,7 +32,7 @@ namespace BMCLV2.Windows
             NIcon = new System.Windows.Forms.NotifyIcon { Visible = true };
             var s = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/screenLaunch.png"));
             if (s != null) this.NIcon.Icon = System.Drawing.Icon.FromHandle(new System.Drawing.Bitmap(s.Stream).GetHicon());
-            _nMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
+            _menuItem = _nMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
             _menuItem.Name = "ShowMainWindow";
             _menuItem.DefaultItem = true;
             _menuItem.Enabled = false;

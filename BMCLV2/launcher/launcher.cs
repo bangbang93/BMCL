@@ -44,17 +44,25 @@ namespace BMCLV2.Launcher
 
         public delegate void GameExitEvent();
         public delegate void StateChangeEventHandler(string state);
+        public delegate void GameStartUpEventHandler(bool success);
         #endregion
 
 
         #region 事件
         public event GameExitEvent Gameexit;
         public event StateChangeEventHandler StateChangeEvent;
+        public event GameStartUpEventHandler GameStartUp;
+
+        private void OnGameStartUp(bool success)
+        {
+            GameStartUpEventHandler handler = GameStartUp;
+            if (handler != null) BmclCore.Invoke(new Action(() => handler(success)));
+        }
 
         private void OnStateChangeEvent(string state)
         {
             var handler = StateChangeEvent;
-            if (handler != null) handler(state);
+            if (handler != null) BmclCore.Invoke(new Action(() => handler(state)));
         }
 
         #endregion
@@ -104,7 +112,13 @@ namespace BMCLV2.Launcher
         /// 释放依赖并运行游戏
         /// </summary>
         /// <returns>true:成功运行；false:失败</returns>
-        public bool Start()
+        public void Start()
+        {
+            var thread = new Thread(Run);
+            thread.Start();
+        }
+
+        private void Run()
         {
             _game.StartInfo.UseShellExecute = false;
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherSettingupEnvoriement"));
@@ -327,8 +341,8 @@ namespace BMCLV2.Launcher
                                     Directory.CreateDirectory(Path.GetDirectoryName(nativep));
                                 }
 #if DEBUG
-                    System.Windows.MessageBox.Show(_urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
-                    BMCLV2.Logger.log(_urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
+                                System.Windows.MessageBox.Show(_urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
+                                BMCLV2.Logger.log(_urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
 #endif
                                 _downer.DownloadFile(_urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), nativep);
                             }
@@ -357,8 +371,8 @@ namespace BMCLV2.Launcher
                                     Directory.CreateDirectory(Path.GetDirectoryName(nativep));
                                 }
 #if DEBUG
-                    System.Windows.MessageBox.Show(urlLib.Replace("\\", "/"));
-                    BMCLV2.Logger.log(urlLib.Replace("\\", "/"));
+                                System.Windows.MessageBox.Show(urlLib.Replace("\\", "/"));
+                                BMCLV2.Logger.log(urlLib.Replace("\\", "/"));
 #endif
                                 _downer.DownloadFile(urlLib + nativep.Replace("/", "\\"), nativep);
                             }
@@ -422,33 +436,33 @@ namespace BMCLV2.Launcher
                 {
                     BMCLV2.Logger.log("应用新配置文件");
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\Config"))
-                    FileHelper.dircopy(@".minecraft\versions\" + _name + @"\Config", @".minecraft\Config");
+                        FileHelper.dircopy(@".minecraft\versions\" + _name + @"\Config", @".minecraft\Config");
                 }
                 if (Directory.Exists(@".minecraft\mods"))
                 {
                     BMCLV2.Logger.log("找到旧的mod文件，备份并应用新mod文件");
                     Directory.Move(@".minecraft\mods", @".minecraft\mods" + _timestamp);
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\mods"))
-                    FileHelper.dircopy(@".minecraft\versions\" + _name + @"\mods", @".minecraft\mods");
+                        FileHelper.dircopy(@".minecraft\versions\" + _name + @"\mods", @".minecraft\mods");
                 }
                 else
                 {
                     BMCLV2.Logger.log("应用新mod文件");
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\mods"))
-                    FileHelper.dircopy(@".minecraft\versions\" + _name + @"\mods", @".minecraft\mods");
+                        FileHelper.dircopy(@".minecraft\versions\" + _name + @"\mods", @".minecraft\mods");
                 }
                 if (Directory.Exists(@".minecraft\coremods"))
                 {
                     BMCLV2.Logger.log("找到旧的coremod文件，备份并应用新coremod文件");
                     Directory.Move(@".minecraft\coremods", @".minecraft\coremods" + _timestamp);
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\coremods"))
-                    FileHelper.dircopy(@".minecraft\versions\" + _name + @"\coremods", @".minecraft\coremods");
+                        FileHelper.dircopy(@".minecraft\versions\" + _name + @"\coremods", @".minecraft\coremods");
                 }
                 else
                 {
                     BMCLV2.Logger.log("应用新coremod文件");
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\coremods"))
-                    FileHelper.dircopy(@".minecraft\versions\" + _name + @"\coremods", @".minecraft\coremods");
+                        FileHelper.dircopy(@".minecraft\versions\" + _name + @"\coremods", @".minecraft\coremods");
                 }
                 if (Directory.Exists(@".minecraft\versions\" + _name + @"\moddir"))
                 {
@@ -482,11 +496,11 @@ namespace BMCLV2.Launcher
                     _logthread = new Thread(Logger);
                     _logthread.Start();
                 }
-                return fin;
+                OnGameStartUp(true);
             }
             catch
             {
-                return false;
+                OnGameStartUp(false);
             }
         }
 

@@ -89,8 +89,8 @@
                             <CheckBox x:Name="checkOptifine" Content="{DynamicResource checkOptifine}" HorizontalAlignment="Left" Height="23" Margin="735,233,0,0" VerticalAlignment="Top" Width="133" Checked="checkOptifine_Checked" Unchecked="checkOptifine_Unchecked"/>
                             <GroupBox x:Name="groupDownloadSource" Header="{DynamicResource groupDownloadSource}" HorizontalAlignment="Left" Height="105" Margin="26,279,0,0" VerticalAlignment="Top" Width="210">
                                 <ListBox x:Name="listDownSource" HorizontalAlignment="Left" Height="72" VerticalAlignment="Top" Width="200" Margin="0,10,-2,0" SelectionChanged="listDownSource_SelectionChanged" Background="#A0FFFFFF">
-                                    <System:String>官方源（在国外，更新快）</System:String>
-                                    <System:String>作者源（在国内，网络更稳定）</System:String>
+                                    <System:String>BMCLAPI（国内，更稳定）</System:String>
+                                    <System:String>官方源（国外，更新快）</System:String>
                                 </ListBox>
                             </GroupBox>
                             <ComboBox x:Name="comboLang" HorizontalAlignment="Left" Height="27" Margin="391,333,0,0" VerticalAlignment="Top" Width="153" SelectedIndex="0" SelectionChanged="comboLang_SelectionChanged">

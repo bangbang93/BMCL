@@ -53,7 +53,6 @@ namespace BMCLV2.Windows
             listVer.SelectedItem = BmclCore.Config.LastPlayVer;
             listAuth.SelectedItem = BmclCore.Config.Login;
             checkCheckUpdate.IsChecked = BmclCore.Config.CheckUpdate;
-            BmclCore.Game.Gameexit += launcher_gameexit;
         }
 
         private void LoadConfig()
@@ -149,11 +148,11 @@ namespace BMCLV2.Windows
         }
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            BmclCore.GameRunning = true;
             if (BmclCore.GameRunning)
             {
                 MessageBox.Show(this, "同时只能运行一个客户端", "运行冲突", MessageBoxButton.OK, MessageBoxImage.Stop);
             }
+            BmclCore.GameRunning = true;
             if (txtUserName.Text == "!!!")
             {
                 MessageBox.Show(this, "请先修改用户名");
@@ -168,10 +167,10 @@ namespace BMCLV2.Windows
             _starter.Show();
             _starter.Activate();
             _starter.Focus();
-            _starter.changeEventH("正在登陆");
+            _starter.ChangeEventH("正在登陆");
             var loginThread = new LoginThread(this.txtUserName.Text, this.txtPwd.Password, this.listAuth.SelectedItem.ToString(), this.listAuth.SelectedIndex);
-            loginThread.loginFinishEvent += LoginThreadOnLoginFinishEvent;
-            loginThread.start();
+            loginThread.LoginFinishEvent += LoginThreadOnLoginFinishEvent;
+            loginThread.Start();
         }
 
         private void LoginThreadOnLoginFinishEvent(LoginInfo loginInfo)
@@ -187,6 +186,8 @@ namespace BMCLV2.Windows
                     var selectVer = listVer.SelectedItem.ToString();
                     var extArg = txtExtJArg.Text;
                     BmclCore.Game = new Launcher.Launcher(javaPath, javaXmx, username, selectVer, Info, extArg, loginInfo);
+                    BmclCore.Game.Gameexit += launcher_gameexit;
+                    BmclCore.Game.GameStartUp += Game_GameStartUp;
                 }
                 catch (Exception ex)
                 {
@@ -215,8 +216,13 @@ namespace BMCLV2.Windows
                 BmclCore.Game.Start();
                 this.Hide();
             }
+            
+        }
+
+        void Game_GameStartUp(bool success)
+        {
             BmclCore.NIcon.NIcon.Visible = true;
-            if (BmclCore.Game == null)
+            if (BmclCore.Game == null || !success)
             {
                 BmclCore.NIcon.ShowBalloonTip(10000, "启动失败" + BmclCore.Config.LastPlayVer, System.Windows.Forms.ToolTipIcon.Error);
                 BmclCore.GameRunning = false;
@@ -241,6 +247,7 @@ namespace BMCLV2.Windows
         private void launcher_gameexit()
         {
             BmclCore.GameRunning = false;
+            BmclCore.Game.Gameexit -= launcher_gameexit;
             if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports"))
             {
                 if (_clientCrashReportCount != Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count())
@@ -1375,10 +1382,10 @@ namespace BMCLV2.Windows
 
         private void ImportOldMC(string ImportName,string ImportFrom,FrmPrs prs)
         {
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportMain")); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.ChangeEventH(LangManager.GetLangFromResource("ImportMain")); }));
             Directory.CreateDirectory(".minecraft\\versions\\" + ImportName);
             File.Copy(ImportFrom + "\\bin\\minecraft.jar", ".minecraft\\versions\\" + ImportName + "\\" + ImportName + ".jar");
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportCreateJson")); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.ChangeEventH(LangManager.GetLangFromResource("ImportCreateJson")); }));
             gameinfo info = new gameinfo();
             info.id = ImportName;
             string timezone = DateTimeOffset.Now.Offset.ToString();
@@ -1391,7 +1398,7 @@ namespace BMCLV2.Windows
             info.type = "Port By BMCL";
             info.minecraftArguments = "${auth_player_name}";
             info.mainClass = "net.minecraft.client.Minecraft";
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportSolveNative")); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.ChangeEventH(LangManager.GetLangFromResource("ImportSolveNative")); }));
             ArrayList libs = new ArrayList();
             DirectoryInfo bin = new DirectoryInfo(ImportFrom + "\\bin");
             foreach (FileInfo file in bin.GetFiles("*.jar"))
@@ -1421,12 +1428,12 @@ namespace BMCLV2.Windows
             nativefile.extract = new libraries.extract();
             libs.Add(nativefile);
             info.libraries = (libraries.libraryies[])libs.ToArray(typeof(libraries.libraryies));
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportWriteJson")); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.ChangeEventH(LangManager.GetLangFromResource("ImportWriteJson")); }));
             FileStream wcfg = new FileStream(".minecraft\\versions\\" + ImportName + "\\" + ImportName + ".json", FileMode.Create);
             DataContractJsonSerializer infojson = new DataContractJsonSerializer(typeof(gameinfo));
             infojson.WriteObject(wcfg, info);
             wcfg.Close();
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportSolveLib")); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.ChangeEventH(LangManager.GetLangFromResource("ImportSolveLib")); }));
             if (Directory.Exists(ImportFrom + "\\lib"))
             {
                 if (!Directory.Exists(".minecraft\\lib"))
@@ -1441,7 +1448,7 @@ namespace BMCLV2.Windows
                     }
                 }
             }
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.changeEventH(LangManager.GetLangFromResource("ImportSolveMod")); }));
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.ChangeEventH(LangManager.GetLangFromResource("ImportSolveMod")); }));
             if (Directory.Exists(ImportFrom + "\\mods"))
                 util.FileHelper.dircopy(ImportFrom + "\\mods", ".minecraft\\versions\\" + ImportName + "\\mods");
             else

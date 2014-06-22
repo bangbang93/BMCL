@@ -5,10 +5,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Threading;
 using System.Windows;
+using System.Windows.Threading;
 using BMCLV2.Lang;
-using BMCLV2.launcher;
 using BMCLV2.Resource;
 using BMCLV2.Windows;
 using Application = System.Windows.Application;
@@ -24,11 +23,12 @@ namespace BMCLV2
         public static Dictionary<string, object> Auths = new Dictionary<string, object>();
         public static Launcher.Launcher Game;
         public static bool GameRunning = false;
-        public static String UrlDownloadBase = Url.URL_DOWNLOAD_BASE;
-        public static String UrlResourceBase = Url.URL_RESOURCE_BASE;
-        public static string UrlLibrariesBase = Url.URL_LIBRARIES_BASE;
+        public static String UrlDownloadBase = Url.URL_DOWNLOAD_bangbang93;
+        public static String UrlResourceBase = Url.URL_RESOURCE_bangbang93;
+        public static string UrlLibrariesBase = Url.URL_LIBRARIES_bangbang93;
         public static NotiIcon NIcon = new NotiIcon();
         public static Window MainWindow = null;
+        public static Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
 
         static BmclCore()
         {
@@ -60,7 +60,10 @@ namespace BMCLV2
             }
             LangManager.UseLanguage(Config.Lang);
             LoadPlugin(LangManager.GetLangFromResource("LangName"));
+#if DEBUG
+#else
             ReleaseCheck();
+#endif
         }
 
         private static void ReleaseCheck()
@@ -173,6 +176,10 @@ namespace BMCLV2
 
             #endregion
         }
-        
+
+        public static void Invoke(Delegate invoke)
+        {
+            BmclCore.Dispatcher.Invoke(invoke);
+        }
     }
 }

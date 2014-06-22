@@ -2,6 +2,7 @@
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 
 namespace BMCLV2.Login
 {
@@ -9,7 +10,7 @@ namespace BMCLV2.Login
     {
         internal delegate void LoginFinishEventHandler(LoginInfo loginInfo);
 
-        public event LoginFinishEventHandler loginFinishEvent;
+        public event LoginFinishEventHandler LoginFinishEvent;
 
 
         private LoginInfo _loginans;
@@ -18,10 +19,10 @@ namespace BMCLV2.Login
         private readonly object _auth;
 
 
-        protected virtual void onLoginFinishEvent(LoginInfo logininfo)
+        protected void OnLoginFinishEvent(LoginInfo logininfo)
         {
-            LoginFinishEventHandler handler = loginFinishEvent;
-            if (handler != null) handler(logininfo);
+            LoginFinishEventHandler handler = LoginFinishEvent;
+            if (handler != null) BmclCore.Invoke(new Action(() => handler(logininfo)));
         }
 
         public LoginThread(string username, string password, string auth, int selectIndex)
@@ -34,14 +35,14 @@ namespace BMCLV2.Login
             }
         }
 
-        public void start()
+        public void Start()
         {
-            var thread = new Thread(run);
+            var thread = new Thread(Run);
+            thread.Start();
         }
 
-        private void run()
+        private void Run()
         {
-
             if (_auth != null)
             {
                 Type T = _auth.GetType();
@@ -67,7 +68,7 @@ namespace BMCLV2.Login
                         Logger.log(string.Format("登陆成功，使用用户名{0},sid{1},Client_identifier{2},uid{3}",
                             _loginans.UN ?? "", _loginans.SID ?? "", _loginans.Client_identifier ?? "",
                             _loginans.UID ?? ""));
-                        onLoginFinishEvent(_loginans);
+                        OnLoginFinishEvent(_loginans);
                     }
                     else
                     {
@@ -75,7 +76,7 @@ namespace BMCLV2.Login
                         _loginans.OtherInfo = li.GetField("OtherInfo").GetValue(loginansobj) as string;
                         Logger.log(string.Format("登陆失败，错误信息:{0}，其他信息:{1}", _loginans.Errinfo ?? "",
                             _loginans.OtherInfo ?? ""));
-                        onLoginFinishEvent(_loginans);
+                        OnLoginFinishEvent(_loginans);
                     }
                 }
                 catch (Exception ex)
@@ -88,7 +89,7 @@ namespace BMCLV2.Login
                         ex = ex.InnerException;
                         _loginans.Errinfo += "\n" + ex.Message;
                     }
-                    onLoginFinishEvent(_loginans);
+                    OnLoginFinishEvent(_loginans);
                 }
             }
             else
@@ -96,7 +97,7 @@ namespace BMCLV2.Login
                 _loginans.Suc = true;
                 _loginans.SID = "no";
                 _loginans.UN = this._username;
-                onLoginFinishEvent(_loginans);
+                OnLoginFinishEvent(_loginans);
             }
         }
     }

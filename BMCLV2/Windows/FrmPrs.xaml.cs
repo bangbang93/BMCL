@@ -27,7 +27,7 @@ namespace BMCLV2
             labName.Content = Name;
         }
 
-        public void changeEventH(string status)
+        public void ChangeEventH(string status)
         {
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { 
                 labStatus.Content = status;
