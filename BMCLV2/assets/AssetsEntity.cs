@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace BMCLV2.assets
+namespace BMCLV2.Assets
 {
     [DataContract]
     public class AssetsEntity

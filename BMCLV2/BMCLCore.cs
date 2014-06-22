@@ -22,7 +22,7 @@ namespace BMCLV2
         private const string Cfgfile = "bmcl.xml";
         public static Config Config;
         public static Dictionary<string, object> Auths = new Dictionary<string, object>();
-        public static Launcher Game;
+        public static Launcher.Launcher Game;
         public static bool GameRunning = false;
         public static String UrlDownloadBase = Url.URL_DOWNLOAD_BASE;
         public static String UrlResourceBase = Url.URL_RESOURCE_BASE;

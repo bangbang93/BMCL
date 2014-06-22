@@ -17,7 +17,6 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using BMCLV2.Forge;
 using BMCLV2.Lang;
-using BMCLV2.launcher;
 using BMCLV2.Login;
 using BMCLV2.util;
 using BMCLV2.Versions;
@@ -29,10 +28,10 @@ namespace BMCLV2.Windows
     /// </summary>
     public partial class FrmMain
     {
-        public static gameinfo info;
+        public static gameinfo Info;
         private bool _inscreen;
         private bool _isLaunchering;
-        public bool debug;
+        public bool Debug;
         
         private int _clientCrashReportCount;
         private FrmPrs _starter;
@@ -43,7 +42,7 @@ namespace BMCLV2.Windows
             BmclCore.NIcon.MainWindow = this;
             BmclCore.MainWindow = this;
             this.Title = "BMCL V2 Ver." + BmclCore.BmclVersion;
-            this.loadConfig();
+            this.LoadConfig();
             this.LoadLanguage();
             listAuth.Items.Add(LangManager.GetLangFromResource("NoneAuth"));
             foreach (var auth in BmclCore.Auths)
@@ -54,10 +53,10 @@ namespace BMCLV2.Windows
             listVer.SelectedItem = BmclCore.Config.LastPlayVer;
             listAuth.SelectedItem = BmclCore.Config.Login;
             checkCheckUpdate.IsChecked = BmclCore.Config.CheckUpdate;
-            Launcher.gameexit += launcher_gameexit;
+            BmclCore.Game.Gameexit += launcher_gameexit;
         }
 
-        private void loadConfig()
+        private void LoadConfig()
         {
             txtUserName.Text = BmclCore.Config.Username;
             txtPwd.Password = Encoding.UTF8.GetString(BmclCore.Config.Passwd);
@@ -171,11 +170,11 @@ namespace BMCLV2.Windows
             _starter.Focus();
             _starter.changeEventH("正在登陆");
             var loginThread = new LoginThread(this.txtUserName.Text, this.txtPwd.Password, this.listAuth.SelectedItem.ToString(), this.listAuth.SelectedIndex);
-            loginThread.loginFinishEvent += loginThreadOnLoginFinishEvent;
+            loginThread.loginFinishEvent += LoginThreadOnLoginFinishEvent;
             loginThread.start();
         }
 
-        private void loginThreadOnLoginFinishEvent(LoginInfo loginInfo)
+        private void LoginThreadOnLoginFinishEvent(LoginInfo loginInfo)
         {
             if (loginInfo.Suc)
             {
@@ -187,7 +186,7 @@ namespace BMCLV2.Windows
                     var javaXmx = txtJavaXmx.Text;
                     var selectVer = listVer.SelectedItem.ToString();
                     var extArg = txtExtJArg.Text;
-                    BmclCore.Game = new Launcher(javaPath, javaXmx, username, selectVer, info, extArg, loginInfo);
+                    BmclCore.Game = new Launcher.Launcher(javaPath, javaXmx, username, selectVer, Info, extArg, loginInfo);
                 }
                 catch (Exception ex)
                 {
@@ -213,7 +212,7 @@ namespace BMCLV2.Windows
             }
             else
             {
-                BmclCore.Game.start();
+                BmclCore.Game.Start();
                 this.Hide();
             }
             BmclCore.NIcon.NIcon.Visible = true;
@@ -224,16 +223,16 @@ namespace BMCLV2.Windows
             }
             else
             {
-                BmclCore.NIcon.ShowBalloonTip(10000, "已启动" + BmclCore.Config.LastPlayVer, System.Windows.Forms.ToolTipIcon.Info);
+                BmclCore.NIcon.ShowBalloonTip(10000, "已启动" + BmclCore.Config.LastPlayVer);
             }
             _starter.Close();
             _starter = null;
             _isLaunchering = false;
-            if (info.assets != null)
+            if (Info.assets != null)
             {
                 var thAssets = new Thread(() =>
                 {
-                    new Assets.Assets(info);
+                    new Assets.Assets(Info);
                 }) { IsBackground = true };
                 thAssets.Start();
             }
@@ -269,13 +268,13 @@ namespace BMCLV2.Windows
             if (Logger.debug)
             {
                 Logger.log("游戏退出，Debug模式保留Log信息窗口，程序不退出");
-                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Show(); }));
+                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(this.Show));
                 return;
             }
             if (!_inscreen)
             {
-                Logger.log("BMCL V2 Ver" + BmclCore.BmclVersion + DateTime.Now.ToString() + "由于游戏退出而退出");
-                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { Application.Current.Shutdown(0); }));
+                Logger.log("BMCL V2 Ver" + BmclCore.BmclVersion + DateTime.Now + "由于游戏退出而退出");
+                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(() => Application.Current.Shutdown(0)));
             }
         }
 
@@ -342,8 +341,8 @@ namespace BMCLV2.Windows
                 return;
             }
             this.listVer.ScrollIntoView(listVer.SelectedItem);
-            string JsonFilePath = gameinfo.GetGameInfoJsonPath(listVer.SelectedItem.ToString());
-            if (string.IsNullOrEmpty(JsonFilePath))
+            string jsonFilePath = gameinfo.GetGameInfoJsonPath(listVer.SelectedItem.ToString());
+            if (string.IsNullOrEmpty(jsonFilePath))
             {
                 MessageBox.Show(LangManager.GetLangFromResource("ErrorNoGameJson"));
                 btnStart.IsEnabled = false;
@@ -353,16 +352,16 @@ namespace BMCLV2.Windows
             {
                 btnStart.IsEnabled = true;
             }
-            info = gameinfo.Read(JsonFilePath);
-            if (info == null)
+            Info = gameinfo.Read(jsonFilePath);
+            if (Info == null)
             {
                 MessageBox.Show(LangManager.GetLangFromResource("ErrorJsonEncoding"));
                 return;
             }
-            labVer.Content = info.id;
-            labTime.Content = info.time;
-            labRelTime.Content = info.releaseTime;
-            labType.Content = info.type;
+            labVer.Content = Info.id;
+            labTime.Content = Info.time;
+            labRelTime.Content = Info.releaseTime;
+            labType.Content = Info.type;
         }
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
@@ -370,12 +369,12 @@ namespace BMCLV2.Windows
             {
                 try
                 {
-                    FileStream Isused = File.OpenWrite(".minecraft\\versions\\" + listVer.SelectedItem.ToString() + "\\" + info.id + ".jar");
+                    FileStream Isused = File.OpenWrite(".minecraft\\versions\\" + listVer.SelectedItem + "\\" + Info.id + ".jar");
                     Isused.Close();
-                    Directory.Delete(".minecraft\\versions\\" + listVer.SelectedItem.ToString(), true);
-                    if (Directory.Exists(".minecraft\\libraries\\" + listVer.SelectedItem.ToString()))
+                    Directory.Delete(".minecraft\\versions\\" + listVer.SelectedItem, true);
+                    if (Directory.Exists(".minecraft\\libraries\\" + listVer.SelectedItem))
                     {
-                        Directory.Delete(".minecraft\\libraries\\" + listVer.SelectedItem.ToString(), true);
+                        Directory.Delete(".minecraft\\libraries\\" + listVer.SelectedItem, true);
                     }
                 }
                 catch (UnauthorizedAccessException)
@@ -586,14 +585,14 @@ namespace BMCLV2.Windows
         }
         private void btnLibraries_Click(object sender, RoutedEventArgs e)
         {
-            FrmLibraries f = new FrmLibraries(info.libraries);
+            FrmLibraries f = new FrmLibraries(Info.libraries);
             if (f.ShowDialog() == true)
             {
-                info.libraries = f.GetChange();
+                Info.libraries = f.GetChange();
                 string JsonFile = gameinfo.GetGameInfoJsonPath(listVer.SelectedItem.ToString());
                 File.Delete(JsonFile + ".bak");
                 File.Move(JsonFile, JsonFile + ".bak");
-                gameinfo.Write(info, JsonFile);
+                gameinfo.Write(Info, JsonFile);
                 this.listVer_SelectionChanged(null, null);
             }
         }
