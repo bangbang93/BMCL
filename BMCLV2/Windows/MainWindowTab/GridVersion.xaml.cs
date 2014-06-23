@@ -154,7 +154,7 @@ namespace BMCLV2.Windows.MainWindowTab
             BmclCore.MainWindow.GridGame.ReFlushlistver();
             //            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
             BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Hidden);
-            BmclCore.MainWindow.tabMain.SelectedIndex = 0;
+            BmclCore.MainWindow.TabMain.SelectedIndex = 0;
         }
         private void btnCheckRes_Click(object sender, RoutedEventArgs e)
         {
@@ -164,6 +164,11 @@ namespace BMCLV2.Windows.MainWindowTab
         private void listRemoteVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             btnDownloadVer_Click(null, null);
+        }
+
+        public void RefreshVersion()
+        {
+            this.btnRefreshRemoteVer_Click(null, null);
         }
 
     }

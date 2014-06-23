@@ -231,5 +231,10 @@ namespace BMCLV2.Windows.MainWindowTab
                 MessageBox.Show(LangManager.GetLangFromResource("ServerListNoServerSelect"));
             }
         }
+
+        public void ReflushSever()
+        {
+            btnReflushServer_Click(null, null);
+        }
     }
 }

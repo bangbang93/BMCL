@@ -120,7 +120,7 @@ namespace BMCLV2.Windows.MainWindowTab
             forgeIns.Start();
             forgeIns.WaitForExit();
             BmclCore.MainWindow.GridGame.ReFlushlistver();
-            BmclCore.MainWindow.tabMain.SelectedIndex = 0;
+            BmclCore.MainWindow.TabMain.SelectedIndex = 0;
             BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Hidden);
         }
         private void treeForgeVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -167,6 +167,11 @@ namespace BMCLV2.Windows.MainWindowTab
         void GetLog_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             txtChangeLog.Text = e.Result;
+        }
+
+        public void RefreshForge()
+        {
+            this.btnReForge_Click(null, null);
         }
     }
 }

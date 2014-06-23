@@ -64,8 +64,8 @@ namespace BMCLV2.Windows.MainWindowTab
         }
         private void sliderWindowTransparency_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            if (BmclCore.MainWindow.top.Background != null)
-                BmclCore.MainWindow.top.Background.Opacity = e.NewValue;
+            if (BmclCore.MainWindow.Container.Background != null)
+                BmclCore.MainWindow.Container.Background.Opacity = e.NewValue;
         }
 
         private void listDownSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -73,14 +73,14 @@ namespace BMCLV2.Windows.MainWindowTab
             switch (listDownSource.SelectedIndex)
             {
                 case 0:
-                    BmclCore.UrlDownloadBase = Resource.Url.URL_DOWNLOAD_BASE;
-                    BmclCore.UrlResourceBase = Resource.Url.URL_RESOURCE_BASE;
-                    BmclCore.UrlLibrariesBase = Resource.Url.URL_LIBRARIES_BASE;
-                    break;
-                case 1:
                     BmclCore.UrlDownloadBase = Resource.Url.URL_DOWNLOAD_bangbang93;
                     BmclCore.UrlResourceBase = Resource.Url.URL_RESOURCE_bangbang93;
                     BmclCore.UrlLibrariesBase = Resource.Url.URL_LIBRARIES_bangbang93;
+                    break;
+                case 1:
+                    BmclCore.UrlDownloadBase = Resource.Url.URL_DOWNLOAD_BASE;
+                    BmclCore.UrlResourceBase = Resource.Url.URL_RESOURCE_BASE;
+                    BmclCore.UrlLibrariesBase = Resource.Url.URL_LIBRARIES_BASE;
                     break;
                 default:
                     goto case 0;
@@ -137,7 +137,7 @@ namespace BMCLV2.Windows.MainWindowTab
 
         private void comboLang_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!BmclCore.MainWindow.loadOk)
+            if (!BmclCore.MainWindow.LoadOk)
                 return;
             switch (comboLang.SelectedIndex)
             {
@@ -151,7 +151,12 @@ namespace BMCLV2.Windows.MainWindowTab
                             LangManager.UseLanguage(BmclCore.Language[comboLang.SelectedItem as string] as string);
                     break;
             }
-            BmclCore.MainWindow.changeLanguage();
+            BmclCore.MainWindow.ChangeLanguage();
+        }
+
+        public void SaveConfig()
+        {
+            btnSaveConfig_Click(null, null);
         }
     }
 }
