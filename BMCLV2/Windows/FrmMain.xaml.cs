@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,8 +19,10 @@ using System.Windows.Media.Imaging;
 using BMCLV2.Forge;
 using BMCLV2.Lang;
 using BMCLV2.Login;
+using BMCLV2.Mod;
 using BMCLV2.util;
 using BMCLV2.Versions;
+using BMCLV2.Windows.MainWindowTab;
 
 namespace BMCLV2.Windows
 {
@@ -72,6 +75,19 @@ namespace BMCLV2.Windows
             txtInsPath.Text = AppDomain.CurrentDomain.BaseDirectory + ".minecraft";
             listDownSource.SelectedIndex = BmclCore.Config.DownloadSource;
             comboLang.SelectedItem = LangManager.GetLangFromResource("DisplayName");
+        }
+
+        public void SwitchStartButton(bool isenable)
+        {
+            btnStart.IsEnabled = isenable;
+        }
+
+        public void ClickStartButton()
+        {
+            if (btnStart.IsEnabled)
+            {
+                btnStart_Click(null, null);
+            }
         }
 
         #region 公共按钮
@@ -236,11 +252,8 @@ namespace BMCLV2.Windows
             _isLaunchering = false;
             if (Info.assets != null)
             {
-                var thAssets = new Thread(() =>
-                {
-                    new Assets.Assets(Info);
-                }) { IsBackground = true };
-                thAssets.Start();
+// ReSharper disable once ObjectCreationAsStatement
+                new Assets.Assets(Info);
             }
         }
 
@@ -292,49 +305,48 @@ namespace BMCLV2.Windows
         }
         private void MenuSelectFile_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.OpenFileDialog ofbg = new System.Windows.Forms.OpenFileDialog();
-            ofbg.CheckFileExists = true;
-            ofbg.Filter = "支持的图片|*.jpg;*.png;*.bmp";
-            ofbg.Multiselect = false;
+            var ofbg = new System.Windows.Forms.OpenFileDialog
+            {
+                CheckFileExists = true,
+                Filter = @"支持的图片|*.jpg;*.png;*.bmp",
+                Multiselect = false
+            };
             string pic;
             if (ofbg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 pic = ofbg.FileName;
             else
                 return;
-            ImageBrush b = new ImageBrush();
-            b.ImageSource = new BitmapImage(new Uri((pic)));
-            b.Stretch = Stretch.Fill;
-            DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
-            this.BeginAnimation(FrmMain.OpacityProperty, da);
+            var b = new ImageBrush {ImageSource = new BitmapImage(new Uri((pic))), Stretch = Stretch.Fill};
+            var da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
+            this.BeginAnimation(OpacityProperty, da);
             this.top.Background = b;
             da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
-            this.BeginAnimation(FrmMain.OpacityProperty, da);
+            this.BeginAnimation(OpacityProperty, da);
         }
         private void MenuSelectTexturePack_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("这是个正在试验的功能，请不要报告有关任何该功能的bug");
-            FrmTexturepack frmTexturepack = new FrmTexturepack();
+            var frmTexturepack = new FrmTexturepack();
             frmTexturepack.ShowDialog();
-            Texturepack.TexturePackEntity Texture = frmTexturepack.GetSelected();
-            ImageBrush b = new ImageBrush();
-            BitmapImage bitmap = new BitmapImage();
+            Texturepack.TexturePackEntity texture = frmTexturepack.GetSelected();
+            var b = new ImageBrush();
+            var bitmap = new BitmapImage();
             bitmap.BeginInit();
-            bitmap.StreamSource = Texture.GuiBackground;
+            bitmap.StreamSource = texture.GuiBackground;
             bitmap.EndInit();
             b.ImageSource = bitmap;
             b.ViewportUnits = BrushMappingMode.Absolute;
             b.Viewport = new Rect(0, 0, bitmap.Width, bitmap.Height);
             b.Stretch = Stretch.None;
             b.TileMode = TileMode.Tile;
-            ImageBrush button = new ImageBrush();
-            button.ImageSource = Texture.GuiButton.Source;
+            var button = new ImageBrush {ImageSource = texture.GuiButton.Source};
 
-            DoubleAnimation da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
-            this.BeginAnimation(FrmMain.OpacityProperty, da);
+            var da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
+            this.BeginAnimation(UIElement.OpacityProperty, da);
             this.top.Background = b;
             btnStart.Background = button;
             da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
-            this.BeginAnimation(FrmMain.OpacityProperty, da);
+            this.BeginAnimation(UIElement.OpacityProperty, da);
         }
         #endregion
 
@@ -355,11 +367,9 @@ namespace BMCLV2.Windows
                 btnStart.IsEnabled = false;
                 return;
             }
-            else
-            {
-                btnStart.IsEnabled = true;
-            }
+            btnStart.IsEnabled = true;
             Info = gameinfo.Read(jsonFilePath);
+            BmclCore.GameInfo = Info;
             if (Info == null)
             {
                 MessageBox.Show(LangManager.GetLangFromResource("ErrorJsonEncoding"));
@@ -376,8 +386,8 @@ namespace BMCLV2.Windows
             {
                 try
                 {
-                    FileStream Isused = File.OpenWrite(".minecraft\\versions\\" + listVer.SelectedItem + "\\" + Info.id + ".jar");
-                    Isused.Close();
+                    FileStream isused = File.OpenWrite(".minecraft\\versions\\" + listVer.SelectedItem + "\\" + Info.id + ".jar");
+                    isused.Close();
                     Directory.Delete(".minecraft\\versions\\" + listVer.SelectedItem, true);
                     if (Directory.Exists(".minecraft\\libraries\\" + listVer.SelectedItem))
                     {
@@ -406,7 +416,7 @@ namespace BMCLV2.Windows
                 if (rname == "") return;
                 if (rname == listVer.SelectedItem.ToString()) return;
                 if (listVer.Items.IndexOf(rname) != -1) throw new Exception(LangManager.GetLangFromResource("RenameFailedExist"));
-                Directory.Move(".minecraft\\versions\\" + listVer.SelectedItem.ToString(), ".minecraft\\versions\\" + rname);
+                Directory.Move(".minecraft\\versions\\" + listVer.SelectedItem, ".minecraft\\versions\\" + rname);
             }
             catch (UnauthorizedAccessException)
             {
@@ -423,167 +433,76 @@ namespace BMCLV2.Windows
         }
         private void btnModMrg_Click(object sender, RoutedEventArgs e)
         {
-            StringBuilder modpath = new StringBuilder(@".minecraft\versions\");
-            modpath.Append(listVer.SelectedItem.ToString()).Append("\\");
-            StringBuilder configpath = new StringBuilder(modpath.ToString());
-            StringBuilder coremodpath = new StringBuilder(modpath.ToString());
-            StringBuilder moddirpath = new StringBuilder(modpath.ToString());
-            modpath.Append("mods");
-            configpath.Append("config");
-            coremodpath.Append("coremods");
-            moddirpath.Append("moddir");
-            if (!Directory.Exists(modpath.ToString()))
+            Process.Start(new ProcessStartInfo()
             {
-                Directory.CreateDirectory(modpath.ToString());
-            }
-            if (!Directory.Exists(configpath.ToString()))
-            {
-                Directory.CreateDirectory(configpath.ToString());
-            }
-            if (!Directory.Exists(coremodpath.ToString()))
-            {
-                Directory.CreateDirectory(coremodpath.ToString());
-            }
-            if (!Directory.Exists(moddirpath.ToString()))
-            {
-                Directory.CreateDirectory(moddirpath.ToString());
-            }
-            Process explorer = new Process();
-            explorer.StartInfo.FileName = "explorer.exe";
-            explorer.StartInfo.Arguments = modpath.ToString();
-            explorer.Start();
+                FileName = "explorer.exe",
+                Arguments =
+                    ModHelper.SetupModPath(listVer.SelectedItem.ToString()) + "mods"
+            });
         }
         private void btnImportOldMc_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.FolderBrowserDialog folderImportOldVer = new System.Windows.Forms.FolderBrowserDialog();
-            folderImportOldVer.Description = LangManager.GetLangFromResource("ImportDirInfo");
-            FrmPrs prs = new FrmPrs(LangManager.GetLangFromResource("ImportPrsTitle"));
+            var folderImportOldVer = new System.Windows.Forms.FolderBrowserDialog
+            {
+                Description = LangManager.GetLangFromResource("ImportDirInfo")
+            };
+            var prs = new FrmPrs(LangManager.GetLangFromResource("ImportPrsTitle"));
             prs.Show();
             if (folderImportOldVer.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                string ImportFrom = folderImportOldVer.SelectedPath;
-                if (!File.Exists(ImportFrom + "\\bin\\minecraft.jar"))
+                string importFrom = folderImportOldVer.SelectedPath;
+                if (!File.Exists(importFrom + "\\bin\\minecraft.jar"))
                 {
                     MessageBox.Show(LangManager.GetLangFromResource("ImportFailedNoMinecraftFound"));
                     return;
                 }
-                string ImportName;
-                bool F1 = false, F2 = false;
-                ImportName = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("ImportNameInfo"), LangManager.GetLangFromResource("ImportOldMcInfo"), "OldMinecraft");
+                bool f1, f2;
+                string importName = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("ImportNameInfo"), LangManager.GetLangFromResource("ImportOldMcInfo"), "OldMinecraft");
                 do
                 {
-                    F1 = false;
-                    F2 = false;
-                    if (ImportName.Length <= 0 || ImportName.IndexOf('.') != -1)
-                        ImportName = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("ImportNameInfo"), LangManager.GetLangFromResource("ImportInvildName"), "OldMinecraft");
+                    f1 = false;
+                    f2 = false;
+                    if (importName.Length <= 0 || importName.IndexOf('.') != -1)
+                        importName = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("ImportNameInfo"), LangManager.GetLangFromResource("ImportInvildName"), "OldMinecraft");
                     else
-                        F1 = true;
-                    if (Directory.Exists(".minecraft\\versions\\" + ImportName))
-                        ImportName = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("ImportNameInfo"), LangManager.GetLangFromResource("ImportFailedExist"), "OldMinecraft");
+                        f1 = true;
+                    if (Directory.Exists(".minecraft\\versions\\" + importName))
+                        importName = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("ImportNameInfo"), LangManager.GetLangFromResource("ImportFailedExist"), "OldMinecraft");
                     else
-                        F2 = true;
+                        f2 = true;
 
-                } while (!(F1 && F2));
-                Thread thImport = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate { ImportOldMC(ImportName, ImportFrom, prs); })));
+                } while (!(f1 && f2));
+                var thImport = new Thread(() => ImportOldMC(importName, importFrom, prs));
                 thImport.Start();
             }
             else prs.Close();
         }
         private void btnCoreModMrg_Click(object sender, RoutedEventArgs e)
         {
-            StringBuilder modpath = new StringBuilder(@".minecraft\versions\");
-            modpath.Append(listVer.SelectedItem.ToString()).Append("\\");
-            StringBuilder configpath = new StringBuilder(modpath.ToString());
-            StringBuilder coremodpath = new StringBuilder(modpath.ToString());
-            StringBuilder moddirpath = new StringBuilder(modpath.ToString());
-            modpath.Append("mods");
-            configpath.Append("config");
-            coremodpath.Append("coremods");
-            moddirpath.Append("moddir");
-            if (!Directory.Exists(modpath.ToString()))
+            Process.Start(new ProcessStartInfo()
             {
-                Directory.CreateDirectory(modpath.ToString());
-            }
-            if (!Directory.Exists(configpath.ToString()))
-            {
-                Directory.CreateDirectory(configpath.ToString());
-            }
-            if (!Directory.Exists(coremodpath.ToString()))
-            {
-                Directory.CreateDirectory(coremodpath.ToString());
-            }
-            if (!Directory.Exists(moddirpath.ToString()))
-            {
-                Directory.CreateDirectory(moddirpath.ToString());
-            }
-            Process explorer = new Process();
-            explorer.StartInfo.FileName = "explorer.exe";
-            explorer.StartInfo.Arguments = coremodpath.ToString();
-            explorer.Start();
+                FileName = "explorer.exe",
+                Arguments =
+                    ModHelper.SetupModPath(listVer.SelectedItem.ToString()) + "coremods"
+            });
         }
         private void btnModdirMrg_Click(object sender, RoutedEventArgs e)
         {
-            StringBuilder modpath = new StringBuilder(@".minecraft\versions\");
-            modpath.Append(listVer.SelectedItem.ToString()).Append("\\");
-            StringBuilder configpath = new StringBuilder(modpath.ToString());
-            StringBuilder coremodpath = new StringBuilder(modpath.ToString());
-            StringBuilder moddirpath = new StringBuilder(modpath.ToString());
-            modpath.Append("mods");
-            configpath.Append("config");
-            coremodpath.Append("coremods");
-            moddirpath.Append("moddir");
-            if (!Directory.Exists(modpath.ToString()))
+            Process.Start(new ProcessStartInfo()
             {
-                Directory.CreateDirectory(modpath.ToString());
-            }
-            if (!Directory.Exists(configpath.ToString()))
-            {
-                Directory.CreateDirectory(configpath.ToString());
-            }
-            if (!Directory.Exists(coremodpath.ToString()))
-            {
-                Directory.CreateDirectory(coremodpath.ToString());
-            }
-            if (!Directory.Exists(moddirpath.ToString()))
-            {
-                Directory.CreateDirectory(moddirpath.ToString());
-            }
-            Process explorer = new Process();
-            explorer.StartInfo.FileName = "explorer.exe";
-            explorer.StartInfo.Arguments = moddirpath.ToString();
-            explorer.Start();
+                FileName = "explorer.exe",
+                Arguments =
+                    ModHelper.SetupModPath(listVer.SelectedItem.ToString()) + "moddir"
+            });
         }
         private void btnModCfgMrg_Click(object sender, RoutedEventArgs e)
         {
-            StringBuilder modpath = new StringBuilder(@".minecraft\versions\");
-            modpath.Append(listVer.SelectedItem.ToString()).Append("\\");
-            StringBuilder configpath = new StringBuilder(modpath.ToString());
-            StringBuilder coremodpath = new StringBuilder(modpath.ToString());
-            StringBuilder moddirpath = new StringBuilder(modpath.ToString());
-            modpath.Append("mods");
-            configpath.Append("config");
-            coremodpath.Append("coremods");
-            moddirpath.Append("moddir");
-            if (!Directory.Exists(modpath.ToString()))
+            Process.Start(new ProcessStartInfo()
             {
-                Directory.CreateDirectory(modpath.ToString());
-            }
-            if (!Directory.Exists(configpath.ToString()))
-            {
-                Directory.CreateDirectory(configpath.ToString());
-            }
-            if (!Directory.Exists(coremodpath.ToString()))
-            {
-                Directory.CreateDirectory(coremodpath.ToString());
-            }
-            if (!Directory.Exists(moddirpath.ToString()))
-            {
-                Directory.CreateDirectory(moddirpath.ToString());
-            }
-            Process explorer = new Process();
-            explorer.StartInfo.FileName = "explorer.exe";
-            explorer.StartInfo.Arguments = configpath.ToString();
-            explorer.Start();
+                FileName = "explorer.exe",
+                Arguments =
+                    ModHelper.SetupModPath(listVer.SelectedItem.ToString()) + "configs"
+            });
         }
         private void listVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
@@ -592,14 +511,14 @@ namespace BMCLV2.Windows
         }
         private void btnLibraries_Click(object sender, RoutedEventArgs e)
         {
-            FrmLibraries f = new FrmLibraries(Info.libraries);
+            var f = new FrmLibraries(Info.libraries);
             if (f.ShowDialog() == true)
             {
                 Info.libraries = f.GetChange();
-                string JsonFile = gameinfo.GetGameInfoJsonPath(listVer.SelectedItem.ToString());
-                File.Delete(JsonFile + ".bak");
-                File.Move(JsonFile, JsonFile + ".bak");
-                gameinfo.Write(Info, JsonFile);
+                string jsonFile = gameinfo.GetGameInfoJsonPath(listVer.SelectedItem.ToString());
+                File.Delete(jsonFile + ".bak");
+                File.Move(jsonFile, jsonFile + ".bak");
+                gameinfo.Write(Info, jsonFile);
                 this.listVer_SelectionChanged(null, null);
             }
         }
@@ -609,7 +528,7 @@ namespace BMCLV2.Windows
         #region tabLauncherCfg
         private void btnSaveConfig_Click(object sender, RoutedEventArgs e)
         {
-            BmclCore.Config.Autostart = (bool)checkAutoStart.IsChecked;
+            BmclCore.Config.Autostart = checkAutoStart.IsChecked != null && (bool) checkAutoStart.IsChecked;
             BmclCore.Config.ExtraJvmArg = txtExtJArg.Text;
             BmclCore.Config.Javaw = txtJavaPath.Text;
             BmclCore.Config.Javaxmx = txtJavaXmx.Text;
@@ -618,20 +537,20 @@ namespace BMCLV2.Windows
             BmclCore.Config.Passwd = Encoding.UTF8.GetBytes(txtPwd.Password);
             BmclCore.Config.Username = txtUserName.Text;
             BmclCore.Config.WindowTransparency = sliderWindowTransparency.Value;
-            BmclCore.Config.Report = checkReport.IsChecked.Value;
+            BmclCore.Config.Report = checkReport.IsChecked != null && checkReport.IsChecked.Value;
             BmclCore.Config.DownloadSource = listDownSource.SelectedIndex;
             BmclCore.Config.Lang = LangManager.GetLangFromResource("LangName");
             Config.Save();
-            DoubleAnimationUsingKeyFrames dak = new DoubleAnimationUsingKeyFrames();
+            var dak = new DoubleAnimationUsingKeyFrames();
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(0)));
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(30, TimeSpan.FromSeconds(0.3)));
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(30, TimeSpan.FromSeconds(2.3)));
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(2.6)));
-            popupSaveSuccess.BeginAnimation(Grid.HeightProperty, dak);
+            popupSaveSuccess.BeginAnimation(FrameworkElement.HeightProperty, dak);
         }
         private void sliderJavaxmx_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            txtJavaXmx.Text = ((int)sliderJavaxmx.Value).ToString();
+            txtJavaXmx.Text = ((int)sliderJavaxmx.Value).ToString(CultureInfo.InvariantCulture);
         }
         private void txtUserName_TextChanged(object sender, TextChangedEventArgs e)
         {
@@ -639,11 +558,13 @@ namespace BMCLV2.Windows
         }
         private void btnSelectJava_Click(object sender, RoutedEventArgs e)
         {
-            System.Windows.Forms.OpenFileDialog ofJava = new System.Windows.Forms.OpenFileDialog();
-            ofJava.RestoreDirectory = true;
-            ofJava.Filter = "Javaw.exe|Javaw.exe";
-            ofJava.Multiselect = false;
-            ofJava.CheckFileExists = true;
+            var ofJava = new System.Windows.Forms.OpenFileDialog
+            {
+                RestoreDirectory = true,
+                Filter = @"Javaw.exe|Javaw.exe",
+                Multiselect = false,
+                CheckFileExists = true
+            };
             if (ofJava.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 txtJavaPath.Text = ofJava.FileName;
@@ -683,7 +604,7 @@ namespace BMCLV2.Windows
             {
                 Logger.log(ex);
                 MessageBox.Show("请输入一个有效数字");
-                txtJavaXmx.Text = (Config.GetMemory()/4).ToString();
+                txtJavaXmx.Text = (Config.GetMemory()/4).ToString(CultureInfo.InvariantCulture);
                 txtJavaXmx.SelectAll();
             }
         }
@@ -699,7 +620,7 @@ namespace BMCLV2.Windows
 
         private void txtExtJArg_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (txtExtJArg.Text.IndexOf("-Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true") != -1)
+            if (txtExtJArg.Text.IndexOf("-Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true", System.StringComparison.Ordinal) != -1)
             {
                 checkOptifine.IsChecked = true;
             }
@@ -707,20 +628,19 @@ namespace BMCLV2.Windows
 
         private void checkOptifine_Checked(object sender, RoutedEventArgs e)
         {
-            if (txtExtJArg.Text.IndexOf("-Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true") != -1)
+            if (txtExtJArg.Text.IndexOf("-Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true", System.StringComparison.Ordinal) != -1)
                 return;
             txtExtJArg.Text += " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
         }
 
         private void checkOptifine_Unchecked(object sender, RoutedEventArgs e)
         {
-            int t = txtExtJArg.Text.IndexOf(" -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true");
             txtExtJArg.Text = txtExtJArg.Text.Replace(" -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true", "");
         }
 
         private void checkCheckUpdate_Checked(object sender, RoutedEventArgs e)
         {
-            BmclCore.Config.CheckUpdate = checkCheckUpdate.IsChecked == true ? true : false;
+            BmclCore.Config.CheckUpdate = checkCheckUpdate.IsChecked == true;
         }
         #endregion
 
@@ -731,32 +651,34 @@ namespace BMCLV2.Windows
             if (btnReflushServer.Content.ToString() == LangManager.GetLangFromResource("RemoteVerGetting"))
                 return;
             listRemoteVer.DataContext = null;
-            DataContractJsonSerializer RawJson = new System.Runtime.Serialization.Json.DataContractJsonSerializer(typeof(RawVersionListType));
-            HttpWebRequest GetJson = (HttpWebRequest)WebRequest.Create(BmclCore.UrlDownloadBase + "versions/versions.json");
-            GetJson.Timeout = 10000;
-            GetJson.ReadWriteTimeout = 10000;
-            Thread thGet = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
+            var rawJson = new DataContractJsonSerializer(typeof(RawVersionListType));
+            var getJson = (HttpWebRequest)WebRequest.Create(BmclCore.UrlDownloadBase + "versions/versions.json");
+            getJson.Timeout = 10000;
+            getJson.ReadWriteTimeout = 10000;
+            var thGet = new Thread(new ThreadStart(delegate
             {
                 try
                 {
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnRefreshRemoteVer.Content = LangManager.GetLangFromResource("RemoteVerGetting"); btnRefreshRemoteVer.IsEnabled = false; }));
-                HttpWebResponse GetJsonAns = (HttpWebResponse)GetJson.GetResponse();
-                RawVersionListType RemoteVersion = RawJson.ReadObject(GetJsonAns.GetResponseStream()) as RawVersionListType;
-                DataTable dt = new DataTable();
-                dt.Columns.Add("Ver");
-                dt.Columns.Add("RelTime");
-                dt.Columns.Add("Type");
-                foreach (RemoteVerType RV in RemoteVersion.getVersions())
-                {
-                    dt.Rows.Add(new string[] { RV.id, RV.releaseTime, RV.type });
-                }
-                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
-                {
-                    btnRefreshRemoteVer.Content = LangManager.GetLangFromResource("btnRefreshRemoteVer");
-                    btnRefreshRemoteVer.IsEnabled = true;
-                    listRemoteVer.DataContext = dt;
-                    listRemoteVer.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("RelTime", System.ComponentModel.ListSortDirection.Descending));
-                }));
+                    var getJsonAns = (HttpWebResponse)getJson.GetResponse();
+// ReSharper disable once AssignNullToNotNullAttribute
+                    var remoteVersion = rawJson.ReadObject(getJsonAns.GetResponseStream()) as RawVersionListType;
+                    var dt = new DataTable();
+                    dt.Columns.Add("Ver");
+                    dt.Columns.Add("RelTime");
+                    dt.Columns.Add("Type");
+                    if (remoteVersion != null)
+                        foreach (RemoteVerType rv in remoteVersion.getVersions())
+                        {
+                            dt.Rows.Add(new object[] { rv.id, rv.releaseTime, rv.type });
+                        }
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
+                    {
+                        btnRefreshRemoteVer.Content = LangManager.GetLangFromResource("btnRefreshRemoteVer");
+                        btnRefreshRemoteVer.IsEnabled = true;
+                        listRemoteVer.DataContext = dt;
+                        listRemoteVer.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("RelTime", System.ComponentModel.ListSortDirection.Descending));
+                    }));
                 }
                 catch (WebException ex)
                 {
@@ -776,7 +698,7 @@ namespace BMCLV2.Windows
                         btnRefreshRemoteVer.IsEnabled = true;
                     }));
                 }
-            })));
+            }));
             thGet.Start();
         }
         private void btnDownloadVer_Click(object sender, RoutedEventArgs e)
@@ -786,49 +708,53 @@ namespace BMCLV2.Windows
                 MessageBox.Show(LangManager.GetLangFromResource("RemoteVerErrorNoVersionSelect"));
                 return;
             }
-            DataRowView SelectVer = listRemoteVer.SelectedItem as DataRowView;
-            string selectver = SelectVer[0] as string;
-            StringBuilder downpath = new StringBuilder(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions\");
-            downpath.Append(selectver).Append("\\");
-            downpath.Append(selectver).Append(".jar");
-            WebClient downer = new WebClient();
-            StringBuilder downurl = new StringBuilder(BmclCore.UrlDownloadBase);
-            downurl.Append(@"versions\");
-            downurl.Append(selectver).Append("\\");
-            downurl.Append(selectver).Append(".jar");
+            var selectVer = listRemoteVer.SelectedItem as DataRowView;
+            if (selectVer != null)
+            {
+                var selectver = selectVer[0] as string;
+                var downpath = new StringBuilder(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions\");
+                downpath.Append(selectver).Append("\\");
+                downpath.Append(selectver).Append(".jar");
+                var downer = new WebClient();
+                var downurl = new StringBuilder(BmclCore.UrlDownloadBase);
+                downurl.Append(@"versions\");
+                downurl.Append(selectver).Append("\\");
+                downurl.Append(selectver).Append(".jar");
 #if DEBUG
             MessageBox.Show(downpath.ToString()+"\n"+downurl.ToString());
 #endif
-            btnDownloadVer.Content = LangManager.GetLangFromResource("RemoteVerDownloading");
-            btnDownloadVer.IsEnabled = false;
-            if (!Directory.Exists(System.IO.Path.GetDirectoryName(downpath.ToString())))
-            {
-                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(downpath.ToString()));
+                btnDownloadVer.Content = LangManager.GetLangFromResource("RemoteVerDownloading");
+                btnDownloadVer.IsEnabled = false;
+// ReSharper disable once AssignNullToNotNullAttribute
+                if (!Directory.Exists(Path.GetDirectoryName(downpath.ToString())))
+                {
+// ReSharper disable once AssignNullToNotNullAttribute
+                    Directory.CreateDirectory(Path.GetDirectoryName(downpath.ToString()));
+                }
+                string downjsonfile = downurl.ToString().Substring(0, downurl.Length - 4) + ".json";
+                string downjsonpath = downpath.ToString().Substring(0, downpath.Length - 4) + ".json";
+                try
+                {
+                    downer.DownloadFileCompleted += downer_DownloadClientFileCompleted;
+                    downer.DownloadProgressChanged += downer_DownloadProgressChanged;
+                    Logger.log("下载:" + downjsonfile);
+                    downer.DownloadFile(new Uri(downjsonfile), downjsonpath);
+                    Logger.log("下载:" + downurl);
+                    downer.DownloadFileAsync(new Uri(downurl.ToString()), downpath.ToString());
+                    _downedtime = Environment.TickCount - 1;
+                    _downed = 0;
+                    gridDown.Visibility = Visibility.Visible;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message+"\n");
+                    btnDownloadVer.Content = LangManager.GetLangFromResource("btnDownloadVer");
+                    btnDownloadVer.IsEnabled = true;
+                }
             }
-            string downjsonfile = downurl.ToString().Substring(0, downurl.Length - 4) + ".json";
-            string downjsonpath = downpath.ToString().Substring(0, downpath.Length - 4) + ".json";
-            try
-            {
-                downer.DownloadFileCompleted += downer_DownloadClientFileCompleted;
-                downer.DownloadProgressChanged += downer_DownloadProgressChanged;
-                Logger.log("下载:" + downjsonfile, Logger.LogType.Info);
-                downer.DownloadFile(new Uri(downjsonfile), downjsonpath);
-                Logger.log("下载:" + downurl, Logger.LogType.Info);
-                downer.DownloadFileAsync(new Uri(downurl.ToString()), downpath.ToString());
-                downedtime = Environment.TickCount - 1;
-                downed = 0;
-                gridDown.Visibility = Visibility.Visible;
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message+"\n");
-                btnDownloadVer.Content = LangManager.GetLangFromResource("btnDownloadVer");
-                btnDownloadVer.IsEnabled = true;
-            }
-
         }
-        int downedtime;
-        int downed;
+        int _downedtime;
+        int _downed;
         void downer_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             prsDown.Maximum = (int)e.TotalBytesToReceive;
@@ -837,10 +763,10 @@ namespace BMCLV2.Windows
             StringBuilder info = new StringBuilder(LangManager.GetLangFromResource("DownloadSpeedInfo"));
             try
             {
-                info.Append(((double)(e.BytesReceived - downed) / (double)((Environment.TickCount - downedtime) / 1000) / 1024.0).ToString("F2")).Append("KB/s,");
+                info.Append(((double)(e.BytesReceived - _downed) / (double)((Environment.TickCount - _downedtime) / 1000) / 1024.0).ToString("F2")).Append("KB/s,");
             }
             catch (DivideByZeroException) { info.Append("0B/s,"); }
-            info.Append(e.ProgressPercentage.ToString()).Append("%");
+            info.Append(e.ProgressPercentage.ToString(CultureInfo.InvariantCulture)).Append("%");
             labDownInfo.Content = info.ToString();
         }
 
@@ -857,7 +783,7 @@ namespace BMCLV2.Windows
         }
         private void btnCheckRes_Click(object sender, RoutedEventArgs e)
         {
-            FrmCheckRes checkres = new FrmCheckRes();
+            var checkres = new FrmCheckRes();
             checkres.Show();
         }
         private void listRemoteVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
@@ -869,12 +795,13 @@ namespace BMCLV2.Windows
 
 
         #region tabForge
-        ForgeVersionList ForgeVer = new ForgeVersionList();
+
+        readonly ForgeVersionList _forgeVer = new ForgeVersionList();
         private void RefreshForgeVersionList()
         {
             treeForgeVer.Items.Add(LangManager.GetLangFromResource("ForgeListGetting"));
-            ForgeVer.ForgePageReadyEvent += ForgeVer_ForgePageReadyEvent;
-            ForgeVer.GetVersion();
+            _forgeVer.ForgePageReadyEvent += ForgeVer_ForgePageReadyEvent;
+            _forgeVer.GetVersion();
         }
 
         void ForgeVer_ForgePageReadyEvent()
@@ -882,11 +809,11 @@ namespace BMCLV2.Windows
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(() =>
             {
                 treeForgeVer.Items.Clear();
-                foreach (TreeViewItem t in ForgeVer.GetNew())
+                foreach (TreeViewItem t in _forgeVer.GetNew())
                 {
                     treeForgeVer.Items.Add(t);
                 }
-                foreach (TreeViewItem t in ForgeVer.GetLegacy())
+                foreach (TreeViewItem t in _forgeVer.GetLegacy())
                 {
                     treeForgeVer.Items.Add(t);
                 }
@@ -910,19 +837,19 @@ namespace BMCLV2.Windows
         }
         private void DownloadForge(string ver)
         {
-            if (!ForgeVer.ForgeDownloadUrl.ContainsKey(ver))
+            if (!_forgeVer.ForgeDownloadUrl.ContainsKey(ver))
             {
                 MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotSupportInstaller"));
                 return;
             }
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { gridDown.Visibility = Visibility.Visible; }));
-            Uri url = new Uri(ForgeVer.ForgeDownloadUrl[ver].ToString());
-            WebClient downer = new WebClient();
+            var url = new Uri(_forgeVer.ForgeDownloadUrl[ver]);
+            var downer = new WebClient();
             downer.DownloadProgressChanged+=downer_DownloadProgressChanged;
             downer.DownloadFileCompleted += downer_DownloadForgeCompleted;
-            downedtime = Environment.TickCount - 1;
-            downed = 0;
-            StreamWriter w = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft\\launcher_profiles.json");
+            _downedtime = Environment.TickCount - 1;
+            _downed = 0;
+            var w = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft\\launcher_profiles.json");
             w.Write(Resource.NormalProfile.Profile);
             w.Close();
             downer.DownloadFileAsync(url, "forge.jar");
@@ -939,17 +866,17 @@ namespace BMCLV2.Windows
             {
                 MessageBox.Show(LangManager.GetLangFromResource("ForgeCopyError"));
             }
-            Process ForgeIns = new Process();
+            var forgeIns = new Process();
             if (!File.Exists(BmclCore.Config.Javaw))
             {
                 MessageBox.Show(LangManager.GetLangFromResource("ForgeJavaError"));
                 return;
             }
-            ForgeIns.StartInfo.FileName = BmclCore.Config.Javaw;
-            ForgeIns.StartInfo.Arguments = "-jar \"" + AppDomain.CurrentDomain.BaseDirectory + "\\forge.jar\"";
-            Logger.log(ForgeIns.StartInfo.Arguments);
-            ForgeIns.Start();
-            ForgeIns.WaitForExit();
+            forgeIns.StartInfo.FileName = BmclCore.Config.Javaw;
+            forgeIns.StartInfo.Arguments = "-jar \"" + AppDomain.CurrentDomain.BaseDirectory + "\\forge.jar\"";
+            Logger.log(forgeIns.StartInfo.Arguments);
+            forgeIns.Start();
+            forgeIns.WaitForExit();
             ReFlushlistver();
             tabMain.SelectedIndex = 0;
             gridDown.Visibility = Visibility.Hidden;
@@ -982,16 +909,16 @@ namespace BMCLV2.Windows
                 return;
             if (this.treeForgeVer.SelectedItem is string)
             {
-                if (!ForgeVer.ForgeChangeLogUrl.ContainsKey(this.treeForgeVer.SelectedItem as string))
-                    if(ForgeVer.ForgeChangeLogUrl[this.treeForgeVer.SelectedItem as string] !=null)
+                if (!_forgeVer.ForgeChangeLogUrl.ContainsKey(this.treeForgeVer.SelectedItem as string))
+                    if(_forgeVer.ForgeChangeLogUrl[this.treeForgeVer.SelectedItem as string] !=null)
                     {
                         MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotHaveChangeLog"));
                         return;
                     }
                 txtChangeLog.Text = LangManager.GetLangFromResource("FetchingForgeChangeLog");
-                WebClient GetLog = new WebClient();
-                GetLog.DownloadStringCompleted += GetLog_DownloadStringCompleted;
-                GetLog.DownloadStringAsync(new Uri(ForgeVer.ForgeChangeLogUrl[this.treeForgeVer.SelectedItem as string] as string));
+                var getLog = new WebClient();
+                getLog.DownloadStringCompleted += GetLog_DownloadStringCompleted;
+                getLog.DownloadStringAsync(new Uri(_forgeVer.ForgeChangeLogUrl[this.treeForgeVer.SelectedItem as string]));
             }
         }
 
@@ -1004,21 +931,21 @@ namespace BMCLV2.Windows
 
         #region tabServerList
 
-        DataTable ServerListDataTable = new DataTable();
-        private serverlist.serverlist sl;
+        readonly DataTable _serverListDataTable = new DataTable();
+        private serverlist.serverlist _sl;
         private void btnReflushServer_Click(object sender, RoutedEventArgs e)
         {
-            ServerListDataTable.Clear();
-            ServerListDataTable.Columns.Clear();
-            ServerListDataTable.Rows.Clear();
-            ServerListDataTable.Columns.Add("ServerName");
-            ServerListDataTable.Columns.Add("HiddenAddress");
-            ServerListDataTable.Columns.Add("ServerAddress");
-            ServerListDataTable.Columns.Add("ServerMotd");
-            ServerListDataTable.Columns.Add("ServerVer");
-            ServerListDataTable.Columns.Add("ServerOnline");
-            ServerListDataTable.Columns.Add("ServerDelay");
-            this.listServer.DataContext = ServerListDataTable;
+            _serverListDataTable.Clear();
+            _serverListDataTable.Columns.Clear();
+            _serverListDataTable.Rows.Clear();
+            _serverListDataTable.Columns.Add("ServerName");
+            _serverListDataTable.Columns.Add("HiddenAddress");
+            _serverListDataTable.Columns.Add("ServerAddress");
+            _serverListDataTable.Columns.Add("ServerMotd");
+            _serverListDataTable.Columns.Add("ServerVer");
+            _serverListDataTable.Columns.Add("ServerOnline");
+            _serverListDataTable.Columns.Add("ServerDelay");
+            this.listServer.DataContext = _serverListDataTable;
             this.btnReflushServer.IsEnabled = false;
             ThreadPool.QueueUserWorkItem(new WaitCallback(GetServerInfo));
         }
@@ -1028,8 +955,8 @@ namespace BMCLV2.Windows
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnReflushServer.Content = LangManager.GetLangFromResource("ServerListGetting"); }));
             if (File.Exists(@".minecraft\servers.dat"))
             {
-                sl = new serverlist.serverlist();
-                foreach (serverlist.serverinfo info in sl.info)
+                _sl = new serverlist.serverlist();
+                foreach (serverlist.serverinfo info in _sl.info)
                 {
                     DateTime start = DateTime.Now;
                     string[] server = new string[7];
@@ -1125,13 +1052,13 @@ namespace BMCLV2.Windows
                             logger.Append(str + ",");
                         }
                         Logger.log(logger.ToString());
-                        lock (ServerListDataTable)
+                        lock (_serverListDataTable)
                         {
-                            ServerListDataTable.Rows.Add(server);
+                            _serverListDataTable.Rows.Add(server);
                             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                             {
                                 listServer.DataContext = null;
-                                listServer.DataContext = ServerListDataTable;
+                                listServer.DataContext = _serverListDataTable;
                             }));
                         }
                     }
@@ -1150,7 +1077,7 @@ namespace BMCLV2.Windows
                     serverdat.Write(Convert.FromBase64String(Resource.ServerDat.Header), 0, Convert.FromBase64String(Resource.ServerDat.Header).Length);
                     serverdat.WriteByte(0);
                     serverdat.Close();
-                    sl = new serverlist.serverlist();
+                    _sl = new serverlist.serverlist();
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
                     {
                         btnAddServer.IsEnabled = true;
@@ -1174,10 +1101,10 @@ namespace BMCLV2.Windows
 
         private void btnAddServer_Click(object sender, RoutedEventArgs e)
         {
-            serverlist.AddServer FrmAdd = new serverlist.AddServer(ref sl);
+            serverlist.AddServer FrmAdd = new serverlist.AddServer(ref _sl);
             if (FrmAdd.ShowDialog() == true)
             {
-                sl.Write();
+                _sl.Write();
                 btnReflushServer_Click(null, null);
             }
         }
@@ -1186,8 +1113,8 @@ namespace BMCLV2.Windows
         {
             try
             {
-                sl.Delete(listServer.SelectedIndex);
-                sl.Write();
+                _sl.Delete(listServer.SelectedIndex);
+                _sl.Write();
                 btnReflushServer_Click(null, null);
             }
             catch (ArgumentOutOfRangeException)
@@ -1201,12 +1128,12 @@ namespace BMCLV2.Windows
             try
             {
                 int selected = this.listServer.SelectedIndex;
-                serverlist.AddServer FrmEdit = new serverlist.AddServer(ref sl, selected);
+                serverlist.AddServer FrmEdit = new serverlist.AddServer(ref _sl, selected);
                 if (FrmEdit.ShowDialog() == true)
                 {
                     serverlist.serverinfo info = FrmEdit.getEdit();
-                    sl.Edit(selected, info.Name, info.Address, info.IsHide);
-                    sl.Write();
+                    _sl.Edit(selected, info.Name, info.Address, info.IsHide);
+                    _sl.Write();
                     btnReflushServer_Click(null, null);
                 }
             }

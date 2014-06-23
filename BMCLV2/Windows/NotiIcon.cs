@@ -10,7 +10,6 @@ namespace BMCLV2.Windows
     {
         public readonly NotifyIcon NIcon = new NotifyIcon();
         private readonly ContextMenu _nMenu = new ContextMenu();
-        private readonly MenuItem _menuItem = null;
         private Window _mainWindow;
         public Window MainWindow
         {
@@ -29,14 +28,14 @@ namespace BMCLV2.Windows
         public NotiIcon()
         {
             NIcon.Visible = false;
-            NIcon = new System.Windows.Forms.NotifyIcon { Visible = true };
+            NIcon = new NotifyIcon { Visible = true };
             var s = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/screenLaunch.png"));
             if (s != null) this.NIcon.Icon = System.Drawing.Icon.FromHandle(new System.Drawing.Bitmap(s.Stream).GetHicon());
-            _menuItem = _nMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
-            _menuItem.Name = "ShowMainWindow";
-            _menuItem.DefaultItem = true;
-            _menuItem.Enabled = false;
-            _menuItem.Click += NMenu_ShowMainWindows_Click;
+            MenuItem menuItem = _nMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
+            menuItem.Name = "ShowMainWindow";
+            menuItem.DefaultItem = true;
+            menuItem.Enabled = false;
+            menuItem.Click += NMenu_ShowMainWindows_Click;
             NIcon.DoubleClick += NIcon_DoubleClick;
             MenuItem debugMode = _nMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuUseDebugMode"));
             debugMode.Name = "DebugMode";

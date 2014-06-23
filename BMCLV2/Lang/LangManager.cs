@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Collections;
 
@@ -25,17 +22,16 @@ namespace BMCLV2.Lang
         {
             if (Application.Current.Resources.Contains(key))
                 return Application.Current.Resources[key] as string;
-            else
-                if (DefaultLanguage.Contains(key))
-                    return DefaultLanguage[key] as string;
-                else
-                    return key;
+            if (DefaultLanguage.Contains(key))
+                return DefaultLanguage[key] as string;
+            return key;
         }
+
         static public ResourceDictionary LoadLangFromResource(string path)
         {
-            var Lang = new ResourceDictionary();
-            Lang.Source = new Uri(path);
-            return Lang;
+            var lang = new ResourceDictionary();
+            lang.Source = new Uri(path);
+            return lang;
         }
         static public void UseLanguage(string languageName)
         {

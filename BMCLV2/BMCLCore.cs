@@ -27,8 +27,9 @@ namespace BMCLV2
         public static String UrlResourceBase = Url.URL_RESOURCE_bangbang93;
         public static string UrlLibrariesBase = Url.URL_LIBRARIES_bangbang93;
         public static NotiIcon NIcon = new NotiIcon();
-        public static Window MainWindow = null;
+        public static FrmMain MainWindow = null;
         public static Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
+        public static gameinfo GameInfo;
 
         static BmclCore()
         {
@@ -177,9 +178,11 @@ namespace BMCLV2
             #endregion
         }
 
-        public static void Invoke(Delegate invoke)
+        public static void Invoke(Delegate invoke, string[] argObjects = null)
         {
-            BmclCore.Dispatcher.Invoke(invoke);
+            BmclCore.Dispatcher.Invoke(invoke, argObjects);
         }
+
+        
     }
 }

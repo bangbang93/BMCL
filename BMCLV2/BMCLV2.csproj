@@ -95,6 +95,14 @@
     <Compile Include="Config.cs" />
     <Compile Include="Launcher\NoJavaException.cs" />
     <Compile Include="Launcher\UnSupportVersionException.cs" />
+    <Compile Include="Mod\ModHelper.cs" />
+    <Compile Include="Windows\MainWindowTab\GridGame.xaml.cs">
+      <DependentUpon>GridGame.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainWindowTab\TabVersion.xaml.cs">
+      <DependentUpon>TabVersion.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Versions\VersionHelper.cs" />
     <Compile Include="Windows\CrashHandle.xaml.cs">
       <DependentUpon>CrashHandle.xaml</DependentUpon>
     </Compile>
@@ -204,6 +212,18 @@
     <Compile Include="zip\ZipInputStream.cs" />
     <Compile Include="zip\ZipNameTransform.cs" />
     <Compile Include="zip\ZipOutputStream.cs" />
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\MainWindowTab\GridGame.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\MainWindowTab\TabVersion.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\CrashHandle.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
