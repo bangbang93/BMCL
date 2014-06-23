@@ -22,7 +22,6 @@ namespace BMCLV2.Windows
     {
         private bool _inscreen;
         private bool _isLaunchering;
-        public bool Debug;
         
         private int _clientCrashReportCount;
         private FrmPrs _starter;
@@ -369,15 +368,6 @@ namespace BMCLV2.Windows
         public bool LoadOk = false;
         private void FrmMainWindow_Loaded(object sender, RoutedEventArgs e)
         {
-            if (!LoadOk)
-            {
-                if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets"))
-                    if (MessageBox.Show(LangManager.GetLangFromResource("ResourceTipForFirstLauncher"), LangManager.GetLangFromResource("ResourceTipTitleForFirstLauncher"), MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                    {
-                        var frmCheckRes = new FrmCheckRes();
-                        frmCheckRes.Show();
-                    }
-            }
             if (BmclCore.Config.Username == "!!!")
             {
                 TabMain.SelectedIndex = 1;
