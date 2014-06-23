@@ -47,6 +47,7 @@ namespace BMCLV2.Windows.MainWindowTab
             labRelTime.Content = BmclCore.GameInfo.releaseTime;
             labType.Content = BmclCore.GameInfo.type;
         }
+
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
             if (MessageBox.Show(LangManager.GetLangFromResource("DeleteMessageBoxInfo"), LangManager.GetLangFromResource("DeleteMessageBoxTitle"), MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK)
@@ -75,6 +76,7 @@ namespace BMCLV2.Windows.MainWindowTab
                 }
             }
         }
+
         private void btnReName_Click(object sender, RoutedEventArgs e)
         {
             try
@@ -98,6 +100,7 @@ namespace BMCLV2.Windows.MainWindowTab
                 this.ReFlushlistver();
             }
         }
+
         private void btnModMrg_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo
@@ -107,6 +110,7 @@ namespace BMCLV2.Windows.MainWindowTab
                     ModHelper.SetupModPath(listVer.SelectedItem.ToString()) + "mods"
             });
         }
+
         private void btnImportOldMc_Click(object sender, RoutedEventArgs e)
         {
             var folderImportOldVer = new System.Windows.Forms.FolderBrowserDialog
@@ -148,6 +152,7 @@ namespace BMCLV2.Windows.MainWindowTab
             }
             else prs.Close();
         }
+
         private void btnCoreModMrg_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo
@@ -157,6 +162,7 @@ namespace BMCLV2.Windows.MainWindowTab
                     ModHelper.SetupModPath(listVer.SelectedItem.ToString()) + "coremods"
             });
         }
+
         private void btnModdirMrg_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo
@@ -166,6 +172,7 @@ namespace BMCLV2.Windows.MainWindowTab
                     ModHelper.SetupModPath(listVer.SelectedItem.ToString()) + "moddir"
             });
         }
+
         private void btnModCfgMrg_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo
@@ -175,10 +182,12 @@ namespace BMCLV2.Windows.MainWindowTab
                     ModHelper.SetupModPath(listVer.SelectedItem.ToString()) + "configs"
             });
         }
+
         private void listVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             BmclCore.MainWindow.ClickStartButton();
         }
+
         private void btnLibraries_Click(object sender, RoutedEventArgs e)
         {
             var f = new FrmLibraries(BmclCore.GameInfo.libraries);
@@ -192,7 +201,8 @@ namespace BMCLV2.Windows.MainWindowTab
                 this.listVer_SelectionChanged(null, null);
             }
         }
-        private void ReFlushlistver()
+
+        public void ReFlushlistver()
         {
             listVer.Items.Clear();
 
@@ -244,6 +254,11 @@ namespace BMCLV2.Windows.MainWindowTab
                 btnModMrg.IsEnabled = false;
                 btnCoreModMrg.IsEnabled = false;
             }
+        }
+
+        public string GetSelectedVersion()
+        {
+            return listVer.SelectedItem as string;
         }
     }
 }

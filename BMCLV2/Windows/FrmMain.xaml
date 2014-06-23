@@ -1,7 +1,7 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:System="clr-namespace:System;assembly=mscorlib" xmlns:MainWindowTab="clr-namespace:BMCLV2.Windows.MainWindowTab" x:Name="FrmMainWindow" x:Class="BMCLV2.Windows.FrmMain"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" xmlns:mainWindowTab="clr-namespace:BMCLV2.Windows.MainWindowTab" x:Name="FrmMainWindow" x:Class="BMCLV2.Windows.FrmMain"
         Title="BMCLV2" Height="504" Width="900" ResizeMode="NoResize" WindowStyle="None" Loaded="FrmMainWindow_Loaded" MouseDown="FrmMainWindow_MouseDown" AllowsTransparency="True" Background="{x:Null}" OpacityMask="White" Closing="FrmMainWindow_Closing" IsVisibleChanged="FrmMainWindow_IsVisibleChanged" Icon="..\tofu.ico" GotFocus="FrmMainWindow_GotFocus" Activated="FrmMainWindow_Activated">
     <Grid Height="504" VerticalAlignment="Top">
         <Grid.RowDefinitions>
@@ -161,12 +161,25 @@
                             <Button x:Name="btnEditServer" Content="{DynamicResource btnEditServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,248,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnEditServer_Click"/>
                         </Grid>
                     </TabItem>
+                    <TabItem x:Name="TabGame" Header="游戏版本">
+                        <mainWindowTab:GridGame x:Name="GridGame"></mainWindowTab:GridGame>
+                    </TabItem>
+                    <TabItem x:Name="TabConfig" Header="启动设置">
+                        <mainWindowTab:GridConfig x:Name="GridConfig"></mainWindowTab:GridConfig>
+                    </TabItem>
+                    <TabItem x:Name="TabVersion" Header="版本管理">
+                        <mainWindowTab:GridVersion x:Name="GridVersion"></mainWindowTab:GridVersion>
+                    </TabItem>
+                    <TabItem x:Name="TabForge" Header="安装Forge">
+                        <mainWindowTab:GridForge x:Name="GridForge"></mainWindowTab:GridForge>
+                    </TabItem>
+                    <TabItem x:Name="TabServer" Header="服务器列表">
+                        <mainWindowTab:GridServer x:Name="GridServer"></mainWindowTab:GridServer>
+                    </TabItem>
                     <TabItem x:Name="tabUpdateInfo" Header="更新信息" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61" Visibility="Hidden">
                         <Grid x:Name="gridUpdateInfo" Background="#FFE5E5E5"/>
                     </TabItem>
-                    <TabItem Header="测试">
-                        <MainWindowTab:GridGame />
-                    </TabItem>
+                    
                 </TabControl>
                 <Button x:Name="btnStart" Content="{DynamicResource btnStart}" HorizontalAlignment="Left" Margin="781,452,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnStart_Click" IsDefault="True" ToolTip="右键可以使用Debug模式启动">
                     <Button.ContextMenu>

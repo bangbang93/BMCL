@@ -93,14 +93,24 @@
     <Compile Include="assets\AssetsEntity.cs" />
     <Compile Include="BmclCore.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Downloader\DownloadQueue.cs" />
     <Compile Include="Launcher\NoJavaException.cs" />
     <Compile Include="Launcher\UnSupportVersionException.cs" />
     <Compile Include="Mod\ModHelper.cs" />
+    <Compile Include="Windows\MainWindowTab\GridConfig.xaml.cs">
+      <DependentUpon>GridConfig.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainWindowTab\GridForge.xaml.cs">
+      <DependentUpon>GridForge.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\MainWindowTab\GridGame.xaml.cs">
       <DependentUpon>GridGame.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Windows\MainWindowTab\TabVersion.xaml.cs">
-      <DependentUpon>TabVersion.xaml</DependentUpon>
+    <Compile Include="Windows\MainWindowTab\GridServer.xaml.cs">
+      <DependentUpon>GridServer.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Windows\MainWindowTab\GridVersion.xaml.cs">
+      <DependentUpon>GridVersion.xaml</DependentUpon>
     </Compile>
     <Compile Include="Versions\VersionHelper.cs" />
     <Compile Include="Windows\CrashHandle.xaml.cs">
@@ -216,11 +226,23 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Windows\MainWindowTab\GridConfig.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\MainWindowTab\GridForge.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Windows\MainWindowTab\GridGame.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Windows\MainWindowTab\TabVersion.xaml">
+    <Page Include="Windows\MainWindowTab\GridServer.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Windows\MainWindowTab\GridVersion.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

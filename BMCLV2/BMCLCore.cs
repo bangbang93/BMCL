@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -30,6 +31,7 @@ namespace BMCLV2
         public static FrmMain MainWindow = null;
         public static Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
         public static gameinfo GameInfo;
+        public static Dictionary<string, object> Language = new Dictionary<string, object>();
 
         static BmclCore()
         {
@@ -178,7 +180,7 @@ namespace BMCLV2
             #endregion
         }
 
-        public static void Invoke(Delegate invoke, string[] argObjects = null)
+        public static void Invoke(Delegate invoke, object[] argObjects = null)
         {
             BmclCore.Dispatcher.Invoke(invoke, argObjects);
         }

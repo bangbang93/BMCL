@@ -90,6 +90,27 @@ namespace BMCLV2.Windows
             }
         }
 
+        public void ChangeDownloadProgress(int value, int maxValue)
+        {
+            prsDown.Maximum = maxValue;
+            prsDown.Value = value;
+        }
+
+        public void ChangeDownloadProgress(long value, long maxValue)
+        {
+            this.ChangeDownloadProgress((int)value, (int)maxValue);
+        }
+
+        public void SwitchDownloadGrid(Visibility visibility)
+        {
+            gridDown.Visibility = visibility;
+        }
+
+        public void SetDownloadInfo(string info)
+        {
+            labDownInfo.Content = info;
+        }
+
         #region 公共按钮
         private void btnChangeBg_Click(object sender, RoutedEventArgs e)
         {
@@ -1204,7 +1225,7 @@ namespace BMCLV2.Windows
         }
 
 
-        bool loadOk = false;
+        public bool loadOk = false;
         private void FrmMainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             if (!loadOk)
@@ -1269,8 +1290,7 @@ namespace BMCLV2.Windows
         {
             if (LasttabMainSelectIndex == tabMain.SelectedIndex)
                 return;
-            else
-                LasttabMainSelectIndex = tabMain.SelectedIndex;
+            LasttabMainSelectIndex = tabMain.SelectedIndex;
             if (!loadOk)
                 return;
             DoubleAnimation da1 = new DoubleAnimation(0, tabMain.ActualWidth, new Duration(new TimeSpan(0, 0, 0, 0, 100)));
@@ -1409,23 +1429,24 @@ namespace BMCLV2.Windows
                 case 1:
                     LangManager.UseLanguage("zh-tw");break;
                 default:
-                    LangManager.UseLanguage(Language[comboLang.SelectedItem as string]as string);break;
+                    if (comboLang.SelectedItem as string != null)
+                    if (BmclCore.Language.ContainsKey(comboLang.SelectedItem as string))
+                        LangManager.UseLanguage(BmclCore.Language[comboLang.SelectedItem as string]as string);
+                    break;
             }
             changeLanguage();
         }
-
-        new Hashtable Language = new Hashtable();
 
         private void LoadLanguage()
         {
             ResourceDictionary Lang;
             Lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
-            Language.Add(Lang["DisplayName"], Lang["LangName"]);
+            BmclCore.Language.Add((string)Lang["DisplayName"], Lang["LangName"]);
             comboLang.Items.Add(Lang["DisplayName"]);
             LangManager.Add(Lang["LangName"] as string, "pack://application:,,,/Lang/zh-cn.xaml");
 
             Lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-tw.xaml");
-            Language.Add(Lang["DisplayName"], Lang["LangName"]);
+            BmclCore.Language.Add((string)Lang["DisplayName"], Lang["LangName"]);
             comboLang.Items.Add(Lang["DisplayName"]);
             LangManager.Add(Lang["LangName"] as string, "pack://application:,,,/Lang/zh-tw.xaml");
             if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\Lang"))
@@ -1435,7 +1456,7 @@ namespace BMCLV2.Windows
                     try
                     {
                         Lang = LangManager.LoadLangFromResource(LangFile);
-                        Language.Add(Lang["DisplayName"], Lang["LangName"]);
+                        BmclCore.Language.Add((string)Lang["DisplayName"], Lang["LangName"]);
                         comboLang.Items.Add(Lang["DisplayName"]);
                         LangManager.Add(Lang["LangName"] as string, LangFile);
                     }
@@ -1448,7 +1469,7 @@ namespace BMCLV2.Windows
             }
         }
 
-        private void changeLanguage()
+        public void changeLanguage()
         {
             listDownSource.Items[0] = LangManager.GetLangFromResource("listOfficalSource");
             listDownSource.Items[1] = LangManager.GetLangFromResource("listAuthorSource");
