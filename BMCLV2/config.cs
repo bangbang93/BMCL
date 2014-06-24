@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Management;
 using Microsoft.Win32;
@@ -13,25 +14,18 @@ namespace BMCLV2
     {
         [DataMember]
         public string Javaw;
-
         [DataMember]
         public string Username;
-
         [DataMember]
         public string Javaxmx;
-
         [DataMember]
         public string Login;
-
         [DataMember]
         public string LastPlayVer;
-
         [DataMember]
         public string ExtraJvmArg;
-
         [DataMember]
         public string Lang;
-
         [DataMember]
         public byte[] Passwd;
         [DataMember]
@@ -40,6 +34,8 @@ namespace BMCLV2
         public double WindowTransparency;
         [DataMember]
         public int DownloadSource;
+        [DataMember]
+        public Dictionary<string, object> PluginConfig = new Dictionary<string, object>();
 
         public Config()
         {
@@ -55,16 +51,35 @@ namespace BMCLV2
             DownloadSource = 0;
             Lang = "zh-cn";
             CheckUpdate = true;
-        }
-        object ICloneable.Clone()
-        {
-            return this.clone();
+            PluginConfig = null;
         }
 
-        public Config clone()
+        public object GetPluginConfig(string key)
+        {
+            if (PluginConfig.ContainsKey(key))
+            {
+                return PluginConfig[key];
+            }
+            return null;
+        }
+
+        public void SetPluginConfig(string key, object value)
+        {
+            if (PluginConfig.ContainsKey(key))
+            {
+                PluginConfig[key] = value;
+            }
+            else
+            {
+                PluginConfig.Add(key, value);
+            }
+        }
+
+        public object Clone()
         {
             return (Config)this.MemberwiseClone();
         }
+
         public static Config Load(string file)
         {
             if (!System.IO.File.Exists(file))

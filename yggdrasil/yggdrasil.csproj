@@ -46,6 +46,7 @@
     <Compile Include="AuthenticationRequest.cs" />
     <Compile Include="AuthenticationResponse.cs" />
     <Compile Include="GameProfile.cs" />
+    <Compile Include="IBmclPlugin.cs" />
     <Compile Include="NewLogin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Response.cs" />

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -69,10 +68,12 @@ namespace BMCLV2
 #endif
         }
 
+// ReSharper disable once UnusedMember.Local
         private static void ReleaseCheck()
         {
             if (BmclCore.Config.Report)
             {
+// ReSharper disable once ObjectCreationAsStatement
                 new Report();
             }
             if (BmclCore.Config.CheckUpdate)
@@ -103,8 +104,6 @@ namespace BMCLV2
         public static void LoadPlugin(string language)
         {
             Auths.Clear();
-            #region 加载新插件
-
             if (!Directory.Exists("auths")) return;
             var authplugins = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\auths");
             foreach (string auth in authplugins.Where(auth => auth.ToLower().EndsWith(".dll")))
@@ -116,6 +115,7 @@ namespace BMCLV2
                     var types = authMethod.GetTypes();
                     foreach (var t in types)
                     {
+                        if (t.GetInterface("IBmclAuthPlugin") != null)
                         try
                         {
                             var authInstance = authMethod.CreateInstance(t.FullName);
@@ -124,7 +124,13 @@ namespace BMCLV2
                             var authVer = T.GetMethod("GetVer");
                             if (authVer == null)
                             {
-                                Logger.log(String.Format("未找到{0}的GetVer方法，放弃加载", authInstance));
+                                if (authInstance.ToString().IndexOf("My.MyApplication", System.StringComparison.Ordinal) == -1 && 
+                                    authInstance.ToString().IndexOf("My.MyComputer", System.StringComparison.Ordinal) == -1 &&
+                                    authInstance.ToString().IndexOf("My.MyProject+MyWebServices", System.StringComparison.Ordinal) == -1 &&
+                                    authInstance.ToString().IndexOf("My.MySettings", System.StringComparison.Ordinal) == -1)
+                                {
+                                    Logger.log(String.Format("未找到{0}的GetVer方法，放弃加载", authInstance));
+                                }
                                 continue;
                             }
                             if ((long) authVer.Invoke(authInstance, null) != 1)
@@ -150,13 +156,22 @@ namespace BMCLV2
                         }
                         catch (MissingMethodException ex)
                         {
+                            if (t.ToString().IndexOf("My.MyProject", System.StringComparison.Ordinal) == -1 &&
+                                t.ToString().IndexOf("My.Resources.Resources", System.StringComparison.Ordinal) == -1 &&
+                                t.ToString().IndexOf("My.MySettingsProperty", System.StringComparison.Ordinal) == -1)
+                            {
                             Logger.log(String.Format("加载{0}的{1}失败", auth, t), Logger.LogType.Error);
                             Logger.log(ex);
+                            }
                         }
                         catch (ArgumentException ex)
                         {
-                            Logger.log(String.Format("加载{0}的{1}失败", auth, t), Logger.LogType.Error);
-                            Logger.log(ex);
+                            if (t.ToString().IndexOf("My.MyProject+MyWebServices", System.StringComparison.Ordinal) == -1 &&
+                                t.ToString().IndexOf("My.MyProject+ThreadSafeObjectProvider`1[T]", System.StringComparison.Ordinal) == -1)
+                            {
+                                Logger.log(String.Format("加载{0}的{1}失败", auth, t), Logger.LogType.Error);
+                                Logger.log(ex);
+                            }
                         }
                         catch (NotSupportedException ex)
                         {
@@ -176,8 +191,6 @@ namespace BMCLV2
                     }
                 }
             }
-
-            #endregion
         }
 
         public static void Invoke(Delegate invoke, object[] argObjects = null)
