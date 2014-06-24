@@ -1,101 +1,107 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.Serialization;
+using System.Globalization;
 using System.Net;
+using System.Threading;
 using System.Web.Script.Serialization;
-using System.Collections;
 using System.IO;
 
 using BMCLV2.util;
 
-namespace BMCLV2.assets
+namespace BMCLV2.Assets
 {
-    public class assets
+    public class Assets
     {
-        WebClient Downloader = new WebClient();
-        bool init = true;
-        gameinfo GameInfo;
-        Dictionary<string, string> DownloadUrlPathPair = new Dictionary<string, string>();
-        public assets(gameinfo GameInfo)
+        private readonly WebClient _downloader = new WebClient();
+        bool _init = true;
+        readonly gameinfo _gameInfo;
+        Dictionary<string, string> _downloadUrlPathPair = new Dictionary<string, string>();
+        private readonly string _urlDownloadBase;
+        private readonly string _urlResourceBase;
+        public Assets(gameinfo gameInfo, string urlDownloadBase = null, string urlResourceBase = null)
         {
-            this.GameInfo = GameInfo;
-            string GameVersion = GameInfo.assets;
+            this._gameInfo = gameInfo;
+            this._urlDownloadBase = urlDownloadBase ?? BmclCore.UrlDownloadBase;
+            this._urlResourceBase = urlResourceBase ?? BmclCore.UrlResourceBase;
+            var thread = new Thread(Run);
+            thread.Start();
+        }
+
+        private void Run()
+        {
+            string gameVersion = _gameInfo.assets;
             try
             {
-                Downloader.DownloadStringAsync(new Uri(FrmMain.URL_DOWNLOAD_BASE + "indexes/" + GameVersion + ".json"));
-                Logger.Log(FrmMain.URL_DOWNLOAD_BASE + "indexes/" + GameVersion + ".json");
+                _downloader.DownloadStringAsync(new Uri(_urlDownloadBase + "indexes/" + gameVersion + ".json"));
+                Logger.info(_urlDownloadBase + "indexes/" + gameVersion + ".json");
             }
             catch (WebException ex)
             {
-                Logger.Log("游戏版本" + GameVersion);
-                Logger.Log(ex);
+                Logger.info("游戏版本" + gameVersion);
+                Logger.error(ex);
             }
-            Downloader.DownloadStringCompleted += Downloader_DownloadStringCompleted;
-            Downloader.DownloadFileCompleted += Downloader_DownloadFileCompleted;
+            _downloader.DownloadStringCompleted += Downloader_DownloadStringCompleted;
+            _downloader.DownloadFileCompleted += Downloader_DownloadFileCompleted;
         }
-
         void Downloader_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
             if (e.Error != null)
             {
-                Logger.Log(Logger.LogType.Error, e.UserState.ToString());
-                Logger.Log(e.Error);
+                Logger.error(e.UserState.ToString());
+                Logger.error(e.Error);
             }
         }
 
         void Downloader_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
-            Downloader.DownloadStringCompleted -= Downloader_DownloadStringCompleted;
+            _downloader.DownloadStringCompleted -= Downloader_DownloadStringCompleted;
             if (e.Error != null)
             {
-                Logger.Log(e.Error);
+                Logger.error(e.Error);
             }
             else
             {
-                string GameVersion = GameInfo.assets;
-                FileHelper.CreateDirectoryForFile(AppDomain.CurrentDomain.BaseDirectory + ".minecraft/assets/indexes/" + GameVersion + ".json");
-                StreamWriter sw = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + ".minecraft/assets/indexes/" + GameVersion + ".json");
+                string gameVersion = _gameInfo.assets;
+                FileHelper.CreateDirectoryForFile(AppDomain.CurrentDomain.BaseDirectory + ".minecraft/assets/indexes/" + gameVersion + ".json");
+                var sw = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + ".minecraft/assets/indexes/" + gameVersion + ".json");
                 sw.Write(e.Result);
                 sw.Close();
-                JavaScriptSerializer JSSerializer = new JavaScriptSerializer();
-                Dictionary<string, Dictionary<string, AssetsEntity>> AssetsObject = JSSerializer.Deserialize<Dictionary<string, Dictionary<string, AssetsEntity>>>(e.Result);
-                Dictionary<string, AssetsEntity> obj = AssetsObject["objects"];
-                Logger.Log("共", obj.Count.ToString(), "项assets");
+                var jsSerializer = new JavaScriptSerializer();
+                var assetsObject = jsSerializer.Deserialize<Dictionary<string, Dictionary<string, AssetsEntity>>>(e.Result);
+                Dictionary<string, AssetsEntity> obj = assetsObject["objects"];
+                Logger.log("共", obj.Count.ToString(CultureInfo.InvariantCulture), "项assets");
                 int i = 0;
                 foreach (KeyValuePair<string, AssetsEntity> entity in obj)
                 {
                     i++;
-                    string Url = FrmMain.URL_RESOURCE_BASE + entity.Value.hash.Substring(0, 2) + "/" + entity.Value.hash;
-                    string File = AppDomain.CurrentDomain.BaseDirectory + @".minecraft\assets\objects\" + entity.Value.hash.Substring(0, 2) + "\\" + entity.Value.hash;
-                    FileHelper.CreateDirectoryForFile(File);
+                    string url = this._urlResourceBase + entity.Value.hash.Substring(0, 2) + "/" + entity.Value.hash;
+                    string file = AppDomain.CurrentDomain.BaseDirectory + @".minecraft\assets\objects\" + entity.Value.hash.Substring(0, 2) + "\\" + entity.Value.hash;
+                    FileHelper.CreateDirectoryForFile(file);
                     try
                     {
-                        if (FileHelper.IfFileVaild(File, entity.Value.size)) continue;
-                        if (init)
+                        if (FileHelper.IfFileVaild(file, entity.Value.size)) continue;
+                        if (_init)
                         {
-                            FrmMain.NIcon.ShowBalloonTip(3000, "BMCL", Lang.LangManager.GetLangFromResource("FoundAssetsModify"), System.Windows.Forms.ToolTipIcon.Info);
-                            init = false;
+                            BmclCore.NIcon.ShowBalloonTip(3000, Lang.LangManager.GetLangFromResource("FoundAssetsModify"));
+                            _init = false;
                         }
                         //Downloader.DownloadFileAsync(new Uri(Url), File,Url);
-                        Downloader.DownloadFile(new Uri(Url), File);
-                        FrmMain.NIcon.Text = "BMCLV2 Solving Assets" + i.ToString() + "/" + obj.Count;
-                        Logger.Log(i.ToString(), "/", obj.Count.ToString(), File.Substring(AppDomain.CurrentDomain.BaseDirectory.Length), "下载完毕");
+                        _downloader.DownloadFile(new Uri(url), file);
+                        Logger.log(i.ToString(CultureInfo.InvariantCulture), "/", obj.Count.ToString(CultureInfo.InvariantCulture), file.Substring(AppDomain.CurrentDomain.BaseDirectory.Length), "下载完毕");
                         if (i == obj.Count)
                         {
-                            Logger.Log("assets下载完毕");
-                            FrmMain.NIcon.ShowBalloonTip(3000, "BMCL", Lang.LangManager.GetLangFromResource("SyncAssetsFinish"), System.Windows.Forms.ToolTipIcon.Info);
+                            Logger.log("assets下载完毕");
+                            BmclCore.NIcon.ShowBalloonTip(3000, Lang.LangManager.GetLangFromResource("SyncAssetsFinish"));
                         }
                     }
                     catch (WebException ex)
                     {
-                        Logger.Log(ex);
+                        Logger.error(ex);
                     }
                 }
-                if (init)
+                if (_init)
                 {
-                    Logger.Log("无需更新assets");
+                    Logger.info("无需更新assets");
                 }
             }
             

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
+using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
@@ -10,6 +7,7 @@ using System.Diagnostics;
 using System.Net;
 
 using BMCLV2.Lang;
+using BMCLV2.Windows;
 
 namespace BMCLV2
 {
@@ -17,20 +15,24 @@ namespace BMCLV2
     /// <summary>
     /// App.xaml 的交互逻辑
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
-        FileStream AppLock;
+        private FileStream _appLock;
         protected override void OnStartup(StartupEventArgs e)
         {
+#if DEBUG
+#else
+            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
             
+#endif
             try
             {
-                AppLock = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "BMCL.lck", FileMode.Create);
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(Process.GetCurrentProcess().Id.ToString());
-                AppLock.Write(buffer, 0, buffer.Length);
-                AppLock.Close();
-                AppLock = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "BMCL.lck", FileMode.Open);
-                WebRequest.DefaultWebProxy = null;
+                _appLock = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "BMCL.lck", FileMode.Create);
+                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(Process.GetCurrentProcess().Id.ToString(CultureInfo.InvariantCulture));
+                _appLock.Write(buffer, 0, buffer.Length);
+                _appLock.Close();
+                _appLock = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "BMCL.lck", FileMode.Open);
             }
             catch (IOException)
             {
@@ -38,27 +40,38 @@ namespace BMCLV2
                 MessageBox.Show(LangManager.GetLangFromResource("StartupDuplicate"));
                 Environment.Exit(3);
             }
-#if DEBUG
-#else
-            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
-#endif
-            if (e.Args.Length == 0)
-                Logger.Debug = false;
+            WebRequest.DefaultWebProxy = null;  //禁用默认代理
+            if (e.Args.Length == 0)   // 判断debug模式
+                Logger.debug = false;
             else
                 if (Array.IndexOf(e.Args, "-Debug") != -1)
-                    Logger.Debug = true;
-            Logger.Start();
+                    Logger.debug = true;
+            Logger.start();
+
             base.OnStartup(e);
         }
 
+
+
         protected override void OnExit(ExitEventArgs e)
         {
-            AppLock.Close();
+            _appLock.Close();
             base.OnExit(e);
-            Logger.Stop();
+            Logger.stop();
         }
 
-        void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+// ReSharper disable once UnusedMember.Local
+// ReSharper disable once UnusedParameter.Local
+        void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+        {
+            e.SetObserved();
+            var crash = new CrashHandle(e.Exception);
+            crash.Show();
+        }
+
+        // ReSharper disable once UnusedMember.Local
+        // ReSharper disable once UnusedParameter.Local
+        private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
             var crash = new CrashHandle(e.Exception);

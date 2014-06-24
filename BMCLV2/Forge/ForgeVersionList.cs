@@ -29,15 +29,14 @@ namespace BMCLV2.Forge
             Thread thOldPage = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() => 
                 {
                     WebClient wc = new WebClient();
-                    wc.Proxy = null;
                     byte[] buffer = wc.DownloadData(OldPageUrl);
                     MemoryStream ms = new MemoryStream(buffer);
                     ForgeLegacy = ForgeVerJsonParse.ReadObject(ms) as ForgeVersion[];
                     OldPageReady = true;
-                    Logger.Log("获取Legcy Forge列表成功");
+                    Logger.log("获取Legcy Forge列表成功");
                     if (OldPageReady && NewPageReady)
                     {
-                        Logger.Log("开始解析Forge");
+                        Logger.log("开始解析Forge");
                         if (ForgePageReadyEvent != null)
                             ForgePageReadyEvent();
                     }
@@ -49,10 +48,10 @@ namespace BMCLV2.Forge
                     MemoryStream ms = new MemoryStream(buffer);
                     ForgeNew = ForgeVerJsonParse.ReadObject(ms) as ForgeVersion[];
                     NewPageReady = true;
-                    Logger.Log("获取new Forge列表成功");
+                    Logger.log("获取new Forge列表成功");
                     if (OldPageReady && NewPageReady)
                     {
-                        Logger.Log("开始解析Forge");
+                        Logger.log("开始解析Forge");
                         if (ForgePageReadyEvent != null)
                             ForgePageReadyEvent();
                     }
@@ -89,7 +88,7 @@ namespace BMCLV2.Forge
                 else
                     ForgeChangeLogUrl.Add(Forge.vername, Forge.changlog);
                 t.Items.Add(Forge.vername);
-                Logger.Log("获取Forge"+Forge.vername);
+                Logger.log("获取Forge"+Forge.vername);
             }
             return r.ToArray(typeof(TreeViewItem)) as TreeViewItem[];
         }
@@ -122,7 +121,7 @@ namespace BMCLV2.Forge
                 else
                     ForgeChangeLogUrl.Add(Forge.vername, Forge.changlog);
                 t.Items.Add(Forge.vername);
-                Logger.Log("获取Forge" + Forge.vername);
+                Logger.log("获取Forge" + Forge.vername);
             }
             return r.ToArray(typeof(TreeViewItem)) as TreeViewItem[];
         }

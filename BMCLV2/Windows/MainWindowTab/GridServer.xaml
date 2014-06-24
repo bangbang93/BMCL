@@ -1,0 +1,28 @@
+﻿<Grid x:Class="BMCLV2.Windows.MainWindowTab.GridServer"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" Background="#50FFFFFF">
+    <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="748*"/>
+        <ColumnDefinition Width="140*"/>
+    </Grid.ColumnDefinitions>
+    <ListView x:Name="listServer" HorizontalAlignment="Left" Height="394" VerticalAlignment="Top" Width="748" Background="#A0FFFFFF" ItemsSource="{Binding}" SelectionMode="Single">
+                <ListView.View>
+                    <GridView AllowsColumnReorder="True">
+                        <GridViewColumn DisplayMemberBinding="{Binding ServerName}" Header="{DynamicResource ServerName}" Width="120"/>
+                        <GridViewColumn DisplayMemberBinding="{Binding HiddenAddress}" Header="{DynamicResource HiddenAddress}" Width="60"/>
+                        <GridViewColumn DisplayMemberBinding="{Binding ServerAddress}" Header="{DynamicResource ServerAddress}" Width="185"/>
+                        <GridViewColumn DisplayMemberBinding="{Binding ServerMotd}" Header="{DynamicResource ServerMotd}" Width="200"/>
+                        <GridViewColumn DisplayMemberBinding="{Binding ServerVer}" Header="{DynamicResource ServerVer}" Width="60"/>
+                        <GridViewColumn DisplayMemberBinding="{Binding ServerOnline}" Header="{DynamicResource ServerOnline}" Width="60"/>
+                        <GridViewColumn DisplayMemberBinding="{Binding ServerDelay}" Header="{DynamicResource ServerDelay}" Width="60"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>
+            <Button x:Name="btnReflushServer" Content="{DynamicResource btnReflushServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,29,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnReflushServer_Click"/>
+            <Button x:Name="btnAddServer" Content="{DynamicResource btnAddServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,99,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnAddServer_Click"/>
+            <Button x:Name="btnDeleteServer" Content="{DynamicResource btnDeleteServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,173,0,0" VerticalAlignment="Top" Width="95" RenderTransformOrigin="0.52,0.5" Height="42" Click="btnDeleteServer_Click"/>
+            <Button x:Name="btnEditServer" Content="{DynamicResource btnEditServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,248,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnEditServer_Click"/>
+        </Grid>

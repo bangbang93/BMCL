@@ -33,8 +33,8 @@
     <s:String x:Key="checkCheckUpdate">检查更新</s:String>
     <s:String x:Key="btnSaveConfig">保存配置</s:String>
     <s:String x:Key="labSaveSucc">保存成功！</s:String>
-    <s:String x:Key="listOfficalSource">官方源（在国外，更新快）</s:String>
-    <s:String x:Key="listAuthorSource">作者源（在国内，网络更稳定）</s:String>
+    <s:String x:Key="listOfficalSource">官方源（国外，更新快）</s:String>
+    <s:String x:Key="listAuthorSource">BMCLAPI(国内，更稳定）</s:String>
     <s:String x:Key="groupAuth">登陆方式</s:String>
     <s:String x:Key="NoneAuth">离线模式</s:String>
     <s:String x:Key="groupDownloadSource">下载服务器</s:String>

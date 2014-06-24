@@ -84,15 +84,15 @@ namespace BMCLV2
                 catch (WebException ex)
                 {
                     MessageBox.Show(LangManager.GetLangFromResource("ResServerTimeOut") + ex.Message);
-                    Logger.Log("与资源服务器通信出错");
-                    Logger.Log(ex);
+                    Logger.log("与资源服务器通信出错");
+                    Logger.log(ex);
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { GetInfoFailedEvent(); }));
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show(LangManager.GetLangFromResource("ResServerTimeOut") + ex.Message);
-                    Logger.Log("与资源服务器通信出错");
-                    Logger.Log(ex);
+                    Logger.log("与资源服务器通信出错");
+                    Logger.log(ex);
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { GetInfoFailedEvent(); }));
                 }
             })));
@@ -135,7 +135,7 @@ namespace BMCLV2
             Thread thCount = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
             {
                 while (checkedfile != dt.Rows.Count) { }
-                Logger.Log(string.Format("检查资源文件，共有{0}个文件待同步，共计{1}个文件", WaitingForSync, dt.Rows.Count));
+                Logger.log(string.Format("检查资源文件，共有{0}个文件待同步，共计{1}个文件", WaitingForSync, dt.Rows.Count));
                 ischecked = true;
             })));
             thCount.Start();
@@ -161,7 +161,7 @@ namespace BMCLV2
                     lock (dt)
                     {
                         dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResNoNeedForSync");
-                        Logger.Log(string.Format("检查资源文件{0}，无需同步", dt.Rows[num]["FileName"]));
+                        Logger.log(string.Format("检查资源文件{0}，无需同步", dt.Rows[num]["FileName"]));
                     }
                 }
                 else
@@ -169,7 +169,7 @@ namespace BMCLV2
                     lock (dt)
                     {
                         dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResWaitingForSync");
-                        Logger.Log(string.Format("检查资源文件{0}，需要同步，文件MD5{1}，目标MD5{2}", dt.Rows[num]["FileName"], lmd5.Trim(), dt.Rows[num]["MD5"]));
+                        Logger.log(string.Format("检查资源文件{0}，需要同步，文件MD5{1}，目标MD5{2}", dt.Rows[num]["FileName"], lmd5.Trim(), dt.Rows[num]["MD5"]));
                     }
                     WaitingForSync++;
                 }
@@ -179,7 +179,7 @@ namespace BMCLV2
                 lock (dt)
                 {
                     dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResWaitingForSync");
-                    Logger.Log(string.Format("检查资源文件{0}，需要同步，由于{1}", dt.Rows[num]["FileName"], ex.Message), Logger.LogType.Exception);
+                    Logger.log(string.Format("检查资源文件{0}，需要同步，由于{1}", dt.Rows[num]["FileName"], ex.Message), Logger.LogType.Exception);
                 }
                 WaitingForSync++;
             }
@@ -231,7 +231,7 @@ namespace BMCLV2
         }
         void Downer(Uri url, string lpath, int num, ref WebClient downer)
         {
-            Logger.Log(string.Format("开始下载第{0}个资源文件{1}", num, url.ToString()));
+            Logger.log(string.Format("开始下载第{0}个资源文件{1}", num, url.ToString()));
             downer.DownloadFileAsync(url, lpath.ToString(), num);
         }
         void downer_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
@@ -240,8 +240,8 @@ namespace BMCLV2
             int num = (int)e.UserState;
             if (e.Error != null)
             {
-                Logger.Log(string.Format("下载资源文件失败{0}，远程路径为{1}", dt.Rows[num]["FileName"],(sender as WebClient).BaseAddress));
-                Logger.Log(e.Error);
+                Logger.log(string.Format("下载资源文件失败{0}，远程路径为{1}", dt.Rows[num]["FileName"],(sender as WebClient).BaseAddress));
+                Logger.log(e.Error);
             }
             else
             {
@@ -250,10 +250,10 @@ namespace BMCLV2
                     dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResInSync");
                 }
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
-                Logger.Log(string.Format("下载资源文件成功{0}，远程路径为{1}", dt.Rows[num]["FileName"], (sender as WebClient).BaseAddress));
+                Logger.log(string.Format("下载资源文件成功{0}，远程路径为{1}", dt.Rows[num]["FileName"], (sender as WebClient).BaseAddress));
                 if (InDownloading == 0)
                 {
-                    Logger.Log(string.Format("下载资源文件完毕"));
+                    Logger.log(string.Format("下载资源文件完毕"));
                     MessageBox.Show(LangManager.GetLangFromResource("ResFinish"));
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { this.Close(); }));
                 }
@@ -333,7 +333,7 @@ namespace BMCLV2
 
                 }
             }
-            Logger.Log(string.Format("共计{0}个文件，{1}个文件重复,{2}个文件json内部重复，{3}个文件待下载",FileCount,DuplicateFileCount,JsonDuplicateFileCount,DownloadFile.Count));
+            Logger.log(string.Format("共计{0}个文件，{1}个文件重复,{2}个文件json内部重复，{3}个文件待下载",FileCount,DuplicateFileCount,JsonDuplicateFileCount,DownloadFile.Count));
             FrmDownload frmDownload = new FrmDownload(DownloadFile);
             frmDownload.Show();
         }

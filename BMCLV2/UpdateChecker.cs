@@ -1,66 +1,76 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Web;
 using System.Net;
-using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Runtime.Serialization;
-using System.Collections;
 
 namespace BMCLV2
 {
     class UpdateChecker
     {
-        private static string CheckUrl = @"http://www.bangbang93.com/bmcl/checkupdate.php";
-        private static string Ver = FrmMain.ver;
+        public delegate void CheckUpdateFinishEventHandler(bool hasUpdate, string updateAddr, string updateInfo);
+
+        public event CheckUpdateFinishEventHandler CheckUpdateFinishEvent;
+
+        protected virtual void OnCheckUpdateFinishEvent(bool hasupdate, string updateaddr, string updateinfo)
+        {
+            CheckUpdateFinishEventHandler handler = CheckUpdateFinishEvent;
+            if (handler != null) handler(hasupdate, updateaddr, updateinfo);
+        }
+
+
+        private const string CheckUrl = @"http://www.bangbang93.com/bmcl/checkupdate.php";
         public bool HasUpdate {get; private set; }
         public string UpdateInfo {get; private set; }
         public string LastestDownloadUrl {get; private set; }
         public UpdateChecker()
         {
+            this.Run();
+        }
+
+        private void Run()
+        {
             try
             {
-                int Build = Convert.ToInt32(Ver.Split('.')[3]);
-                HttpWebRequest req = (HttpWebRequest)WebRequest.Create(CheckUrl + "?ver=" + Build);
+                int build = Convert.ToInt32(BmclCore.BmclVersion.Split('.')[3]);
+                var req = (HttpWebRequest)WebRequest.Create(CheckUrl + "?ver=" + build);
                 req.Method = "GET";
-                HttpWebResponse res = (HttpWebResponse)req.GetResponse();
-                DataContractJsonSerializer VerJsonSerializer = new DataContractJsonSerializer(typeof(VerList));
-                VerList VerTable = (VerList)VerJsonSerializer.ReadObject(res.GetResponseStream());
-                if (VerTable.Lastest.Build==0 )
+                var res = (HttpWebResponse)req.GetResponse();
+                var verJsonSerializer = new DataContractJsonSerializer(typeof(VerList));
+                var verTable = (VerList)verJsonSerializer.ReadObject(res.GetResponseStream());
+                if (verTable.Lastest.Build == 0)
                 {
-                    Logger.Log("解析返回的更新日志失败", Logger.LogType.Error);
+                    Logger.log("解析返回的更新日志失败", Logger.LogType.Error);
                     HasUpdate = false;
                     return;
                 }
-                if (VerTable.Lastest.Build > Convert.ToInt32(Build))
+                if (verTable.Lastest.Build > Convert.ToInt32(build))
                 {
                     HasUpdate = true;
-                    LastestDownloadUrl = VerTable.Lastest.DownloadUrl;
-                    Logger.Log("需要更新，最新版本为" + VerTable.Lastest);
-                    Logger.Log("下载地址为" + LastestDownloadUrl);
+                    LastestDownloadUrl = verTable.Lastest.DownloadUrl;
+                    Logger.log("需要更新，最新版本为" + verTable.Lastest);
+                    Logger.log("下载地址为" + LastestDownloadUrl);
                 }
                 else
                 {
                     HasUpdate = false;
-                    Logger.Log("无需更新");
+                    Logger.log("无需更新");
                 }
-                StringBuilder sb = new StringBuilder();
-                foreach (UpdateInfo VerInfo in VerTable.Update)
+                var sb = new StringBuilder();
+                foreach (UpdateInfo verInfo in verTable.Update)
                 {
-                    if ( VerInfo.Build > Convert.ToInt32(Build))
+                    if (verInfo.Build > Convert.ToInt32(build))
                     {
-                        sb.AppendLine(VerInfo.Version as string);
-                        sb.AppendLine(VerInfo.Info as string);
+                        sb.AppendLine(verInfo.Version);
+                        sb.AppendLine(verInfo.Info);
                     }
                 }
                 UpdateInfo = sb.ToString();
-
+                OnCheckUpdateFinishEvent(HasUpdate, LastestDownloadUrl, UpdateInfo);
             }
             catch (Exception ex)
             {
-                Logger.Log(ex);
+                Logger.log(ex);
                 HasUpdate = false;
             }
         }

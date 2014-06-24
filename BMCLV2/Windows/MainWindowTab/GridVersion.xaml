@@ -1,0 +1,23 @@
+﻿<Grid x:Class="BMCLV2.Windows.MainWindowTab.GridVersion"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" Background="#50FFFFFF">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="748"/>
+            <ColumnDefinition Width="140"/>
+        </Grid.ColumnDefinitions>
+        <ListView x:Name="listRemoteVer" HorizontalAlignment="Left" Height="394" VerticalAlignment="Top" Width="748" Background="#A0FFFFFF" ItemsSource="{Binding}" MouseDoubleClick="listRemoteVer_MouseDoubleClick" SelectionMode="Single">
+            <ListView.View>
+                <GridView AllowsColumnReorder="True">
+                    <GridViewColumn DisplayMemberBinding="{Binding Ver}" Header="{DynamicResource VerColVer}" Width="80"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding RelTime}" Header="{DynamicResource VerColTime}" Width="250"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding Type}" Header="{DynamicResource VerColType}" Width="70"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Button x:Name="btnRefreshRemoteVer" Content="{DynamicResource btnRefreshRemoteVer}" Grid.Column="1" HorizontalAlignment="Center" Margin="10,35,10,0" VerticalAlignment="Top" Width="120" Height="53" Click="btnRefreshRemoteVer_Click"/>
+        <Button x:Name="btnDownloadVer" Content="{DynamicResource btnDownloadVer}" Grid.Column="1" HorizontalAlignment="Left" Margin="10,115,0,0" VerticalAlignment="Top" Width="120" Height="53" Click="btnDownloadVer_Click"/>
+        <Button x:Name="btnCheckRes" Content="{DynamicResource btnCheckRes}" HorizontalAlignment="Left" Margin="10,195,0,0" VerticalAlignment="Top" Width="120" Height="53" FontWeight="Thin" Click="btnCheckRes_Click" Grid.Column="1"/>
+</Grid>

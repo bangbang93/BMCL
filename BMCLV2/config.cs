@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Globalization;
 using System.Management;
 using Microsoft.Win32;
 using System.Runtime.Serialization;
@@ -11,65 +10,102 @@ using System.Windows;
 namespace BMCLV2
 {
     [DataContract]
-    public class config : ICloneable
+    public class Config : ICloneable
     {
         [DataMember]
-        public string javaw,username,javaxmx,login,lastPlayVer,extraJVMArg,Lang;
+        public string Javaw;
         [DataMember]
-        public byte[] passwd;
+        public string Username;
         [DataMember]
-        public bool autostart, Report,CheckUpdate;
+        public string Javaxmx;
+        [DataMember]
+        public string Login;
+        [DataMember]
+        public string LastPlayVer;
+        [DataMember]
+        public string ExtraJvmArg;
+        [DataMember]
+        public string Lang;
+        [DataMember]
+        public byte[] Passwd;
+        [DataMember]
+        public bool Autostart, Report,CheckUpdate;
         [DataMember]
         public double WindowTransparency;
         [DataMember]
         public int DownloadSource;
+        [DataMember]
+        public Dictionary<string, object> PluginConfig = new Dictionary<string, object>();
 
-        public config()
+        public Config()
         {
-            javaw = (getjavadir() != null) ? getjavadir() : "javaw.exe";
-            username = "!!!";
-            javaxmx = (getmem() / 4).ToString();
-            passwd = null;
-            login = "啥都没有";
-            autostart = false;
-            extraJVMArg = " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
+            Javaw = GetJavaDir() ?? "javaw.exe";
+            Username = "!!!";
+            Javaxmx = (GetMemory() / 4).ToString(CultureInfo.InvariantCulture);
+            Passwd = new byte[0];
+            Login = "啥都没有";
+            Autostart = false;
+            ExtraJvmArg = " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
             WindowTransparency = 1;
             Report = true;
             DownloadSource = 0;
             Lang = "zh-cn";
             CheckUpdate = true;
+            PluginConfig = null;
         }
-        object ICloneable.Clone()
+
+        public object GetPluginConfig(string key)
         {
-            return this.clone();
+            if (PluginConfig.ContainsKey(key))
+            {
+                return PluginConfig[key];
+            }
+            return null;
         }
-        public config clone()
+
+        public void SetPluginConfig(string key, object value)
         {
-            return (config)this.MemberwiseClone();
+            if (PluginConfig.ContainsKey(key))
+            {
+                PluginConfig[key] = value;
+            }
+            else
+            {
+                PluginConfig.Add(key, value);
+            }
         }
-        public static config Load(string File)
+
+        public object Clone()
         {
-            FileStream fs = null;
-            if (!System.IO.File.Exists(File))
-                return new config();
+            return (Config)this.MemberwiseClone();
+        }
+
+        public static Config Load(string file)
+        {
+            if (!System.IO.File.Exists(file))
+                return new Config();
             try
             {
-                fs = new FileStream(File, FileMode.Open);
-                DataContractSerializer ser = new DataContractSerializer(typeof(config));
-                config cfg = ser.ReadObject(fs) as config;
+                var fs = new FileStream(file, FileMode.Open);
+                var ser = new DataContractSerializer(typeof(Config));
+                var cfg = (Config)ser.ReadObject(fs);
                 fs.Close();
                 return cfg;
             }
             catch
             {
                 MessageBox.Show("加载配置文件遇到错误，使用默认配置");
-                return new config();
+                return new Config();
             }
         }
-        public static void Save(config cfg,string File)
+        public static void Save(Config cfg = null ,string file = "bmcl.xml")
         {
-            FileStream fs = new FileStream(File, FileMode.Create);
-            DataContractSerializer ser = new DataContractSerializer(typeof(config));
+            if (cfg == null)
+            {
+                cfg = BmclCore.Config;
+            }
+            var fs = new FileStream(file, FileMode.Create);
+            var ser = new DataContractSerializer(typeof(Config));
             ser.WriteObject(fs, cfg);
             fs.Close();
         }
@@ -77,23 +113,33 @@ namespace BMCLV2
         /// 读取注册表，寻找安装的java路径
         /// </summary>
         /// <returns>javaw.exe路径</returns>
-        public static string getjavadir()
+        public static string GetJavaDir()
         {
             try
             {
                 RegistryKey reg = Registry.LocalMachine;
-                reg = reg.OpenSubKey("SOFTWARE").OpenSubKey("JavaSoft").OpenSubKey("Java Runtime Environment");
-                foreach (string ver in reg.GetSubKeyNames())
+                var openSubKey = reg.OpenSubKey("SOFTWARE");
+                if (openSubKey != null)
                 {
-                    try
-                    {
-                        RegistryKey command = reg.OpenSubKey(ver);
-                        string str = command.GetValue("JavaHome").ToString();
-                        if (str != "")
-                            return str + @"\bin\javaw.exe";
-                    }
-                    catch { return null; }
+                    var registryKey = openSubKey.OpenSubKey("JavaSoft");
+                    if (registryKey != null)
+                        reg = registryKey.OpenSubKey("Java Runtime Environment");
                 }
+                if (reg != null)
+                    foreach (string ver in reg.GetSubKeyNames())
+                    {
+                        try
+                        {
+                            RegistryKey command = reg.OpenSubKey(ver);
+                            if (command != null)
+                            {
+                                string str = command.GetValue("JavaHome").ToString();
+                                if (str != "")
+                                    return str + @"\bin\javaw.exe";
+                            }
+                        }
+                        catch { return null; }
+                    }
                 return null;
             }
             catch { return null; }
@@ -103,26 +149,27 @@ namespace BMCLV2
         /// 获取系统物理内存大小
         /// </summary>
         /// <returns>系统物理内存大小，支持64bit,单位MB</returns>
-        public static ulong getmem()
+        public static ulong GetMemory()
         {
             try
             {
                 double capacity = 0.0;
-                ManagementClass cimobject1 = new ManagementClass("Win32_PhysicalMemory");
+                var cimobject1 = new ManagementClass("Win32_PhysicalMemory");
                 ManagementObjectCollection moc1 = cimobject1.GetInstances();
-                foreach (ManagementObject mo1 in moc1)
+                foreach (var o in moc1)
                 {
+                    var mo1 = (ManagementObject) o;
                     capacity += ((Math.Round(Int64.Parse(mo1.Properties["Capacity"].Value.ToString()) / 1024 / 1024.0, 1)));
                 }
                 moc1.Dispose();
                 cimobject1.Dispose();
-                UInt64 qmem = Convert.ToUInt64(capacity.ToString());
+                UInt64 qmem = Convert.ToUInt64(capacity.ToString(CultureInfo.InvariantCulture));
                 return qmem;
             }
             catch (System.Runtime.InteropServices.COMException ex)
             {
-                Logger.Log("获取内存失败");
-                Logger.Log(ex);
+                Logger.error("获取内存失败");
+                Logger.error(ex);
                 return ulong.MaxValue;
 
             }
