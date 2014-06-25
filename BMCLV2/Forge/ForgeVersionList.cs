@@ -29,6 +29,7 @@ namespace BMCLV2.Forge
             Thread thOldPage = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() => 
                 {
                     WebClient wc = new WebClient();
+                    wc.Headers.Add("User-Agent", "BMCL" + BmclCore.BmclVersion);
                     byte[] buffer = wc.DownloadData(OldPageUrl);
                     MemoryStream ms = new MemoryStream(buffer);
                     ForgeLegacy = ForgeVerJsonParse.ReadObject(ms) as ForgeVersion[];
@@ -44,6 +45,7 @@ namespace BMCLV2.Forge
             Thread thNewPage = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(() =>
                 {
                     WebClient wc = new WebClient();
+                    wc.Headers.Add("User-Agent", "BMCL" + BmclCore.BmclVersion);
                     byte[] buffer = wc.DownloadData(NewPageUrl);
                     MemoryStream ms = new MemoryStream(buffer);
                     ForgeNew = ForgeVerJsonParse.ReadObject(ms) as ForgeVersion[];

@@ -30,6 +30,7 @@ namespace BMCLV2.Windows.MainWindowTab
             var getJson = (HttpWebRequest)WebRequest.Create(BmclCore.UrlDownloadBase + "versions/versions.json");
             getJson.Timeout = 10000;
             getJson.ReadWriteTimeout = 10000;
+            getJson.UserAgent = "BMCL" + BmclCore.BmclVersion;
             var thGet = new Thread(new ThreadStart(delegate
             {
                 try
@@ -91,6 +92,7 @@ namespace BMCLV2.Windows.MainWindowTab
                 downpath.Append(selectver).Append("\\");
                 downpath.Append(selectver).Append(".jar");
                 var downer = new WebClient();
+                downer.Headers.Add("User-Agent", "BMCL" + BmclCore.BmclVersion);
                 var downurl = new StringBuilder(BmclCore.UrlDownloadBase);
                 downurl.Append(@"versions\");
                 downurl.Append(selectver).Append("\\");
