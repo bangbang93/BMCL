@@ -91,7 +91,8 @@ namespace BMCLV2
                     MessageBox.Show(BmclCore.MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
                         MessageBoxImage.Information) == MessageBoxResult.OK)
                 {
-                    Process.Start(updateAddr);
+                    var updater = new FrmUpdater(updateBuild, updateAddr);
+                    updater.ShowDialog();
                 }
             }
         }
