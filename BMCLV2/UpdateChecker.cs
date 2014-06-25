@@ -3,19 +3,20 @@ using System.Text;
 using System.Net;
 using System.Runtime.Serialization.Json;
 using System.Runtime.Serialization;
+using System.Threading;
 
 namespace BMCLV2
 {
     class UpdateChecker
     {
-        public delegate void CheckUpdateFinishEventHandler(bool hasUpdate, string updateAddr, string updateInfo);
+        public delegate void CheckUpdateFinishEventHandler(bool hasUpdate, string updateAddr, string updateInfo, int updateBuild);
 
         public event CheckUpdateFinishEventHandler CheckUpdateFinishEvent;
 
-        protected virtual void OnCheckUpdateFinishEvent(bool hasupdate, string updateaddr, string updateinfo)
+        protected virtual void OnCheckUpdateFinishEvent(bool hasupdate, string updateaddr, string updateinfo, int updateBuild)
         {
             CheckUpdateFinishEventHandler handler = CheckUpdateFinishEvent;
-            if (handler != null) handler(hasupdate, updateaddr, updateinfo);
+            if (handler != null) BmclCore.Invoke(new Action(() => handler(hasupdate, updateaddr, updateinfo, updateBuild)));
         }
 
 
@@ -25,7 +26,8 @@ namespace BMCLV2
         public string LastestDownloadUrl {get; private set; }
         public UpdateChecker()
         {
-            this.Run();
+            var thread = new Thread(Run);
+            thread.Start();
         }
 
         private void Run()
@@ -66,7 +68,7 @@ namespace BMCLV2
                     }
                 }
                 UpdateInfo = sb.ToString();
-                OnCheckUpdateFinishEvent(HasUpdate, LastestDownloadUrl, UpdateInfo);
+                OnCheckUpdateFinishEvent(HasUpdate, verTable.Lastest.DownloadUrl, UpdateInfo, verTable.Lastest.Build);
             }
             catch (Exception ex)
             {

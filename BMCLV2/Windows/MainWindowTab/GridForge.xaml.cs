@@ -74,6 +74,7 @@ namespace BMCLV2.Windows.MainWindowTab
             BmclCore.Invoke(new Action(() => BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Visible)));
             var url = new Uri(_forgeVer.ForgeDownloadUrl[ver]);
             var downer = new WebClient();
+            downer.Headers.Add("User-Agent", "BMCL" + BmclCore.BmclVersion);
             downer.DownloadProgressChanged += downer_DownloadProgressChanged;
             downer.DownloadFileCompleted += downer_DownloadForgeCompleted;
             _downedtime = Environment.TickCount - 1;
