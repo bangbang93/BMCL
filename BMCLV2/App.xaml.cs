@@ -5,9 +5,11 @@ using System.Windows;
 using System.IO;
 using System.Diagnostics;
 using System.Net;
-
+using System.Windows.Forms;
 using BMCLV2.Lang;
 using BMCLV2.Windows;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace BMCLV2
 {
@@ -17,9 +19,17 @@ namespace BMCLV2
     /// </summary>
     public partial class App
     {
-        private FileStream _appLock;
+        private static FileStream _appLock;
         protected override void OnStartup(StartupEventArgs e)
         {
+            if (Array.IndexOf(e.Args, "-Update") != -1)
+            {
+                var index = Array.IndexOf(e.Args, "-Update");
+                if (index == e.Args.Length)
+                    DoUpdate();
+                else
+                    DoUpdate(e.Args[index + 1]);
+            }
 #if DEBUG
 #else
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
@@ -55,8 +65,13 @@ namespace BMCLV2
 
         protected override void OnExit(ExitEventArgs e)
         {
-            _appLock.Close();
             base.OnExit(e);
+            Logger.stop();
+        }
+
+        public static void AboutToExit()
+        {
+            _appLock.Close();
             Logger.stop();
         }
 
@@ -76,6 +91,19 @@ namespace BMCLV2
             e.Handled = true;
             var crash = new CrashHandle(e.Exception);
             crash.Show();
+        }
+
+        private void DoUpdate()
+        {
+            var processName = Process.GetCurrentProcess().ProcessName;
+            File.Copy(processName, "BMCL.exe", true);
+            Process.Start("BMCL.exe","-Update " + processName);
+            Application.Current.Shutdown(0);
+        }
+
+        private void DoUpdate(string fileName)
+        {
+            File.Delete(fileName);
         }
     }
 }

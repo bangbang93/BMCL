@@ -99,6 +99,9 @@
     <Compile Include="Mod\ModHelper.cs" />
     <Compile Include="Plugin\IBmclPlugin.cs" />
     <Compile Include="Plugin\IBmclAuthPlugin.cs" />
+    <Compile Include="Windows\FrmUpdater.xaml.cs">
+      <DependentUpon>FrmUpdater.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Windows\MainWindowTab\GridConfig.xaml.cs">
       <DependentUpon>GridConfig.xaml</DependentUpon>
     </Compile>
@@ -227,6 +230,10 @@
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Windows\FrmUpdater.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\MainWindowTab\GridConfig.xaml">
       <SubType>Designer</SubType>

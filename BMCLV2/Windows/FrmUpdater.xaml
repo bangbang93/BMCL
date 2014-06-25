@@ -1,0 +1,10 @@
+﻿<Window x:Class="BMCLV2.Windows.FrmUpdater"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="FrmUpdater" Height="43" Width="674" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen" WindowStyle="None">
+    <Grid>
+        <ProgressBar x:Name="PrsBar"/>
+        <Label x:Name="LabInfo" Content="连接更新服务器中" Margin="282,10,282,0" VerticalAlignment="Top" TextOptions.TextHintingMode="Fixed" TextOptions.TextFormattingMode="Display" HorizontalContentAlignment="Center" HorizontalAlignment="Center"/>
+
+    </Grid>
+</Window>

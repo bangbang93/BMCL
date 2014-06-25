@@ -83,7 +83,7 @@ namespace BMCLV2
             }
         }
 
-        private static void UpdateCheckerOnCheckUpdateFinishEvent(bool hasUpdate, string updateAddr, string updateInfo)
+        private static void UpdateCheckerOnCheckUpdateFinishEvent(bool hasUpdate, string updateAddr, string updateInfo, int updateBuild)
         {
             if (hasUpdate)
             {
@@ -116,70 +116,128 @@ namespace BMCLV2
                     foreach (var t in types)
                     {
                         if (t.GetInterface("IBmclAuthPlugin") != null)
-                        try
                         {
-                            var authInstance = authMethod.CreateInstance(t.FullName);
-                            if (authInstance == null) continue;
-                            var T = authInstance.GetType();
-                            var authVer = T.GetMethod("GetVer");
-                            if (authVer == null)
+                            try
                             {
-                                if (authInstance.ToString().IndexOf("My.MyApplication", System.StringComparison.Ordinal) == -1 && 
-                                    authInstance.ToString().IndexOf("My.MyComputer", System.StringComparison.Ordinal) == -1 &&
-                                    authInstance.ToString().IndexOf("My.MyProject+MyWebServices", System.StringComparison.Ordinal) == -1 &&
-                                    authInstance.ToString().IndexOf("My.MySettings", System.StringComparison.Ordinal) == -1)
+                                var authInstance = authMethod.CreateInstance(t.FullName);
+                                if (authInstance == null) continue;
+                                var T = authInstance.GetType();
+                                var authVer = T.GetMethod("GetVer");
+                                if (authVer == null)
                                 {
                                     Logger.log(String.Format("未找到{0}的GetVer方法，放弃加载", authInstance));
+                                    continue;
                                 }
-                                continue;
+                                if ((long)authVer.Invoke(authInstance, null) != 1)
+                                {
+                                    Logger.log(String.Format("{0}的版本不为1，放弃加载", authInstance));
+                                    continue;
+                                }
+                                var authVersion = T.GetMethod("GetVersion");
+                                if (authVersion == null)
+                                {
+                                    Logger.log(String.Format("{0}为第一代插件", authInstance));
+                                }
+                                else if ((long)authVersion.Invoke(authInstance, new object[] { 2 }) != 2)
+                                {
+                                    Logger.log(String.Format("{0}版本高于启动器，放弃加载", authInstance));
+                                }
+                                var mAuthName = T.GetMethod("GetName");
+                                var authName =
+                                    mAuthName.Invoke(authInstance, new object[] { language }).ToString();
+                                Auths.Add(authName, authInstance);
+                                Logger.log(String.Format("{0}加载成功，名称为{1}", authInstance, authName),
+                                    Logger.LogType.Error);
                             }
-                            if ((long) authVer.Invoke(authInstance, null) != 1)
-                            {
-                                Logger.log(String.Format("{0}的版本不为1，放弃加载", authInstance));
-                                continue;
-                            }
-                            var authVersion = T.GetMethod("GetVersion");
-                            if (authVersion == null)
-                            {
-                                Logger.log(String.Format("{0}为第一代插件", authInstance));
-                            }
-                            else if ((long) authVersion.Invoke(authInstance, new object[] {2}) != 2)
-                            {
-                                Logger.log(String.Format("{0}版本高于启动器，放弃加载", authInstance));
-                            }
-                            var mAuthName = T.GetMethod("GetName");
-                            var authName =
-                                mAuthName.Invoke(authInstance, new object[] {language}).ToString();
-                            Auths.Add(authName, authInstance);
-                            Logger.log(String.Format("{0}加载成功，名称为{1}", authInstance, authName),
-                                Logger.LogType.Error);
-                        }
-                        catch (MissingMethodException ex)
-                        {
-                            if (t.ToString().IndexOf("My.MyProject", System.StringComparison.Ordinal) == -1 &&
-                                t.ToString().IndexOf("My.Resources.Resources", System.StringComparison.Ordinal) == -1 &&
-                                t.ToString().IndexOf("My.MySettingsProperty", System.StringComparison.Ordinal) == -1)
-                            {
-                            Logger.log(String.Format("加载{0}的{1}失败", auth, t), Logger.LogType.Error);
-                            Logger.log(ex);
-                            }
-                        }
-                        catch (ArgumentException ex)
-                        {
-                            if (t.ToString().IndexOf("My.MyProject+MyWebServices", System.StringComparison.Ordinal) == -1 &&
-                                t.ToString().IndexOf("My.MyProject+ThreadSafeObjectProvider`1[T]", System.StringComparison.Ordinal) == -1)
+                            catch (MissingMethodException ex)
                             {
                                 Logger.log(String.Format("加载{0}的{1}失败", auth, t), Logger.LogType.Error);
                                 Logger.log(ex);
                             }
-                        }
-                        catch (NotSupportedException ex)
-                        {
-                            if (ex.Message.IndexOf("0x80131515", System.StringComparison.Ordinal) != -1)
+                            catch (ArgumentException ex)
                             {
-                                MessageBox.Show(LangManager.GetLangFromResource("LoadPluginLockErrorInfo"), LangManager.GetLangFromResource("LoadPluginLockErrorTitle"));
+                                Logger.log(String.Format("加载{0}的{1}失败", auth, t), Logger.LogType.Error);
+                                Logger.log(ex);
                             }
-                            else throw;
+                            catch (NotSupportedException ex)
+                            {
+                                if (ex.Message.IndexOf("0x80131515", System.StringComparison.Ordinal) != -1)
+                                {
+                                    MessageBox.Show(LangManager.GetLangFromResource("LoadPluginLockErrorInfo"), LangManager.GetLangFromResource("LoadPluginLockErrorTitle"));
+                                }
+                                else throw;
+                            }
+                        } else if (t.GetInterface("IBmclPlugin") != null)
+                        {
+
+                        }
+                        else
+                        {
+                            try
+                            {
+                                var authInstance = authMethod.CreateInstance(t.FullName);
+                                if (authInstance == null) continue;
+                                var T = authInstance.GetType();
+                                var authVer = T.GetMethod("GetVer");
+                                if (authVer == null)
+                                {
+                                    if (authInstance.ToString().IndexOf("My.MyApplication", System.StringComparison.Ordinal) == -1 &&
+                                        authInstance.ToString().IndexOf("My.MyComputer", System.StringComparison.Ordinal) == -1 &&
+                                        authInstance.ToString().IndexOf("My.MyProject+MyWebServices", System.StringComparison.Ordinal) == -1 &&
+                                        authInstance.ToString().IndexOf("My.MySettings", System.StringComparison.Ordinal) == -1)
+                                    {
+                                        Logger.log(String.Format("未找到{0}的GetVer方法，放弃加载", authInstance));
+                                    }
+                                    continue;
+                                }
+                                if ((long)authVer.Invoke(authInstance, null) != 1)
+                                {
+                                    Logger.log(String.Format("{0}的版本不为1，放弃加载", authInstance));
+                                    continue;
+                                }
+                                var authVersion = T.GetMethod("GetVersion");
+                                if (authVersion == null)
+                                {
+                                    Logger.log(String.Format("{0}为第一代插件", authInstance));
+                                }
+                                else if ((long)authVersion.Invoke(authInstance, new object[] { 2 }) != 2)
+                                {
+                                    Logger.log(String.Format("{0}版本高于启动器，放弃加载", authInstance));
+                                }
+                                var mAuthName = T.GetMethod("GetName");
+                                var authName =
+                                    mAuthName.Invoke(authInstance, new object[] { language }).ToString();
+                                Auths.Add(authName, authInstance);
+                                Logger.log(String.Format("{0}加载成功，名称为{1}", authInstance, authName),
+                                    Logger.LogType.Error);
+                            }
+                            catch (MissingMethodException ex)
+                            {
+                                if (t.ToString().IndexOf("My.MyProject", System.StringComparison.Ordinal) == -1 &&
+                                    t.ToString().IndexOf("My.Resources.Resources", System.StringComparison.Ordinal) == -1 &&
+                                    t.ToString().IndexOf("My.MySettingsProperty", System.StringComparison.Ordinal) == -1)
+                                {
+                                    Logger.log(String.Format("加载{0}的{1}失败", auth, t), Logger.LogType.Error);
+                                    Logger.log(ex);
+                                }
+                            }
+                            catch (ArgumentException ex)
+                            {
+                                if (t.ToString().IndexOf("My.MyProject+MyWebServices", System.StringComparison.Ordinal) == -1 &&
+                                    t.ToString().IndexOf("My.MyProject+ThreadSafeObjectProvider`1[T]", System.StringComparison.Ordinal) == -1)
+                                {
+                                    Logger.log(String.Format("加载{0}的{1}失败", auth, t), Logger.LogType.Error);
+                                    Logger.log(ex);
+                                }
+                            }
+                            catch (NotSupportedException ex)
+                            {
+                                if (ex.Message.IndexOf("0x80131515", System.StringComparison.Ordinal) != -1)
+                                {
+                                    MessageBox.Show(LangManager.GetLangFromResource("LoadPluginLockErrorInfo"), LangManager.GetLangFromResource("LoadPluginLockErrorTitle"));
+                                }
+                                else throw;
+                            }
                         }
                     }
                 }
