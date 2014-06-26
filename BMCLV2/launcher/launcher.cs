@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Windows;
 using BMCLV2.Lang;
 using BMCLV2.libraries;
 using BMCLV2.Login;
@@ -191,7 +192,10 @@ namespace BMCLV2.Launcher
                             System.Windows.MessageBox.Show(_urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
 #endif
                             BMCLV2.Logger.log(_urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
-                            _downer.DownloadFile(_urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
+                            _downer.DownloadFile(
+                                _urlLib +
+                                libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
+                            
                         }
                         else
                         {
@@ -212,14 +216,21 @@ namespace BMCLV2.Launcher
                             System.Windows.MessageBox.Show(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
 #endif
                             BMCLV2.Logger.log(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
-                            _downer.DownloadFile(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), libp);
+                                _downer.DownloadFile(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), libp);
                         }
                     }
                     catch (WebException ex)
                     {
                         BMCLV2.Logger.log(ex);
                         BMCLV2.Logger.log("原地址下载失败，尝试作者源" + lib.name);
-                        _downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
+                        try
+                        {
+                            _downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
+                        }
+                        catch (WebException exception)
+                        {
+                            MessageBox.Show(BmclCore.MainWindow, "下载" + lib.name + "遇到错误：" + exception.Message);
+                        }
                     }
                 }
                 arg.Append(BuildLibPath(lib) + ";");
@@ -350,7 +361,18 @@ namespace BMCLV2.Launcher
                                 BMCLV2.Logger.log(ex);
                                 BMCLV2.Logger.log("原地址下载失败，尝试作者源" + lib.name);
                                 string nativep = BuildLibPath(lib);
-                                _downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), nativep);
+                                try
+                                {
+                                    _downer.DownloadFile(
+                                        Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" +
+                                        nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"),
+                                        nativep);
+                                }
+                                catch (WebException exception)
+                                {
+                                    MessageBox.Show(BmclCore.MainWindow, "下载" + lib.name + "遇到错误：" + exception.Message);
+                                }
+                                
                             }
                         }
                         else
