@@ -1,28 +1,21 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Threading;
+using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using System.Net;
-using System.IO;
-using System.Xml;
-using System.Data;
-using System.Threading;
 using System.Windows.Media.Animation;
-using System.Runtime.Serialization.Json;
-using System.Web.Script.Serialization;
-using System.Collections;
-
+using System.Xml;
 using BMCLV2.Lang;
 
-namespace BMCLV2
+namespace BMCLV2.Windows
 {
     /// <summary>
     /// FrmCheckRes.xaml 的交互逻辑
@@ -34,52 +27,55 @@ namespace BMCLV2
         {
             InitializeComponent();
         }
-        string URL_RESOURCE_BASE = "http://www.bangbang93.com/bmcl/resources/";
-        DataTable dt = new DataTable();
-        int InDownloading = 0;
-        int WaitingForSync = 0;
-        bool ischecked = false;
-        int checkedfile = 0;
+
+        private const string UrlResourceBase = "http://www.bangbang93.com/bmcl/resources/";
+        readonly DataTable _dt = new DataTable();
+        int _inDownloading;
+        int _waitingForSync;
+        bool _ischecked;
+        int _checkedfile;
         delegate void GetInfoFinishEventHandle(DataTable dt);
         event GetInfoFinishEventHandle GetInfoFinishEvent;
         delegate void GetInfoFailedEventHandle();
         event GetInfoFailedEventHandle GetInfoFailedEvent;
-        string SoundsJsonString;
+        string _soundsJsonString;
 
         private void frmCheckRes_Loaded(object sender, RoutedEventArgs e)
         {
             GetInfoFinishEvent += FrmCheckRes_GetInfoFinishEvent;
             GetInfoFailedEvent += FrmCheckRes_GetInfoFailedEvent;
-            Thread thGetInfo = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
+            var thGetInfo = new Thread(new ThreadStart(delegate
             {
                 try
                 {
-                    dt.Columns.Add("FileName");
-                    dt.Columns.Add("ModifyTime");
-                    dt.Columns.Add("Size");
-                    dt.Columns.Add("Status");
-                    dt.Columns.Add("MD5");
-                    byte[] buffer = (new WebClient()).DownloadData(URL_RESOURCE_BASE);
-                    Stream RawXml = new MemoryStream(buffer);
-                    XmlDocument doc = new XmlDocument();
-                    doc.Load(RawXml);
+                    _dt.Columns.Add("FileName");
+                    _dt.Columns.Add("ModifyTime");
+                    _dt.Columns.Add("Size");
+                    _dt.Columns.Add("Status");
+                    _dt.Columns.Add("MD5");
+                    var client = new WebClient();
+                    client.Headers.Add("User-Agent", "BMCL" + BmclCore.BmclVersion);
+                    byte[] buffer = client.DownloadData(UrlResourceBase);
+                    Stream rawXml = new MemoryStream(buffer);
+                    var doc = new XmlDocument();
+                    doc.Load(rawXml);
                     XmlNodeList nodeLst = doc.GetElementsByTagName("Contents");
                     for (int i = 0; i < nodeLst.Count; i++)
                     {
                         XmlNode node = nodeLst.Item(i);
                         if (node.GetType() == null)
                             continue;
-                        XmlElement element = (XmlElement)node;
+                        var element = (XmlElement)node;
                         String key = element.GetElementsByTagName("Key").Item(0).ChildNodes.Item(0).Value;
                         String modtime = element.GetElementsByTagName("LastModified").Item(0).ChildNodes.Item(0).Value;
                         String etag = element.GetElementsByTagName("ETag") == null ? "-" : element.GetElementsByTagName("ETag").Item(0).ChildNodes.Item(0).Value;
                         long size = long.Parse(element.GetElementsByTagName("Size").Item(0).ChildNodes.Item(0).Value);
                         if (size <= 0L)
                             continue;
-                        dt.Rows.Add(new string[] { key, modtime, size.ToString(), LangManager.GetLangFromResource("ResWaitingForCheck"), etag.Replace("\"", "").Trim() });
+                        _dt.Rows.Add(new object[] { key, modtime, size.ToString(CultureInfo.InvariantCulture), LangManager.GetLangFromResource("ResWaitingForCheck"), etag.Replace("\"", "").Trim() });
                     }
-                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { GetInfoFinishEvent(dt); }));
-                    SoundsJsonString = (new WebClient()).DownloadString(this.URL_RESOURCE_BASE + "sounds.json");
+                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { GetInfoFinishEvent(_dt); }));
+                    _soundsJsonString = (new WebClient()).DownloadString(UrlResourceBase + "sounds.json");
                 }
                 catch (WebException ex)
                 {
@@ -95,7 +91,7 @@ namespace BMCLV2
                     Logger.log(ex);
                     Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { GetInfoFailedEvent(); }));
                 }
-            })));
+            }));
             thGetInfo.Start();
         }
 
@@ -124,7 +120,7 @@ namespace BMCLV2
             checking = true;
             prs.Maximum = listRes.Items.Count;
             prs.Value = 0;
-            checkedfile = 0;
+            _checkedfile = 0;
             int nextcheck = -1;
             foreach (object item in listRes.Items)
             {
@@ -134,16 +130,16 @@ namespace BMCLV2
             }
             Thread thCount = new Thread(new ThreadStart(new System.Windows.Forms.MethodInvoker(delegate
             {
-                while (checkedfile != dt.Rows.Count) { }
-                Logger.log(string.Format("检查资源文件，共有{0}个文件待同步，共计{1}个文件", WaitingForSync, dt.Rows.Count));
-                ischecked = true;
+                while (_checkedfile != _dt.Rows.Count) { }
+                Logger.log(string.Format("检查资源文件，共有{0}个文件待同步，共计{1}个文件", _waitingForSync, _dt.Rows.Count));
+                _ischecked = true;
             })));
             thCount.Start();
         }
         public void GetMD5HashFromFile(object obj)
         {
             int num = (int)obj;
-            string fileName = AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets\" + dt.Rows[num]["FileName"].ToString();
+            string fileName = AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets\" + _dt.Rows[num]["FileName"].ToString();
             try
             {
                 FileStream file = new FileStream(fileName, FileMode.Open);
@@ -156,36 +152,36 @@ namespace BMCLV2
                     sb.Append(retVal[i].ToString("x2"));
                 }
                 string lmd5 = sb.ToString();
-                if (lmd5.Trim() == dt.Rows[num]["MD5"].ToString())
+                if (lmd5.Trim() == _dt.Rows[num]["MD5"].ToString())
                 {
-                    lock (dt)
+                    lock (_dt)
                     {
-                        dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResNoNeedForSync");
-                        Logger.log(string.Format("检查资源文件{0}，无需同步", dt.Rows[num]["FileName"]));
+                        _dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResNoNeedForSync");
+                        Logger.log(string.Format("检查资源文件{0}，无需同步", _dt.Rows[num]["FileName"]));
                     }
                 }
                 else
                 {
-                    lock (dt)
+                    lock (_dt)
                     {
-                        dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResWaitingForSync");
-                        Logger.log(string.Format("检查资源文件{0}，需要同步，文件MD5{1}，目标MD5{2}", dt.Rows[num]["FileName"], lmd5.Trim(), dt.Rows[num]["MD5"]));
+                        _dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResWaitingForSync");
+                        Logger.log(string.Format("检查资源文件{0}，需要同步，文件MD5{1}，目标MD5{2}", _dt.Rows[num]["FileName"], lmd5.Trim(), _dt.Rows[num]["MD5"]));
                     }
-                    WaitingForSync++;
+                    _waitingForSync++;
                 }
             }
             catch (Exception ex)
             {
-                lock (dt)
+                lock (_dt)
                 {
-                    dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResWaitingForSync");
-                    Logger.log(string.Format("检查资源文件{0}，需要同步，由于{1}", dt.Rows[num]["FileName"], ex.Message), Logger.LogType.Exception);
+                    _dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResWaitingForSync");
+                    Logger.log(string.Format("检查资源文件{0}，需要同步，由于{1}", _dt.Rows[num]["FileName"], ex.Message), Logger.LogType.Exception);
                 }
-                WaitingForSync++;
+                _waitingForSync++;
             }
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
-            checkedfile++;
-            if (checkedfile == dt.Rows.Count)
+            _checkedfile++;
+            if (_checkedfile == _dt.Rows.Count)
             {
                 MessageBox.Show(LangManager.GetLangFromResource("ResCheckComplete"));
             }
@@ -193,37 +189,37 @@ namespace BMCLV2
 
         private void btnSync_Click(object sender, RoutedEventArgs e)
         {
-            if (!ischecked)
+            if (!_ischecked)
             {
                 if (!checking)
                     btnCheck_Click(null, null);
                 MessageBox.Show(LangManager.GetLangFromResource("ResPlsWaitingForCheck"));
                 return;
             }
-            if (WaitingForSync == 0)
+            if (_waitingForSync == 0)
             {
                 MessageBox.Show(LangManager.GetLangFromResource("ResNoFileForSync"));
             }
-            prs.Maximum = WaitingForSync;
+            prs.Maximum = _waitingForSync;
             prs.Value = 0;
             int num = -1;
             this.btnSync.IsEnabled = false;
             foreach (object item in listRes.Items)
             {
                 num++;
-                if (dt.Rows[num]["Status"].ToString() == LangManager.GetLangFromResource("ResWaitingForSync"))
+                if (_dt.Rows[num]["Status"].ToString() == LangManager.GetLangFromResource("ResWaitingForSync"))
                 {
                     WebClient downer = new WebClient();
-                    StringBuilder rpath = new StringBuilder(URL_RESOURCE_BASE);
+                    StringBuilder rpath = new StringBuilder(UrlResourceBase);
                     StringBuilder lpath = new StringBuilder(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets\");
-                    rpath.Append(dt.Rows[num]["FileName"].ToString());
-                    lpath.Append(dt.Rows[num]["FileName"].ToString());
+                    rpath.Append(_dt.Rows[num]["FileName"].ToString());
+                    lpath.Append(_dt.Rows[num]["FileName"].ToString());
                     if (!Directory.Exists(System.IO.Path.GetDirectoryName(lpath.ToString())))
                     {
                         Directory.CreateDirectory(System.IO.Path.GetDirectoryName(lpath.ToString()));
                     }
                     downer.DownloadFileCompleted += downer_DownloadFileCompleted;
-                    InDownloading++;
+                    _inDownloading++;
                     int tnum = num;
                     ThreadPool.QueueUserWorkItem(a => Downer(new Uri(rpath.ToString()), lpath.ToString(), tnum, ref downer));
                 }
@@ -236,22 +232,22 @@ namespace BMCLV2
         }
         void downer_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
         {
-            InDownloading--;
+            _inDownloading--;
             int num = (int)e.UserState;
             if (e.Error != null)
             {
-                Logger.log(string.Format("下载资源文件失败{0}，远程路径为{1}", dt.Rows[num]["FileName"],(sender as WebClient).BaseAddress));
+                Logger.log(string.Format("下载资源文件失败{0}，远程路径为{1}", _dt.Rows[num]["FileName"],(sender as WebClient).BaseAddress));
                 Logger.log(e.Error);
             }
             else
             {
-                lock (dt)
+                lock (_dt)
                 {
-                    dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResInSync");
+                    _dt.Rows[num]["Status"] = LangManager.GetLangFromResource("ResInSync");
                 }
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { prs.Value++; }));
-                Logger.log(string.Format("下载资源文件成功{0}，远程路径为{1}", dt.Rows[num]["FileName"], (sender as WebClient).BaseAddress));
-                if (InDownloading == 0)
+                Logger.log(string.Format("下载资源文件成功{0}，远程路径为{1}", _dt.Rows[num]["FileName"], (sender as WebClient).BaseAddress));
+                if (_inDownloading == 0)
                 {
                     Logger.log(string.Format("下载资源文件完毕"));
                     MessageBox.Show(LangManager.GetLangFromResource("ResFinish"));
@@ -263,7 +259,7 @@ namespace BMCLV2
         private void btnNewMusic_Click(object sender, RoutedEventArgs e)
         {
             JavaScriptSerializer SoundsJsonSerizlizer = new JavaScriptSerializer();
-            var sounds = SoundsJsonSerizlizer.Deserialize<Dictionary<string, Dictionary<string, object>>>(SoundsJsonString);
+            var sounds = SoundsJsonSerizlizer.Deserialize<Dictionary<string, Dictionary<string, object>>>(_soundsJsonString);
             Hashtable DownloadFile = new Hashtable();
             int FileCount=0;
             int DuplicateFileCount=0;
@@ -285,9 +281,9 @@ namespace BMCLV2
                         foreach (string FileName in SoundFile)
                         {
                             FileCount++;
-                            string Url = this.URL_RESOURCE_BASE + "sounds/" + FileName + ".ogg";
+                            string Url = UrlResourceBase + "sounds/" + FileName + ".ogg";
                             string SoundName = AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets\sounds\" + FileName + ".ogg";
-                            DataRow[] result = dt.Select("FileName = " + "'sounds/" + FileName + ".ogg'");
+                            DataRow[] result = _dt.Select("FileName = " + "'sounds/" + FileName + ".ogg'");
                             if (result.Count() != 0)
                             {
                                 DuplicateFileCount++;
@@ -308,9 +304,9 @@ namespace BMCLV2
                             if (!music.ContainsKey("stream")) continue;
                             if ((bool)music["stream"] == false) continue;
                             FileCount++;
-                            string Url = this.URL_RESOURCE_BASE + "sounds/" + music["name"] + ".ogg";
+                            string Url = UrlResourceBase + "sounds/" + music["name"] + ".ogg";
                             string SoundName = AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\assets\sounds\" + music["name"] + ".ogg";
-                            DataRow[] result = dt.Select("FileName = " + "'sounds/" + music["name"] as string + ".ogg'");
+                            DataRow[] result = _dt.Select("FileName = " + "'sounds/" + music["name"] as string + ".ogg'");
                             if (result.Count() != 0)
                             {
                                 DuplicateFileCount++;
