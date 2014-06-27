@@ -4,6 +4,13 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" Background="#50FFFFFF">
+    <Grid.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../ButtonStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Grid.Resources>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="748"/>
             <ColumnDefinition Width="140"/>
@@ -17,7 +24,7 @@
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button x:Name="btnRefreshRemoteVer" Content="{DynamicResource btnRefreshRemoteVer}" Grid.Column="1" HorizontalAlignment="Center" Margin="10,35,10,0" VerticalAlignment="Top" Width="120" Height="53" Click="btnRefreshRemoteVer_Click"/>
-        <Button x:Name="btnDownloadVer" Content="{DynamicResource btnDownloadVer}" Grid.Column="1" HorizontalAlignment="Left" Margin="10,115,0,0" VerticalAlignment="Top" Width="120" Height="53" Click="btnDownloadVer_Click"/>
-        <Button x:Name="btnCheckRes" Content="{DynamicResource btnCheckRes}" HorizontalAlignment="Left" Margin="10,195,0,0" VerticalAlignment="Top" Width="120" Height="53" FontWeight="Thin" Click="btnCheckRes_Click" Grid.Column="1"/>
+    <Button x:Name="btnRefreshRemoteVer" Content="{DynamicResource btnRefreshRemoteVer}" Grid.Column="1" HorizontalAlignment="Center" Margin="10,35,10,0" VerticalAlignment="Top" Width="120" Height="53" Click="btnRefreshRemoteVer_Click" Style="{StaticResource NormalButtonStyle}"/>
+    <Button x:Name="btnDownloadVer" Content="{DynamicResource btnDownloadVer}" Grid.Column="1" HorizontalAlignment="Left" Margin="10,115,0,0" VerticalAlignment="Top" Width="120" Height="53" Click="btnDownloadVer_Click" Style="{StaticResource NormalButtonStyle}"/>
+    <Button x:Name="btnCheckRes" Content="{DynamicResource btnCheckRes}" HorizontalAlignment="Left" Margin="10,195,0,0" VerticalAlignment="Top" Width="120" Height="53" FontWeight="Thin" Click="btnCheckRes_Click" Grid.Column="1" Style="{StaticResource NormalButtonStyle}"/>
 </Grid>

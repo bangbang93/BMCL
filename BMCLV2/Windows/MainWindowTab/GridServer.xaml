@@ -4,6 +4,13 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" Background="#50FFFFFF">
+    <Grid.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../ButtonStyle.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Grid.Resources>
     <Grid.ColumnDefinitions>
         <ColumnDefinition Width="748*"/>
         <ColumnDefinition Width="140*"/>
@@ -21,8 +28,8 @@
                     </GridView>
                 </ListView.View>
             </ListView>
-            <Button x:Name="btnReflushServer" Content="{DynamicResource btnReflushServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,29,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnReflushServer_Click"/>
-            <Button x:Name="btnAddServer" Content="{DynamicResource btnAddServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,99,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnAddServer_Click"/>
-            <Button x:Name="btnDeleteServer" Content="{DynamicResource btnDeleteServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,173,0,0" VerticalAlignment="Top" Width="95" RenderTransformOrigin="0.52,0.5" Height="42" Click="btnDeleteServer_Click"/>
-            <Button x:Name="btnEditServer" Content="{DynamicResource btnEditServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,248,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnEditServer_Click"/>
+    <Button x:Name="btnReflushServer" Content="{DynamicResource btnReflushServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,29,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnReflushServer_Click" Style="{StaticResource NormalButtonStyle}"/>
+    <Button x:Name="btnAddServer" Content="{DynamicResource btnAddServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,99,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnAddServer_Click" Style="{StaticResource NormalButtonStyle}"/>
+    <Button x:Name="btnDeleteServer" Content="{DynamicResource btnDeleteServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,173,0,0" VerticalAlignment="Top" Width="95" RenderTransformOrigin="0.52,0.5" Height="42" Click="btnDeleteServer_Click" Style="{StaticResource NormalButtonStyle}"/>
+    <Button x:Name="btnEditServer" Content="{DynamicResource btnEditServer}" Grid.Column="1" HorizontalAlignment="Left" Margin="20,248,0,0" VerticalAlignment="Top" Width="95" Height="42" Click="btnEditServer_Click" Style="{StaticResource NormalButtonStyle}"/>
         </Grid>
