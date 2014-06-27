@@ -22,17 +22,12 @@
                     <Setter Property="Effect">
                         <Setter.Value>
                             <DropShadowEffect ShadowDepth="0"
-                          Color="LightBlue"
+                          Color="Blue"
                           Opacity="1"
                           BlurRadius="0"/>
                         </Setter.Value>
                     </Setter>
-                    <Setter Property="Background">
-                        <Setter.Value>
-                            <ImageBrush ImageSource="/BMCLV3;component/Resource/button.png"/>
-                        </Setter.Value>
-                    </Setter>
-                    
+                    <Setter Property="Background" Value="Blue" />
                 </Trigger.Setters>
                 <Trigger.EnterActions>
                     <BeginStoryboard>
@@ -41,6 +36,11 @@
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.EnterActions>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Trigger.Setters>
+                    <Setter Property="Background" Value="DarkBlue"></Setter>
+                </Trigger.Setters>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -67,7 +67,7 @@
                     <Setter Property="Effect">
                         <Setter.Value>
                             <DropShadowEffect ShadowDepth="0"
-                          Color="LightPink"
+                          Color="Red"
                           Opacity="1"
                           BlurRadius="0"/>
                         </Setter.Value>
@@ -90,6 +90,11 @@
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.EnterActions>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Trigger.Setters>
+                    <Setter Property="Background" Value="DarkRed"></Setter>
+                </Trigger.Setters>
             </Trigger>
         </Style.Triggers>
     </Style>
