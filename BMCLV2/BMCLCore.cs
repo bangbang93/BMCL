@@ -31,6 +31,7 @@ namespace BMCLV2
         public static Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
         public static gameinfo GameInfo;
         public static Dictionary<string, object> Language = new Dictionary<string, object>();
+        public static string BaseDirectory = Environment.CurrentDirectory + '\\';
 
         static BmclCore()
         {
