@@ -6,7 +6,7 @@
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="ButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="Style.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -21,19 +21,19 @@
                     <TabControl.Background>
                         <ImageBrush/>
                     </TabControl.Background>
-                    <TabItem x:Name="TabGame" Header="{DynamicResource tabGameVersion}">
+                    <TabItem x:Name="TabGame" Header="{DynamicResource tabGameVersion}" Style="{StaticResource TabItemStyle}">
                         <mainWindowTab:GridGame x:Name="GridGame"></mainWindowTab:GridGame>
                     </TabItem>
-                    <TabItem x:Name="TabConfig" Header="{DynamicResource tabLauncherCfg}">
+                    <TabItem x:Name="TabConfig" Header="{DynamicResource tabLauncherCfg}" Style="{StaticResource TabItemStyle}">
                         <mainWindowTab:GridConfig x:Name="GridConfig"></mainWindowTab:GridConfig>
                     </TabItem>
-                    <TabItem x:Name="TabVersion" Header="{DynamicResource tabRemoteVer}">
+                    <TabItem x:Name="TabVersion" Header="{DynamicResource tabRemoteVer}" Style="{StaticResource TabItemStyle}">
                         <mainWindowTab:GridVersion x:Name="GridVersion"></mainWindowTab:GridVersion>
                     </TabItem>
-                    <TabItem x:Name="TabForge" Header="{DynamicResource tabForge}">
+                    <TabItem x:Name="TabForge" Header="{DynamicResource tabForge}" Style="{StaticResource TabItemStyle}">
                         <mainWindowTab:GridForge x:Name="GridForge"></mainWindowTab:GridForge>
                     </TabItem>
-                    <TabItem x:Name="TabServer" Header="服务器列表">
+                    <TabItem x:Name="TabServer" Header="服务器列表" Style="{StaticResource TabItemStyle}">
                         <mainWindowTab:GridServer x:Name="GridServer"></mainWindowTab:GridServer>
                     </TabItem>
                     <TabItem x:Name="tabUpdateInfo" Header="更新信息" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61" Visibility="Hidden">

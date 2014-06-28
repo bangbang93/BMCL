@@ -33,15 +33,8 @@ namespace BMCLV2.Windows
             InitializeComponent();
             this.Title = "BMCL V2 Ver." + BmclCore.BmclVersion;
             this.LoadConfig();
-            this.LoadLanguage();
-            GridConfig.listAuth.Items.Add(LangManager.GetLangFromResource("NoneAuth"));
-            foreach (var auth in BmclCore.Auths)
-            {
-                GridConfig.listAuth.Items.Add(auth.Key);
-            }
             GridGame.ReFlushlistver();
             GridGame.listVer.SelectedItem = BmclCore.Config.LastPlayVer;
-            GridConfig.listAuth.SelectedItem = BmclCore.Config.Login;
             GridConfig.checkCheckUpdate.IsChecked = BmclCore.Config.CheckUpdate;
         }
 
@@ -465,34 +458,6 @@ namespace BMCLV2.Windows
             else
                 _inscreen = false;
             
-        }
-
-
-        private void LoadLanguage()
-        {
-            ResourceDictionary lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
-            BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
-            GridConfig.comboLang.Items.Add(lang["DisplayName"]);
-            LangManager.Add(lang["LangName"] as string, "pack://application:,,,/Lang/zh-cn.xaml");
-
-            lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-tw.xaml");
-            BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
-            GridConfig.comboLang.Items.Add(lang["DisplayName"]);
-            LangManager.Add(lang["LangName"] as string, "pack://application:,,,/Lang/zh-tw.xaml");
-            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\Lang"))
-            {
-                foreach (string langFile in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\Lang", "*.xaml", SearchOption.TopDirectoryOnly))
-                {
-                    lang = LangManager.LoadLangFromResource(langFile);
-                    BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
-                    GridConfig.comboLang.Items.Add(lang["DisplayName"]);
-                    LangManager.Add(lang["LangName"] as string, langFile);
-                }
-            }
-            else
-            {
-                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\Lang");
-            }
         }
 
         public void ChangeLanguage()

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Collections;
 
@@ -6,16 +7,17 @@ namespace BMCLV2.Lang
 {
     static class LangManager
     {
-        static private readonly Hashtable Language = new Hashtable();
+        private static readonly Dictionary<string, LangType> Languages = new Dictionary<string, LangType>();
+        private static readonly Dictionary<string, string> DisplayToName = new Dictionary<string, string>(); 
         static private readonly ResourceDictionary DefaultLanguage = LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
         static public void Add(string languageName,string languageUrl)
         {
-            if (Language.ContainsKey(languageName))
+            if (Languages.ContainsKey(languageName))
             {
-                Language[languageName] = new LangType(languageName,languageUrl);
+                Languages[languageName] = new LangType(languageName,languageUrl);
                 return;
             }
-            Language.Add(languageName, new LangType(languageName, languageUrl));
+            Languages.Add(languageName, new LangType(languageName, languageUrl));
 
         }
         static public string GetLangFromResource(string key)
@@ -35,14 +37,26 @@ namespace BMCLV2.Lang
         }
         static public void UseLanguage(string languageName)
         {
-            if (!Language.ContainsKey(languageName))
+            if (!Languages.ContainsKey(languageName))
             {
                 Application.Current.Resources = DefaultLanguage;
                 return;
             }
-            var langType = Language[languageName] as LangType;
+            var langType = Languages[languageName];
             if (langType != null)
                 Application.Current.Resources = langType.Language;
+        }
+
+        public static string[] ListLanuage()
+        {
+            var langs = new string[Languages.Count];
+            var i = 0;
+            foreach (var lang in Languages)
+            {
+                langs[i] = (string)lang.Value.Language["DisplayName"];
+                i++;
+            }
+            return langs;
         }
     }
 }

@@ -20,6 +20,12 @@ namespace BMCLV2
     public partial class App
     {
         private static FileStream _appLock;
+        private static bool _skipPlugin = false;
+
+        public static bool SkipPlugin
+        {
+            get { return _skipPlugin; }
+        }
         protected override void OnStartup(StartupEventArgs e)
         {
             if (Array.IndexOf(e.Args, "-Update") != -1)
@@ -29,6 +35,10 @@ namespace BMCLV2
                     DoUpdate();
                 else
                     DoUpdate(e.Args[index + 1]);
+            }
+            if (Array.IndexOf(e.Args, "-SkipPlugin") != -1)
+            {
+                App._skipPlugin = true;
             }
 #if DEBUG
 #else

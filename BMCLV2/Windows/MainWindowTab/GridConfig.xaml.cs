@@ -18,6 +18,8 @@ namespace BMCLV2.Windows.MainWindowTab
         public GridConfig()
         {
             InitializeComponent();
+            RefreshLangList();
+            RefreshAuthList();
         }
         private void btnSaveConfig_Click(object sender, RoutedEventArgs e)
         {
@@ -140,24 +142,37 @@ namespace BMCLV2.Windows.MainWindowTab
         {
             if (!BmclCore.MainWindow.LoadOk)
                 return;
-            switch (comboLang.SelectedIndex)
-            {
-                case 0:
-                    LangManager.UseLanguage("zh-cn"); break;
-                case 1:
-                    LangManager.UseLanguage("zh-tw"); break;
-                default:
-                    if (comboLang.SelectedItem as string != null)
-                        if (BmclCore.Language.ContainsKey(comboLang.SelectedItem as string))
-                            LangManager.UseLanguage(BmclCore.Language[comboLang.SelectedItem as string] as string);
-                    break;
-            }
+            if (comboLang.SelectedItem as string != null)
+                if (BmclCore.Language.ContainsKey(comboLang.SelectedItem as string))
+                    LangManager.UseLanguage(BmclCore.Language[comboLang.SelectedItem as string] as string);
             BmclCore.MainWindow.ChangeLanguage();
+            RefreshAuthList();
         }
 
         public void SaveConfig()
         {
             btnSaveConfig_Click(null, null);
+        }
+
+        public void RefreshLangList()
+        {
+            var langs = LangManager.ListLanuage();
+            foreach (var lang in langs)
+            {
+                comboLang.Items.Add(lang);
+            }
+            comboLang.SelectedItem = LangManager.GetLangFromResource("LangName");
+        }
+
+        public void RefreshAuthList()
+        {
+            listAuth.Items.Clear();
+            listAuth.Items.Add(LangManager.GetLangFromResource("NoneAuth"));
+            listAuth.SelectedItem = BmclCore.Config.Login;
+            foreach (var auth in BmclCore.Auths)
+            {
+                listAuth.Items.Add(auth.Key);
+            }
         }
     }
 }

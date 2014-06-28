@@ -9,7 +9,7 @@
     <Grid.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../ButtonStyle.xaml"></ResourceDictionary>
+                <ResourceDictionary Source="../Style.xaml"></ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Grid.Resources>

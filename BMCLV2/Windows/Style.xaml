@@ -27,7 +27,7 @@
                           BlurRadius="0"/>
                         </Setter.Value>
                     </Setter>
-                    <Setter Property="Background" Value="Blue" />
+                    <Setter Property="Background" Value="#FFCCFFFF" />
                 </Trigger.Setters>
                 <Trigger.EnterActions>
                     <BeginStoryboard>
@@ -95,6 +95,45 @@
                 <Trigger.Setters>
                     <Setter Property="Background" Value="DarkRed"></Setter>
                 </Trigger.Setters>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+    
+    <Style TargetType="TabItem" x:Key="TabItemStyle">
+        <Setter Property="Background">
+            <Setter.Value>
+                <ImageBrush ImageSource="/BMCLV3;component/Resource/tabitem.png"/>
+            </Setter.Value>
+        </Setter>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Trigger.Setters>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect ShadowDepth="0"
+                          Color="Green"
+                          Opacity="1"
+                          BlurRadius="0"/>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <SolidColorBrush Color="Green"></SolidColorBrush>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="BorderBrush">
+                        <Setter.Value>
+                            <x:Null></x:Null>
+                        </Setter.Value>
+                    </Setter>
+                </Trigger.Setters>
+                <Trigger.EnterActions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <DoubleAnimation From="0" To="30" Duration="0:0:0.5" Storyboard.TargetProperty="(Effect).(DropShadowEffect.BlurRadius)" />
+                        </Storyboard>
+                    </BeginStoryboard>
+                </Trigger.EnterActions>
             </Trigger>
         </Style.Triggers>
     </Style>
