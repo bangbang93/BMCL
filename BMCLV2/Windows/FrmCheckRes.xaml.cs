@@ -55,7 +55,7 @@ namespace BMCLV2.Windows
                     _dt.Columns.Add("MD5");
                     var client = new WebClient();
                     client.Headers.Add("User-Agent", "BMCL" + BmclCore.BmclVersion);
-                    byte[] buffer = client.DownloadData(UrlResourceBase);
+                    byte[] buffer = client.DownloadData(UrlResourceBase + "ResourcesList.xml");
                     Stream rawXml = new MemoryStream(buffer);
                     var doc = new XmlDocument();
                     doc.Load(rawXml);
