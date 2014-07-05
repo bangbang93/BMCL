@@ -92,12 +92,21 @@ namespace BMCLV2
         {
             if (hasUpdate)
             {
-                if (
-                    MessageBox.Show(BmclCore.MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
-                        MessageBoxImage.Information) == MessageBoxResult.OK)
+                var a = MessageBox.Show(BmclCore.MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
+                    MessageBoxImage.Information);
+                if (a == MessageBoxResult.OK)
                 {
                     var updater = new FrmUpdater(updateBuild, updateAddr);
                     updater.ShowDialog();
+                }
+                if (a == MessageBoxResult.No || a == MessageBoxResult.None) //若窗口直接消失
+                {
+                    if (MessageBox.Show(BmclCore.MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
+                    MessageBoxImage.Information) == MessageBoxResult.OK)
+                    {
+                        var updater = new FrmUpdater(updateBuild, updateAddr);
+                        updater.ShowDialog();
+                    }
                 }
             }
         }
