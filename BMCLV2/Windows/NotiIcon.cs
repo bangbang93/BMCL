@@ -76,7 +76,8 @@ namespace BMCLV2.Windows
 
         void DebugMode_Click(object sender, EventArgs e)
         {
-            Process.Start(Process.GetCurrentProcess().MainModule.FileName + "-Debug");
+            var a = Process.GetCurrentProcess().MainModule.FileName;
+            Process.Start(a,"-Debug");
             BmclCore.NIcon.Hide();
             Environment.Exit(0);
         }
