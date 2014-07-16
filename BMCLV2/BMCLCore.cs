@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -31,6 +30,7 @@ namespace BMCLV2
         public static Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
         public static gameinfo GameInfo;
         public static Dictionary<string, object> Language = new Dictionary<string, object>();
+        public static string BaseDirectory = Environment.CurrentDirectory + '\\';
 
         static BmclCore()
         {
@@ -46,6 +46,8 @@ namespace BMCLV2
                 }
                 Logger.log(String.Format("加载{0}文件", Cfgfile));
                 Logger.log(Config);
+                LoadLanguage();
+                ChangeLanguage(Config.Lang);
             }
             else
             {
@@ -61,7 +63,10 @@ namespace BMCLV2
                 Config.Javaxmx = (Config.GetMemory() / 4).ToString(CultureInfo.InvariantCulture);
             }
             LangManager.UseLanguage(Config.Lang);
-            LoadPlugin(LangManager.GetLangFromResource("LangName"));
+            if (!App.SkipPlugin)
+            {
+                LoadPlugin(LangManager.GetLangFromResource("LangName"));
+            }
 #if DEBUG
 #else
             ReleaseCheck();
@@ -87,16 +92,26 @@ namespace BMCLV2
         {
             if (hasUpdate)
             {
-                if (
-                    MessageBox.Show(BmclCore.MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
-                        MessageBoxImage.Information) == MessageBoxResult.OK)
+                var a = MessageBox.Show(BmclCore.MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
+                    MessageBoxImage.Information);
+                if (a == MessageBoxResult.OK)
                 {
-                    Process.Start(updateAddr);
+                    var updater = new FrmUpdater(updateBuild, updateAddr);
+                    updater.ShowDialog();
+                }
+                if (a == MessageBoxResult.No || a == MessageBoxResult.None) //若窗口直接消失
+                {
+                    if (MessageBox.Show(BmclCore.MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
+                    MessageBoxImage.Information) == MessageBoxResult.OK)
+                    {
+                        var updater = new FrmUpdater(updateBuild, updateAddr);
+                        updater.ShowDialog();
+                    }
                 }
             }
         }
 
-        public static void ChangeLanguate(string lang)
+        public static void ChangeLanguage(string lang)
         {
             LangManager.UseLanguage(lang);
         }
@@ -256,6 +271,30 @@ namespace BMCLV2
             BmclCore.Dispatcher.Invoke(invoke, argObjects);
         }
 
+
+        private static void LoadLanguage()
+        {
+            ResourceDictionary lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
+            BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
+            LangManager.Add(lang["LangName"] as string, "pack://application:,,,/Lang/zh-cn.xaml");
+
+            lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-tw.xaml");
+            BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
+            LangManager.Add(lang["LangName"] as string, "pack://application:,,,/Lang/zh-tw.xaml");
+            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\Lang"))
+            {
+                foreach (string langFile in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\Lang", "*.xaml", SearchOption.TopDirectoryOnly))
+                {
+                    lang = LangManager.LoadLangFromResource(langFile);
+                    BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
+                    LangManager.Add(lang["LangName"] as string, langFile);
+                }
+            }
+            else
+            {
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\Lang");
+            }
+        }
         
     }
 }

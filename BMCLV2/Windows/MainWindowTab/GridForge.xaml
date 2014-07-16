@@ -4,12 +4,19 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       mc:Ignorable="d" Background="#50FFFFFF">
+    <Grid.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Style.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Grid.Resources>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="888"/>
             </Grid.ColumnDefinitions>
-            <Button x:Name="btnLastForge" Content="{DynamicResource btnLastForge}" HorizontalAlignment="Left" Margin="24,24,0,0" VerticalAlignment="Top" Width="158" Height="51" Click="btnLastForge_Click"/>
+    <Button x:Name="btnLastForge" Content="{DynamicResource btnLastForge}" HorizontalAlignment="Left" Margin="24,24,0,0" VerticalAlignment="Top" Width="158" Height="51" Click="btnLastForge_Click" Style="{StaticResource NormalButtonStyle}"/>
             <TextBox x:Name="txtInsPath" HorizontalAlignment="Left" Height="23" Margin="24,96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="208" Background="#A0FFFFFF" ToolTip="点击复制" IsReadOnly="True" MouseDown="txtInsPath_MouseDown"/>
-            <Button x:Name="btnReForge" Content="{DynamicResource btnReForge}" HorizontalAlignment="Left" Margin="24,142,0,0" VerticalAlignment="Top" Width="120" Height="38" Click="btnReForge_Click"/>
+    <Button x:Name="btnReForge" Content="{DynamicResource btnReForge}" HorizontalAlignment="Left" Margin="24,142,0,0" VerticalAlignment="Top" Width="120" Height="38" Click="btnReForge_Click" Style="{StaticResource NormalButtonStyle}"/>
             <TreeView x:Name="treeForgeVer" HorizontalAlignment="Left" Height="374" Margin="275,10,0,0" VerticalAlignment="Top" Width="246" Background="#A0FFFFFF" MouseDoubleClick="treeForgeVer_MouseDoubleClick" ToolTip="双击版本号下载相应版本" MouseDown="treeForgeVer_MouseDown"/>
             <ScrollViewer HorizontalAlignment="Left" Height="374" Margin="526,10,0,0" VerticalAlignment="Top" Width="352" Background="#A0FFFFFF">
                 <TextBlock x:Name="txtChangeLog" HorizontalAlignment="Left" TextWrapping="Wrap" Text="右键点击版本查看相应更新日志" VerticalAlignment="Top" Width="352"/>

@@ -1,7 +1,7 @@
-﻿<Window x:Name="frmCheckRes" x:Class="BMCLV2.FrmCheckRes"
+﻿<Window x:Name="frmCheckRes" x:Class="BMCLV2.Windows.FrmCheckRes"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="对比资源文件" Height="437.019" Width="775.962" Loaded="frmCheckRes_Loaded" Icon="screenLaunch.png">
+        Title="对比资源文件" Height="437.019" Width="775.962" Loaded="frmCheckRes_Loaded" Icon="../screenLaunch.png">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>

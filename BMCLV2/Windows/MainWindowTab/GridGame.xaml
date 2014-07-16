@@ -4,9 +4,18 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" Background="#50FFFFFF">
+    <Grid.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Style.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Grid.Resources>
     <ListBox x:Name="listVer" HorizontalAlignment="Left" Height="374" VerticalAlignment="Top" Width="243" SelectionChanged="listVer_SelectionChanged" Background="#A0FFFFFF" Margin="0,10,0,0" MouseDoubleClick="listVer_MouseDoubleClick" ToolTip="双击版本号也可启动" Grid.ColumnSpan="2"/>
-    <Button x:Name="btnDelete" Content="{DynamicResource btnDelete}" HorizontalAlignment="Left" Margin="270,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnDelete_Click"/>
-    <Button x:Name="btnImportOldMc" Content="{DynamicResource btnImportOldMc}" HorizontalAlignment="Left" Margin="380,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnImportOldMc_Click"/>
+    <Button x:Name="btnDelete" Content="{DynamicResource btnDelete}" HorizontalAlignment="Left" Margin="270,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnDelete_Click" BorderBrush="{x:Null}"  Style="{StaticResource NormalButtonStyle}">
+    </Button>
+    <Button x:Name="btnImportOldMc" Content="{DynamicResource btnImportOldMc}" HorizontalAlignment="Left" Margin="380,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnImportOldMc_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
+    </Button>
     <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="119" Margin="270,10,0,0" VerticalAlignment="Top" Width="567" Background="#A0FFFFFF">
         <Grid>
             <Label x:Name="llabVer" Content="{DynamicResource llabVer}" HorizontalAlignment="Left" Margin="2,-2,0,0" VerticalAlignment="Top"/>
@@ -19,10 +28,16 @@
             <Label x:Name="labType" Content="" HorizontalAlignment="Left" Margin="89,91,0,0" VerticalAlignment="Top"/>
         </Grid>
     </Border>
-    <Button x:Name="btnReName" Content="{DynamicResource btnReName}" HorizontalAlignment="Left" Margin="490,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnReName_Click"/>
-    <Button x:Name="btnModMrg" Content="{DynamicResource btnModMrg}" HorizontalAlignment="Left" Margin="270,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModMrg_Click"/>
-    <Button x:Name="btnCoreModMrg" Content="{DynamicResource btnCoreModMrg}" HorizontalAlignment="Left" Margin="380,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnCoreModMrg_Click" ToolTip="仅对1.6之前的版本有效"/>
-    <Button x:Name="btnModdirMrg" Content="{DynamicResource btnModdirMrg}" HorizontalAlignment="Left" Margin="490,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModdirMrg_Click" ToolTip="如果MOD在.minecraft下创建了文件夹（例如Flan's mod,Custom NPC等），请使用这个管理"/>
-    <Button x:Name="btnModCfgMrg" Content="{DynamicResource btnModCfgMrg}" HorizontalAlignment="Left" Margin="600,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModCfgMrg_Click"/>
-    <Button x:Name="btnLibraries" Content="{DynamicResource btnLibraries}" HorizontalAlignment="Left" Margin="600,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnLibraries_Click"/>
+    <Button x:Name="btnReName" Content="{DynamicResource btnReName}" HorizontalAlignment="Left" Margin="490,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnReName_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
+    </Button>
+    <Button x:Name="btnModMrg" Content="{DynamicResource btnModMrg}" HorizontalAlignment="Left" Margin="270,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModMrg_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
+    </Button>
+    <Button x:Name="btnCoreModMrg" Content="{DynamicResource btnCoreModMrg}" HorizontalAlignment="Left" Margin="380,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnCoreModMrg_Click" ToolTip="仅对1.6之前的版本有效" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
+    </Button>
+    <Button x:Name="btnModdirMrg" Content="{DynamicResource btnModdirMrg}" HorizontalAlignment="Left" Margin="490,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModdirMrg_Click" ToolTip="如果MOD在.minecraft下创建了文件夹（例如Flan's mod,Custom NPC等），请使用这个管理" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
+    </Button>
+    <Button x:Name="btnModCfgMrg" Content="{DynamicResource btnModCfgMrg}" HorizontalAlignment="Left" Margin="600,186,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModCfgMrg_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
+    </Button>
+    <Button x:Name="btnLibraries" Content="{DynamicResource btnLibraries}" HorizontalAlignment="Left" Margin="600,143,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnLibraries_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
+    </Button>
 </Grid>

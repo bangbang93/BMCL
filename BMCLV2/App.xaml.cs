@@ -20,8 +20,20 @@ namespace BMCLV2
     public partial class App
     {
         private static FileStream _appLock;
+        private static bool _skipPlugin = false;
+
+        public static bool SkipPlugin
+        {
+            get { return _skipPlugin; }
+        }
         protected override void OnStartup(StartupEventArgs e)
         {
+#if DEBUG
+#else
+            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
+#endif
             if (Array.IndexOf(e.Args, "-Update") != -1)
             {
                 var index = Array.IndexOf(e.Args, "-Update");
@@ -30,12 +42,10 @@ namespace BMCLV2
                 else
                     DoUpdate(e.Args[index + 1]);
             }
-#if DEBUG
-#else
-            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
-            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
-            
-#endif
+            if (Array.IndexOf(e.Args, "-SkipPlugin") != -1)
+            {
+                App._skipPlugin = true;
+            }
             try
             {
                 _appLock = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "BMCL.lck", FileMode.Create);

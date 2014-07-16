@@ -10,16 +10,17 @@ namespace BMCLV2.Mod
     {
         static public string SetupModPath(string version)
         {
-            var versionPath = new StringBuilder(@".minecraft\versions\");
+            var versionPath = new StringBuilder(BmclCore.BaseDirectory +  @".minecraft\versions\");
             versionPath.Append(version).Append("\\");
+            var modpath = new StringBuilder(versionPath.ToString());
             var configpath = new StringBuilder(versionPath.ToString());
             var coremodpath = new StringBuilder(versionPath.ToString());
             var moddirpath = new StringBuilder(versionPath.ToString());
-            versionPath.Append("mods");
+            modpath.Append("mods");
             configpath.Append("config");
             coremodpath.Append("coremods");
             moddirpath.Append("moddir");
-            if (!Directory.Exists(versionPath.ToString()))
+            if (!Directory.Exists(modpath.ToString()))
             {
                 Directory.CreateDirectory(versionPath.ToString());
             }

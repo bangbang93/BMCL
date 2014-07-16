@@ -303,6 +303,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Windows\Style.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Launcher\launcher.cs" />
@@ -370,6 +374,15 @@
   </ItemGroup>
   <ItemGroup>
     <SplashScreen Include="screenLaunch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resource\button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resource\button-close.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resource\tabitem.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

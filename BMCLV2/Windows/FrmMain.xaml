@@ -3,6 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:system="clr-namespace:System;assembly=mscorlib" xmlns:mainWindowTab="clr-namespace:BMCLV2.Windows.MainWindowTab" x:Name="FrmMainWindow" x:Class="BMCLV2.Windows.FrmMain"
         Title="BMCLV2" Height="504" Width="900" ResizeMode="NoResize" WindowStyle="None" Loaded="FrmMainWindow_Loaded" MouseDown="FrmMainWindow_MouseDown" AllowsTransparency="True" Background="{x:Null}" OpacityMask="White" Closing="FrmMainWindow_Closing" IsVisibleChanged="FrmMainWindow_IsVisibleChanged" Icon="..\tofu.ico" GotFocus="FrmMainWindow_GotFocus" Activated="FrmMainWindow_Activated">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Style.xaml"></ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
     <Grid Height="504" VerticalAlignment="Top">
         <Border BorderBrush="Black" CornerRadius="15,15,15,15" BorderThickness="2" HorizontalAlignment="Left" Height="504" VerticalAlignment="Top" Margin="0,0,0,-42" Width="900" x:Name="Container">
             <Grid x:Name="GridMain">
@@ -14,35 +21,36 @@
                     <TabControl.Background>
                         <ImageBrush/>
                     </TabControl.Background>
-                    <TabItem x:Name="TabGame" Header="{DynamicResource tabGameVersion}">
+                    <TabItem x:Name="TabGame" Header="{DynamicResource tabGameVersion}" Style="{StaticResource TabItemStyle}">
                         <mainWindowTab:GridGame x:Name="GridGame"></mainWindowTab:GridGame>
                     </TabItem>
-                    <TabItem x:Name="TabConfig" Header="{DynamicResource tabLauncherCfg}">
+                    <TabItem x:Name="TabConfig" Header="{DynamicResource tabLauncherCfg}" Style="{StaticResource TabItemStyle}">
                         <mainWindowTab:GridConfig x:Name="GridConfig"></mainWindowTab:GridConfig>
                     </TabItem>
-                    <TabItem x:Name="TabVersion" Header="{DynamicResource tabRemoteVer}">
+                    <TabItem x:Name="TabVersion" Header="{DynamicResource tabRemoteVer}" Style="{StaticResource TabItemStyle}">
                         <mainWindowTab:GridVersion x:Name="GridVersion"></mainWindowTab:GridVersion>
                     </TabItem>
-                    <TabItem x:Name="TabForge" Header="{DynamicResource tabForge}">
+                    <TabItem x:Name="TabForge" Header="{DynamicResource tabForge}" Style="{StaticResource TabItemStyle}">
                         <mainWindowTab:GridForge x:Name="GridForge"></mainWindowTab:GridForge>
                     </TabItem>
-                    <TabItem x:Name="TabServer" Header="服务器列表">
+                    <TabItem x:Name="TabServer" Header="服务器列表" Style="{StaticResource TabItemStyle}">
                         <mainWindowTab:GridServer x:Name="GridServer"></mainWindowTab:GridServer>
                     </TabItem>
                     <TabItem x:Name="tabUpdateInfo" Header="更新信息" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61" Visibility="Hidden">
                         <Grid x:Name="gridUpdateInfo" Background="#FFE5E5E5"/>
                     </TabItem>
-                    
+
                 </TabControl>
-                <Button x:Name="btnStart" Content="{DynamicResource btnStart}" HorizontalAlignment="Left" Margin="781,452,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnStart_Click" IsDefault="True" ToolTip="右键可以使用Debug模式启动">
+                <Button x:Name="btnStart" Content="{DynamicResource btnStart}" HorizontalAlignment="Left" Margin="781,452,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnStart_Click" IsDefault="True" ToolTip="右键可以使用Debug模式启动" BorderBrush="{x:Null}" BorderThickness="0" Style="{StaticResource NormalButtonStyle}">
                     <Button.ContextMenu>
                         <ContextMenu>
                             <MenuItem x:Name="MenuStartDebug" Header="{DynamicResource MenuStartDebug}" Click="MenuStartDebug_Click"/>
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>
-                <Button x:Name="btnClose" Content="{DynamicResource btnClose}" HorizontalAlignment="Left" Height="38" Margin="671,452,0,0" VerticalAlignment="Top" Width="105" Click="btnClose_Click" IsCancel="True"/>
-                <Button x:Name="btnChangeBg" Content="{DynamicResource btnChangeBg}" HorizontalAlignment="Left" Height="38" Margin="557,452,0,0" VerticalAlignment="Top" Width="52" Click="btnChangeBg_Click" ToolTip="右键可以选择文件甚至材质包">
+                <Button x:Name="btnClose" Content="{DynamicResource btnClose}" HorizontalAlignment="Left" Height="38" Margin="671,452,0,0" VerticalAlignment="Top" Width="105" Click="btnClose_Click" IsCancel="True" BorderBrush="{x:Null}" BorderThickness="0" Style="{StaticResource DangerButtonStyle}">
+                </Button>
+                <Button x:Name="btnChangeBg" Content="{DynamicResource btnChangeBg}" HorizontalAlignment="Left" Height="38" Margin="557,452,0,0" VerticalAlignment="Top" Width="52" Click="btnChangeBg_Click" ToolTip="右键可以选择文件甚至材质包" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
                     <Button.ContextMenu>
                         <ContextMenu>
                             <MenuItem x:Name="MenuSelectFile" Header="{DynamicResource MenuSelectFile}" Click="MenuSelectFile_Click"/>
@@ -54,7 +62,8 @@
                     <ProgressBar x:Name="prsDown" HorizontalAlignment="Left" Height="18" Margin="10,10,0,0" VerticalAlignment="Top" Width="261"/>
                     <Label x:Name="labDownInfo" Content="" Margin="276,10,10,0"/>
                 </Grid>
-                <Button x:Name="btnMiniSize" Content="{DynamicResource btnMiniSize}" HorizontalAlignment="Left" Height="38" Margin="614,452,0,0" VerticalAlignment="Top" Width="52" Click="btnMiniSize_Click"/>
+                <Button x:Name="btnMiniSize" Content="{DynamicResource btnMiniSize}" HorizontalAlignment="Left" Height="38" Margin="614,452,0,0" VerticalAlignment="Top" Width="52" Click="btnMiniSize_Click" BorderBrush="{x:Null}" BorderThickness="0"  Style="{StaticResource NormalButtonStyle}">
+                </Button>
             </Grid>
         </Border>
     </Grid>
