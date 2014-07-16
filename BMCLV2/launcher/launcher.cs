@@ -249,9 +249,6 @@ namespace BMCLV2.Launcher
             mcarg.Replace("${assets_root}", @"assets");
             mcarg.Replace("${user_type}", "Legacy");
             mcarg.Replace("${assets_index_name}", _info.assets);
-            mcarg.Replace("${auth_uuid}", "{}");
-            mcarg.Replace("${auth_access_token}", "{}");
-            mcarg.Replace("${user_properties}", "{}");
             if (!string.IsNullOrEmpty(_li.OutInfo))
             {
                 string[] replace = _li.OutInfo.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -266,6 +263,9 @@ namespace BMCLV2.Launcher
             {
                 mcarg.Replace("{auth_session}", _li.SID);
             }
+            mcarg.Replace("${auth_uuid}", "{}");
+            mcarg.Replace("${auth_access_token}", "{}");
+            mcarg.Replace("${user_properties}", "{}");
             arg.Append(" ");
             arg.Append(mcarg);
             _game.StartInfo.Arguments = arg.ToString();
