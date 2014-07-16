@@ -168,10 +168,14 @@ namespace BMCLV2.Windows.MainWindowTab
         {
             listAuth.Items.Clear();
             listAuth.Items.Add(LangManager.GetLangFromResource("NoneAuth"));
-            listAuth.SelectedItem = BmclCore.Config.Login;
             foreach (var auth in BmclCore.Auths)
             {
                 listAuth.Items.Add(auth.Key);
+            }
+            listAuth.SelectedItem = BmclCore.Config.Login;
+            if (listAuth.SelectedItem == null)
+            {
+                listAuth.SelectedIndex = 0;
             }
         }
     }
