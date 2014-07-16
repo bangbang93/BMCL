@@ -28,6 +28,12 @@ namespace BMCLV2
         }
         protected override void OnStartup(StartupEventArgs e)
         {
+#if DEBUG
+#else
+            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
+            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
+
+#endif
             if (Array.IndexOf(e.Args, "-Update") != -1)
             {
                 var index = Array.IndexOf(e.Args, "-Update");
@@ -40,12 +46,6 @@ namespace BMCLV2
             {
                 App._skipPlugin = true;
             }
-#if DEBUG
-#else
-            Dispatcher.UnhandledException += Dispatcher_UnhandledException;
-            TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
-            
-#endif
             try
             {
                 _appLock = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "BMCL.lck", FileMode.Create);
