@@ -229,7 +229,8 @@ namespace BMCLV2.Launcher
                         }
                         catch (WebException exception)
                         {
-                            MessageBox.Show(BmclCore.MainWindow, "下载" + lib.name + "遇到错误：" + exception.Message);
+                            BmclCore.Invoke(new Action(() => MessageBox.Show(BmclCore.MainWindow, "下载" + lib.name + "遇到错误：" + exception.Message)));
+                            return;
                         }
                     }
                 }
@@ -370,7 +371,8 @@ namespace BMCLV2.Launcher
                                 }
                                 catch (WebException exception)
                                 {
-                                    MessageBox.Show(BmclCore.MainWindow, "下载" + lib.name + "遇到错误：" + exception.Message);
+                                    BmclCore.Invoke(new Action(() => MessageBox.Show(BmclCore.MainWindow, "下载" + lib.name + "遇到错误：" + exception.Message)));
+                                    return;
                                 }
                                 
                             }
