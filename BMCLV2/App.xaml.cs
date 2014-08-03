@@ -28,6 +28,12 @@ namespace BMCLV2
         }
         protected override void OnStartup(StartupEventArgs e)
         {
+            if (e.Args.Length == 0)   // 判断debug模式
+                Logger.debug = false;
+            else
+                if (Array.IndexOf(e.Args, "-Debug") != -1)
+                    Logger.debug = true;
+            Logger.start();
 #if DEBUG
 #else
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
@@ -61,13 +67,6 @@ namespace BMCLV2
                 Environment.Exit(3);
             }
             WebRequest.DefaultWebProxy = null;  //禁用默认代理
-            if (e.Args.Length == 0)   // 判断debug模式
-                Logger.debug = false;
-            else
-                if (Array.IndexOf(e.Args, "-Debug") != -1)
-                    Logger.debug = true;
-            Logger.start();
-
             base.OnStartup(e);
         }
 
@@ -106,9 +105,27 @@ namespace BMCLV2
         private void DoUpdate()
         {
             var processName = Process.GetCurrentProcess().ProcessName;
-            File.Copy(processName, "BMCL.exe", true);
-            Process.Start("BMCL.exe","-Update " + processName);
-            Application.Current.Shutdown(0);
+            var time = 0;
+            while (time < 10)
+            {
+                try
+                {
+                    File.Copy(processName, "BMCL.exe", true);
+                    Process.Start("BMCL.exe", "-Update " + processName);
+                    Application.Current.Shutdown(0);
+                    return;
+                }
+                catch (Exception e)
+                {
+                    Logger.error(e);
+                }
+                finally
+                {
+                    time ++;
+                }
+            }
+            MessageBox.Show("自动升级失败，请手动使用" + processName + "替代旧版文件");
+            MessageBox.Show("自动升级失败，请手动使用" + processName + "替代旧版文件");
         }
 
         private void DoUpdate(string fileName)
