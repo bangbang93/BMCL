@@ -107,7 +107,7 @@ namespace BMCLV2.Windows.MainWindowTab
             {
                 FileName = "explorer.exe",
                 Arguments =
-                    ModHelper.SetupModPath(listVer.SelectedItem.ToString()) + "mods"
+                     Path.Combine(ModHelper.SetupModPath(listVer.SelectedItem.ToString()), "mods")
             });
         }
 
@@ -159,7 +159,7 @@ namespace BMCLV2.Windows.MainWindowTab
             {
                 FileName = "explorer.exe",
                 Arguments =
-                    ModHelper.SetupModPath(listVer.SelectedItem.ToString()) + "coremods"
+                    Path.Combine(ModHelper.SetupModPath(listVer.SelectedItem.ToString()), "coremods")
             });
         }
 
@@ -169,7 +169,7 @@ namespace BMCLV2.Windows.MainWindowTab
             {
                 FileName = "explorer.exe",
                 Arguments =
-                    ModHelper.SetupModPath(listVer.SelectedItem.ToString()) + "moddir"
+                    Path.Combine(ModHelper.SetupModPath(listVer.SelectedItem.ToString()), "moddir")
             });
         }
 
@@ -179,7 +179,7 @@ namespace BMCLV2.Windows.MainWindowTab
             {
                 FileName = "explorer.exe",
                 Arguments =
-                    ModHelper.SetupModPath(listVer.SelectedItem.ToString()) + "configs"
+                    Path.Combine(ModHelper.SetupModPath(listVer.SelectedItem.ToString()), "config")
             });
         }
 

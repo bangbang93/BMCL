@@ -10,33 +10,28 @@ namespace BMCLV2.Mod
     {
         static public string SetupModPath(string version)
         {
-            var versionPath = new StringBuilder(BmclCore.BaseDirectory +  @".minecraft\versions\");
-            versionPath.Append(version).Append("\\");
-            var modpath = new StringBuilder(versionPath.ToString());
-            var configpath = new StringBuilder(versionPath.ToString());
-            var coremodpath = new StringBuilder(versionPath.ToString());
-            var moddirpath = new StringBuilder(versionPath.ToString());
-            modpath.Append("mods");
-            configpath.Append("config");
-            coremodpath.Append("coremods");
-            moddirpath.Append("moddir");
-            if (!Directory.Exists(modpath.ToString()))
+            var versionPath = Path.Combine(BmclCore.BaseDirectory, @".minecraft\versions\", version);
+            var modpath = Path.Combine(versionPath, "mods");
+            var configpath = Path.Combine(versionPath, "config");
+            var coremodpath = Path.Combine(versionPath, "coremods");
+            var moddirpath = Path.Combine(versionPath, "moddir");
+            if (!Directory.Exists(modpath))
             {
-                Directory.CreateDirectory(versionPath.ToString());
+                Directory.CreateDirectory(modpath);
             }
-            if (!Directory.Exists(configpath.ToString()))
+            if (!Directory.Exists(configpath))
             {
-                Directory.CreateDirectory(configpath.ToString());
+                Directory.CreateDirectory(configpath);
             }
-            if (!Directory.Exists(coremodpath.ToString()))
+            if (!Directory.Exists(coremodpath))
             {
-                Directory.CreateDirectory(coremodpath.ToString());
+                Directory.CreateDirectory(coremodpath);
             }
-            if (!Directory.Exists(moddirpath.ToString()))
+            if (!Directory.Exists(moddirpath))
             {
-                Directory.CreateDirectory(moddirpath.ToString());
+                Directory.CreateDirectory(moddirpath);
             }
-            return versionPath.ToString();
+            return versionPath;
         }
     }
 }
