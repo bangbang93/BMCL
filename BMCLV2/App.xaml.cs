@@ -43,10 +43,17 @@ namespace BMCLV2
             if (Array.IndexOf(e.Args, "-Update") != -1)
             {
                 var index = Array.IndexOf(e.Args, "-Update");
-                if (index == e.Args.Length)
-                    DoUpdate();
-                else
-                    DoUpdate(e.Args[index + 1]);
+                if (index < e.Args.Length - 1)
+                {
+                    if (!e.Args[index + 1].StartsWith("-"))
+                    {
+                        DoUpdate(e.Args[index + 1]);
+                    }
+                    else
+                    {
+                        DoUpdate();
+                    }
+                }
             }
             if (Array.IndexOf(e.Args, "-SkipPlugin") != -1)
             {
