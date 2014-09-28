@@ -21,7 +21,8 @@ namespace BMCLV2.Forge
         public event ForgePageReadyHandle ForgePageReadyEvent;
         private DataContractJsonSerializer ForgeVerJsonParse = new DataContractJsonSerializer(typeof(ForgeVersion[]));
         private ForgeVersion[] ForgeNew, ForgeLegacy;
-        public Dictionary<string, string> ForgeDownloadUrl = new Dictionary<string, string>(), ForgeChangeLogUrl = new Dictionary<string, string>();
+        public Dictionary<string, string> ForgeDownloadUrl = new Dictionary<string, string>(), 
+            ForgeChangeLogUrl = new Dictionary<string, string>();
         public void GetVersion()
         {
             
@@ -88,7 +89,7 @@ namespace BMCLV2.Forge
                 if (ForgeChangeLogUrl.ContainsKey(Forge.vername))
                     ForgeChangeLogUrl[Forge.vername] = Forge.installer[1];
                 else
-                    ForgeChangeLogUrl.Add(Forge.vername, Forge.changlog);
+                    ForgeChangeLogUrl.Add(Forge.vername, Forge.changelog);
                 t.Items.Add(Forge.vername);
                 Logger.log("获取Forge"+Forge.vername);
             }
@@ -121,9 +122,9 @@ namespace BMCLV2.Forge
                 if (ForgeChangeLogUrl.ContainsKey(Forge.vername))
                     ForgeChangeLogUrl[Forge.vername] = Forge.installer[1];
                 else
-                    ForgeChangeLogUrl.Add(Forge.vername, Forge.changlog);
+                    ForgeChangeLogUrl.Add(Forge.vername, Forge.changelog);
                 t.Items.Add(Forge.vername);
-                Logger.log("获取Forge" + Forge.vername);
+//                Logger.log("获取Forge" + Forge.vername);
             }
             return r.ToArray(typeof(TreeViewItem)) as TreeViewItem[];
         }
