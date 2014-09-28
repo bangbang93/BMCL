@@ -17,7 +17,6 @@ namespace BMCLV2
     public static class BmclCore
     {
         public static String BmclVersion;
-        private const string Cfgfile = "bmcl.xml";
         public static Config Config;
         public static Dictionary<string, object> Auths = new Dictionary<string, object>();
         public static Launcher.Launcher Game;
@@ -31,6 +30,7 @@ namespace BMCLV2
         public static gameinfo GameInfo;
         public static Dictionary<string, object> Language = new Dictionary<string, object>();
         public static string BaseDirectory = Environment.CurrentDirectory + '\\';
+        private readonly static string Cfgfile = BaseDirectory + "bmcl.xml";
 
         static BmclCore()
         {

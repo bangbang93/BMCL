@@ -152,16 +152,17 @@ namespace BMCLV2.Windows.MainWindowTab
                 return;
             if (this.treeForgeVer.SelectedItem is string)
             {
-                if (!_forgeVer.ForgeChangeLogUrl.ContainsKey(this.treeForgeVer.SelectedItem as string))
-                    if (_forgeVer.ForgeChangeLogUrl[this.treeForgeVer.SelectedItem as string] != null)
-                    {
-                        MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotHaveChangeLog"));
-                        return;
-                    }
-                txtChangeLog.Text = LangManager.GetLangFromResource("FetchingForgeChangeLog");
-                var getLog = new WebClient();
-                getLog.DownloadStringCompleted += GetLog_DownloadStringCompleted;
-                getLog.DownloadStringAsync(new Uri(_forgeVer.ForgeChangeLogUrl[this.treeForgeVer.SelectedItem as string]));
+                if (_forgeVer.ForgeChangeLogUrl.ContainsKey(this.treeForgeVer.SelectedItem as string))
+                {
+                    txtChangeLog.Text = LangManager.GetLangFromResource("FetchingForgeChangeLog");
+                    var getLog = new WebClient();
+                    getLog.DownloadStringCompleted += GetLog_DownloadStringCompleted;
+                    getLog.DownloadStringAsync(new Uri(_forgeVer.ForgeChangeLogUrl[this.treeForgeVer.SelectedItem as string]));
+                } 
+                else
+                {
+                    MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotHaveChangeLog"));
+                }
             }
         }
 

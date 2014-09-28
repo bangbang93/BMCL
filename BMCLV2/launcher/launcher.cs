@@ -229,7 +229,8 @@ namespace BMCLV2.Launcher
                         }
                         catch (WebException exception)
                         {
-                            MessageBox.Show(BmclCore.MainWindow, "下载" + lib.name + "遇到错误：" + exception.Message);
+                            BmclCore.Invoke(new Action(() => MessageBox.Show(BmclCore.MainWindow, "下载" + lib.name + "遇到错误：" + exception.Message)));
+                            return;
                         }
                     }
                 }
@@ -263,8 +264,9 @@ namespace BMCLV2.Launcher
             {
                 mcarg.Replace("{auth_session}", _li.SID);
             }
-            mcarg.Replace("${auth_uuid}", "{}");
-            mcarg.Replace("${auth_access_token}", "{}");
+            var uuid = Guid.NewGuid().ToString();
+            mcarg.Replace("${auth_uuid}", uuid);
+            mcarg.Replace("${auth_access_token}", uuid);
             mcarg.Replace("${user_properties}", "{}");
             arg.Append(" ");
             arg.Append(mcarg);
@@ -370,7 +372,8 @@ namespace BMCLV2.Launcher
                                 }
                                 catch (WebException exception)
                                 {
-                                    MessageBox.Show(BmclCore.MainWindow, "下载" + lib.name + "遇到错误：" + exception.Message);
+                                    BmclCore.Invoke(new Action(() => MessageBox.Show(BmclCore.MainWindow, "下载" + lib.name + "遇到错误：" + exception.Message)));
+                                    return;
                                 }
                                 
                             }

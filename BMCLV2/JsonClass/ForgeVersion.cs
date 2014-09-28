@@ -10,7 +10,7 @@ namespace BMCLV2.JsonClass
     public class ForgeVersion
     {
         [DataMember]
-        public string vername, ver, mcver, releasetime, changlog;
+        public string vername, ver, mcver, releasetime, changelog;
         [DataMember]
         public string[] installer, javadoc, src, universal;
     }
