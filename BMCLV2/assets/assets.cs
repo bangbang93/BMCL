@@ -57,6 +57,11 @@ namespace BMCLV2.Assets
             _downloader.DownloadStringCompleted -= Downloader_DownloadStringCompleted;
             if (e.Error != null)
             {
+                if (e.Error is WebException)
+                {
+                    var ex = e.Error as WebException;
+                    Logger.log(ex.Response.ResponseUri.ToString());
+                }
                 Logger.error(e.Error);
             }
             else
@@ -96,6 +101,7 @@ namespace BMCLV2.Assets
                     }
                     catch (WebException ex)
                     {
+                        Logger.log(ex.Response.ResponseUri.ToString());
                         Logger.error(ex);
                     }
                 }

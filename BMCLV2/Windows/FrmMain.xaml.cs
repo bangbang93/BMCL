@@ -214,6 +214,7 @@ namespace BMCLV2.Windows
                     _starter.Close();
                     MessageBox.Show("启动失败：" + ex.Message);
                     Logger.log(ex);
+                    BmclCore.GameRunning = false;
                     return;
                 }
             }

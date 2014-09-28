@@ -515,10 +515,14 @@ namespace BMCLV2.Launcher
                 bool fin = _game.Start();
                 if (BMCLV2.Logger.debug)
                 {
-                    _gameoutput = _game.StandardOutput;
-                    _gameerror = _game.StandardError;
-                    _logthread = new Thread(Logger);
-                    _logthread.Start();
+//                    _gameoutput = _game.StandardOutput;
+//                    _gameerror = _game.StandardError;
+//                    _logthread = new Thread(Logger);
+//                    _logthread.Start();
+                    _game.OutputDataReceived += _game_OutputDataReceived;
+                    _game.ErrorDataReceived += _game_ErrorDataReceived;
+                    _game.BeginOutputReadLine();
+                    _game.BeginErrorReadLine();
                 }
                 OnGameStartUp(true);
             }
@@ -526,6 +530,16 @@ namespace BMCLV2.Launcher
             {
                 OnGameStartUp(false);
             }
+        }
+
+        void _game_ErrorDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            BMCLV2.Logger.log(e.Data, BMCLV2.Logger.LogType.Fml);
+        }
+
+        void _game_OutputDataReceived(object sender, DataReceivedEventArgs e)
+        {
+            BMCLV2.Logger.log(e.Data, BMCLV2.Logger.LogType.Game);
         }
 
         void game_Exited(object sender, EventArgs e)
@@ -573,11 +587,13 @@ namespace BMCLV2.Launcher
             }
             if (BMCLV2.Logger.debug)
             {
-                _logthread.Abort();
-                _thError.Abort();
-                _thOutput.Abort();
-                _gameerror.Close();
-                _gameoutput.Close();
+//                _logthread.Abort();
+//                _thError.Abort();
+//                _thOutput.Abort();
+//                _gameerror.Close();
+//                _gameoutput.Close();
+                _game.OutputDataReceived -= _game_OutputDataReceived;
+                _game.ErrorDataReceived -= _game_ErrorDataReceived;
             }
             Gameexit();
         }
