@@ -98,11 +98,15 @@ namespace BMCLV2
                 return new Config();
             }
         }
-        public static void Save(Config cfg = null ,string file = "bmcl.xml")
+        public static void Save(Config cfg = null ,string file = null)
         {
             if (cfg == null)
             {
                 cfg = BmclCore.Config;
+            }
+            if (file == null)
+            {
+                file = BmclCore.BaseDirectory + "bmcl.xml";
             }
             var fs = new FileStream(file, FileMode.Create);
             var ser = new DataContractSerializer(typeof(Config));
