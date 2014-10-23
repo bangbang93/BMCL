@@ -264,9 +264,8 @@ namespace BMCLV2.Launcher
             {
                 mcarg.Replace("{auth_session}", _li.SID);
             }
-            var uuid = Guid.NewGuid().ToString();
-            mcarg.Replace("${auth_uuid}", uuid);
-            mcarg.Replace("${auth_access_token}", uuid);
+            mcarg.Replace("${auth_uuid}", BmclCore.Config.GUID);
+            mcarg.Replace("${auth_access_token}", BmclCore.Config.GUID);
             mcarg.Replace("${user_properties}", "{}");
             arg.Append(" ");
             arg.Append(mcarg);

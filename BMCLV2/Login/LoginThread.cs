@@ -93,7 +93,7 @@ namespace BMCLV2.Login
             else
             {
                 _loginans.Suc = true;
-                _loginans.SID = Guid.NewGuid().ToString();
+                _loginans.SID = BmclCore.Config.GUID;
                 _loginans.UN = this._username;
                 OnLoginFinishEvent(_loginans);
             }

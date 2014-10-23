@@ -37,6 +37,8 @@ namespace BMCLV2
         [DataMember]
         public Dictionary<string, object> PluginConfig = new Dictionary<string, object>();
 
+        [DataMember] public string GUID;
+
         public Config()
         {
             Javaw = GetJavaDir() ?? "javaw.exe";
@@ -52,6 +54,7 @@ namespace BMCLV2
             Lang = "zh-cn";
             CheckUpdate = true;
             PluginConfig = null;
+            GUID = GetGuid();
         }
 
         public object GetPluginConfig(string key)
@@ -90,6 +93,10 @@ namespace BMCLV2
                 var ser = new DataContractSerializer(typeof(Config));
                 var cfg = (Config)ser.ReadObject(fs);
                 fs.Close();
+                if (cfg.GUID == null)
+                {
+                    cfg.GUID = GetGuid();
+                }
                 return cfg;
             }
             catch
@@ -112,6 +119,11 @@ namespace BMCLV2
             var ser = new DataContractSerializer(typeof(Config));
             ser.WriteObject(fs, cfg);
             fs.Close();
+        }
+
+        public void Save(string file = null)
+        {
+            Save(this, file);
         }
         /// <summary>
         /// 读取注册表，寻找安装的java路径
@@ -177,6 +189,11 @@ namespace BMCLV2
                 return ulong.MaxValue;
 
             }
+        }
+
+        public static string GetGuid()
+        {
+            return Guid.NewGuid().ToString();
         }
     }
 }

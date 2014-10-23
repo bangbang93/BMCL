@@ -35,7 +35,7 @@ namespace BMCLV2.Windows.MainWindowTab
             BmclCore.Config.Report = checkReport.IsChecked != null && checkReport.IsChecked.Value;
             BmclCore.Config.DownloadSource = listDownSource.SelectedIndex;
             BmclCore.Config.Lang = LangManager.GetLangFromResource("LangName");
-            Config.Save();
+            BmclCore.Config.Save(null);
             var dak = new DoubleAnimationUsingKeyFrames();
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(0)));
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(30, TimeSpan.FromSeconds(0.3)));
