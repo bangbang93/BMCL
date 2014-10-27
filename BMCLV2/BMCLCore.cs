@@ -143,9 +143,9 @@ namespace BMCLV2
                                     Logger.log(String.Format("未找到{0}的GetVer方法，放弃加载", authInstance));
                                     continue;
                                 }
-                                if ((long)authVer.Invoke(authInstance, null) != 1)
+                                if ((long)authVer.Invoke(authInstance, null) > 2)
                                 {
-                                    Logger.log(String.Format("{0}的版本不为1，放弃加载", authInstance));
+                                    Logger.log(String.Format("{0}的版本高于2，放弃加载", authInstance));
                                     continue;
                                 }
                                 var authVersion = T.GetMethod("GetVersion");
