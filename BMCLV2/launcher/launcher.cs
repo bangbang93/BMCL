@@ -36,7 +36,7 @@ namespace BMCLV2.Launcher
         Thread _thError;
         Thread _thOutput;
         private LoginInfo _li;
-        public string Extarg;
+        public string[] Extarg;
         
         #endregion
 
@@ -80,7 +80,7 @@ namespace BMCLV2.Launcher
         /// <param name="info"></param>
         /// <param name="extarg"></param>
         /// <param name="li"></param>
-        public Launcher(string javaPath, string javaXmx, string userName, string name, gameinfo info, string extarg, LoginInfo li)
+        public Launcher(string javaPath, string javaXmx, string userName, string name, gameinfo info, string[] extarg, LoginInfo li)
         {
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherCheckJava"));
             if (!File.Exists(javaPath))
@@ -125,7 +125,7 @@ namespace BMCLV2.Launcher
             var arg = new StringBuilder("-Xincgc -Xmx");
             arg.Append(_javaxmx);
             arg.Append("M ");
-            arg.Append(Extarg);
+            arg.Append(_solveArgs(Extarg));
             arg.Append(" ");
             arg.Append("-Djava.library.path=\"");
             arg.Append(Environment.CurrentDirectory).Append(@"\.minecraft\versions\");
@@ -708,6 +708,23 @@ namespace BMCLV2.Launcher
             {
                 return 0;
             }
+        }
+
+        private string _solveArgs(string[] args)
+        {
+            var arg = new StringBuilder();
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (i == 0 || args[i][0] == '"')
+                {
+                    arg.Append(args[i]).Append(' ');
+                }
+                else
+                {
+                    arg.Append('"').Append(args[i]).Append("\" ");
+                }
+            }
+            return arg.ToString();
         }
         #endregion
 

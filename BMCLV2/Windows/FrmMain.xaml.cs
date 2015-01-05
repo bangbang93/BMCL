@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -55,6 +56,9 @@ namespace BMCLV2.Windows
             GridForge.txtInsPath.Text = AppDomain.CurrentDomain.BaseDirectory + ".minecraft";
             GridConfig.listDownSource.SelectedIndex = BmclCore.Config.DownloadSource;
             GridConfig.comboLang.SelectedItem = LangManager.GetLangFromResource("DisplayName");
+            GridConfig.ScreenHeightTextBox.Text = BmclCore.Config.Height.ToString(CultureInfo.InvariantCulture);
+            GridConfig.ScreenWidthTextBox.Text = BmclCore.Config.Width.ToString(CultureInfo.InvariantCulture);
+            GridConfig.FullScreenCheckBox.IsChecked = BmclCore.Config.FullScreen;
         }
 
         public void SwitchStartButton(bool isenable)
@@ -203,7 +207,7 @@ namespace BMCLV2.Windows
                     var javaXmx = GridConfig.txtJavaXmx.Text;
                     var selectVer = GridGame.listVer.SelectedItem.ToString();
                     var extArg = GridConfig.txtExtJArg.Text;
-                    BmclCore.Game = new Launcher.Launcher(javaPath, javaXmx, username, selectVer, BmclCore.GameInfo, extArg, loginInfo);
+                    BmclCore.Game = new Launcher.Launcher(javaPath, javaXmx, username, selectVer, BmclCore.GameInfo, new[] { extArg }, loginInfo);
                     BmclCore.Game.StateChangeEvent += Game_StateChangeEvent;
                     BmclCore.Game.Gameexit += launcher_gameexit;
                     BmclCore.Game.GameStartUp += Game_GameStartUp;
