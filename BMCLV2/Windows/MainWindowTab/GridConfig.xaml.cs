@@ -35,6 +35,9 @@ namespace BMCLV2.Windows.MainWindowTab
             BmclCore.Config.Report = checkReport.IsChecked != null && checkReport.IsChecked.Value;
             BmclCore.Config.DownloadSource = listDownSource.SelectedIndex;
             BmclCore.Config.Lang = LangManager.GetLangFromResource("LangName");
+            BmclCore.Config.Height = int.Parse(ScreenHeightTextBox.Text);
+            BmclCore.Config.Width = int.Parse(ScreenWidthTextBox.Text);
+            BmclCore.Config.FullScreen = FullScreenCheckBox.IsChecked??false;
             BmclCore.Config.Save(null);
             var dak = new DoubleAnimationUsingKeyFrames();
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(0)));
@@ -176,6 +179,19 @@ namespace BMCLV2.Windows.MainWindowTab
             if (listAuth.SelectedItem == null)
             {
                 listAuth.SelectedIndex = 0;
+            }
+        }
+
+        private void Grid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (txtUserName.Text == "!!!" && (bool) e.NewValue)
+            {
+                tip.IsOpen = true;
+                tip.Margin = txtUserName.Margin;
+            }
+            else
+            {
+                tip.IsOpen = false;
             }
         }
     }

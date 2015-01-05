@@ -36,8 +36,10 @@ namespace BMCLV2
         public int DownloadSource;
         [DataMember]
         public Dictionary<string, object> PluginConfig = new Dictionary<string, object>();
-
         [DataMember] public string GUID;
+        [DataMember] public int Height;
+        [DataMember] public int Width;
+        [DataMember] public bool FullScreen;
 
         public Config()
         {
@@ -55,6 +57,9 @@ namespace BMCLV2
             CheckUpdate = true;
             PluginConfig = null;
             GUID = GetGuid();
+            Height = -1;
+            Width = -1;
+            FullScreen = false;
         }
 
         public object GetPluginConfig(string key)

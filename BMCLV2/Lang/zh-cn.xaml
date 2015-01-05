@@ -163,4 +163,6 @@
     <s:String x:Key="SyncAssetsFinish">同步资源文件完毕，若未生效，请重启客户端</s:String>
     <s:String x:Key="ResourceTipForFirstLauncher">可能是第一次启动，未找到资源文件，是否下载？</s:String>
     <s:String x:Key="ResourceTipTitleForFirstLauncher">未找到资源文件</s:String>
+    <s:String x:Key="ScreenSetting">游戏窗口设定</s:String>
+    <s:String x:Key="FullScreen">全屏</s:String>
 </ResourceDictionary>
