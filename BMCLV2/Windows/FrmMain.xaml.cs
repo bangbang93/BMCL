@@ -170,7 +170,6 @@ namespace BMCLV2.Windows
                 }
                 catch (InvalidOperationException)
                 {
-                    
                     Environment.Exit(0);
                 }
             }

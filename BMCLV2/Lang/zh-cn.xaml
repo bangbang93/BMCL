@@ -71,7 +71,7 @@
     <s:String x:Key="MenuSelectTexturePack">选择材质包</s:String>
     <s:String x:Key="BMCLHiddenInfo">BMCL隐藏在这里了</s:String>
     <s:String x:Key="CantFindVersionJsonInfo">找不到版本所需的json文件</s:String>
-    <s:String x:Key="DeleteMessageBoxInfo">你确定要删除当前版本？这个操作不能恢复，1.5.1之后的版本可去版本管理里重新下载</s:String>
+    <s:String x:Key="DeleteMessageBoxInfo">你确定要删除当前版本？这个操作不能恢复！</s:String>
     <s:String x:Key="DeleteMessageBoxTitle">删除确认</s:String>
     <s:String x:Key="DeleteFailedMessageInfo">删除失败，请检查该客户端是否正处于运行状态</s:String>
     <s:String x:Key="RenameNewName">新名字</s:String>
@@ -165,4 +165,5 @@
     <s:String x:Key="ResourceTipTitleForFirstLauncher">未找到资源文件</s:String>
     <s:String x:Key="ScreenSetting">游戏窗口设定</s:String>
     <s:String x:Key="FullScreen">全屏</s:String>
+    <s:String x:Key="ResourceDeprecatedWarning">该选项是为了兼容1.6而存在的，若你使用的是1.7以上的客户端，请不要使用该功能</s:String>
 </ResourceDictionary>
