@@ -7,9 +7,11 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
 using BMCLV2.Lang;
 using BMCLV2.Versions;
+using MessageBox = System.Windows.MessageBox;
 
 namespace BMCLV2.Windows.MainWindowTab
 {
@@ -160,8 +162,13 @@ namespace BMCLV2.Windows.MainWindowTab
         }
         private void btnCheckRes_Click(object sender, RoutedEventArgs e)
         {
-            var checkres = new FrmCheckRes();
-            checkres.Show();
+            if (
+                MessageBox.Show(LangManager.GetLangFromResource("ResourceDeprecatedWarning"), "BMCL", MessageBoxButton.OKCancel) ==
+                MessageBoxResult.OK)
+            {
+                var checkres = new FrmCheckRes();
+                checkres.Show();
+            }
         }
         private void listRemoteVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
