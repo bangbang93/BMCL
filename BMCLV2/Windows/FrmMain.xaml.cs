@@ -164,7 +164,15 @@ namespace BMCLV2.Windows
             this.Close();
             if (!Logger.debug)
             {
-                Application.Current.Shutdown(0);
+                try
+                {
+                    Application.Current.Shutdown(0);
+                }
+                catch (InvalidOperationException)
+                {
+                    
+                    Environment.Exit(0);
+                }
             }
         }
         private void btnStart_Click(object sender, RoutedEventArgs e)
