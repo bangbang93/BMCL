@@ -35,21 +35,15 @@ namespace BMCLV2.Windows.MainWindowTab
 
         void ForgeVer_ForgePageReadyEvent()
         {
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(() =>
+            treeForgeVer.Items.Clear();
+            var forgeVer = _forgeVer.GetNew();
+            foreach (TreeViewItem t in forgeVer)
             {
-                treeForgeVer.Items.Clear();
-                foreach (TreeViewItem t in _forgeVer.GetNew())
-                {
-                    treeForgeVer.Items.Add(t);
-                }
-                foreach (TreeViewItem t in _forgeVer.GetLegacy())
-                {
-                    treeForgeVer.Items.Add(t);
-                }
-                btnReForge.Content = LangManager.GetLangFromResource("btnReForge");
-                btnReForge.IsEnabled = true;
-                btnLastForge.IsEnabled = true;
-            }));
+                treeForgeVer.Items.Add(t);
+            }
+            btnReForge.Content = LangManager.GetLangFromResource("btnReForge");
+            btnReForge.IsEnabled = true;
+            btnLastForge.IsEnabled = true;
         }
         private void btnLastForge_Click(object sender, RoutedEventArgs e)
         {

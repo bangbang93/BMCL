@@ -6,6 +6,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Net;
 using System.Windows.Forms;
+using System.Windows.Markup;
 using BMCLV2.Lang;
 using BMCLV2.Windows;
 using Application = System.Windows.Application;
@@ -105,6 +106,17 @@ namespace BMCLV2
         private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
+            if (e.Exception is XamlParseException)
+            {
+                if (e.Exception.InnerException != null)
+                {
+                    if (e.Exception.InnerException is FileLoadException)
+                    {
+                        //TODO 资源加载
+                        return;
+                    }
+                }
+            }
             var crash = new CrashHandle(e.Exception);
             crash.Show();
         }
