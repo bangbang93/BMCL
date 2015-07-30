@@ -14,7 +14,7 @@ namespace BMCLV2.serverlist
         {
             this.Name = Name;
             this.IsHide = IsHide;
-            this.Address = Address;
+            this.Address = Address.Replace("\0", "").Replace("\f", "").Trim();
         }
     }
 }

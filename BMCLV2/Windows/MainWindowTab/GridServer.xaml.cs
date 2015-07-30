@@ -66,7 +66,7 @@ namespace BMCLV2.Windows.MainWindowTab
 
                         using (var con = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { ReceiveTimeout = 3000, SendTimeout = 3000 })
                         {
-                            con.Connect(Dns.GetHostAddresses(info.Address.Split(':')[0]),
+                            con.Connect(Dns.GetHostAddresses(info.Address.Split(':')[0] == "0" ? "127.0.0.1" : info.Address.Split(':')[0]),
                                 info.Address.Split(':').Length == 1 ? 25565 : int.Parse(info.Address.Split(':')[1]));
                             con.Send(new byte[] { 254 });
                             con.Send(new byte[] { 1 });
@@ -90,7 +90,7 @@ namespace BMCLV2.Windows.MainWindowTab
                         var message = Encoding.Unicode.GetString(unirecive.ToArray());
 
                         var end = DateTime.Now;
-
+                        //Logger.info(message);
                         var astring = message.Split('\u00a7');
                         if (astring.Length == 3)
                         {
@@ -105,7 +105,7 @@ namespace BMCLV2.Windows.MainWindowTab
                             server[5] = astring[4] + "/" + astring[5];
                         }
                         server[6] = (end - start).Milliseconds + "ms";
-
+                        server[3] = ((string)server[3]).Replace("  ", "").Replace(new String(new char[] { (char)0x1c }), "");
                     }
                     catch (SocketException ex)
                     {
