@@ -32,6 +32,10 @@ namespace BMCLV2
         public int minimumLauncherVersion = 0;
         [DataMember(IsRequired = false)]
         public string assets;
+        [DataMember(IsRequired = false)]
+        public string inheritsFrom = "";
+        [DataMember(IsRequired = false)]
+        public string jar = "";
         object ICloneable.Clone()
         {
             return this.clone();
@@ -58,6 +62,11 @@ namespace BMCLV2
                 DataContractJsonSerializer InfoReader = new DataContractJsonSerializer(typeof(gameinfo));
                 info = InfoReader.ReadObject(JsonFile.BaseStream) as gameinfo;
                 JsonFile.Close();
+                if(info.inheritsFrom == "" || info.inheritsFrom == null)
+                    return info;
+                String anotherJson = GetGameInfoJsonPath(info.inheritsFrom);
+                gameinfo anotherGameinfo = Read(anotherJson);
+                info.libraries = mixLibraries(info.libraries, anotherGameinfo.libraries);
                 return info;
             }
             catch (SerializationException ex)
@@ -77,6 +86,11 @@ namespace BMCLV2
                     sw.WriteLine(JsonString);
                     sw.Close();
                     Logger.log("JSON文件转存完毕");
+                    if(info.inheritsFrom == "" || info.inheritsFrom == null)
+                        return info;
+                    String anotherJson = GetGameInfoJsonPath(info.inheritsFrom);
+                    gameinfo anotherGameinfo = Read(anotherJson);
+                    info.libraries = mixLibraries(info.libraries, anotherGameinfo.libraries);
                     return info;
                 }
                 catch (SerializationException ex1)
@@ -124,6 +138,16 @@ namespace BMCLV2
                 return JsonFilePath.ToString();
             }
 
+        }
+        
+        private static libraryies[] mixLibraries(libraryies[] lib1, libraryies[] lib2){
+            libraryies[] libs = new libraryies[lib1.length + lib2.Length];
+            for(int i=0; i<libs.length; i++){ //循环两次好 还是这样好？
+                libraryies[] temp = (i + 1 > lib1.length ? lib2 : lib1);
+                int temp2 = (i + 1 > lib1.length ? i - lib1.length : i);
+                libs[i]=temp[temp2];
+            }
+            return libs;
         }
     }
 }
