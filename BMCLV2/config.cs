@@ -147,7 +147,7 @@ namespace BMCLV2
                         reg = registryKey.OpenSubKey("Java Runtime Environment");
                 }
                 if (reg != null){
-					List<string> javaList = new List<string>();
+                    List<string> javaList = new List<string>();
                     foreach (string ver in reg.GetSubKeyNames())
                     {
                         try
@@ -161,17 +161,17 @@ namespace BMCLV2
                             }
                         }
                         catch { return null; }
-				    }
-					//先找出Java7 因为Java8不能正常启动1.7.2
-					foreach (string java in javaList)
+                    }
+                    //先找出Java7 因为Java8不能正常启动1.7.2
+                    foreach (string java in javaList)
                     {
-						if(java.ToLower().Contains("jre7")||java.ToLower().Contains("jdk1.7.0")){//可能这样判断版本的方法不太好
-							return java;
-						}
-				    }
-					//没有Java7的时候返回第一个Java
-					return javaList[0];
-				}
+                        if(java.ToLower().Contains("jre7")||java.ToLower().Contains("jdk1.7.0")){//可能这样判断版本的方法不太好
+                            return java;
+                        }
+                    }
+                    //没有Java7的时候返回第一个Java
+                    return javaList[0];
+                }
                 return null;
             }
             catch { return null; }
