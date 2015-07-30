@@ -53,7 +53,7 @@ namespace BMCLV2.Windows.MainWindowTab
                     server[0] = info.Name;
                     server[1] = info.IsHide ? LangManager.GetLangFromResource("ServerListYes") : LangManager.GetLangFromResource("ServerListNo");
                     if (info.IsHide)
-                        server[2] = string.Empty;
+                        server[2] = LangManager.GetLangFromResource("btnMiniSize");//要的只是这两个字
                     else
                         server[2] = info.Address;
                     server[3] = " ";
@@ -95,6 +95,7 @@ namespace BMCLV2.Windows.MainWindowTab
                         if (astring.Length == 3)
                         {
                             server[3] = astring[0].IndexOf('\r') == 0 ? astring[0].Substring(1) : astring[0];
+                            server[4] = LangManager.GetLangFromResource("Unknown");//未知
                             server[5] = astring[1] + "/" + astring[2];
                         }
                         if (astring.Length == 2)

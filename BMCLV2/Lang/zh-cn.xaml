@@ -56,6 +56,7 @@
     <s:String x:Key="ServerAddress">服务器地址</s:String>
     <s:String x:Key="ServerMotd">服务器介绍</s:String>
     <s:String x:Key="ServerVer">服务器版本</s:String>
+    <s:String x:Key="Unknown">未知</s:String>
     <s:String x:Key="ServerOnline">在线人数</s:String>
     <s:String x:Key="ServerDelay">延迟</s:String>
     <s:String x:Key="btnReflushServer">刷新服务器</s:String>
