@@ -481,7 +481,7 @@ namespace BMCLV2.Windows
 
         private void MenuStartDebug_Click(object sender, RoutedEventArgs e)
         {
-            MessageBox.Show(LangManager.GetLangFromResource("MenuDebugHint"));
+            MessageBox.Show(LangManager.GetLangFromResource("MenuDebugHint").Replace("\\n", "\n"));
             Logger.debug = true;
             btnStart_Click(null, null);
         }
