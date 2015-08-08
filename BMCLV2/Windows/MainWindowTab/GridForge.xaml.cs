@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using BMCLV2.Forge;
 using BMCLV2.Lang;
+using BMCLV2.Resource;
 
 namespace BMCLV2.Windows.MainWindowTab
 {
@@ -35,21 +36,14 @@ namespace BMCLV2.Windows.MainWindowTab
 
         void ForgeVer_ForgePageReadyEvent()
         {
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(() =>
+            treeForgeVer.Items.Clear();
+            foreach (TreeViewItem t in _forgeVer.GetNew())
             {
-                treeForgeVer.Items.Clear();
-                foreach (TreeViewItem t in _forgeVer.GetNew())
-                {
-                    treeForgeVer.Items.Add(t);
-                }
-                foreach (TreeViewItem t in _forgeVer.GetLegacy())
-                {
-                    treeForgeVer.Items.Add(t);
-                }
-                btnReForge.Content = LangManager.GetLangFromResource("btnReForge");
-                btnReForge.IsEnabled = true;
-                btnLastForge.IsEnabled = true;
-            }));
+                treeForgeVer.Items.Add(t);
+            }
+            btnReForge.Content = LangManager.GetLangFromResource("btnReForge");
+            btnReForge.IsEnabled = true;
+            btnLastForge.IsEnabled = true;
         }
         private void btnLastForge_Click(object sender, RoutedEventArgs e)
         {
@@ -72,7 +66,15 @@ namespace BMCLV2.Windows.MainWindowTab
                 return;
             }
             BmclCore.Invoke(new Action(() => BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Visible)));
-            var url = new Uri(_forgeVer.ForgeDownloadUrl[ver]);
+            Uri url;
+            if (BmclCore.Config.DownloadSource == 0)
+            {
+                url = new Uri(_forgeVer.ForgeDownloadUrl[ver].Replace("files.minecraftforge.net", "bmclapi2.bangbang93.com"));
+            }
+            else
+            {
+                url = new Uri(_forgeVer.ForgeDownloadUrl[ver]);
+            }
             var downer = new WebClient();
             downer.Headers.Add("User-Agent", "BMCL" + BmclCore.BmclVersion);
             downer.DownloadProgressChanged += downer_DownloadProgressChanged;
