@@ -21,21 +21,33 @@ namespace BMCLV2.serverlist
                     var split = new string(new char[] { (char)0x1, (char)0x0, (char)0xb });
                     var split1 = new string(new char[] { (char)0x8, (char)0x0, (char)0x2 });
                     var split2 = new string(new char[] { (char)0x8, (char)0x0, (char)0x4 });
+                    var split3 = new string(new char[] { (char)0x0, (char)0x8, (char)0x0, (char)0x4 });
                     var x = s.ReadToEnd();
                     var l = x.IndexOf(split + "hideAddress", System.StringComparison.Ordinal) > 0 ?
                         x.Split(new string[] { split }, StringSplitOptions.RemoveEmptyEntries) :
-                        x.Split(new string[] { split2 }, StringSplitOptions.RemoveEmptyEntries);
+                        x.Split(new string[] { split2, split3 }, StringSplitOptions.RemoveEmptyEntries);
                     var listlength = (int)l[0][l[0].Length - 1];
                     foreach (var str in l.Skip(1).ToArray())
                     {
+                        var strr = str.Split(new string[] { split1, split2 }, StringSplitOptions.RemoveEmptyEntries);
                         if (str.IndexOf("hideAddress", System.StringComparison.Ordinal) > -1)
                         {
-                            var strr = str.Split(new string[] { split1, split2 }, StringSplitOptions.RemoveEmptyEntries);
-                            list.Add(new serverinfo(strr[1].Substring(6), Convert.ToBoolean((int)strr[0][strr[0].Length - 1]), strr[2].Substring(4).Replace("\0", "")));
+                            if (strr.Length == 3)
+                            {
+                                //System.Windows.Forms.MessageBox.Show(strr.Length + " 1");
+                                list.Add(new serverinfo(strr[1].Substring(6), Convert.ToBoolean((int)strr[0][strr[0].Length - 1]), strr[2].Substring(4)));
+                            }
+                            else
+                            {//4
+                                //System.Windows.Forms.MessageBox.Show(strr.Length + " 2");
+                                list.Add(new serverinfo(strr[2].Substring(6), false, strr[3].Substring(4)));//1.7.2开始的格式(1.7.2开始没有隐藏地址选项)
+                            }
                         }
                         else
-                        {
-                            var strr = str.Split(new string[] { split1, split2 }, StringSplitOptions.RemoveEmptyEntries);
+                        {//2 1
+                            if (strr.Length == 1)
+                                continue;
+                             //System.Windows.Forms.MessageBox.Show(strr.Length + " 3");
                             list.Add(new serverinfo(strr[0].Substring(6), false, strr[1].Substring(4).Replace("\0", "")));
                         }
                     }
@@ -44,7 +56,8 @@ namespace BMCLV2.serverlist
             }
             catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("读取文件列表发生错误:" + ex.Message);
+                System.Windows.Forms.MessageBox.Show("读取文件列表发生错误:" + ex.Message+ex.StackTrace);
+                
             }
             finally
             {

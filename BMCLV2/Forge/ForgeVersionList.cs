@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing.Text;
 using System.Linq;
 using System.Text;
 using System.Windows.Controls;
@@ -16,64 +15,70 @@ namespace BMCLV2.Forge
 {
     class ForgeVersionList
     {
-        private const string FORGE_API_URL = "http://bmclapi2.bangbang93.com/forge/last";
         private string OldPageUrl = "http://bmclapi.bangbang93.com/forge/legacylist";  //这两个API允许对外开放，如果有人想要用的话就用吧。
         private string NewPageUrl = "http://bmclapi.bangbang93.com/forge/versionlist";
+        private string NewUrl = "http://bmclapi2.bangbang93.com/forge/last";
         public delegate void ForgePageReadyHandle();
         public event ForgePageReadyHandle ForgePageReadyEvent;
         private DataContractJsonSerializer ForgeVerJsonParse = new DataContractJsonSerializer(typeof(ForgeVersion[]));
-        private ForgeVersion[] Forge;
+        private ForgeVersion[] ForgeNew, ForgeLegacy;
         public Dictionary<string, string> ForgeDownloadUrl = new Dictionary<string, string>(), 
             ForgeChangeLogUrl = new Dictionary<string, string>();
         public void GetVersion()
         {
-            WebClient wc = new WebClient();
-            wc.DownloadStringAsync(new Uri("http://bmclapi2.bangbang93.com/forge/last"));
-            wc.DownloadStringCompleted += wc_DownloadStringCompleted;
+            var webClient = new WebClient();
+            webClient.DownloadStringAsync(new Uri(NewUrl));
+            webClient.DownloadStringCompleted += WebClient_DownloadStringCompleted;
         }
 
-        void wc_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        private void WebClient_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
         {
             if (e.Error != null)
             {
-
+                Logger.log("获取forge列表失败");
+                Logger.error(e.Error);
             }
             else
             {
-                Forge = ForgeVerJsonParse.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(e.Result))) as ForgeVersion[];
-                ForgePageReadyEvent();
+                ForgeNew =
+                    ForgeVerJsonParse.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(e.Result))) as ForgeVersion[];
+                Logger.log("获取Forge列表成功");
             }
+            ForgePageReadyEvent?.Invoke();
         }
 
         public TreeViewItem[] GetNew()
         {
-            ArrayList r = new ArrayList(Forge.Length);
+            ArrayList r = new ArrayList(ForgeNew.Length);
             TreeViewItem t = new TreeViewItem();
-            foreach (ForgeVersion forge in Forge)
+            r.Add(t);
+            foreach (ForgeVersion Forge in ForgeNew)
             {
-                if (forge.downloads.installer.Length != 2)
+                Forge.minecraft = Forge.minecraft.Trim();
+                Forge.version = Forge.version.Trim();
+                if (Forge.downloads.installer == null || Forge.downloads.installer.Length == 0)
                 {
                     continue;
                 }
                 if (t.Header == null)
                 {
-                    t.Header = forge.minecraft;
+                    t.Header = Forge.minecraft;
                 }
-                if (t.Header.ToString() != forge.minecraft)
+                if (t.Header.ToString() != Forge.minecraft)
                 {
-                    r.Add(t);
                     t = new TreeViewItem();
+                    r.Add(t);
                 }
-                if (ForgeDownloadUrl.ContainsKey(forge.version))
-                    ForgeDownloadUrl[forge.version] = forge.downloads.installer[1].Replace("http://files.minecraftforge.net/", "http://bmclapi2.bangbang93.com/");
+                if (ForgeDownloadUrl.ContainsKey(Forge.version))
+                    ForgeDownloadUrl[Forge.version] = Forge.downloads.installer[1];
                 else
-                    ForgeDownloadUrl.Add(forge.version, forge.downloads.installer[1].Replace("http://files.minecraftforge.net/", "http://bmclapi2.bangbang93.com/"));
-                if (ForgeChangeLogUrl.ContainsKey(forge.version))
-                    ForgeChangeLogUrl[forge.version] = forge.downloads.installer[1];
+                    ForgeDownloadUrl.Add(Forge.version, Forge.downloads.installer[1]);
+                if (ForgeChangeLogUrl.ContainsKey(Forge.version))
+                    ForgeChangeLogUrl[Forge.version] = Forge.downloads.changelog;
                 else
-                    ForgeChangeLogUrl.Add(forge.version, forge.downloads.changelog);
-                t.Items.Add(forge.version);
-                Logger.log("获取Forge" + forge.version);
+                    ForgeChangeLogUrl.Add(Forge.version, Forge.downloads.changelog);
+                t.Items.Add(Forge.version);
+                Logger.log("获取Forge"+Forge.version);
             }
             return r.ToArray(typeof(TreeViewItem)) as TreeViewItem[];
         }

@@ -3,23 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
-using System.Windows.Forms.VisualStyles;
 
 namespace BMCLV2.JsonClass
 {
     [DataContract]
     public class ForgeVersion
     {
-        [DataMember] public string time, minecraft, version;
+        [DataMember] public string minecraft, time, version;
 
-        [DataMember]
-        public Downloads downloads;
-        public class Downloads
+        [DataMember] public Download downloads;
+        public class Download
         {
-            [DataMember]
             public string changelog;
-
-            [DataMember] public string[] universal, src, javadoc, installer;
+            public string[] universal;
+            public string[] src;
+            public string[] javadoc;
+            public string[] installer;
         }
     }
 }

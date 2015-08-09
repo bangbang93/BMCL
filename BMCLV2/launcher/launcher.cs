@@ -238,7 +238,10 @@ namespace BMCLV2.Launcher
             }
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherBuildMCArg"));
             var mcpath = new StringBuilder(Environment.CurrentDirectory + @"\.minecraft\versions\");
-            mcpath.Append(_name).Append("\\").Append(_version).Append(".jar\" ");
+            if(_info.jar == "" || _info.jar == null)
+                mcpath.Append(_name).Append("\\").Append(_version).Append(".jar\" ");
+            else
+                mcpath.Append(_info.jar).Append("\\").Append(_info.jar).Append(".jar\" ");
             mcpath.Append(_info.mainClass);
             arg.Append(mcpath);
             //" --username ${auth_player_name} --session ${auth_session} --version ${version_name} --gameDir ${game_directory} --assetsDir ${game_assets}"
