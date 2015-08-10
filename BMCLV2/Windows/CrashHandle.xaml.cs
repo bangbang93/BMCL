@@ -23,7 +23,7 @@ namespace BMCLV2.Windows
             message.AppendLine(ex.ToString());
             message.AppendLine(ex.Message);
             foreach (DictionaryEntry data in ex.Data)
-                message.AppendLine(string.Format("Key:{0}\nValue:{1}", data.Key, data.Value));
+                message.AppendLine($"Key:{data.Key}\nValue:{data.Value}");
             message.AppendLine(ex.StackTrace);
             var iex = ex;
             while (iex.InnerException != null)
@@ -34,7 +34,7 @@ namespace BMCLV2.Windows
                 message.AppendLine(iex.ToString());
                 message.AppendLine(iex.Message);
                 foreach (DictionaryEntry data in ex.Data)
-                    message.AppendLine(string.Format("Key:{0}\nValue:{1}", data.Key, data.Value));
+                    message.AppendLine($"Key:{data.Key}\nValue:{data.Value}");
                 message.AppendLine(iex.StackTrace);
             }
             message.AppendLine("\n\n-----------------BMCL LOG----------------------\n");
