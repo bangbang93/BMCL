@@ -23,6 +23,7 @@ namespace BMCLV2.Assets
             this._gameInfo = gameInfo;
             this._urlDownloadBase = urlDownloadBase ?? BmclCore.UrlDownloadBase;
             this._urlResourceBase = urlResourceBase ?? BmclCore.UrlResourceBase;
+            _downloader.Headers.Add("User-Agent", "BMCL" + BmclCore.BmclVersion);
             var thread = new Thread(Run);
             thread.Start();
         }

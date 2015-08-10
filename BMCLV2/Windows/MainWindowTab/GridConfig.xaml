@@ -5,7 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:system="clr-namespace:System;assembly=mscorlib"
       mc:Ignorable="d" 
-      Background="#50FFFFFF">
+      Background="#50FFFFFF" IsVisibleChanged="Grid_IsVisibleChanged">
     <Grid.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -13,48 +13,56 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Grid.Resources>
-        <Label x:Name="labUserName" Content="{DynamicResource labUserName}" HorizontalAlignment="Left" Margin="26,22,0,0" VerticalAlignment="Top"/>
-        <Label x:Name="labPwd" Content="{DynamicResource labPwd}" HorizontalAlignment="Left" Margin="26,53,0,0" VerticalAlignment="Top"/>
-        <Popup x:Name="tip" HorizontalAlignment="Left" Margin="26,50,0,0" VerticalAlignment="Top" PlacementTarget="{Binding ElementName=txtUserName}"    >
-            <Grid Background="White" >
-                <Label x:Name="labPleaseInputUsername" Content="{DynamicResource labPleaseInputUsername}" />
-            </Grid>
-        </Popup>
-        <TextBox x:Name="txtUserName" HorizontalAlignment="Left" Height="23" Margin="89,25,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="147" Background="#A0FFFFFF" TextChanged="txtUserName_TextChanged" TabIndex="0" KeyUp="txtUserName_KeyUp"/>
-        <GroupBox x:Name="groupAuth" Header="{DynamicResource groupAuth}" HorizontalAlignment="Left" Margin="26,84,0,0" VerticalAlignment="Top" Height="190" Width="210">
-            <GroupBox.Background>
-                <ImageBrush/>
-            </GroupBox.Background>
-            <ListBox x:Name="listAuth" HorizontalAlignment="Left" Height="150" VerticalAlignment="Top" Width="200" Margin="0,10,-2,0" Background="#A0FFFFFF"/>
-        </GroupBox>
-        <Label x:Name="labJavaPath" Content="{DynamicResource labJavaPath}" HorizontalAlignment="Left" Margin="391,25,0,0" VerticalAlignment="Top" Width="62"/>
-        <TextBox x:Name="txtJavaPath" HorizontalAlignment="Left" Height="23" Margin="457,28,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="312" Background="#A0FFFFFF" TabIndex="2"/>
-        <Label x:Name="labJavaXmx" Content="{DynamicResource labJavaXmx}" HorizontalAlignment="Left" Margin="391,56,0,0" VerticalAlignment="Top" Width="62"/>
-        <TextBox x:Name="txtJavaXmx" HorizontalAlignment="Left" Height="23" Margin="457,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="128" Background="#A0FFFFFF" TextChanged="txtJavaXmx_TextChanged" TabIndex="3"/>
-        <Slider x:Name="sliderJavaxmx" HorizontalAlignment="Left" Margin="391,87,0,0" VerticalAlignment="Top" Width="246" ValueChanged="sliderJavaxmx_ValueChanged"/>
-        <Label Content="MB" HorizontalAlignment="Left" Margin="589,56,0,0" VerticalAlignment="Top" Width="32"/>
-    <Button x:Name="btnSelectJava" Content="{DynamicResource btnSelectJava}" HorizontalAlignment="Left" Margin="774,29,0,0" VerticalAlignment="Top" Width="48" Click="btnSelectJava_Click"  Style="{StaticResource NormalButtonStyle}"/>
-        <CheckBox x:Name="checkAutoStart" Content="{DynamicResource checkAutoStart}" HorizontalAlignment="Left" Margin="391,114,0,0" VerticalAlignment="Top" Width="95"/>
-        <Label x:Name="labExtJvmArg" Content="{DynamicResource labExtJvmArg}" HorizontalAlignment="Left" Margin="391,202,0,0" VerticalAlignment="Top" Width="153"/>
-        <TextBox x:Name="txtExtJArg" HorizontalAlignment="Left" Height="23" Margin="391,233,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="339" Background="#A0FFFFFF" ToolTip="1.6以前的版本请无视该设置" TabIndex="4" TextChanged="txtExtJArg_TextChanged"/>
-        <Button x:Name="btnSaveConfig" Content="{DynamicResource btnSaveConfig}" HorizontalAlignment="Left" Margin="773,346,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnSaveConfig_Click" Style="{StaticResource NormalButtonStyle}"/>
-        <PasswordBox x:Name="txtPwd" HorizontalAlignment="Left" Margin="89,56,0,0" VerticalAlignment="Top" Width="147" Background="#A0FFFFFF" TabIndex="1"/>
-        <Label x:Name="labBGAlpha" Content="{DynamicResource labBGAlpha}" HorizontalAlignment="Left" Margin="391,135,0,0" VerticalAlignment="Top"/>
-        <Slider x:Name="sliderWindowTransparency" HorizontalAlignment="Left" Margin="391,166,0,0" VerticalAlignment="Top" Width="246" ValueChanged="sliderWindowTransparency_ValueChanged" Maximum="1"/>
-        <CheckBox x:Name="checkReport" Content="{DynamicResource checkReport}" HorizontalAlignment="Left" Margin="391,281,0,0" VerticalAlignment="Top"/>
-        <Popup/>
-        <Popup/>
-        <Grid x:Name="popupSaveSuccess" Background="#B0FFFFFF" Margin="774,306,10,88" Height="0">
-            <Label x:Name="labSaveSucc" Content="{DynamicResource labSaveSucc}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="104" Height="28" Background="{x:Null}"/>
+    <Label x:Name="labUserName" Content="{DynamicResource labUserName}" HorizontalAlignment="Left" Margin="26,22,0,0" VerticalAlignment="Top"/>
+    <Label x:Name="labPwd" Content="{DynamicResource labPwd}" HorizontalAlignment="Left" Margin="26,53,0,0" VerticalAlignment="Top"/>
+    <Popup x:Name="tip" HorizontalAlignment="Left" Margin="26,50,0,0" VerticalAlignment="Top" PlacementTarget="{Binding ElementName=txtUserName}"    >
+        <Grid Background="White" >
+            <Label x:Name="labPleaseInputUsername" Content="{DynamicResource labPleaseInputUsername}" />
         </Grid>
-        <CheckBox x:Name="checkOptifine" Content="{DynamicResource checkOptifine}" HorizontalAlignment="Left" Height="23" Margin="735,233,0,0" VerticalAlignment="Top" Width="133" Checked="checkOptifine_Checked" Unchecked="checkOptifine_Unchecked"/>
-        <GroupBox x:Name="groupDownloadSource" Header="{DynamicResource groupDownloadSource}" HorizontalAlignment="Left" Height="105" Margin="26,279,0,0" VerticalAlignment="Top" Width="210">
-            <ListBox x:Name="listDownSource" HorizontalAlignment="Left" Height="72" VerticalAlignment="Top" Width="200" Margin="0,10,-2,0" SelectionChanged="listDownSource_SelectionChanged" Background="#A0FFFFFF">
-                <system:String>BMCLAPI（国内，更稳定）</system:String>
-                <system:String>官方源（国外，更新快）</system:String>
-            </ListBox>
-        </GroupBox>
-        <ComboBox x:Name="comboLang" HorizontalAlignment="Left" Height="27" Margin="391,333,0,0" VerticalAlignment="Top" Width="153" SelectedIndex="0" SelectionChanged="comboLang_SelectionChanged"/>
-        <Label Content="语言 language" HorizontalAlignment="Left" Margin="391,302,0,0" VerticalAlignment="Top"/>
-        <CheckBox x:Name="checkCheckUpdate" Content="{DynamicResource checkCheckUpdate}" HorizontalAlignment="Left" Height="18" Margin="640,279,0,0" VerticalAlignment="Top" Width="129" Checked="checkCheckUpdate_Checked"/>
+    </Popup>
+    <TextBox x:Name="txtUserName" HorizontalAlignment="Left" Height="23" Margin="89,25,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="147" Background="#A0FFFFFF" TextChanged="txtUserName_TextChanged" TabIndex="0" KeyUp="txtUserName_KeyUp"/>
+    <GroupBox x:Name="groupAuth" Header="{DynamicResource groupAuth}" HorizontalAlignment="Left" Margin="26,84,0,0" VerticalAlignment="Top" Height="190" Width="210">
+        <GroupBox.Background>
+            <ImageBrush/>
+        </GroupBox.Background>
+        <ListBox x:Name="listAuth" HorizontalAlignment="Left" Height="150" VerticalAlignment="Top" Width="200" Margin="0,10,-2,0" Background="#A0FFFFFF"/>
+    </GroupBox>
+    <Label x:Name="labJavaPath" Content="{DynamicResource labJavaPath}" HorizontalAlignment="Left" Margin="391,25,0,0" VerticalAlignment="Top" Width="62"/>
+    <TextBox x:Name="txtJavaPath" HorizontalAlignment="Left" Height="23" Margin="457,28,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="312" Background="#A0FFFFFF" TabIndex="2"/>
+    <Label x:Name="labJavaXmx" Content="{DynamicResource labJavaXmx}" HorizontalAlignment="Left" Margin="391,56,0,0" VerticalAlignment="Top" Width="62"/>
+    <TextBox x:Name="txtJavaXmx" HorizontalAlignment="Left" Height="23" Margin="457,59,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="128" Background="#A0FFFFFF" TextChanged="txtJavaXmx_TextChanged" TabIndex="3"/>
+    <Slider x:Name="sliderJavaxmx" HorizontalAlignment="Left" Margin="391,87,0,0" VerticalAlignment="Top" Width="246" ValueChanged="sliderJavaxmx_ValueChanged"/>
+    <Label Content="MB" HorizontalAlignment="Left" Margin="589,56,0,0" VerticalAlignment="Top" Width="32"/>
+    <Button x:Name="btnSelectJava" Content="{DynamicResource btnSelectJava}" HorizontalAlignment="Left" Margin="774,29,0,0" VerticalAlignment="Top" Width="48" Click="btnSelectJava_Click"  Style="{StaticResource NormalButtonStyle}"/>
+    <CheckBox x:Name="checkAutoStart" Content="{DynamicResource checkAutoStart}" HorizontalAlignment="Left" Margin="391,114,0,0" VerticalAlignment="Top" Width="95"/>
+    <Label x:Name="labExtJvmArg" Content="{DynamicResource labExtJvmArg}" HorizontalAlignment="Left" Margin="391,202,0,0" VerticalAlignment="Top" Width="153"/>
+    <TextBox x:Name="txtExtJArg" HorizontalAlignment="Left" Height="23" Margin="391,233,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="339" Background="#A0FFFFFF" ToolTip="1.6以前的版本请无视该设置" TabIndex="4" TextChanged="txtExtJArg_TextChanged"/>
+    <Button x:Name="btnSaveConfig" Content="{DynamicResource btnSaveConfig}" HorizontalAlignment="Left" Margin="773,346,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnSaveConfig_Click" Style="{StaticResource NormalButtonStyle}"/>
+    <PasswordBox x:Name="txtPwd" HorizontalAlignment="Left" Margin="89,56,0,0" VerticalAlignment="Top" Width="147" Background="#A0FFFFFF" TabIndex="1"/>
+    <Label x:Name="labBGAlpha" Content="{DynamicResource labBGAlpha}" HorizontalAlignment="Left" Margin="391,135,0,0" VerticalAlignment="Top"/>
+    <Slider x:Name="sliderWindowTransparency" HorizontalAlignment="Left" Margin="391,166,0,0" VerticalAlignment="Top" Width="246" ValueChanged="sliderWindowTransparency_ValueChanged" Maximum="1"/>
+    <CheckBox x:Name="checkReport" Content="{DynamicResource checkReport}" HorizontalAlignment="Left" Margin="391,281,0,0" VerticalAlignment="Top"/>
+    <Popup/>
+    <Popup/>
+    <Grid x:Name="popupSaveSuccess" Background="#B0FFFFFF" Margin="774,306,10,88" Height="0">
+        <Label x:Name="labSaveSucc" Content="{DynamicResource labSaveSucc}" HorizontalAlignment="Left" VerticalAlignment="Top" Width="104" Height="28" Background="{x:Null}"/>
+    </Grid>
+    <CheckBox x:Name="checkOptifine" Content="{DynamicResource checkOptifine}" HorizontalAlignment="Left" Height="23" Margin="735,233,0,0" VerticalAlignment="Top" Width="133" Checked="checkOptifine_Checked" Unchecked="checkOptifine_Unchecked"/>
+    <GroupBox x:Name="groupDownloadSource" Header="{DynamicResource groupDownloadSource}" HorizontalAlignment="Left" Height="105" Margin="26,279,0,0" VerticalAlignment="Top" Width="210">
+        <ListBox x:Name="listDownSource" HorizontalAlignment="Left" Height="72" VerticalAlignment="Top" Width="200" Margin="0,10,-2,0" SelectionChanged="listDownSource_SelectionChanged" Background="#A0FFFFFF">
+            <system:String>BMCLAPI（国内，更稳定）</system:String>
+            <system:String>官方源（国外，更新快）</system:String>
+        </ListBox>
+    </GroupBox>
+    <ComboBox x:Name="comboLang" HorizontalAlignment="Left" Height="27" Margin="391,333,0,0" VerticalAlignment="Top" Width="153" SelectedIndex="0" SelectionChanged="comboLang_SelectionChanged"/>
+    <Label Content="语言 language" HorizontalAlignment="Left" Margin="391,302,0,0" VerticalAlignment="Top"/>
+    <CheckBox x:Name="checkCheckUpdate" Content="{DynamicResource checkCheckUpdate}" HorizontalAlignment="Left" Height="18" Margin="640,279,0,0" VerticalAlignment="Top" Width="129" Checked="checkCheckUpdate_Checked"/>
+    <GroupBox Header="{DynamicResource ScreenSetting}" HorizontalAlignment="Left" Height="89" Margin="637,59,0,0" VerticalAlignment="Top" Width="231">
+        <Grid HorizontalAlignment="Left" VerticalAlignment="Top" Width="219" Height="79" Margin="0,0,0,-12">
+            <TextBox x:Name="ScreenWidthTextBox" Background="#A0FFFFFF" HorizontalAlignment="Left" Height="28" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="100" Margin="0,10,0,0"/>
+            <Label Content="×" HorizontalAlignment="Left"  Margin="104,14,0,0" VerticalAlignment="Top" FontSize="14" Padding="0"/>
+            <TextBox x:Name="ScreenHeightTextBox" Background="#A0FFFFFF" HorizontalAlignment="Left" Height="28" Margin="119,10,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="100"/>
+            <CheckBox x:Name="FullScreenCheckBox" Content="{DynamicResource FullScreen}" HorizontalAlignment="Center" Margin="73,50,73,0" VerticalAlignment="Top"/>
+        </Grid>
+    </GroupBox>
 </Grid>

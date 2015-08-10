@@ -36,8 +36,10 @@ namespace BMCLV2
         public int DownloadSource;
         [DataMember]
         public Dictionary<string, object> PluginConfig = new Dictionary<string, object>();
-
         [DataMember] public string GUID;
+        [DataMember] public int Height;
+        [DataMember] public int Width;
+        [DataMember] public bool FullScreen;
 
         public Config()
         {
@@ -55,6 +57,9 @@ namespace BMCLV2
             CheckUpdate = true;
             PluginConfig = null;
             GUID = GetGuid();
+            Height = -1;
+            Width = -1;
+            FullScreen = false;
         }
 
         public object GetPluginConfig(string key)
@@ -141,7 +146,8 @@ namespace BMCLV2
                     if (registryKey != null)
                         reg = registryKey.OpenSubKey("Java Runtime Environment");
                 }
-                if (reg != null)
+                if (reg != null){
+                    List<string> javaList = new List<string>();
                     foreach (string ver in reg.GetSubKeyNames())
                     {
                         try
@@ -151,11 +157,21 @@ namespace BMCLV2
                             {
                                 string str = command.GetValue("JavaHome").ToString();
                                 if (str != "")
-                                    return str + @"\bin\javaw.exe";
+                                    javaList.Add(str + @"\bin\javaw.exe");
                             }
                         }
                         catch { return null; }
                     }
+                    //先找出Java7 因为Java8不能正常启动1.7.2
+                    foreach (string java in javaList)
+                    {
+                        if(java.ToLower().Contains("jre7")||java.ToLower().Contains("jdk1.7.0")){//可能这样判断版本的方法不太好
+                            return java;
+                        }
+                    }
+                    //没有Java7的时候返回第一个Java
+                    return javaList[0];
+                }
                 return null;
             }
             catch { return null; }
@@ -187,7 +203,6 @@ namespace BMCLV2
                 Logger.error("获取内存失败");
                 Logger.error(ex);
                 return ulong.MaxValue;
-
             }
         }
 

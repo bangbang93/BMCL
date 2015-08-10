@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using BMCLV2.Lang;
@@ -35,6 +36,9 @@ namespace BMCLV2.Windows.MainWindowTab
             BmclCore.Config.Report = checkReport.IsChecked != null && checkReport.IsChecked.Value;
             BmclCore.Config.DownloadSource = listDownSource.SelectedIndex;
             BmclCore.Config.Lang = LangManager.GetLangFromResource("LangName");
+            BmclCore.Config.Height = int.Parse(ScreenHeightTextBox.Text);
+            BmclCore.Config.Width = int.Parse(ScreenWidthTextBox.Text);
+            BmclCore.Config.FullScreen = FullScreenCheckBox.IsChecked??false;
             BmclCore.Config.Save(null);
             var dak = new DoubleAnimationUsingKeyFrames();
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(0)));
@@ -96,6 +100,13 @@ namespace BMCLV2.Windows.MainWindowTab
                 sliderJavaxmx.Value = Convert.ToInt32(txtJavaXmx.Text);
             }
             catch (FormatException ex)
+            {
+                Logger.log(ex);
+                MessageBox.Show("请输入一个有效数字");
+                txtJavaXmx.Text = (Config.GetMemory()/4).ToString(CultureInfo.InvariantCulture);
+                txtJavaXmx.SelectAll();
+            }
+            catch (XamlParseException ex)
             {
                 Logger.log(ex);
                 MessageBox.Show("请输入一个有效数字");
@@ -176,6 +187,19 @@ namespace BMCLV2.Windows.MainWindowTab
             if (listAuth.SelectedItem == null)
             {
                 listAuth.SelectedIndex = 0;
+            }
+        }
+
+        private void Grid_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (txtUserName.Text == "!!!" && (bool) e.NewValue)
+            {
+                tip.IsOpen = true;
+                tip.Margin = txtUserName.Margin;
+            }
+            else
+            {
+                tip.IsOpen = false;
             }
         }
     }

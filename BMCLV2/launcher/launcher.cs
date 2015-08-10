@@ -32,11 +32,10 @@ namespace BMCLV2.Launcher
         private readonly WebClient _downer = new WebClient();
         StreamReader _gameoutput;
         StreamReader _gameerror;
-        Thread _logthread;
         Thread _thError;
         Thread _thOutput;
         private LoginInfo _li;
-        public string Extarg;
+        public string[] Extarg;
         
         #endregion
 
@@ -80,7 +79,7 @@ namespace BMCLV2.Launcher
         /// <param name="info"></param>
         /// <param name="extarg"></param>
         /// <param name="li"></param>
-        public Launcher(string javaPath, string javaXmx, string userName, string name, gameinfo info, string extarg, LoginInfo li)
+        public Launcher(string javaPath, string javaXmx, string userName, string name, gameinfo info, string[] extarg, LoginInfo li)
         {
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherCheckJava"));
             if (!File.Exists(javaPath))
@@ -125,7 +124,7 @@ namespace BMCLV2.Launcher
             var arg = new StringBuilder("-Xincgc -Xmx");
             arg.Append(_javaxmx);
             arg.Append("M ");
-            arg.Append(Extarg);
+            arg.Append(_solveArgs(Extarg));
             arg.Append(" ");
             arg.Append("-Djava.library.path=\"");
             arg.Append(Environment.CurrentDirectory).Append(@"\.minecraft\versions\");
@@ -238,7 +237,10 @@ namespace BMCLV2.Launcher
             }
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherBuildMCArg"));
             var mcpath = new StringBuilder(Environment.CurrentDirectory + @"\.minecraft\versions\");
-            mcpath.Append(_name).Append("\\").Append(_version).Append(".jar\" ");
+            if(_info.jar == "" || _info.jar == null)
+                mcpath.Append(_name).Append("\\").Append(_version).Append(".jar\" ");
+            else
+                mcpath.Append(_info.jar).Append("\\").Append(_info.jar).Append(".jar\" ");
             mcpath.Append(_info.mainClass);
             arg.Append(mcpath);
             //" --username ${auth_player_name} --session ${auth_session} --version ${version_name} --gameDir ${game_directory} --assetsDir ${game_assets}"
@@ -708,6 +710,23 @@ namespace BMCLV2.Launcher
             {
                 return 0;
             }
+        }
+
+        private string _solveArgs(string[] args)
+        {
+            var arg = new StringBuilder();
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (i == 0 || args[i][0] == '"')
+                {
+                    arg.Append(args[i]).Append(' ');
+                }
+                else
+                {
+                    arg.Append('"').Append(args[i]).Append("\" ");
+                }
+            }
+            return arg.ToString();
         }
         #endregion
 

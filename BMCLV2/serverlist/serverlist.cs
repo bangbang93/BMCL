@@ -14,79 +14,54 @@ namespace BMCLV2.serverlist
         public serverinfo[] info;
         public serverlist()
         {
-            FileStream server = new FileStream(@".minecraft\servers.dat", FileMode.Open);
             try
             {
-                byte[] header = new byte[0x13];
-                server.Read(header, 0, header.Length);
-                if (server.Length - server.Position < 5)
+                using (var s = new StreamReader(@".minecraft\servers.dat"))
                 {
-                    server.Close();
+                    var split = new string(new char[] { (char)0x1, (char)0x0, (char)0xb });
+                    var split1 = new string(new char[] { (char)0x8, (char)0x0, (char)0x2 });
+                    var split2 = new string(new char[] { (char)0x8, (char)0x0, (char)0x4 });
+                    var split3 = new string(new char[] { (char)0x0, (char)0x8, (char)0x0, (char)0x4 });
+                    var x = s.ReadToEnd();
+                    var l = x.IndexOf(split + "hideAddress", System.StringComparison.Ordinal) > 0 ?
+                        x.Split(new string[] { split }, StringSplitOptions.RemoveEmptyEntries) :
+                        x.Split(new string[] { split2, split3 }, StringSplitOptions.RemoveEmptyEntries);
+                    var listlength = (int)l[0][l[0].Length - 1];
+                    foreach (var str in l.Skip(1).ToArray())
+                    {
+                        var strr = str.Split(new string[] { split1, split2 }, StringSplitOptions.RemoveEmptyEntries);
+                        if (str.IndexOf("hideAddress", System.StringComparison.Ordinal) > -1)
+                        {
+                            if (strr.Length == 3)
+                            {
+                                //System.Windows.Forms.MessageBox.Show(strr.Length + " 1");
+                                list.Add(new serverinfo(strr[1].Substring(6), Convert.ToBoolean((int)strr[0][strr[0].Length - 1]), strr[2].Substring(4)));
+                            }
+                            else
+                            {//4
+                                //System.Windows.Forms.MessageBox.Show(strr.Length + " 2");
+                                list.Add(new serverinfo(strr[2].Substring(6), false, strr[3].Substring(4)));//1.7.2开始的格式(1.7.2开始没有隐藏地址选项)
+                            }
+                        }
+                        else
+                        {//2 1
+                            if (strr.Length == 1)
+                                continue;
+                             //System.Windows.Forms.MessageBox.Show(strr.Length + " 3");
+                            list.Add(new serverinfo(strr[0].Substring(6), false, strr[1].Substring(4).Replace("\0", "")));
+                        }
+                    }
                     info = (serverinfo[])list.ToArray(typeof(serverinfo));
-                    return;
-                }
-                while (server.Position != server.Length)
-                {
-                    byte[] HideAddress = new byte[13];
-                    if (server.Position == server.Length)
-                    {
-                        throw new EndOfStreamException("读取到文件结尾");
-                    }
-                    server.Read(HideAddress, 0, HideAddress.Length);
-                    bool IsHide = (server.ReadByte()) == 1 ? true : false;
-                    byte[] name = new byte[9];
-                    if (server.Position == server.Length)
-                    {
-                        throw new EndOfStreamException("读取到文件结尾");
-                    }
-                    server.Read(name, 0, name.Length);
-                    ArrayList NameString = new ArrayList(20);
-                    byte ch = (byte)server.ReadByte();
-                    while (ch != 0)
-                    {
-                        NameString.Add(ch);
-                        if (server.Position == server.Length)
-                        {
-                            throw new EndOfStreamException("读取到文件结尾");
-                        }
-                        ch = (byte)server.ReadByte();
-                    }
-                    string Name = Encoding.UTF8.GetString((byte[])NameString.ToArray(typeof(byte)), 0, NameString.Count - 1);
-                    byte[] address = new byte[5];
-                    if (server.Position == server.Length)
-                    {
-                        throw new EndOfStreamException("读取到文件结尾");
-                    }
-                    server.Read(address, 0, address.Length);
-                    ArrayList AddRess = new ArrayList(20);
-                    ch = (byte)server.ReadByte();
-                    while (ch != 0)
-                    {
-                        AddRess.Add(ch);
-                        if (server.Position == server.Length)
-                        {
-                            throw new EndOfStreamException("读取到文件结尾");
-                        }
-                        ch = (byte)server.ReadByte();
-                    }
-                    string Address = Encoding.UTF8.GetString((byte[])AddRess.ToArray(typeof(byte)), 0, AddRess.Count);
-                    list.Add(new serverinfo(Name, IsHide, Address));
-                    if (server.Position == server.Length)
-                    {
-                        throw new EndOfStreamException("读取到文件结尾");
-                    }
-                    if (server.ReadByte() == 0)
-                        break;
                 }
             }
-            catch (EndOfStreamException ex)
+            catch (Exception ex)
             {
-                System.Windows.Forms.MessageBox.Show("尝试读取文件列表:" + ex.Message);
+                System.Windows.Forms.MessageBox.Show("读取文件列表发生错误:" + ex.Message+ex.StackTrace);
+                
             }
             finally
             {
                 info = (serverinfo[])list.ToArray(typeof(serverinfo));
-                server.Close();
             }
         }
         public void Add(string name,string ip,bool ishide)

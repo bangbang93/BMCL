@@ -48,90 +48,73 @@ namespace BMCLV2.Windows.MainWindowTab
                 _sl = new serverlist.serverlist();
                 foreach (serverlist.serverinfo info in _sl.info)
                 {
-                    DateTime start = DateTime.Now;
+                    var start = DateTime.Now;
                     var server = new object[7];
                     server[0] = info.Name;
                     server[1] = info.IsHide ? LangManager.GetLangFromResource("ServerListYes") : LangManager.GetLangFromResource("ServerListNo");
                     if (info.IsHide)
-                        server[2] = string.Empty;
+                        server[2] = LangManager.GetLangFromResource("btnMiniSize");//要的只是这两个字
                     else
                         server[2] = info.Address;
+                    server[3] = " ";
+                    server[4] = " ";
+                    server[5] = " ";
                     try
                     {
-                        var con = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
+                        var bytes = 512;
+                        var recive = new byte[bytes];
+
+                        using (var con = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { ReceiveTimeout = 3000, SendTimeout = 3000 })
                         {
-                            ReceiveTimeout = 3000,
-                            SendTimeout = 3000
-                        };
-                        con.Connect(Dns.GetHostAddresses(info.Address.Split(':')[0]),
-                            info.Address.Split(':').Length == 1 ? 25565 : int.Parse(info.Address.Split(':')[1]));
-                        con.Send(new byte[] { 254 });
-                        con.Send(new byte[] { 1 });
-                        var recive = new byte[512];
-                        int bytes = con.Receive(recive);
+                            con.Connect(Dns.GetHostAddresses(info.Address.Split(':')[0] == "0" ? "127.0.0.1" : info.Address.Split(':')[0]),
+                                info.Address.Split(':').Length == 1 ? 25565 : int.Parse(info.Address.Split(':')[1]));
+                            con.Send(new byte[] { 254 });
+                            con.Send(new byte[] { 1 });
+                            recive = new byte[512];
+                            bytes = con.Receive(recive);
+                            con.Shutdown(SocketShutdown.Both);
+                            con.Close();
+                        }
+
                         if (recive[0] != 255)
                         {
                             throw new Exception(LangManager.GetLangFromResource("ServerListInvildReply"));
                         }
-                        string message = Encoding.UTF8.GetString(recive, 4, bytes - 4);
-                        var remessage = new StringBuilder(30);
-                        for (int i = 0; i <= message.Length; i += 2)
-                        {
-                            remessage.Append(message[i]);
-                        }
-                        message = remessage.ToString();
-                        con.Shutdown(SocketShutdown.Both);
-                        con.Close();
-                        DateTime end = DateTime.Now;
-                        char[] achar = message.ToCharArray();
 
-                        for (int i = 0; i < achar.Length; ++i)
+                        var unirecive = new System.Collections.Generic.List<byte>();
+                        for (var index = 1; index < bytes; index += 2)
                         {
-                            if (achar[i] != 167 && achar[i] != 0 && char.IsControl(achar[i]))
-                            {
-                                achar[i] = (char)63;
-                            }
+                            unirecive.Add(recive[index + 1]);
+                            unirecive.Add(recive[index]);
                         }
-                        message = new String(achar);
-                        if (message[0] == (char)253 || message[0] == (char)65533)
+                        var message = Encoding.Unicode.GetString(unirecive.ToArray());
+
+                        var end = DateTime.Now;
+                        //Logger.info(message);
+                        var astring = message.Split('\u00a7');
+                        if (astring.Length == 3)
                         {
-                            message = (char)167 + message.Substring(1);
+                            server[3] = astring[0].IndexOf('\r') == 0 ? astring[0].Substring(1) : astring[0];
+                            server[4] = LangManager.GetLangFromResource("Unknown");//未知
+                            server[5] = astring[1] + "/" + astring[2];
                         }
-                        if (message.StartsWith("\u00a7") && message.Length > 1)
+                        if (astring.Length == 2)
                         {
-                            string[] astring = message.Substring(1).Split('\0');
-                            if (MathHelper.parseIntWithDefault(astring[0], 0) == 1)
-                            {
-                                server[3] = astring[3];
-                                server[4] = astring[2];
-                                int online = MathHelper.parseIntWithDefault(astring[4], 0);
-                                int maxplayer = MathHelper.parseIntWithDefault(astring[5], 0);
-                                server[5] = online + "/" + maxplayer;
-                            }
+                            astring = astring[1].Split('\0');
+                            server[3] = astring[3];
+                            server[4] = astring[2];
+                            server[5] = astring[4] + "/" + astring[5];
                         }
-                        else
-                        {
-                            server[3] = " ";
-                            server[4] = " ";
-                            server[5] = " ";
-                        }
-                        server[6] = (end - start).Milliseconds + " ms";
+                        server[6] = (end - start).Milliseconds + "ms";
+                        server[3] = ((string)server[3]).Replace("  ", "").Replace(new String(new char[] { (char)0x1c }), "");
                     }
                     catch (SocketException ex)
                     {
-                        server[3] = " ";
-                        server[4] = " ";
-                        server[5] = " ";
                         server[6] = LangManager.GetLangFromResource("ServerListSocketException") + ex.Message;
-                        //server.SubItems[0].ForeColor = Color.Red;
                     }
                     catch (Exception ex)
                     {
-                        server[3] = " ";
-                        server[4] = " ";
-                        server[5] = " ";
                         server[6] = LangManager.GetLangFromResource("ServerListUnknowServer") + ex.Message;
-                        //server.SubItems[0].ForeColor = Color.Red;
                     }
                     finally
                     {
