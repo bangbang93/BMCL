@@ -66,7 +66,7 @@ namespace BMCLV2
                     return info;
                 String anotherJson = GetGameInfoJsonPath(info.inheritsFrom);
                 gameinfo anotherGameinfo = Read(anotherJson);
-                info.libraries = mixLibraries(info.libraries, anotherGameinfo.libraries);
+                info.libraries = MixLibraries(info.libraries, anotherGameinfo.libraries);
                 return info;
             }
             catch (SerializationException ex)
@@ -90,7 +90,7 @@ namespace BMCLV2
                         return info;
                     String anotherJson = GetGameInfoJsonPath(info.inheritsFrom);
                     gameinfo anotherGameinfo = Read(anotherJson);
-                    info.libraries = mixLibraries(info.libraries, anotherGameinfo.libraries);
+                    info.libraries = MixLibraries(info.libraries, anotherGameinfo.libraries);
                     return info;
                 }
                 catch (SerializationException ex1)
@@ -140,7 +140,7 @@ namespace BMCLV2
 
         }
         
-        private static libraryies[] mixLibraries(libraryies[] lib1, libraryies[] lib2)
+        private static libraryies[] MixLibraries(libraryies[] lib1, libraryies[] lib2)
         {
             return lib1.Concat(lib2).ToArray();
         }
