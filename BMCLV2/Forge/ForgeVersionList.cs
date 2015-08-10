@@ -15,19 +15,17 @@ namespace BMCLV2.Forge
 {
     class ForgeVersionList
     {
-        private string OldPageUrl = "http://bmclapi.bangbang93.com/forge/legacylist";  //这两个API允许对外开放，如果有人想要用的话就用吧。
-        private string NewPageUrl = "http://bmclapi.bangbang93.com/forge/versionlist";
-        private string NewUrl = "http://bmclapi2.bangbang93.com/forge/last";
+        private readonly string _newUrl = "http://bmclapi2.bangbang93.com/forge/last";
         public delegate void ForgePageReadyHandle();
         public event ForgePageReadyHandle ForgePageReadyEvent;
-        private DataContractJsonSerializer ForgeVerJsonParse = new DataContractJsonSerializer(typeof(ForgeVersion[]));
-        private ForgeVersion[] ForgeNew, ForgeLegacy;
+        private readonly DataContractJsonSerializer _forgeVerJsonParse = new DataContractJsonSerializer(typeof(ForgeVersion[]));
+        private ForgeVersion[] _forgeNew;
         public Dictionary<string, string> ForgeDownloadUrl = new Dictionary<string, string>(), 
             ForgeChangeLogUrl = new Dictionary<string, string>();
         public void GetVersion()
         {
             var webClient = new WebClient();
-            webClient.DownloadStringAsync(new Uri(NewUrl));
+            webClient.DownloadStringAsync(new Uri(_newUrl));
             webClient.DownloadStringCompleted += WebClient_DownloadStringCompleted;
         }
 
@@ -40,8 +38,8 @@ namespace BMCLV2.Forge
             }
             else
             {
-                ForgeNew =
-                    ForgeVerJsonParse.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(e.Result))) as ForgeVersion[];
+                _forgeNew =
+                    _forgeVerJsonParse.ReadObject(new MemoryStream(Encoding.UTF8.GetBytes(e.Result))) as ForgeVersion[];
                 Logger.log("获取Forge列表成功");
             }
             ForgePageReadyEvent?.Invoke();
@@ -49,10 +47,10 @@ namespace BMCLV2.Forge
 
         public TreeViewItem[] GetNew()
         {
-            ArrayList r = new ArrayList(ForgeNew.Length);
+            ArrayList r = new ArrayList(_forgeNew.Length);
             TreeViewItem t = new TreeViewItem();
             r.Add(t);
-            foreach (ForgeVersion Forge in ForgeNew)
+            foreach (ForgeVersion Forge in _forgeNew)
             {
                 Forge.minecraft = Forge.minecraft.Trim();
                 Forge.version = Forge.version.Trim();

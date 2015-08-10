@@ -32,7 +32,6 @@ namespace BMCLV2.Launcher
         private readonly WebClient _downer = new WebClient();
         StreamReader _gameoutput;
         StreamReader _gameerror;
-        Thread _logthread;
         Thread _thError;
         Thread _thOutput;
         private LoginInfo _li;
