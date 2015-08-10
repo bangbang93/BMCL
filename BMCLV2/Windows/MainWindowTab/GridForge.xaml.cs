@@ -9,7 +9,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using BMCLV2.Forge;
 using BMCLV2.Lang;
-using BMCLV2.Resource;
 
 namespace BMCLV2.Windows.MainWindowTab
 {

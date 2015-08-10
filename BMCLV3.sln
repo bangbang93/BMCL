@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BMCLV3", "BMCLV2\BMCLV3.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "yggdrasil", "yggdrasil\yggdrasil.csproj", "{7FD4E841-3F18-4107-976C-3695B2DCEA0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BmclNG", "BmclNG\BmclNG.csproj", "{82CDA6C0-1562-4A49-86DC-01EA3BC61760}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -26,6 +28,12 @@ Global
 		{7FD4E841-3F18-4107-976C-3695B2DCEA0E}.DebugDebug|Any CPU.Build.0 = Debug|Any CPU
 		{7FD4E841-3F18-4107-976C-3695B2DCEA0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7FD4E841-3F18-4107-976C-3695B2DCEA0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82CDA6C0-1562-4A49-86DC-01EA3BC61760}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82CDA6C0-1562-4A49-86DC-01EA3BC61760}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82CDA6C0-1562-4A49-86DC-01EA3BC61760}.DebugDebug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82CDA6C0-1562-4A49-86DC-01EA3BC61760}.DebugDebug|Any CPU.Build.0 = Debug|Any CPU
+		{82CDA6C0-1562-4A49-86DC-01EA3BC61760}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82CDA6C0-1562-4A49-86DC-01EA3BC61760}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
