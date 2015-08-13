@@ -54,6 +54,10 @@ namespace BMCLV2
                 Config = new Config();
                 Logger.log("加载默认配置");
             }
+            if (!Directory.Exists(BaseDirectory + ".minecraft"))
+            {
+                Directory.CreateDirectory(BaseDirectory + ".minecraft");
+            }
             if (Config.Javaw == "autosearch")
             {
                 Config.Javaw = Config.GetJavaDir();

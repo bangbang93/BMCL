@@ -54,8 +54,11 @@ namespace BMCLV2.Windows.MainWindowTab
             {
                 try
                 {
-                    FileStream isused = File.OpenWrite(".minecraft\\versions\\" + listVer.SelectedItem + "\\" + BmclCore.GameInfo.id + ".jar");
-                    isused.Close();
+                    if (BmclCore.GameInfo != null)
+                    {
+                        FileStream isused = File.OpenWrite(".minecraft\\versions\\" + listVer.SelectedItem + "\\" + BmclCore.GameInfo.id + ".jar");
+                        isused.Close();
+                    }
                     Directory.Delete(".minecraft\\versions\\" + listVer.SelectedItem, true);
                     if (Directory.Exists(".minecraft\\libraries\\" + listVer.SelectedItem))
                     {

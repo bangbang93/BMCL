@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using BMCLV2.Lang;
@@ -99,6 +100,13 @@ namespace BMCLV2.Windows.MainWindowTab
                 sliderJavaxmx.Value = Convert.ToInt32(txtJavaXmx.Text);
             }
             catch (FormatException ex)
+            {
+                Logger.log(ex);
+                MessageBox.Show("请输入一个有效数字");
+                txtJavaXmx.Text = (Config.GetMemory()/4).ToString(CultureInfo.InvariantCulture);
+                txtJavaXmx.SelectAll();
+            }
+            catch (XamlParseException ex)
             {
                 Logger.log(ex);
                 MessageBox.Show("请输入一个有效数字");

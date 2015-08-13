@@ -162,7 +162,7 @@ namespace BMCLV2.Windows
                 }
             Logger.log(string.Format("BMCL V2 Ver.{0} 正在退出", BmclCore.BmclVersion));
             this.Close();
-            if (!Logger.debug)
+            if (!Logger.debug && !Process.GetCurrentProcess().HasExited)
             {
                 try
                 {

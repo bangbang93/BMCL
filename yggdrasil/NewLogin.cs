@@ -7,33 +7,31 @@ using System.Collections;
 using System.IO;
 using System.Web;
 using System.Runtime.Serialization.Json;
-using BMCLV2.Plugin;
+using System.Runtime.Serialization;
 
 namespace yggdrasil
 {
-    public class NewLogin : IBmclAuthPlugin
+    public class NewLogin
     {
-// ReSharper disable UnusedMember.Local
-        private const string BaseUrl = "https://authserver.mojang.com/";
-        private const string RouteAuthenticate = "https://authserver.mojang.com/authenticate";
-        private const string RouteRefresh = "https://authserver.mojang.com/refresh";
-        private const string RouteValidate = "https://authserver.mojang.com/validate";
-        private const string RouteInvalidate = "https://authserver.mojang.com/invalidate";
-        private const string RouteSignout = "https://authserver.mojang.com/signout";
-        // ReSharper restore UnusedMember.Local
-        private static string _clientToken;
+        private string BaseUrl = "https://authserver.mojang.com/";
+        private string RouteAuthenticate = "https://authserver.mojang.com/authenticate";
+        private string RouteRefresh = "https://authserver.mojang.com/refresh";
+        private string RouteValidate = "https://authserver.mojang.com/validate";
+        private string RouteInvalidate = "https://authserver.mojang.com/invalidate";
+        private string RouteSignout = "https://authserver.mojang.com/signout";
+        private static string ClientToken;
 
-        public LoginInfo Login(string userName, string password, string clientIdentifier = "", string language = "zh-cn")
+        public LoginInfo Login(string UserName, string Password, string Client_identifier = "", string Language = "zh-cn")
         {
-            var li = new LoginInfo();
-            _clientToken = clientIdentifier;
+            LoginInfo LI = new LoginInfo();
+            ClientToken = Client_identifier;
             try
             {
-                var auth = (HttpWebRequest)WebRequest.Create(RouteAuthenticate);
+                HttpWebRequest auth = (HttpWebRequest)WebRequest.Create(RouteAuthenticate);
                 auth.Method = "POST";
-                var ag = new AuthenticationRequest(userName, password);
-                var agJsonSerialiaer = new DataContractJsonSerializer(typeof(AuthenticationRequest));
-                var agJsonStream = new MemoryStream();
+                AuthenticationRequest ag = new AuthenticationRequest(UserName, Password);
+                DataContractJsonSerializer agJsonSerialiaer = new DataContractJsonSerializer(typeof(AuthenticationRequest));
+                MemoryStream agJsonStream = new MemoryStream();
                 agJsonSerialiaer.WriteObject(agJsonStream, ag);
                 agJsonStream.Position = 0;
                 string logindata = (new StreamReader(agJsonStream)).ReadToEnd();
@@ -42,72 +40,37 @@ namespace yggdrasil
                 Stream poststream = auth.GetRequestStream();
                 poststream.Write(postdata, 0, postdata.Length);
                 poststream.Close();
-                var authans = (HttpWebResponse)auth.GetResponse();
-                var responseJsonSerializer = new DataContractJsonSerializer(typeof(AuthenticationResponse));
-                var res = authans.GetResponseStream();
-                if (res == null)
+                HttpWebResponse authans = (HttpWebResponse)auth.GetResponse();
+                DataContractJsonSerializer ResponseJsonSerializer = new DataContractJsonSerializer(typeof(AuthenticationResponse));
+                StreamReader ResponseStream = new StreamReader(authans.GetResponseStream());
+                string ResponseJson = ResponseStream.ReadToEnd();
+                MemoryStream ResponseJsonStream = new MemoryStream(Encoding.UTF8.GetBytes(ResponseJson));
+                ResponseJsonStream.Position = 0;
+                AuthenticationResponse Response = ResponseJsonSerializer.ReadObject(ResponseJsonStream) as AuthenticationResponse;
+                if (Response.getClientToken() != NewLogin.ClientToken)
                 {
-                    li.Suc = false;
-                    li.Errinfo = "服务器无响应";
-                    return li;
+                    LI.Suc = false;
+                    LI.Errinfo = "客户端标识和服务器返回不符，这是个不常见的错误，就算是正版启动器这里也没做任何处理，只是报了这么个错。";
+                    return LI;
                 }
-                var responseStream = new StreamReader(res);
-                string responseJson = responseStream.ReadToEnd();
-                var responseJsonStream = new MemoryStream(Encoding.UTF8.GetBytes(responseJson)) {Position = 0};
-                var response = responseJsonSerializer.ReadObject(responseJsonStream) as AuthenticationResponse;
-                if (response == null)
-                {
-                    li.Suc = false;
-                    li.Errinfo = "服务器无响应";
-                    return li;
-                }
-                if (response.getClientToken() != NewLogin._clientToken)
-                {
-                    li.Suc = false;
-                    li.Errinfo = "客户端标识和服务器返回不符，这是个不常见的错误，就算是正版启动器这里也没做任何处理，只是报了这么个错。";
-                    return li;
-                }
-                li.Suc = true;
-                li.UN = response.getSelectedProfile().getName();
-                li.Client_identifier = NewLogin._clientToken;
-                li.SID = response.getAccessToken();
-                var otherInfoSerializer = new DataContractJsonSerializer(typeof(SortedList));
-                var otherInfoList = new SortedList
-                {
-                    {"${auth_uuid}", response.getSelectedProfile().getId()},
-                    {"${auth_access_token}", response.getAccessToken()}
-                };
-                var otherInfoStream = new MemoryStream();
-                otherInfoSerializer.WriteObject(otherInfoStream, otherInfoList);
-                otherInfoStream.Position = 0;
-                //LI.OtherInfo = (new StreamReader(OtherInfoStream)).ReadToEnd();
-                var outInfo = new StringBuilder();
-                outInfo.Append("${auth_session}:").AppendLine(response.getAccessToken());
-                outInfo.Append("${auth_uuid}:").AppendLine(response.getSelectedProfile().getId());
-                outInfo.Append("${auth_access_token}:").AppendLine(response.getAccessToken());
-                if (response.getUser() != null)
-                {
-                    if (response.getUser().getId()!=null)
-                    {
-                        AuthenticationResponse.Properties[] properties = response.getUser().getProperties();
-                        if (properties != null)
-                        {
-                            var propertiesObj = properties.ToDictionary(p => p.getName(), p => new[] {p.getValue()});
-                            var pJsonSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
-                            string pJsonStr = pJsonSerializer.Serialize(propertiesObj);
-                            outInfo.Append("${user_properties}:").AppendLine(pJsonStr);
-                        }
-                    }
-                }
-                li.OtherInfo = li.SID;
-                li.OutInfo = outInfo.ToString();
-                return li;
+                LI.Suc = true;
+                LI.UN = Response.getSelectedProfile().getName();
+                LI.Client_identifier = NewLogin.ClientToken;
+                DataContractSerializer OtherInfoSerializer = new DataContractSerializer(typeof(SortedList));
+                SortedList OtherInfoList = new SortedList();
+                OtherInfoList.Add("${auth_uuid}",Response.getSelectedProfile().getId());
+                OtherInfoList.Add("${auth_access_token}", Response.getAccessToken());
+                MemoryStream OtherInfoStream = new MemoryStream();
+                OtherInfoSerializer.WriteObject(OtherInfoStream, OtherInfoList);
+                OtherInfoStream.Position = 0;
+                LI.OtherInfo = (new StreamReader(OtherInfoStream)).ReadToEnd();
+                return LI;
             }
             catch (TimeoutException ex)
             {
-                li.Suc = false;
-                li.Errinfo = ex.Message;
-                return li;
+                LI.Suc = false;
+                LI.Errinfo = ex.Message;
+                return LI;
             }
         }
         public long GetVer()
@@ -115,13 +78,13 @@ namespace yggdrasil
             return 1;
             //代表为第一代标准化登陆插件
         }
-        public string GetName(string language = "zh-cn")
+        public string GetName(string Language = "zh-cn")
         {
-            return "新正版登录";
+            return "1.7新正版";
         }
         public static string GetClientToken()
         {
-            return _clientToken;
+            return ClientToken;
         }
 
         private static String ParsToString(Hashtable Pars)
@@ -146,18 +109,6 @@ namespace yggdrasil
             public string Errinfo;
             public string OtherInfo;
             public string Client_identifier;
-            public string OutInfo;
-        }
-
-        public long GetVersion(int version)
-        {
-            switch (version)
-            {
-                case 1:
-                    return 1;
-                default:
-                    return version;
-            }
         }
     }
 }

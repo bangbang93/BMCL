@@ -203,7 +203,6 @@ namespace BMCLV2
                 Logger.error("获取内存失败");
                 Logger.error(ex);
                 return ulong.MaxValue;
-
             }
         }
 

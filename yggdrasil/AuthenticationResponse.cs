@@ -9,24 +9,15 @@ namespace yggdrasil
     [DataContract]
     public class AuthenticationResponse : Response
     {
-        [DataContract]
         public class User
         {
-            [DataMember]
-            private String id;
-            [DataMember]
-            private Properties[] properties;
-            public String getId() { return id; }
-            public Properties[] getProperties() { return this.properties; }
-        }
-        [DataContract]
-        public class Properties
-        {
-            [DataMember]
-            private string name, value;
-            public string getName() { return this.name; }
-            public string getValue() { return this.value; }
 
+            private String id;
+
+            public String getId()
+            {
+                return id;
+            }
         }
 
         [DataMember]
