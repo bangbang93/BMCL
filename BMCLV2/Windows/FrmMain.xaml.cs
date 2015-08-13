@@ -23,7 +23,7 @@ namespace BMCLV2.Windows
         private bool _inscreen;
         private bool _isLaunchering;
         
-        private int _clientCrashReportCount;
+        private int _clientCrashReportCount, _hsErrorCount;
         private FrmPrs _starter;
 
         public FrmMain()
@@ -179,6 +179,7 @@ namespace BMCLV2.Windows
                 return;
             }
             _clientCrashReportCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count() : 0;
+            _hsErrorCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Where(s => s.StartsWith("hs_err")).Count() : 0;
             _starter = new FrmPrs("正在准备游戏环境及启动游戏");
             Logger.info(string.Format("正在启动{0},使用的登陆方式为{1}", GridGame.listVer.SelectedItem, GridConfig.listAuth.SelectedItem));
             _starter.ShowInTaskbar = false;
@@ -282,6 +283,7 @@ namespace BMCLV2.Windows
                     {
                         if (lastClientCrashReportModifyTime < clientCrashReport.LastWriteTime)
                         {
+                            lastClientCrashReportModifyTime = clientCrashReport.LastWriteTime;
                             lastClientCrashReportPath = clientCrashReport.FullName;
                         }
                     }
@@ -294,6 +296,27 @@ namespace BMCLV2.Windows
                     }
                 }
             }
+            if (_hsErrorCount != Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Where(s => s.StartsWith("hs_err")).Count())
+                {
+                    Logger.log("发现新的JVM错误报告");
+                    var lastClientCrashReportPath = "";
+                    var lastClientCrashReportModifyTime=DateTime.MinValue;
+                    foreach (var clientCrashReport in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Where(s => s.StartsWith("hs_err")))
+                    {
+                        if (lastClientCrashReportModifyTime < clientCrashReport.LastWriteTime)
+                        {
+                            lastClientCrashReportModifyTime = clientCrashReport.LastWriteTime;
+                            lastClientCrashReportPath = clientCrashReport.FullName;
+                        }
+                    }
+                    var crashReportReader = new StreamReader(lastClientCrashReportPath);
+                    Logger.log(crashReportReader.ReadToEnd(),Logger.LogType.Crash);
+                    crashReportReader.Close();
+                    if (MessageBox.Show("JVM好像崩溃了，是否查看崩溃报告？", "JVM崩溃", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    {
+                        Process.Start(lastClientCrashReportPath);
+                    }
+                }
             if (Logger.debug)
             {
                 Logger.log("游戏退出，Debug模式保留Log信息窗口，程序不退出");
