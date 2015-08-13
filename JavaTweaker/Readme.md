@@ -1,14 +1,14 @@
-ÓÃ·¨
+ç”¨æ³•
 =============
-##1.±àÒë
-####1)Ê¹ÓÃMCP»òÖ±½ÓÔÚclasspathÖÐÌí¼Ólaunchwrapper¾ù¿É
-####2)½«±àÒë²úÉúµÄ¶«Î÷ÒÔ±ê×¼zipÖ±½Ó´ò³Éjar°ü(¿ÉÑ¹Ëõ)£¬ÎÞÐè»ìÏý»òÌí¼ÓMETA-INF
-##2.Ê¹ÓÃ
-####1)½«ÒªÌæ»»ºËÐÄÎÄ¼þµÄclass£¬»ò¶îÍâ¼ÓÈëºËÐÄÎÄ¼þµÄclass·ÅÈëjarÖÐ
-####2)ÒÔ¿âÎÄ¼þ¹ÒÔØ·½Ê½¹ÒÔØjar(×¢£ºË³ÐòÓ¦¸ÃÊÇÔÚ×îÇ°Ãæ)
-####3)Èç¹û¿âÎÄ¼þÁÐ±íÖÐÃ»ÓÐlaunchwrapper¿â£¬Ôò¹ÒÔØlaunchwrapper¿â (×¢£ºË³ÐòÓ¦¸ÃÊÇÔÚ´ÎÇ°Ãæ)
-####4)Èç¹ûÆô¶¯²ÎÊýÖÐÃ»ÓÐÖ¸¶¨'--tweakClass'µÄ»°£¬ÔòÖ¸¶¨'--tweakClass bmcl.Tweaker'£¬Èç¹ûÒÑ¾­Ö¸¶¨Ôò²»ÄÜ±ä¸üÄÚÈÝ
-####5)È·±£'mainClass'Îª'net.minecraft.launchwrapper.Launch'
-##3.×¢
-####1)Ê¹ÓÃÖÐµÄÄÚÈÝºÍforgeÆô¶¯¼¸ºõÒ»ÖÂ£¬Ïê¼ûforgeµÄjson
-####2)Õâ¸ö¿âÎÄ¼þ²»»áÓ°ÏìforgeºÍÆäËûmod£¬Ö»»áÔÚloadClassµÄÊ±ºò¶¯Ì¬Ìæ»»µôºËÐÄÎÄ¼þÖÐµÄÄÚÈÝ£¬´Ó¶øÊµÏÖ²»ÐÞ¸ÄºËÐÄÎÄ¼þ±¾Ìå
+###1.ç¼–è¯‘
+#####1)ä½¿ç”¨MCPæˆ–ç›´æŽ¥åœ¨classpathä¸­æ·»åŠ launchwrapperå‡å¯
+#####2)å°†ç¼–è¯‘äº§ç”Ÿçš„ä¸œè¥¿ä»¥æ ‡å‡†zipç›´æŽ¥æ‰“æˆjaråŒ…(å¯åŽ‹ç¼©)ï¼Œæ— éœ€æ··æ·†æˆ–æ·»åŠ META-INF
+###2.ä½¿ç”¨
+#####1)å°†è¦æ›¿æ¢æ ¸å¿ƒæ–‡ä»¶çš„classï¼Œæˆ–é¢å¤–åŠ å…¥æ ¸å¿ƒæ–‡ä»¶çš„classæ”¾å…¥jarä¸­
+#####2)ä»¥åº“æ–‡ä»¶æŒ‚è½½æ–¹å¼æŒ‚è½½jar(æ³¨ï¼šé¡ºåºåº”è¯¥æ˜¯åœ¨æœ€å‰é¢)
+#####3)å¦‚æžœåº“æ–‡ä»¶åˆ—è¡¨ä¸­æ²¡æœ‰launchwrapperåº“ï¼Œåˆ™æŒ‚è½½launchwrapperåº“ (æ³¨ï¼šé¡ºåºåº”è¯¥æ˜¯åœ¨æ¬¡å‰é¢)
+#####4)å¦‚æžœå¯åŠ¨å‚æ•°ä¸­æ²¡æœ‰æŒ‡å®š'--tweakClass'çš„è¯ï¼Œåˆ™æŒ‡å®š'--tweakClass bmcl.Tweaker'ï¼Œå¦‚æžœå·²ç»æŒ‡å®šåˆ™ä¸èƒ½å˜æ›´å†…å®¹
+#####5)ç¡®ä¿'mainClass'ä¸º'net.minecraft.launchwrapper.Launch'
+###3.æ³¨
+#####1)ä½¿ç”¨ä¸­çš„å†…å®¹å’Œforgeå¯åŠ¨å‡ ä¹Žä¸€è‡´ï¼Œè¯¦è§forgeçš„json
+#####2)è¿™ä¸ªåº“æ–‡ä»¶ä¸ä¼šå½±å“forgeå’Œå…¶ä»–modï¼Œåªä¼šåœ¨loadClassçš„æ—¶å€™åŠ¨æ€æ›¿æ¢æŽ‰æ ¸å¿ƒæ–‡ä»¶ä¸­çš„å†…å®¹ï¼Œä»Žè€Œå®žçŽ°ä¸ä¿®æ”¹æ ¸å¿ƒæ–‡ä»¶æœ¬ä½“
