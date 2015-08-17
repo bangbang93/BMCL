@@ -190,7 +190,7 @@ namespace BMCLV2.Windows
                 return;
             }
             _clientCrashReportCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count() : 0;
-            _hsErrorCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Where(s => s.StartsWith("hs_err")).Count() : 0;
+            _hsErrorCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Count(s => s.StartsWith("hs_err")) : 0;
             _starter = new FrmPrs("正在准备游戏环境及启动游戏");
             Logger.info(string.Format("正在启动{0},使用的登陆方式为{1}", GridGame.listVer.SelectedItem, GridConfig.listAuth.SelectedItem));
             _starter.ShowInTaskbar = false;
@@ -307,7 +307,7 @@ namespace BMCLV2.Windows
                     }
                 }
             }
-            if (_hsErrorCount != Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Where(s => s.StartsWith("hs_err")).Count())
+            if (_hsErrorCount != Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Count(s => s.StartsWith("hs_err")))
                 {
                     Logger.log("发现新的JVM错误报告");
                     var lastClientCrashReportPath = "";
