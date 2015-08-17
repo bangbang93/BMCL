@@ -314,12 +314,13 @@ namespace BMCLV2.Windows
                     var lastClientCrashReportModifyTime=DateTime.MinValue;
                     foreach (var clientCrashReport in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Where(s => s.StartsWith("hs_err")))
                     {
-                        if (lastClientCrashReportModifyTime < clientCrashReport.LastWriteTime)
+                        var jvmCrashReport = new FileInfo(clientCrashReport);
+                        if (lastClientCrashReportModifyTime < jvmCrashReport.LastWriteTime)
                         {
-                            lastClientCrashReportModifyTime = clientCrashReport.LastWriteTime;
-                            lastClientCrashReportPath = clientCrashReport.FullName;
+                            lastClientCrashReportModifyTime = jvmCrashReport.LastWriteTime;
+                            lastClientCrashReportPath = jvmCrashReport.FullName;
                         }
-                    }
+                }
                     var crashReportReader = new StreamReader(lastClientCrashReportPath);
                     Logger.log(crashReportReader.ReadToEnd(),Logger.LogType.Crash);
                     crashReportReader.Close();
