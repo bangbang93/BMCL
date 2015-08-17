@@ -181,7 +181,6 @@ namespace BMCLV2.Windows
                 MessageBox.Show(this, "同时只能运行一个客户端", "运行冲突", MessageBoxButton.OK, MessageBoxImage.Stop);
                 return;
             }
-            BmclCore.GameRunning = true;
             if (GridConfig.txtUserName.Text == "!!!")
             {
                 MessageBox.Show(this, "请先修改用户名");
@@ -246,6 +245,7 @@ namespace BMCLV2.Windows
             else
             {
                 BmclCore.Game.Start();
+                BmclCore.GameRunning = true;
                 this.Hide();
             }
             
