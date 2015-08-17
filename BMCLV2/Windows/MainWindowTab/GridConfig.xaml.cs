@@ -34,6 +34,7 @@ namespace BMCLV2.Windows.MainWindowTab
             BmclCore.Config.Username = txtUserName.Text;
             BmclCore.Config.WindowTransparency = sliderWindowTransparency.Value;
             BmclCore.Config.Report = checkReport.IsChecked != null && checkReport.IsChecked.Value;
+            BmclCore.Config.CheckUpdate = checkCheckUpdate.IsChecked != null && checkCheckUpdate.IsChecked.Value;
             BmclCore.Config.DownloadSource = listDownSource.SelectedIndex;
             BmclCore.Config.Lang = LangManager.GetLangFromResource("LangName");
             BmclCore.Config.Height = int.Parse(ScreenHeightTextBox.Text);
