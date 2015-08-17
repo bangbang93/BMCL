@@ -4,6 +4,7 @@ using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Collections;
+using System.Linq;
 
 namespace BMCLV2
 {
@@ -133,7 +134,7 @@ namespace BMCLV2
             StringBuilder sb = new StringBuilder();
             foreach (string str in messages)
             {
-                sb.Append(str);
+                sb.Append(str).Append(" ");
             }
             write(sb.ToString());
         }
