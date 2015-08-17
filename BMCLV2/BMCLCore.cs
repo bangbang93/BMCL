@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -30,6 +31,7 @@ namespace BMCLV2
         public static gameinfo GameInfo;
         public static Dictionary<string, object> Language = new Dictionary<string, object>();
         public static string BaseDirectory = Environment.CurrentDirectory + '\\';
+        private static Application thisApplication = Application.Current;
         private readonly static string Cfgfile = BaseDirectory + "bmcl.xml";
 
         static BmclCore()
@@ -298,6 +300,11 @@ namespace BMCLV2
             {
                 Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\Lang");
             }
+        }
+
+        public static void Halt(int code = 0)
+        {
+            thisApplication.Shutdown(code);
         }
         
     }
