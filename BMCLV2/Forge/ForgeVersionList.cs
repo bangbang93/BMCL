@@ -45,38 +45,39 @@ namespace BMCLV2.Forge
 
         public TreeViewItem[] GetNew()
         {
-            ArrayList r = new ArrayList(_forgeNew.Length);
-            TreeViewItem t = new TreeViewItem();
-            r.Add(t);
-            foreach (ForgeVersion Forge in _forgeNew)
+            ArrayList arrayList = new ArrayList(_forgeNew.Length);
+            TreeViewItem treeViewItem = new TreeViewItem();
+            arrayList.Add(treeViewItem);
+            foreach (ForgeVersion forge in _forgeNew)
             {
-                Forge.minecraft = Forge.minecraft.Trim();
-                Forge.version = Forge.version.Trim();
-                if (Forge.downloads.installer == null || Forge.downloads.installer.Length == 0)
+                forge.minecraft = forge.minecraft.Trim();
+                forge.version = forge.version.Trim();
+                if (forge.downloads.installer == null || forge.downloads.installer.Length == 0)
                 {
+                    Logger.log(forge.version, "for", forge.minecraft, "does not have installer");
                     continue;
                 }
-                if (t.Header == null)
+                if (treeViewItem.Header == null)
                 {
-                    t.Header = Forge.minecraft;
+                    treeViewItem.Header = forge.minecraft;
                 }
-                if (t.Header.ToString() != Forge.minecraft)
+                else
                 {
-                    t = new TreeViewItem();
-                    r.Add(t);
+                    if (treeViewItem.Header.ToString() != forge.minecraft)
+                    {
+                        treeViewItem = new TreeViewItem();
+                        arrayList.Add(treeViewItem);
+                        treeViewItem.Header = forge.minecraft;
+                    }
                 }
-                if (ForgeDownloadUrl.ContainsKey(Forge.version))
-                    ForgeDownloadUrl[Forge.version] = Forge.downloads.installer[1];
-                else
-                    ForgeDownloadUrl.Add(Forge.version, Forge.downloads.installer[1]);
-                if (ForgeChangeLogUrl.ContainsKey(Forge.version))
-                    ForgeChangeLogUrl[Forge.version] = Forge.downloads.changelog;
-                else
-                    ForgeChangeLogUrl.Add(Forge.version, Forge.downloads.changelog);
-                t.Items.Add(Forge.version);
-                Logger.log("获取Forge"+Forge.version);
+                Logger.log(treeViewItem.Header.ToString());
+                Logger.log(forge.minecraft);
+                ForgeDownloadUrl[forge.version] = forge.downloads.installer[1];
+                ForgeChangeLogUrl[forge.version] = forge.downloads.changelog;
+                treeViewItem.Items.Add(forge.version);
+                Logger.log("获取Forge", forge.version);
             }
-            return r.ToArray(typeof(TreeViewItem)) as TreeViewItem[];
+            return arrayList.ToArray(typeof(TreeViewItem)) as TreeViewItem[];
         }
     }
 }
