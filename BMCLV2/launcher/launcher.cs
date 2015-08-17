@@ -506,7 +506,6 @@ namespace BMCLV2.Launcher
             }
 
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherGo"));
-            //game.StartInfo.WorkingDirectory = Environment.CurrentDirectory + "\\.minecraft\\versions\\" + version;
             Environment.SetEnvironmentVariable("APPDATA", Environment.CurrentDirectory);
             _game.EnableRaisingEvents = true;
             _game.Exited += game_Exited;
@@ -516,10 +515,6 @@ namespace BMCLV2.Launcher
                 bool fin = _game.Start();
                 if (BMCLV2.Logger.debug)
                 {
-//                    _gameoutput = _game.StandardOutput;
-//                    _gameerror = _game.StandardError;
-//                    _logthread = new Thread(Logger);
-//                    _logthread.Start();
                     _game.OutputDataReceived += _game_OutputDataReceived;
                     _game.ErrorDataReceived += _game_ErrorDataReceived;
                     _game.BeginOutputReadLine();
@@ -646,53 +641,6 @@ namespace BMCLV2.Launcher
         public bool IsRunning()
         {
             return !_game.HasExited;
-        }
-
-        private void Logger()
-        {
-            _thOutput = new Thread(new ThreadStart(delegate
-            {
-                while (true)
-                {
-                    try
-                    {
-                        if (!_gameoutput.EndOfStream)
-                        {
-                            string line = _gameoutput.ReadLine();
-                            BMCLV2.Logger.log(line, BMCLV2.Logger.LogType.Game);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        BMCLV2.Logger.log("获取游戏输出失败:" + ex.Message, BMCLV2.Logger.LogType.Error);
-                    }
-                }
-// ReSharper disable once FunctionNeverReturns
-            }));
-            _thError = new Thread(new ThreadStart(delegate
-            {
-                while (true)
-                {
-                    try
-                    {
-                        if (!_gameerror.EndOfStream)
-                        {
-                            string line = _gameerror.ReadLine();
-                            BMCLV2.Logger.log(line, BMCLV2.Logger.LogType.Fml);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        BMCLV2.Logger.log("获取FML输出失败:" + ex.Message, BMCLV2.Logger.LogType.Error);
-                    }
-                }
-// ReSharper disable once FunctionNeverReturns
-            }));
-            _thOutput.IsBackground = true;
-            _thError.IsBackground = true;
-            _thOutput.Start();
-            _thError.Start();
-
         }
 
         /// <summary>
