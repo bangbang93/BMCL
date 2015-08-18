@@ -30,12 +30,9 @@ namespace BMCLV2.Launcher
         private readonly string _urlLib = BmclCore.UrlLibrariesBase;
         public int Downloading = 0;
         private readonly WebClient _downer = new WebClient();
-        StreamReader _gameoutput;
-        StreamReader _gameerror;
-        Thread _thError;
-        Thread _thOutput;
         private LoginInfo _li;
         public string[] Extarg;
+        private DateTime _gameStartTime;
         
         #endregion
 
@@ -44,6 +41,7 @@ namespace BMCLV2.Launcher
         public delegate void GameExitEvent();
         public delegate void StateChangeEventHandler(string state);
         public delegate void GameStartUpEventHandler(bool success);
+        public delegate void GameStartUpErrorHandler(Exception ex);
         #endregion
 
 
@@ -51,6 +49,7 @@ namespace BMCLV2.Launcher
         public event GameExitEvent Gameexit;
         public event StateChangeEventHandler StateChangeEvent;
         public event GameStartUpEventHandler GameStartUp;
+        public event GameStartUpErrorHandler GameError;
 
         private void OnGameStartUp(bool success)
         {
@@ -222,9 +221,10 @@ namespace BMCLV2.Launcher
                     {
                         BMCLV2.Logger.log(ex);
                         BMCLV2.Logger.log("原地址下载失败，尝试作者源" + lib.name);
+                        Logger.log(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), libp);
                         try
                         {
-                            _downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
+                            _downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), libp);
                         }
                         catch (WebException exception)
                         {
@@ -513,6 +513,7 @@ namespace BMCLV2.Launcher
             try
             {
                 bool fin = _game.Start();
+                _gameStartTime = new DateTime();
                 if (BMCLV2.Logger.debug)
                 {
                     _game.OutputDataReceived += _game_OutputDataReceived;
@@ -591,7 +592,7 @@ namespace BMCLV2.Launcher
                 _game.OutputDataReceived -= _game_OutputDataReceived;
                 _game.ErrorDataReceived -= _game_ErrorDataReceived;
             }
-            Gameexit();
+            Gameexit?.Invoke();
         }
 
         /// <summary>
@@ -675,6 +676,11 @@ namespace BMCLV2.Launcher
                 }
             }
             return arg.ToString();
+        }
+
+        public int GetUpTime()
+        {
+            return (int)(new DateTime() - _gameStartTime).TotalSeconds;
         }
         #endregion
 
