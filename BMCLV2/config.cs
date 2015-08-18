@@ -165,7 +165,7 @@ namespace BMCLV2
                     //先找出Java7 因为Java8不能正常启动1.7.2
                     foreach (string java in javaList)
                     {
-                        if(java.ToLower().Contains("jre7")||java.ToLower().Contains("jdk1.7.0")){//可能这样判断版本的方法不太好
+                        if(java.ToLower().Contains("jre7")||java.ToLower().Contains("jdk1.7")||java.ToLower().Contains("jre1.7")){//可能这样判断版本的方法不太好
                             return java;
                         }
                     }
