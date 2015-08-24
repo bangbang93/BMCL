@@ -5,7 +5,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Threading;
 using BMCLV2.Lang;
 using BMCLV2.Resource;
@@ -306,6 +308,21 @@ namespace BMCLV2
         {
             thisApplication.Shutdown(code);
         }
-        
+
+        public static void SingleInstance(Window window)
+        {
+            ThreadPool.RegisterWaitForSingleObject(App.ProgramStarted, OnAnotherProgramStarted, window, -1, false);
+        }
+
+        private static void OnAnotherProgramStarted(object state, bool timedout)
+        {
+            var window = state as Window;
+            NIcon.ShowBalloonTip(2000, LangManager.GetLangFromResource("BMCLHiddenInfo"));
+            if (window != null)
+            {
+                Dispatcher.Invoke(new Action(window.Show));
+                Dispatcher.Invoke(new Action(()=> { window.Activate(); }));
+            }
+        }
     }
 }
