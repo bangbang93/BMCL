@@ -98,7 +98,7 @@ namespace BMCLV2.Launcher
                 _game.StartInfo.RedirectStandardOutput = true;
                 _game.StartInfo.RedirectStandardError = true;
             }
-            _info = info;
+
             this._li = li;
             this.Extarg = extarg;
             this._info = info;
