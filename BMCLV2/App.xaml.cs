@@ -50,7 +50,7 @@ namespace BMCLV2
 #else
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
-
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 #endif
             if (Array.IndexOf(e.Args, "-Update") != -1)
             {
@@ -75,7 +75,11 @@ namespace BMCLV2
             base.OnStartup(e);
         }
 
-
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var crash = new CrashHandle(e.ExceptionObject as Exception);
+            crash.Show();
+        }
 
         protected override void OnExit(ExitEventArgs e)
         {
