@@ -37,6 +37,7 @@ namespace BMCLV2.Windows
             GridGame.ReFlushlistver();
             GridGame.listVer.SelectedItem = BmclCore.Config.LastPlayVer;
             GridConfig.checkCheckUpdate.IsChecked = BmclCore.Config.CheckUpdate;
+            BmclCore.SingleInstance(this);
         }
 
         private void LoadConfig()
