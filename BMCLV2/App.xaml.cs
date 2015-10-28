@@ -21,7 +21,6 @@ namespace BMCLV2
     /// </summary>
     public partial class App
     {
-        private static FileStream _appLock;
         private static bool _skipPlugin = false;
 
         public static EventWaitHandle ProgramStarted;
@@ -33,7 +32,7 @@ namespace BMCLV2
         protected override void OnStartup(StartupEventArgs e)
         {
             bool createNew;
-            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, "BmclStart", out createNew);
+            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, Environment.CurrentDirectory + "BMCLStart", out createNew);
             if (!createNew)
             {
                 ProgramStarted.Set();

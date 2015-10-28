@@ -321,7 +321,7 @@ namespace BMCLV2
             if (window != null)
             {
                 Dispatcher.Invoke(new Action(window.Show));
-                Dispatcher.Invoke(new Action(()=> { window.Activate(); }));
+                Dispatcher.Invoke(new Action(() => { window.Activate(); }));
             }
         }
     }
