@@ -21,8 +21,8 @@ namespace BMCLV2.Launcher
 
         #region 属性
         private readonly Process _game = new Process();
-        private readonly string _javaxmx = "";
-        private readonly string _username = "";
+        private readonly string _javaxmx;
+        private readonly string _username;
         private readonly string _version;
         private readonly string _name;
         private readonly gameinfo _info;
