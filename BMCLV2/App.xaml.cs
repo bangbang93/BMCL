@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using System.Diagnostics;
 using System.Net;
 using System.Threading;
-using System.Windows.Forms;
 using System.Windows.Markup;
-using BMCLV2.Lang;
 using BMCLV2.Windows;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
@@ -88,7 +85,6 @@ namespace BMCLV2
 
         public static void AboutToExit()
         {
-            _appLock.Close();
             Logger.stop();
         }
 

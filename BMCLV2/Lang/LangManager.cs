@@ -8,7 +8,6 @@ namespace BMCLV2.Lang
     static class LangManager
     {
         private static readonly Dictionary<string, LangType> Languages = new Dictionary<string, LangType>();
-        private static readonly Dictionary<string, string> DisplayToName = new Dictionary<string, string>(); 
         static private readonly ResourceDictionary DefaultLanguage = LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
         static public void Add(string languageName,string languageUrl)
         {
@@ -31,8 +30,7 @@ namespace BMCLV2.Lang
 
         static public ResourceDictionary LoadLangFromResource(string path)
         {
-            var lang = new ResourceDictionary();
-            lang.Source = new Uri(path);
+            var lang = new ResourceDictionary {Source = new Uri(path)};
             return lang;
         }
         static public void UseLanguage(string languageName)
