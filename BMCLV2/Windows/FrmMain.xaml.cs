@@ -14,6 +14,7 @@ using System.Windows.Media.Imaging;
 using BMCLV2.I18N;
 using BMCLV2.Login;
 using BMCLV2.Plugin;
+using BMCLV2.Themes;
 
 namespace BMCLV2.Windows
 {
@@ -28,12 +29,14 @@ namespace BMCLV2.Windows
         private int _clientCrashReportCount, _hsErrorCount;
         private FrmPrs _starter;
 
+        private Background _background = new Background();
+
         public FrmMain()
         {
             BmclCore.NIcon.MainWindow = this;
             BmclCore.MainWindow = this;
             InitializeComponent();
-            this.Title = "BMCL V2 Ver." + BmclCore.BmclVersion;
+            this.Title = "BMCL Ver." + BmclCore.BmclVersion;
             this.LoadConfig();
             GridGame.ReFlushlistver();
             GridGame.listVer.SelectedItem = BmclCore.Config.LastPlayVer;
@@ -100,58 +103,18 @@ namespace BMCLV2.Windows
         #region 公共按钮
         private void btnChangeBg_Click(object sender, RoutedEventArgs e)
         {
-            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\bg"))
+            var background = _background.GetRadnomImageBrush();
+            if (background != null)
             {
-                var rand = new Random();
-                var pics = new ArrayList();
-                foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.jpg", SearchOption.AllDirectories))
-                {
-                    pics.Add(str);
-                }
-                foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.png", SearchOption.AllDirectories))
-                {
-                    pics.Add(str);
-                }
-                foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.bmp", SearchOption.AllDirectories))
-                {
-                    pics.Add(str);
-                }
-                int imgTotal = pics.Count; 
-                if (imgTotal == 0)
-                {
-                    if (e != null)
-                        MessageBox.Show("没有可用的背景图");
-                    return;
-                }
-                if (imgTotal == 1)
-                {
-                    if (e != null)
-                        MessageBox.Show("只有一张可用的背景图哦");
-                    return;
-                }
-                int img = rand.Next(imgTotal);
-                var b = new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri(((string) pics[img]))),
-                    Stretch = Stretch.Fill
-                };
                 var da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
-                this.BeginAnimation(UIElement.OpacityProperty, da);
-                this.Container.Background = b;
+                BeginAnimation(OpacityProperty, da);
+                Container.Background = background;
                 da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
-                this.BeginAnimation(UIElement.OpacityProperty, da);
+                BeginAnimation(OpacityProperty, da);
             }
             else
             {
-                if (e == null)
-                    return;
-                MessageBox.Show("请在启动启动其目录下新建bg文件夹，并放入图片文件，支持jpg,bmp,png等格式，比例请尽量接近16:9，否则会被拉伸");
-                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\bg");
-                var explorer = new Process
-                {
-                    StartInfo = {FileName = "explorer.exe", Arguments = AppDomain.CurrentDomain.BaseDirectory + "\\bg"}
-                };
-                explorer.Start();
+                btnChangeBg.IsEnabled = false;
             }
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
@@ -162,7 +125,7 @@ namespace BMCLV2.Windows
                     this.btnMiniSize_Click(null, null);
                     return;
                 }
-            Logger.log(string.Format("BMCL V2 Ver.{0} 正在退出", BmclCore.BmclVersion));
+            Logger.log($"BMCL V2 Ver.{BmclCore.BmclVersion} 正在退出");
             this.Close();
             BmclCore.Halt();
         }
