@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 using BMCLV2.Resource;
 using BMCLV2.Windows;
 
@@ -20,7 +20,6 @@ namespace BMCLV2
         public static Dictionary<string, object> Auths = new Dictionary<string, object>();
         public static Launcher.Launcher Game;
         public static bool GameRunning = false;
-        public static string UrlDownloadBase = Url.URL_DOWNLOAD_bangbang93;
         public static string UrlResourceBase = Url.URL_RESOURCE_bangbang93;
         public static string UrlLibrariesBase = Url.URL_LIBRARIES_bangbang93;
         public static NotiIcon NIcon = new NotiIcon();
@@ -38,23 +37,16 @@ namespace BMCLV2
             BmclVersion = Application.ResourceAssembly.FullName.Split('=')[1];
             BmclVersion = BmclVersion.Substring(0, BmclVersion.IndexOf(','));
             Logger.log("BMCL V3 Ver." + BmclVersion + "正在启动");
-            if (File.Exists(Cfgfile))
+            Config = Config.Load(Cfgfile);
+            if (Config.Passwd == null)
             {
-                Config = Config.Load(Cfgfile);
-                if (Config.Passwd == null)
-                {
-                    Config.Passwd = new byte[0];   //V2的密码存储兼容
-                }
-                Logger.log($"加载{Cfgfile}文件");
-                Logger.log(Config);
-                LoadLanguage();
-                ChangeLanguage(Config.Lang);
+                Config.Passwd = new byte[0];   //V2的密码存储兼容
             }
-            else
-            {
-                Config = new Config();
-                Logger.log("加载默认配置");
-            }
+            Logger.log($"加载{Cfgfile}文件");
+            Logger.log(Config);
+            LangManager.LoadLanguage();
+            ChangeLanguage(Config.Lang);
+            Logger.log("加载默认配置");
             if (!Directory.Exists(BaseDirectory + ".minecraft"))
             {
                 Directory.CreateDirectory(BaseDirectory + ".minecraft");
@@ -274,30 +266,6 @@ namespace BMCLV2
             Dispatcher.Invoke(invoke, argObjects);
         }
 
-
-        private static void LoadLanguage()
-        {
-            ResourceDictionary lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
-            Language.Add((string)lang["DisplayName"], lang["LangName"]);
-            LangManager.Add(lang["LangName"] as string, "pack://application:,,,/Lang/zh-cn.xaml");
-
-            lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-tw.xaml");
-            Language.Add((string)lang["DisplayName"], lang["LangName"]);
-            LangManager.Add(lang["LangName"] as string, "pack://application:,,,/Lang/zh-tw.xaml");
-            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\Lang"))
-            {
-                foreach (string langFile in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\Lang", "*.xaml", SearchOption.TopDirectoryOnly))
-                {
-                    lang = LangManager.LoadLangFromResource(langFile);
-                    Language.Add((string)lang["DisplayName"], lang["LangName"]);
-                    LangManager.Add(lang["LangName"] as string, langFile);
-                }
-            }
-            else
-            {
-                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\Lang");
-            }
-        }
 
         public static void Halt(int code = 0)
         {

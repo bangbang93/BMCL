@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
-using System.Collections;
 
-namespace BMCLV2.Lang
+namespace BMCLV2.I18N
 {
     static class LangManager
     {
@@ -55,6 +55,30 @@ namespace BMCLV2.Lang
                 i++;
             }
             return langs;
+        }
+
+        public static void LoadLanguage()
+        {
+            ResourceDictionary lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
+            BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
+            LangManager.Add(lang["LangName"] as string, "pack://application:,,,/Lang/zh-cn.xaml");
+
+            lang = LangManager.LoadLangFromResource("pack://application:,,,/Lang/zh-tw.xaml");
+            BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
+            LangManager.Add(lang["LangName"] as string, "pack://application:,,,/Lang/zh-tw.xaml");
+            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\Lang"))
+            {
+                foreach (var langFile in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\Lang", "*.xaml", SearchOption.TopDirectoryOnly))
+                {
+                    lang = LangManager.LoadLangFromResource(langFile);
+                    BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
+                    LangManager.Add(lang["LangName"] as string, langFile);
+                }
+            }
+            else
+            {
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\Lang");
+            }
         }
     }
 }

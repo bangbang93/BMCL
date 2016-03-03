@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 using BMCLV2.Mod;
 using BMCLV2.Versions;
 

@@ -7,7 +7,7 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 
 namespace BMCLV2.Windows.MainWindowTab
 {
@@ -81,12 +81,10 @@ namespace BMCLV2.Windows.MainWindowTab
             switch (listDownSource.SelectedIndex)
             {
                 case 0:
-                    BmclCore.UrlDownloadBase = Resource.Url.URL_DOWNLOAD_bangbang93;
                     BmclCore.UrlResourceBase = Resource.Url.URL_RESOURCE_bangbang93;
                     BmclCore.UrlLibrariesBase = Resource.Url.URL_LIBRARIES_bangbang93;
                     break;
                 case 1:
-                    BmclCore.UrlDownloadBase = Resource.Url.URL_DOWNLOAD_BASE;
                     BmclCore.UrlResourceBase = Resource.Url.URL_RESOURCE_BASE;
                     BmclCore.UrlLibrariesBase = Resource.Url.URL_LIBRARIES_BASE;
                     break;

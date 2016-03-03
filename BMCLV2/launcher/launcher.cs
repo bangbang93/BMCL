@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 using BMCLV2.libraries;
 using BMCLV2.Login;
 using BMCLV2.util;

@@ -9,7 +9,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 using BMCLV2.Versions;
 using MessageBox = System.Windows.MessageBox;
 
@@ -29,55 +29,6 @@ namespace BMCLV2.Windows.MainWindowTab
             btnRefreshRemoteVer.IsEnabled = false;
             listRemoteVer.DataContext = null;
             var rawJson = new DataContractJsonSerializer(typeof(RawVersionListType));
-            var getJson = (HttpWebRequest)WebRequest.Create(BmclCore.UrlDownloadBase + "versions/versions.json");
-            getJson.Timeout = 10000;
-            getJson.ReadWriteTimeout = 10000;
-            getJson.UserAgent = "BMCL" + BmclCore.BmclVersion;
-            var thGet = new Thread(new ThreadStart(delegate
-            {
-                try
-                {
-                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate { btnRefreshRemoteVer.Content = LangManager.GetLangFromResource("RemoteVerGetting");}));
-                    var getJsonAns = (HttpWebResponse)getJson.GetResponse();
-                    // ReSharper disable once AssignNullToNotNullAttribute
-                    var remoteVersion = rawJson.ReadObject(getJsonAns.GetResponseStream()) as RawVersionListType;
-                    var dt = new DataTable();
-                    dt.Columns.Add("Ver");
-                    dt.Columns.Add("RelTime");
-                    dt.Columns.Add("Type");
-                    if (remoteVersion != null)
-                        foreach (RemoteVerType rv in remoteVersion.getVersions())
-                        {
-                            dt.Rows.Add(new object[] { rv.id, rv.releaseTime, rv.type });
-                        }
-                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
-                    {
-                        btnRefreshRemoteVer.Content = LangManager.GetLangFromResource("btnRefreshRemoteVer");
-                        btnRefreshRemoteVer.IsEnabled = true;
-                        listRemoteVer.DataContext = dt;
-                        listRemoteVer.Items.SortDescriptions.Add(new System.ComponentModel.SortDescription("RelTime", System.ComponentModel.ListSortDirection.Descending));
-                    }));
-                }
-                catch (WebException ex)
-                {
-                    MessageBox.Show(LangManager.GetLangFromResource("RemoteVerFailedTimeout") + "\n" + ex.Message);
-                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
-                    {
-                        btnRefreshRemoteVer.Content = LangManager.GetLangFromResource("btnRefreshRemoteVer");
-                        btnRefreshRemoteVer.IsEnabled = true;
-                    }));
-                }
-                catch (TimeoutException ex)
-                {
-                    MessageBox.Show(LangManager.GetLangFromResource("RemoteVerFailedTimeout") + "\n" + ex.Message);
-                    Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate
-                    {
-                        btnRefreshRemoteVer.Content = LangManager.GetLangFromResource("btnRefreshRemoteVer");
-                        btnRefreshRemoteVer.IsEnabled = true;
-                    }));
-                }
-            }));
-            thGet.Start();
         }
         private void btnDownloadVer_Click(object sender, RoutedEventArgs e)
         {
@@ -93,44 +44,6 @@ namespace BMCLV2.Windows.MainWindowTab
                 var downpath = new StringBuilder(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions\");
                 downpath.Append(selectver).Append("\\");
                 downpath.Append(selectver).Append(".jar");
-                var downer = new WebClient();
-                downer.Headers.Add("User-Agent", "BMCL" + BmclCore.BmclVersion);
-                var downurl = new StringBuilder(BmclCore.UrlDownloadBase);
-                downurl.Append(@"versions\");
-                downurl.Append(selectver).Append("\\");
-                downurl.Append(selectver).Append(".jar");
-#if DEBUG
-                MessageBox.Show(downpath + "\n" + downurl);
-#endif
-                btnDownloadVer.Content = LangManager.GetLangFromResource("RemoteVerDownloading");
-                btnDownloadVer.IsEnabled = false;
-                // ReSharper disable once AssignNullToNotNullAttribute
-                if (!Directory.Exists(Path.GetDirectoryName(downpath.ToString())))
-                {
-// ReSharper disable AssignNullToNotNullAttribute
-                    Directory.CreateDirectory(Path.GetDirectoryName(downpath.ToString()));
-// ReSharper restore AssignNullToNotNullAttribute
-                }
-                string downjsonfile = downurl.ToString().Substring(0, downurl.Length - 4) + ".json";
-                string downjsonpath = downpath.ToString().Substring(0, downpath.Length - 4) + ".json";
-                try
-                {
-                    downer.DownloadFileCompleted += downer_DownloadClientFileCompleted;
-                    downer.DownloadProgressChanged += downer_DownloadProgressChanged;
-                    Logger.log("下载:" + downjsonfile);
-                    downer.DownloadFile(new Uri(downjsonfile), downjsonpath);
-                    Logger.log("下载:" + downurl);
-                    downer.DownloadFileAsync(new Uri(downurl.ToString()), downpath.ToString());
-                    _downedtime = Environment.TickCount - 1;
-                    _downed = 0;
-                    BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Visible);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message + "\n");
-                    btnDownloadVer.Content = LangManager.GetLangFromResource("btnDownloadVer");
-                    btnDownloadVer.IsEnabled = true;
-                }
             }
         }
         int _downedtime;
@@ -138,7 +51,6 @@ namespace BMCLV2.Windows.MainWindowTab
         void downer_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
         {
             BmclCore.MainWindow.ChangeDownloadProgress((int)e.BytesReceived, (int)e.TotalBytesToReceive);
-            //            TaskbarManager.Instance.SetProgressValue((int)e.BytesReceived, (int)e.TotalBytesToReceive);
             var info = new StringBuilder(LangManager.GetLangFromResource("DownloadSpeedInfo"));
             try
             {
