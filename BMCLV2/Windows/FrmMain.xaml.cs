@@ -11,8 +11,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 using BMCLV2.Login;
+using BMCLV2.Plugin;
 
 namespace BMCLV2.Windows
 {
@@ -491,7 +492,7 @@ namespace BMCLV2.Windows
         {
             GridConfig.listDownSource.Items[1] = LangManager.GetLangFromResource("listOfficalSource");
             GridConfig.listDownSource.Items[0] = LangManager.GetLangFromResource("listAuthorSource");
-            BmclCore.LoadPlugin(LangManager.GetLangFromResource("LangName"));
+            PluginManager.LoadPlugin(LangManager.GetLangFromResource("LangName"));
         }
 
         private void MenuStartDebug_Click(object sender, RoutedEventArgs e)

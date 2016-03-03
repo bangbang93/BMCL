@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using BMCLV2.I18N;
+using BMCLV2.Plugin;
 using BMCLV2.Resource;
 using BMCLV2.Windows;
 
@@ -45,7 +46,7 @@ namespace BMCLV2
             Logger.log($"加载{Cfgfile}文件");
             Logger.log(Config);
             LangManager.LoadLanguage();
-            ChangeLanguage(Config.Lang);
+            LangManager.ChangeLanguage(Config.Lang);
             Logger.log("加载默认配置");
             if (!Directory.Exists(BaseDirectory + ".minecraft"))
             {
@@ -62,7 +63,7 @@ namespace BMCLV2
             LangManager.UseLanguage(Config.Lang);
             if (!App.SkipPlugin)
             {
-                LoadPlugin(LangManager.GetLangFromResource("LangName"));
+                PluginManager.LoadPlugin(LangManager.GetLangFromResource("LangName"));
             }
 #if DEBUG
 #else
@@ -106,161 +107,6 @@ namespace BMCLV2
             }
         }
 
-        public static void ChangeLanguage(string lang)
-        {
-            LangManager.UseLanguage(lang);
-        }
-
-        public static void LoadPlugin(string language)
-        {
-            Auths.Clear();
-            if (!Directory.Exists("auths")) return;
-            var authplugins = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\auths");
-            foreach (string auth in authplugins.Where(auth => auth.ToLower().EndsWith(".dll")))
-            {
-                Logger.log("尝试加载" + auth);
-                try
-                {
-                    var authMethod = Assembly.LoadFrom(auth);
-                    var types = authMethod.GetTypes();
-                    foreach (var t in types)
-                    {
-                        if (t.GetInterface("IBmclAuthPlugin") != null)
-                        {
-                            try
-                            {
-                                var authInstance = authMethod.CreateInstance(t.FullName);
-                                if (authInstance == null) continue;
-                                var T = authInstance.GetType();
-                                var authVer = T.GetMethod("GetVer");
-                                if (authVer == null)
-                                {
-                                    Logger.log(String.Format("未找到{0}的GetVer方法，放弃加载", authInstance));
-                                    continue;
-                                }
-                                if ((long)authVer.Invoke(authInstance, null) > 2)
-                                {
-                                    Logger.log(String.Format("{0}的版本高于2，放弃加载", authInstance));
-                                    continue;
-                                }
-                                var authVersion = T.GetMethod("GetVersion");
-                                if (authVersion == null)
-                                {
-                                    Logger.log(String.Format("{0}为第一代插件", authInstance));
-                                }
-                                else if ((long)authVersion.Invoke(authInstance, new object[] { 2 }) != 2)
-                                {
-                                    Logger.log(String.Format("{0}版本高于启动器，放弃加载", authInstance));
-                                }
-                                var mAuthName = T.GetMethod("GetName");
-                                var authName =
-                                    mAuthName.Invoke(authInstance, new object[] { language }).ToString();
-                                Auths.Add(authName, authInstance);
-                                Logger.log(String.Format("{0}加载成功，名称为{1}", authInstance, authName),
-                                    Logger.LogType.Error);
-                            }
-                            catch (MissingMethodException ex)
-                            {
-                                Logger.log(String.Format("加载{0}的{1}失败", auth, t), Logger.LogType.Error);
-                                Logger.log(ex);
-                            }
-                            catch (ArgumentException ex)
-                            {
-                                Logger.log(String.Format("加载{0}的{1}失败", auth, t), Logger.LogType.Error);
-                                Logger.log(ex);
-                            }
-                            catch (NotSupportedException ex)
-                            {
-                                if (ex.Message.IndexOf("0x80131515", StringComparison.Ordinal) != -1)
-                                {
-                                    MessageBox.Show(LangManager.GetLangFromResource("LoadPluginLockErrorInfo"), LangManager.GetLangFromResource("LoadPluginLockErrorTitle"));
-                                }
-                                else throw;
-                            }
-                        } else if (t.GetInterface("IBmclPlugin") != null)
-                        {
-
-                        }
-                        else
-                        {
-                            try
-                            {
-                                var authInstance = authMethod.CreateInstance(t.FullName);
-                                if (authInstance == null) continue;
-                                var T = authInstance.GetType();
-                                var authVer = T.GetMethod("GetVer");
-                                if (authVer == null)
-                                {
-                                    if (authInstance.ToString().IndexOf("My.MyApplication", StringComparison.Ordinal) == -1 &&
-                                        authInstance.ToString().IndexOf("My.MyComputer", StringComparison.Ordinal) == -1 &&
-                                        authInstance.ToString().IndexOf("My.MyProject+MyWebServices", StringComparison.Ordinal) == -1 &&
-                                        authInstance.ToString().IndexOf("My.MySettings", StringComparison.Ordinal) == -1)
-                                    {
-                                        Logger.log(String.Format("未找到{0}的GetVer方法，放弃加载", authInstance));
-                                    }
-                                    continue;
-                                }
-                                if ((long)authVer.Invoke(authInstance, null) != 1)
-                                {
-                                    Logger.log(String.Format("{0}的版本不为1，放弃加载", authInstance));
-                                    continue;
-                                }
-                                var authVersion = T.GetMethod("GetVersion");
-                                if (authVersion == null)
-                                {
-                                    Logger.log(String.Format("{0}为第一代插件", authInstance));
-                                }
-                                else if ((long)authVersion.Invoke(authInstance, new object[] { 2 }) != 2)
-                                {
-                                    Logger.log(String.Format("{0}版本高于启动器，放弃加载", authInstance));
-                                }
-                                var mAuthName = T.GetMethod("GetName");
-                                var authName =
-                                    mAuthName.Invoke(authInstance, new object[] { language }).ToString();
-                                Auths.Add(authName, authInstance);
-                                Logger.log(String.Format("{0}加载成功，名称为{1}", authInstance, authName),
-                                    Logger.LogType.Error);
-                            }
-                            catch (MissingMethodException ex)
-                            {
-                                if (t.ToString().IndexOf("My.MyProject", StringComparison.Ordinal) == -1 &&
-                                    t.ToString().IndexOf("My.Resources.Resources", StringComparison.Ordinal) == -1 &&
-                                    t.ToString().IndexOf("My.MySettingsProperty", StringComparison.Ordinal) == -1)
-                                {
-                                    Logger.log(String.Format("加载{0}的{1}失败", auth, t), Logger.LogType.Error);
-                                    Logger.log(ex);
-                                }
-                            }
-                            catch (ArgumentException ex)
-                            {
-                                if (t.ToString().IndexOf("My.MyProject+MyWebServices", StringComparison.Ordinal) == -1 &&
-                                    t.ToString().IndexOf("My.MyProject+ThreadSafeObjectProvider`1[T]", StringComparison.Ordinal) == -1)
-                                {
-                                    Logger.log(String.Format("加载{0}的{1}失败", auth, t), Logger.LogType.Error);
-                                    Logger.log(ex);
-                                }
-                            }
-                            catch (NotSupportedException ex)
-                            {
-                                if (ex.Message.IndexOf("0x80131515", StringComparison.Ordinal) != -1)
-                                {
-                                    MessageBox.Show(LangManager.GetLangFromResource("LoadPluginLockErrorInfo"), LangManager.GetLangFromResource("LoadPluginLockErrorTitle"));
-                                }
-                                else throw;
-                            }
-                        }
-                    }
-                }
-                catch (NotSupportedException ex)
-                {
-                    if (ex.Message.IndexOf("0x80131515", StringComparison.Ordinal) != -1)
-                    {
-                        MessageBox.Show(LangManager.GetLangFromResource("LoadPluginLockErrorInfo"), LangManager.GetLangFromResource("LoadPluginLockErrorTitle"));
-                    }
-                }
-            }
-        }
-
         public static void Invoke(Delegate invoke, object[] argObjects = null)
         {
             Dispatcher.Invoke(invoke, argObjects);
@@ -279,12 +125,11 @@ namespace BMCLV2
 
         private static void OnAnotherProgramStarted(object state, bool timedout)
         {
-            var window = state as Window;
+            var window = MainWindow;
             NIcon.ShowBalloonTip(2000, LangManager.GetLangFromResource("BMCLHiddenInfo"));
             if (window != null)
             {
-                Dispatcher.Invoke(new Action(window.Show));
-                Dispatcher.Invoke(new Action(() => { window.Activate(); }));
+                Dispatcher.Invoke(window.Show);
             }
         }
     }

@@ -80,5 +80,10 @@ namespace BMCLV2.I18N
                 Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\Lang");
             }
         }
+
+        public static void ChangeLanguage(string lang)
+        {
+            LangManager.UseLanguage(lang);
+        }
     }
 }
