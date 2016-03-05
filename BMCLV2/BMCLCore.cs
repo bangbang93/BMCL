@@ -8,6 +8,7 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
 using BMCLV2.I18N;
+using BMCLV2.Mirrors;
 using BMCLV2.Plugin;
 using BMCLV2.Resource;
 using BMCLV2.Windows;
@@ -31,7 +32,7 @@ namespace BMCLV2
         public static string BaseDirectory = Environment.CurrentDirectory + '\\';
         private static readonly Application ThisApplication = Application.Current;
         private readonly static string Cfgfile = BaseDirectory + "bmcl.xml";
-        private static Report _reporter;
+        public static MirrorManager MirrorManager = new MirrorManager();
 
         static BmclCore()
         {
@@ -75,7 +76,7 @@ namespace BMCLV2
         {
             if (Config.Report)
             {
-                _reporter = new Report();
+                var reporter = new Report();
             }
             if (Config.CheckUpdate)
             {

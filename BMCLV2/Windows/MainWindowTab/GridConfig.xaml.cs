@@ -8,6 +8,7 @@ using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using BMCLV2.I18N;
+using BMCLV2.Mirrors;
 
 namespace BMCLV2.Windows.MainWindowTab
 {
@@ -78,19 +79,9 @@ namespace BMCLV2.Windows.MainWindowTab
 
         private void listDownSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            switch (listDownSource.SelectedIndex)
-            {
-                case 0:
-                    BmclCore.UrlResourceBase = Resource.Url.URL_RESOURCE_bangbang93;
-                    BmclCore.UrlLibrariesBase = Resource.Url.URL_LIBRARIES_bangbang93;
-                    break;
-                case 1:
-                    BmclCore.UrlResourceBase = Resource.Url.URL_RESOURCE_BASE;
-                    BmclCore.UrlLibrariesBase = Resource.Url.URL_LIBRARIES_BASE;
-                    break;
-                default:
-                    goto case 0;
-            }
+            var index = listDownSource.SelectedIndex;
+            BmclCore.MirrorManager.CurrectMirror = BmclCore.MirrorManager[index];
+            BmclCore.Config.DownloadSource = index;
         }
         private void txtJavaXmx_TextChanged(object sender, TextChangedEventArgs e)
         {

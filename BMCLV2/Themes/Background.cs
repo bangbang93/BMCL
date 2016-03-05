@@ -9,6 +9,7 @@ namespace BMCLV2.Themes
     public class Background
     {
         private readonly List<string> _files = new List<string>();
+        private readonly string directory = AppDomain.CurrentDomain.BaseDirectory + "\\bg";
 
         public Background()
         {
@@ -45,9 +46,16 @@ namespace BMCLV2.Themes
         public void Reload()
         {
             _files.Clear();
-            _files.AddRange(Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.jpg", SearchOption.AllDirectories));
-            _files.AddRange(Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.png", SearchOption.AllDirectories));
-            _files.AddRange(Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.bmp", SearchOption.AllDirectories));
+            try
+            {
+                _files.AddRange(Directory.GetFiles(directory, "*.jpg", SearchOption.AllDirectories));
+                _files.AddRange(Directory.GetFiles(directory, "*.png", SearchOption.AllDirectories));
+                _files.AddRange(Directory.GetFiles(directory, "*.bmp", SearchOption.AllDirectories));
+            }
+            catch (DirectoryNotFoundException)
+            {
+                Directory.CreateDirectory(directory);
+            }
         }
     }
 }

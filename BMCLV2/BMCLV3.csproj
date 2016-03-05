@@ -99,14 +99,19 @@
     <Compile Include="Downloader\Downloader.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="JsonClass\JSON.cs" />
     <Compile Include="Launcher\NoJavaException.cs" />
     <Compile Include="Launcher\UnSupportVersionException.cs" />
+    <Compile Include="Mirrors\BMCLAPI\Version.cs" />
     <Compile Include="Mirrors\Interface\Version.cs" />
+    <Compile Include="Mirrors\MirrorManager.cs" />
     <Compile Include="Mirrors\Vanilla\Version.cs" />
     <Compile Include="Mod\ModHelper.cs" />
     <Compile Include="Objects\Mirrors\VersionManifest.cs" />
     <Compile Include="Plugin\IBmclPlugin.cs" />
     <Compile Include="Plugin\IBmclAuthPlugin.cs" />
+    <Compile Include="Plugin\PluginManager.cs" />
+    <Compile Include="Themes\Background.cs" />
     <Compile Include="Windows\FrmUpdater.xaml.cs">
       <DependentUpon>FrmUpdater.xaml</DependentUpon>
     </Compile>
@@ -151,8 +156,8 @@
     </Compile>
     <Compile Include="JsonClass\ForgeVersion.cs" />
     <Compile Include="JsonClass\soundsJson.cs" />
-    <Compile Include="Lang\LangManager.cs" />
-    <Compile Include="Lang\LangType.cs" />
+    <Compile Include="I18N\LangManager.cs" />
+    <Compile Include="I18N\LangType.cs" />
     <Compile Include="Launcher\gameinfo.cs" />
     <Compile Include="libraries\extract.cs" />
     <Compile Include="libraries\libraryies.cs" />
@@ -303,7 +308,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Lang\zh-tw.xaml">
+    <Page Include="I18N\zh-tw.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -348,7 +353,7 @@
       <LastGenOutput>Url.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Page Include="Lang\zh-cn.xaml">
+    <Page Include="I18N\zh-cn.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -359,7 +364,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="tofu.ico" />

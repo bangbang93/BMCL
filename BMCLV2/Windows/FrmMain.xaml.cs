@@ -29,7 +29,7 @@ namespace BMCLV2.Windows
         private int _clientCrashReportCount, _hsErrorCount;
         private FrmPrs _starter;
 
-        private Background _background = new Background();
+        private readonly Background _background = new Background();
 
         public FrmMain()
         {
@@ -126,7 +126,6 @@ namespace BMCLV2.Windows
                     return;
                 }
             Logger.log($"BMCL V2 Ver.{BmclCore.BmclVersion} 正在退出");
-            this.Close();
             BmclCore.Halt();
         }
         private void btnStart_Click(object sender, RoutedEventArgs e)
@@ -146,7 +145,7 @@ namespace BMCLV2.Windows
             _clientCrashReportCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count() : 0;
             _hsErrorCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Count(s => s.StartsWith("hs_err")) : 0;
             _starter = new FrmPrs("正在准备游戏环境及启动游戏");
-            Logger.info(string.Format("正在启动{0},使用的登陆方式为{1}", GridGame.listVer.SelectedItem, GridConfig.listAuth.SelectedItem));
+            Logger.info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
             _starter.ShowInTaskbar = false;
             _starter.Show();
             _starter.Activate();

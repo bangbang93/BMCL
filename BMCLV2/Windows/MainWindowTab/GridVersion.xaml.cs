@@ -10,8 +10,10 @@ using System.Windows;
 using System.Windows.Forms;
 using System.Windows.Input;
 using BMCLV2.I18N;
+using BMCLV2.Mirrors;
 using BMCLV2.Versions;
 using MessageBox = System.Windows.MessageBox;
+using Version = BMCLV2.Mirrors.Interface.Version;
 
 namespace BMCLV2.Windows.MainWindowTab
 {
@@ -20,15 +22,18 @@ namespace BMCLV2.Windows.MainWindowTab
     /// </summary>
     public partial class GridVersion
     {
+
         public GridVersion()
         {
             InitializeComponent();
         }
-        private void btnRefreshRemoteVer_Click(object sender, RoutedEventArgs e)
+
+        private async void btnRefreshRemoteVer_Click(object sender, RoutedEventArgs e)
         {
             btnRefreshRemoteVer.IsEnabled = false;
-            listRemoteVer.DataContext = null;
-            var rawJson = new DataContractJsonSerializer(typeof(RawVersionListType));
+            await BmclCore.MirrorManager.CurrectMirror.Refresh();
+            listRemoteVer.DataContext = BmclCore.MirrorManager.CurrectMirror.GetDataTable();
+            btnRefreshRemoteVer.IsEnabled = true;
         }
         private void btnDownloadVer_Click(object sender, RoutedEventArgs e)
         {
@@ -71,16 +76,6 @@ namespace BMCLV2.Windows.MainWindowTab
             //            TaskbarManager.Instance.SetProgressState(TaskbarProgressBarState.NoProgress);
             BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Hidden);
             BmclCore.MainWindow.TabMain.SelectedIndex = 0;
-        }
-        private void btnCheckRes_Click(object sender, RoutedEventArgs e)
-        {
-            if (
-                MessageBox.Show(LangManager.GetLangFromResource("ResourceDeprecatedWarning"), "BMCL", MessageBoxButton.OKCancel) ==
-                MessageBoxResult.OK)
-            {
-                var checkres = new FrmCheckRes();
-                checkres.Show();
-            }
         }
         private void listRemoteVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

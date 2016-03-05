@@ -29,7 +29,7 @@ namespace BMCLV2
         protected override void OnStartup(StartupEventArgs e)
         {
             bool createNew;
-            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, Environment.CurrentDirectory + "BMCLStart", out createNew);
+            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, Process.GetCurrentProcess().ProcessName, out createNew);
             if (!createNew)
             {
                 ProgramStarted.Set();

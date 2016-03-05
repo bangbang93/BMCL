@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Data;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
+using System.Text;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
+using BMCLV2.JsonClass;
 using BMCLV2.Objects.Mirrors;
 
 namespace BMCLV2.Mirrors.Interface
@@ -11,8 +15,8 @@ namespace BMCLV2.Mirrors.Interface
         protected readonly Downloader.Downloader Downloader = new Downloader.Downloader();
         protected VersionManifest VersionManifest;
         protected string Url = "http://bmclapi2.bangbang93.com/mc/game/version_manifest.json";
+        public virtual string Name { get;}
 
-            
         public VersionManifest.Latest GetLatest()
         {
             return VersionManifest.latest;
@@ -21,6 +25,21 @@ namespace BMCLV2.Mirrors.Interface
         public VersionManifest.Version[] GetVersions()
         {
             return VersionManifest.versions;
+        }
+
+        public DataTable GetDataTable()
+        {
+            var versions = VersionManifest.versions;
+            var dt = new DataTable();
+            dt.Columns.Add("id");
+            dt.Columns.Add("type");
+            dt.Columns.Add("time");
+            dt.Columns.Add("url");
+            foreach (var version in versions)
+            {
+                dt.Rows.Add(version.id, version.type, version.time, version.url);
+            }
+            return dt;
         }
 
         public VersionManifest.Version GetVersion(string id)
@@ -33,8 +52,7 @@ namespace BMCLV2.Mirrors.Interface
             var json =
                 await Downloader.DownloadStringTaskAsync(
                     new Uri(Url));
-            var serializer = new JavaScriptSerializer();
-            VersionManifest = serializer.DeserializeObject(json) as VersionManifest;
+            VersionManifest = (VersionManifest) new JSON(typeof (VersionManifest)).Parse(json);
         }
     }
 }
