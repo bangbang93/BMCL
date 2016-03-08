@@ -99,6 +99,7 @@
     <Compile Include="Downloader\Downloader.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Downloader\Version.cs" />
     <Compile Include="JsonClass\JSON.cs" />
     <Compile Include="Launcher\NoJavaException.cs" />
     <Compile Include="Launcher\UnSupportVersionException.cs" />
@@ -107,11 +108,14 @@
     <Compile Include="Mirrors\MirrorManager.cs" />
     <Compile Include="Mirrors\Vanilla\Version.cs" />
     <Compile Include="Mod\ModHelper.cs" />
+    <Compile Include="Objects\Mirrors\LibraryInfo.cs" />
+    <Compile Include="Objects\Mirrors\VersionInfo.cs" />
     <Compile Include="Objects\Mirrors\VersionManifest.cs" />
     <Compile Include="Plugin\IBmclPlugin.cs" />
     <Compile Include="Plugin\IBmclAuthPlugin.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Themes\Background.cs" />
+    <Compile Include="util\PathHelper.cs" />
     <Compile Include="Windows\FrmUpdater.xaml.cs">
       <DependentUpon>FrmUpdater.xaml</DependentUpon>
     </Compile>

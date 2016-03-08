@@ -54,7 +54,7 @@ namespace BMCLV2.util
 
         static public void CreateDirectoryForFile(string File)
         {
-            CreateDirectoryIfNotExist(System.IO.Path.GetDirectoryName(File));
+            CreateDirectoryIfNotExist(Path.GetDirectoryName(File));
         }
 
         public static void WriteFile(string path, string content)

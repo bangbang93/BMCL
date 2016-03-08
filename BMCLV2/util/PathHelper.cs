@@ -4,7 +4,7 @@
     {
         public static string VersionFile(string id, string suffix)
         {
-            return System.IO.Path.Combine(BmclCore.BaseDirectory, ".minecraft", "id", $"{id}.{suffix}");
+            return System.IO.Path.Combine(BmclCore.BaseDirectory, ".minecraft", "versions", id, $"{id}.{suffix}");
         } 
     }
 }

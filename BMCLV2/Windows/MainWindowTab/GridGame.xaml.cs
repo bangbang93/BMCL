@@ -6,7 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using BMCLV2.I18N;
 using BMCLV2.Mod;
-using BMCLV2.Versions;
 
 namespace BMCLV2.Windows.MainWindowTab
 {
@@ -43,8 +42,8 @@ namespace BMCLV2.Windows.MainWindowTab
                 return;
             }
             labVer.Content = BmclCore.GameInfo.id;
-            labTime.Content = BmclCore.GameInfo.time;
-            labRelTime.Content = BmclCore.GameInfo.releaseTime;
+            labTime.Content = DateTime.Parse(BmclCore.GameInfo.time);
+            labRelTime.Content = DateTime.Parse(BmclCore.GameInfo.releaseTime);
             labType.Content = BmclCore.GameInfo.type;
         }
 
@@ -114,58 +113,6 @@ namespace BMCLV2.Windows.MainWindowTab
             });
         }
 
-        private void btnImportOldMc_Click(object sender, RoutedEventArgs e)
-        {
-            var folderImportOldVer = new System.Windows.Forms.FolderBrowserDialog
-            {
-                Description = LangManager.GetLangFromResource("ImportDirInfo")
-            };
-            var prs = new FrmPrs(LangManager.GetLangFromResource("ImportPrsTitle"));
-            prs.Show();
-            if (folderImportOldVer.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                string importFrom = folderImportOldVer.SelectedPath;
-                if (!File.Exists(importFrom + "\\bin\\minecraft.jar"))
-                {
-                    MessageBox.Show(LangManager.GetLangFromResource("ImportFailedNoMinecraftFound"));
-                    return;
-                }
-                bool f1, f2;
-                string importName = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("ImportNameInfo"), LangManager.GetLangFromResource("ImportOldMcInfo"), "OldMinecraft");
-                do
-                {
-                    f1 = false;
-                    f2 = false;
-                    if (importName.Length <= 0 || importName.IndexOf('.') != -1)
-                        importName = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("ImportNameInfo"), LangManager.GetLangFromResource("ImportInvildName"), "OldMinecraft");
-                    else
-                        f1 = true;
-                    if (Directory.Exists(".minecraft\\versions\\" + importName))
-                        importName = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("ImportNameInfo"), LangManager.GetLangFromResource("ImportFailedExist"), "OldMinecraft");
-                    else
-                        f2 = true;
-
-                } while (!(f1 && f2));
-                VersionHelper.ImportOldMc(importName, importFrom, new Action(() =>
-                {
-                    prs.Close();
-                    MessageBox.Show(BmclCore.MainWindow, LangManager.GetLangFromResource("ImportOldMCInfo"));
-                }
-                ));
-            }
-            else prs.Close();
-        }
-
-        private void btnCoreModMrg_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "explorer.exe",
-                Arguments =
-                    Path.Combine(ModHelper.SetupModPath(listVer.SelectedItem.ToString()), "coremods")
-            });
-        }
-
         private void btnModdirMrg_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo
@@ -191,20 +138,6 @@ namespace BMCLV2.Windows.MainWindowTab
             BmclCore.MainWindow.ClickStartButton();
         }
 
-        private void btnLibraries_Click(object sender, RoutedEventArgs e)
-        {
-            var f = new FrmLibraries(BmclCore.GameInfo.libraries);
-            if (f.ShowDialog() == true)
-            {
-                BmclCore.GameInfo.libraries = f.GetChange();
-                string jsonFile = gameinfo.GetGameInfoJsonPath(listVer.SelectedItem.ToString());
-                File.Delete(jsonFile + ".bak");
-                File.Move(jsonFile, jsonFile + ".bak");
-                gameinfo.Write(BmclCore.GameInfo, jsonFile);
-                this.listVer_SelectionChanged(null, null);
-            }
-        }
-
         public void ReFlushlistver()
         {
             listVer.Items.Clear();
@@ -218,7 +151,6 @@ namespace BMCLV2.Windows.MainWindowTab
                     btnModCfgMrg.IsEnabled = false;
                     btnModdirMrg.IsEnabled = false;
                     btnModMrg.IsEnabled = false;
-                    btnCoreModMrg.IsEnabled = false;
                     return;
                 }
             }
@@ -230,7 +162,6 @@ namespace BMCLV2.Windows.MainWindowTab
                 btnModCfgMrg.IsEnabled = false;
                 btnModdirMrg.IsEnabled = false;
                 btnModMrg.IsEnabled = false;
-                btnCoreModMrg.IsEnabled = false;
                 return;
             }
             DirectoryInfo[] versions = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions").GetDirectories();
@@ -246,7 +177,6 @@ namespace BMCLV2.Windows.MainWindowTab
                 btnModCfgMrg.IsEnabled = true;
                 btnModdirMrg.IsEnabled = true;
                 btnModMrg.IsEnabled = true;
-                btnCoreModMrg.IsEnabled = true;
             }
             else
             {
@@ -255,7 +185,6 @@ namespace BMCLV2.Windows.MainWindowTab
                 btnModCfgMrg.IsEnabled = false;
                 btnModdirMrg.IsEnabled = false;
                 btnModMrg.IsEnabled = false;
-                btnCoreModMrg.IsEnabled = false;
             }
         }
 

@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Input;
 using BMCLV2.I18N;
 using MessageBox = System.Windows.MessageBox;
+using Version = BMCLV2.Downloader.Version;
 
 namespace BMCLV2.Windows.MainWindowTab
 {
@@ -15,8 +16,8 @@ namespace BMCLV2.Windows.MainWindowTab
     /// </summary>
     public partial class GridVersion
     {
+        private FrmPrs _prs;
 
-        private int _downloadStartTime;
         public GridVersion()
         {
             InitializeComponent();
@@ -40,35 +41,26 @@ namespace BMCLV2.Windows.MainWindowTab
             if (selectVer != null)
             {
                 var url = selectVer[3] as string;
-                var downloader = new Downloader.Downloader();
-                downloader.DownloadProgressChanged += downer_DownloadProgressChanged;
-                downloader.DownloadFileCompleted += downer_DownloadClientFileCompleted;
-                _downloadStartTime = Environment.TickCount;
+                var versionDownloader = new Version(url);
+                _prs = new FrmPrs(LangManager.GetLangFromResource("btnDownloadVer"));
+                _prs.Show();
+                versionDownloader.ProcessChange += VersionDownloader_ProcessChange;
+                await versionDownloader.Start();
+                Logger.log("下载客户端文件成功");
+                MessageBox.Show(LangManager.GetLangFromResource("RemoteVerDownloadSuccess"));
+                btnDownloadVer.Content = LangManager.GetLangFromResource("btnDownloadVer");
+                btnDownloadVer.IsEnabled = true;
+                BmclCore.MainWindow.GridGame.ReFlushlistver();
+                BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Hidden);
+                BmclCore.MainWindow.TabMain.SelectedIndex = 0;
+                _prs.Close();
+                _prs = null;
             }
-        }
-        void downer_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            BmclCore.MainWindow.ChangeDownloadProgress((int)e.BytesReceived, (int)e.TotalBytesToReceive);
-            var info = new StringBuilder(LangManager.GetLangFromResource("DownloadSpeedInfo"));
-            try
-            {
-                long escapeTime = (Environment.TickCount - _downloadStartTime)/1000;
-                info.Append(((double)e.BytesReceived / escapeTime / 1024.0).ToString("F2")).Append("KB/s,");
-            }
-            catch (DivideByZeroException) { info.Append("0B/s,"); }
-            info.Append(e.ProgressPercentage.ToString(CultureInfo.InvariantCulture)).Append("%");
-            BmclCore.MainWindow.SetDownloadInfo(info.ToString());
         }
 
-        void downer_DownloadClientFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        private void VersionDownloader_ProcessChange(string status)
         {
-            Logger.log("下载客户端文件成功");
-            MessageBox.Show(LangManager.GetLangFromResource("RemoteVerDownloadSuccess"));
-            btnDownloadVer.Content = LangManager.GetLangFromResource("btnDownloadVer");
-            btnDownloadVer.IsEnabled = true;
-            BmclCore.MainWindow.GridGame.ReFlushlistver();
-            BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Hidden);
-            BmclCore.MainWindow.TabMain.SelectedIndex = 0;
+            _prs.ChangeEventH(status);
         }
         private void listRemoteVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

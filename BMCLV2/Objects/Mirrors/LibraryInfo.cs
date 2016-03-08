@@ -48,11 +48,5 @@ namespace BMCLV2.Objects.Mirrors
         [DataMember] public Downloads downloads;
         [DataMember] public Rule[] rules;
         [DataMember] public Extract extract;
-        [DataMember] public string mainClass;
-        [DataMember] public string minecraftArguments;
-        [DataMember] public int minimumLauncherVersion;
-        [DataMember] public string releaseTime;
-        [DataMember] public string time;
-        [DataMember] public string type;
     }
 }
