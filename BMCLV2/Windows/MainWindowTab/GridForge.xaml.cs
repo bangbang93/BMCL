@@ -73,7 +73,6 @@ namespace BMCLV2.Windows.MainWindowTab
         private async void DownloadForge(string ver)
         {
             var forgeVersion = _forgeVersions.First(version => version.name == ver);
-            BmclCore.Invoke(new Action(() => BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Visible)));
             await _forgeTask.DownloadForge(forgeVersion);
             BmclCore.MainWindow.GridGame.ReFlushlistver();
             BmclCore.MainWindow.TabMain.SelectedIndex = 0;
