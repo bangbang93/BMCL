@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Windows;
@@ -9,6 +12,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using BMCLV2.Forge;
 using BMCLV2.I18N;
+using BMCLV2.JsonClass;
 
 namespace BMCLV2.Windows.MainWindowTab
 {
@@ -25,25 +29,34 @@ namespace BMCLV2.Windows.MainWindowTab
             InitializeComponent();
         }
 
-        readonly ForgeVersionList _forgeVer = new ForgeVersionList();
-        private void RefreshForgeVersionList()
+        readonly ForgeTask _forgeTask = new ForgeTask();
+        private ForgeVersion[] _forgeVersions;
+        private async void RefreshForgeVersionList()
         {
             treeForgeVer.Items.Add(LangManager.GetLangFromResource("ForgeListGetting"));
-            _forgeVer.ForgePageReadyEvent += ForgeVer_ForgePageReadyEvent;
-            _forgeVer.GetVersion();
-        }
-
-        void ForgeVer_ForgePageReadyEvent()
-        {
+            _forgeVersions = await _forgeTask.GetVersion();
             treeForgeVer.Items.Clear();
-            foreach (TreeViewItem t in _forgeVer.GetNew())
+            var versionList = new SortedList<string, TreeViewItem>();
+            foreach (var version in _forgeVersions)
             {
-                treeForgeVer.Items.Add(t);
+                if (!versionList.ContainsKey(version.GetMc()))
+                {
+                    versionList[version.GetMc()] = new TreeViewItem()
+                    {
+                        Header = version.GetMc()
+                    };
+                }
+                versionList[version.GetMc()].Items.Add(version.name);
+            }
+            foreach (var treeViewItem in versionList)
+            {
+                treeForgeVer.Items.Add(treeViewItem.Value);
             }
             btnReForge.Content = LangManager.GetLangFromResource("btnReForge");
             btnReForge.IsEnabled = true;
             btnLastForge.IsEnabled = true;
         }
+
         private void btnLastForge_Click(object sender, RoutedEventArgs e)
         {
             DownloadForge("Latest");
@@ -57,91 +70,23 @@ namespace BMCLV2.Windows.MainWindowTab
             btnLastForge.IsEnabled = false;
             RefreshForgeVersionList();
         }
-        private void DownloadForge(string ver)
+        private async void DownloadForge(string ver)
         {
-            if (!_forgeVer.ForgeDownloadUrl.ContainsKey(ver))
-            {
-                MessageBox.Show(LangManager.GetLangFromResource("ForgeDoNotSupportInstaller"));
-                return;
-            }
+            var forgeVersion = _forgeVersions.First(version => version.name == ver);
             BmclCore.Invoke(new Action(() => BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Visible)));
-            Uri url;
-            if (BmclCore.Config.DownloadSource == 0)
-            {
-                url = new Uri(_forgeVer.ForgeDownloadUrl[ver].Replace("files.minecraftforge.net", "bmclapi2.bangbang93.com"));
-            }
-            else
-            {
-                url = new Uri(_forgeVer.ForgeDownloadUrl[ver]);
-            }
-            var downer = new WebClient();
-            downer.Headers.Add("User-Agent", "BMCL" + BmclCore.BmclVersion);
-            downer.DownloadProgressChanged += downer_DownloadProgressChanged;
-            downer.DownloadFileCompleted += downer_DownloadForgeCompleted;
-            _downedtime = Environment.TickCount - 1;
-            _downed = 0;
-            var w = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft\\launcher_profiles.json");
-            w.Write(Resource.NormalProfile.Profile);
-            w.Close();
-            downer.DownloadFileAsync(url, "forge.jar");
-        }
-
-        void downer_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e)
-        {
-            BmclCore.MainWindow.ChangeDownloadProgress(e.BytesReceived, e.TotalBytesToReceive);
-            var info = new StringBuilder(LangManager.GetLangFromResource("DownloadSpeedInfo"));
-            try
-            {
-                info.Append(((e.BytesReceived - _downed) / ((Environment.TickCount - _downedtime) / 1000.0) / 1024.0).ToString("F2")).Append("KB/s,");
-            }
-            catch (DivideByZeroException) { info.Append("0B/s,"); }
-            info.Append(e.ProgressPercentage.ToString(CultureInfo.InvariantCulture)).Append("%");
-            BmclCore.MainWindow.SetDownloadInfo(info.ToString());
-        }
-
-        void downer_DownloadForgeCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
-        {
-            if (e.Error == null)
-            {
-                try
-                {
-                    Clipboard.SetText(txtInsPath.Text);
-                    MessageBox.Show(LangManager.GetLangFromResource("ForgeInstallInfo"));
-                }
-                catch
-                {
-                    MessageBox.Show(LangManager.GetLangFromResource("ForgeCopyError"));
-                }
-                var forgeIns = new Process();
-                if (!File.Exists(BmclCore.Config.Javaw))
-                {
-                    MessageBox.Show(LangManager.GetLangFromResource("ForgeJavaError"));
-                    return;
-                }
-                forgeIns.StartInfo.FileName = BmclCore.Config.Javaw;
-                forgeIns.StartInfo.Arguments = "-jar \"" + BmclCore.BaseDirectory + "\\forge.jar\"";
-                Logger.log(forgeIns.StartInfo.Arguments);
-                forgeIns.Start();
-                forgeIns.WaitForExit();
-                BmclCore.MainWindow.GridGame.ReFlushlistver();
-                BmclCore.MainWindow.TabMain.SelectedIndex = 0;
-            }
-            else
-            {
-                MessageBox.Show(e.Error.Message);
-                Logger.error(e.Error);
-            } BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Hidden);
-            
+            await _forgeTask.DownloadForge(forgeVersion);
+            BmclCore.MainWindow.GridGame.ReFlushlistver();
+            BmclCore.MainWindow.TabMain.SelectedIndex = 0;
         }
         private void treeForgeVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (this.treeForgeVer.SelectedItem == null)
-                return;
-            if (this.treeForgeVer.SelectedItem is string)
+            var selectedItem = treeForgeVer.SelectedItem as string;
+            if (selectedItem != null)
             {
-                DownloadForge(this.treeForgeVer.SelectedItem as string);
+                DownloadForge(selectedItem);
             }
         }
+
         private void txtInsPath_MouseDown(object sender, MouseButtonEventArgs e)
         {
             try
@@ -157,16 +102,15 @@ namespace BMCLV2.Windows.MainWindowTab
 
         private void treeForgeVer_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (this.treeForgeVer.SelectedItem == null)
-                return;
-            if (this.treeForgeVer.SelectedItem is string)
+            var selectedItem = treeForgeVer.SelectedItem as string;
+            if (selectedItem != null)
             {
-                if (_forgeVer.ForgeChangeLogUrl.ContainsKey(this.treeForgeVer.SelectedItem as string))
+                if (_forgeTask.ForgeChangeLogUrl.ContainsKey(selectedItem))
                 {
                     txtChangeLog.Text = LangManager.GetLangFromResource("FetchingForgeChangeLog");
                     var getLog = new WebClient();
                     getLog.DownloadStringCompleted += GetLog_DownloadStringCompleted;
-                    getLog.DownloadStringAsync(new Uri(_forgeVer.ForgeChangeLogUrl[this.treeForgeVer.SelectedItem as string]));
+                    getLog.DownloadStringAsync(new Uri(_forgeTask.ForgeChangeLogUrl[(string) treeForgeVer.SelectedItem]));
                 } 
                 else
                 {

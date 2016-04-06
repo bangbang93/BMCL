@@ -139,7 +139,7 @@
       <DependentUpon>CrashHandle.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forge\ForgeListNotReadyException.cs" />
-    <Compile Include="Forge\ForgeVersionList.cs" />
+    <Compile Include="Forge\ForgeTask.cs" />
     <Compile Include="Windows\FrmCheckRes.xaml.cs">
       <DependentUpon>FrmCheckRes.xaml</DependentUpon>
     </Compile>
