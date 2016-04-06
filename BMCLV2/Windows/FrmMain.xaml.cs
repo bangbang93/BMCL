@@ -11,8 +11,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 using BMCLV2.Login;
+using BMCLV2.Plugin;
+using BMCLV2.Themes;
 
 namespace BMCLV2.Windows
 {
@@ -27,12 +29,14 @@ namespace BMCLV2.Windows
         private int _clientCrashReportCount, _hsErrorCount;
         private FrmPrs _starter;
 
+        private readonly Background _background = new Background();
+
         public FrmMain()
         {
             BmclCore.NIcon.MainWindow = this;
             BmclCore.MainWindow = this;
             InitializeComponent();
-            this.Title = "BMCL V2 Ver." + BmclCore.BmclVersion;
+            this.Title = "BMCL Ver." + BmclCore.BmclVersion;
             this.LoadConfig();
             GridGame.ReFlushlistver();
             GridGame.listVer.SelectedItem = BmclCore.Config.LastPlayVer;
@@ -99,58 +103,18 @@ namespace BMCLV2.Windows
         #region 公共按钮
         private void btnChangeBg_Click(object sender, RoutedEventArgs e)
         {
-            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\bg"))
+            var background = _background.GetRadnomImageBrush();
+            if (background != null)
             {
-                var rand = new Random();
-                var pics = new ArrayList();
-                foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.jpg", SearchOption.AllDirectories))
-                {
-                    pics.Add(str);
-                }
-                foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.png", SearchOption.AllDirectories))
-                {
-                    pics.Add(str);
-                }
-                foreach (string str in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg", "*.bmp", SearchOption.AllDirectories))
-                {
-                    pics.Add(str);
-                }
-                int imgTotal = pics.Count; 
-                if (imgTotal == 0)
-                {
-                    if (e != null)
-                        MessageBox.Show("没有可用的背景图");
-                    return;
-                }
-                if (imgTotal == 1)
-                {
-                    if (e != null)
-                        MessageBox.Show("只有一张可用的背景图哦");
-                    return;
-                }
-                int img = rand.Next(imgTotal);
-                var b = new ImageBrush
-                {
-                    ImageSource = new BitmapImage(new Uri(((string) pics[img]))),
-                    Stretch = Stretch.Fill
-                };
                 var da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
-                this.BeginAnimation(UIElement.OpacityProperty, da);
-                this.Container.Background = b;
+                BeginAnimation(OpacityProperty, da);
+                Container.Background = background;
                 da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
-                this.BeginAnimation(UIElement.OpacityProperty, da);
+                BeginAnimation(OpacityProperty, da);
             }
             else
             {
-                if (e == null)
-                    return;
-                MessageBox.Show("请在启动启动其目录下新建bg文件夹，并放入图片文件，支持jpg,bmp,png等格式，比例请尽量接近16:9，否则会被拉伸");
-                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\bg");
-                var explorer = new Process
-                {
-                    StartInfo = {FileName = "explorer.exe", Arguments = AppDomain.CurrentDomain.BaseDirectory + "\\bg"}
-                };
-                explorer.Start();
+                btnChangeBg.IsEnabled = false;
             }
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
@@ -161,8 +125,7 @@ namespace BMCLV2.Windows
                     this.btnMiniSize_Click(null, null);
                     return;
                 }
-            Logger.log(string.Format("BMCL V2 Ver.{0} 正在退出", BmclCore.BmclVersion));
-            this.Close();
+            Logger.log($"BMCL V2 Ver.{BmclCore.BmclVersion} 正在退出");
             BmclCore.Halt();
         }
         private void btnStart_Click(object sender, RoutedEventArgs e)
@@ -182,7 +145,7 @@ namespace BMCLV2.Windows
             _clientCrashReportCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count() : 0;
             _hsErrorCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Count(s => s.StartsWith("hs_err")) : 0;
             _starter = new FrmPrs("正在准备游戏环境及启动游戏");
-            Logger.info(string.Format("正在启动{0},使用的登陆方式为{1}", GridGame.listVer.SelectedItem, GridConfig.listAuth.SelectedItem));
+            Logger.info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
             _starter.ShowInTaskbar = false;
             _starter.Show();
             _starter.Activate();
@@ -491,7 +454,7 @@ namespace BMCLV2.Windows
         {
             GridConfig.listDownSource.Items[1] = LangManager.GetLangFromResource("listOfficalSource");
             GridConfig.listDownSource.Items[0] = LangManager.GetLangFromResource("listAuthorSource");
-            BmclCore.LoadPlugin(LangManager.GetLangFromResource("LangName"));
+            PluginManager.LoadPlugin(LangManager.GetLangFromResource("LangName"));
         }
 
         private void MenuStartDebug_Click(object sender, RoutedEventArgs e)

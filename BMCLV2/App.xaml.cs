@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using System.Diagnostics;
 using System.Net;
 using System.Threading;
-using System.Windows.Forms;
 using System.Windows.Markup;
-using BMCLV2.Lang;
 using BMCLV2.Windows;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
@@ -21,7 +18,6 @@ namespace BMCLV2
     /// </summary>
     public partial class App
     {
-        private static FileStream _appLock;
         private static bool _skipPlugin = false;
 
         public static EventWaitHandle ProgramStarted;
@@ -33,7 +29,7 @@ namespace BMCLV2
         protected override void OnStartup(StartupEventArgs e)
         {
             bool createNew;
-            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, "BmclStart", out createNew);
+            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, Process.GetCurrentProcess().ProcessName, out createNew);
             if (!createNew)
             {
                 ProgramStarted.Set();
@@ -89,7 +85,6 @@ namespace BMCLV2
 
         public static void AboutToExit()
         {
-            _appLock.Close();
             Logger.stop();
         }
 

@@ -7,7 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Windows;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 using BMCLV2.libraries;
 using BMCLV2.Login;
 using BMCLV2.util;
@@ -21,8 +21,8 @@ namespace BMCLV2.Launcher
 
         #region 属性
         private readonly Process _game = new Process();
-        private readonly string _javaxmx = "";
-        private readonly string _username = "";
+        private readonly string _javaxmx;
+        private readonly string _username;
         private readonly string _version;
         private readonly string _name;
         private readonly gameinfo _info;

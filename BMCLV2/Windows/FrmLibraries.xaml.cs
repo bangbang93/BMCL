@@ -14,9 +14,8 @@ using System.Data;
 using System.Runtime.Serialization.Json;
 using System.IO;
 using System.Collections;
-
+using BMCLV2.I18N;
 using BMCLV2.libraries;
-using BMCLV2.Lang;
 
 namespace BMCLV2
 {

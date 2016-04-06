@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 
 namespace BMCLV2.Launcher
 {

@@ -6,7 +6,7 @@ using System.IO;
 using System.Net;
 using System.Threading;
 using System.Web.Script.Serialization;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 using BMCLV2.util;
 
 namespace BMCLV2.Assets
@@ -21,7 +21,6 @@ namespace BMCLV2.Assets
         public Assets(gameinfo gameInfo, string urlDownloadBase = null, string urlResourceBase = null)
         {
             _gameInfo = gameInfo;
-            _urlDownloadBase = urlDownloadBase ?? BmclCore.UrlDownloadBase;
             _urlResourceBase = urlResourceBase ?? BmclCore.UrlResourceBase;
             var thread = new Thread(Run);
             thread.Start();

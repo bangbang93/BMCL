@@ -6,7 +6,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Windows;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 using BMCLV2.util;
 
 namespace BMCLV2.Windows.MainWindowTab

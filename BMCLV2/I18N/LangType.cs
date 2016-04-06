@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 
-namespace BMCLV2.Lang
+namespace BMCLV2.I18N
 {
     class LangType
     {

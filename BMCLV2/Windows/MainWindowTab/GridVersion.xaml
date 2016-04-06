@@ -18,13 +18,12 @@
         <ListView x:Name="listRemoteVer" HorizontalAlignment="Left" Height="394" VerticalAlignment="Top" Width="748" Background="#A0FFFFFF" ItemsSource="{Binding}" MouseDoubleClick="listRemoteVer_MouseDoubleClick" SelectionMode="Single">
             <ListView.View>
                 <GridView AllowsColumnReorder="True">
-                    <GridViewColumn DisplayMemberBinding="{Binding Ver}" Header="{DynamicResource VerColVer}" Width="80"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding RelTime}" Header="{DynamicResource VerColTime}" Width="250"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding Type}" Header="{DynamicResource VerColType}" Width="70"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding id}" Header="{DynamicResource VerColVer}" Width="80"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding time}" Header="{DynamicResource VerColTime}" Width="250"/>
+                    <GridViewColumn DisplayMemberBinding="{Binding type}" Header="{DynamicResource VerColType}" Width="70"/>
                 </GridView>
             </ListView.View>
         </ListView>
     <Button x:Name="btnRefreshRemoteVer" Content="{DynamicResource btnRefreshRemoteVer}" Grid.Column="1" HorizontalAlignment="Center" Margin="10,35,10,0" VerticalAlignment="Top" Width="120" Height="53" Click="btnRefreshRemoteVer_Click" Style="{StaticResource NormalButtonStyle}"/>
     <Button x:Name="btnDownloadVer" Content="{DynamicResource btnDownloadVer}" Grid.Column="1" HorizontalAlignment="Left" Margin="10,115,0,0" VerticalAlignment="Top" Width="120" Height="53" Click="btnDownloadVer_Click" Style="{StaticResource NormalButtonStyle}"/>
-    <Button x:Name="btnCheckRes" Content="{DynamicResource btnCheckRes}" HorizontalAlignment="Left" Margin="10,195,0,0" VerticalAlignment="Top" Width="120" Height="53" FontWeight="Thin" Click="btnCheckRes_Click" Grid.Column="1" Style="{StaticResource NormalButtonStyle}"/>
 </Grid>

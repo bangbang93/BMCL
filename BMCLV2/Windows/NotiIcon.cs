@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Forms;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 
 namespace BMCLV2.Windows
 {

@@ -5,6 +5,7 @@ using System.Management;
 using Microsoft.Win32;
 using System.Runtime.Serialization;
 using System.IO;
+using System.Linq;
 using System.Windows;
 
 namespace BMCLV2
@@ -90,7 +91,7 @@ namespace BMCLV2
 
         public static Config Load(string file)
         {
-            if (!System.IO.File.Exists(file))
+            if (!File.Exists(file))
                 return new Config();
             try
             {
@@ -185,20 +186,15 @@ namespace BMCLV2
         {
             try
             {
-                double capacity = 0.0;
                 var cimobject1 = new ManagementClass("Win32_PhysicalMemory");
                 ManagementObjectCollection moc1 = cimobject1.GetInstances();
-                foreach (var o in moc1)
-                {
-                    var mo1 = (ManagementObject) o;
-                    capacity += ((Math.Round(Int64.Parse(mo1.Properties["Capacity"].Value.ToString()) / 1024 / 1024.0, 1)));
-                }
+                double capacity = moc1.Cast<ManagementObject>().Sum(mo1 => ((Math.Round(long.Parse(mo1.Properties["Capacity"].Value.ToString())/1024.0/1024.0, 1))));
                 moc1.Dispose();
                 cimobject1.Dispose();
                 UInt64 qmem = Convert.ToUInt64(capacity.ToString(CultureInfo.InvariantCulture));
                 return qmem;
             }
-            catch (System.Runtime.InteropServices.COMException ex)
+            catch (Exception ex)
             {
                 Logger.error("获取内存失败");
                 Logger.error(ex);

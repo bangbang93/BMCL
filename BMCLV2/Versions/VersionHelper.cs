@@ -3,7 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Threading;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 
 namespace BMCLV2.Versions
 {

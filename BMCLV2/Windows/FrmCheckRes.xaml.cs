@@ -13,7 +13,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Xml;
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 
 namespace BMCLV2.Windows
 {

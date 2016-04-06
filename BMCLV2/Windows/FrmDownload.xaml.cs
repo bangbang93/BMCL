@@ -14,8 +14,7 @@ using System.Collections;
 using System.Net;
 using System.Threading;
 using System.IO;
-
-using BMCLV2.Lang;
+using BMCLV2.I18N;
 
 namespace BMCLV2
 {
