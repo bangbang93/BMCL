@@ -36,7 +36,7 @@ namespace BMCLV2
         [DataMember]
         public int DownloadSource;
         [DataMember]
-        public Dictionary<string, object> PluginConfig = new Dictionary<string, object>();
+        public Dictionary<string, object> PluginConfig;
         [DataMember] public string GUID;
         [DataMember] public int Height;
         [DataMember] public int Width;
@@ -56,7 +56,7 @@ namespace BMCLV2
             DownloadSource = 0;
             Lang = "zh-cn";
             CheckUpdate = true;
-            PluginConfig = null;
+            PluginConfig = new Dictionary<string, object>(); ;
             GUID = GetGuid();
             Height = -1;
             Width = -1;

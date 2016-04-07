@@ -39,6 +39,11 @@ namespace BMCLV2.Game
         public Dictionary<string, VersionInfo> GetVersions()
         {
             return _versions;
-        } 
+        }
+
+        public VersionInfo GetVersion(string id)
+        {
+            return _versions[id];
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using BMCLV2.Game;
 using BMCLV2.I18N;
 using BMCLV2.Mod;
 
@@ -27,25 +28,13 @@ namespace BMCLV2.Windows.MainWindowTab
                 listVer.SelectedIndex = 0;
                 return;
             }
-            this.listVer.ScrollIntoView(listVer.SelectedItem);
-            string jsonFilePath = gameinfo.GetGameInfoJsonPath(listVer.SelectedItem.ToString());
-            if (string.IsNullOrEmpty(jsonFilePath))
-            {
-                MessageBox.Show(LangManager.GetLangFromResource("ErrorNoGameJson"));
-                _mainWindow.SwitchStartButton(false);
-                return;
-            }
-            _mainWindow.SwitchStartButton(true);
-            BmclCore.GameInfo = gameinfo.Read(jsonFilePath);
-            if (BmclCore.GameInfo == null)
-            {
-                MessageBox.Show(LangManager.GetLangFromResource("ErrorJsonEncoding"));
-                return;
-            }
-            labVer.Content = BmclCore.GameInfo.id;
-            labTime.Content = DateTime.Parse(BmclCore.GameInfo.time);
-            labRelTime.Content = DateTime.Parse(BmclCore.GameInfo.releaseTime);
-            labType.Content = BmclCore.GameInfo.type;
+            listVer.ScrollIntoView(listVer.SelectedItem);
+            var id = GetSelectedVersion();
+            var game = BmclCore.GameManager.GetVersion(id);
+            labVer.Content = game.Id;
+            labTime.Content = DateTime.Parse(game.Time);
+            labRelTime.Content = DateTime.Parse(game.ReleaseTime);
+            labType.Content = game.Type;
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -65,11 +54,7 @@ namespace BMCLV2.Windows.MainWindowTab
                         Directory.Delete(".minecraft\\libraries\\" + listVer.SelectedItem, true);
                     }
                 }
-                catch (UnauthorizedAccessException)
-                {
-                    MessageBox.Show(LangManager.GetLangFromResource("DeleteFailedMessageInfo"));
-                }
-                catch (IOException)
+                catch (SystemException)
                 {
                     MessageBox.Show(LangManager.GetLangFromResource("DeleteFailedMessageInfo"));
                 }
