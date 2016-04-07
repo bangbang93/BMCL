@@ -21,9 +21,6 @@ namespace BMCLV2.Windows.MainWindowTab
     /// </summary>
     public partial class GridForge
     {
-        int _downedtime;
-        int _downed;
-
         public GridForge()
         {
             InitializeComponent();

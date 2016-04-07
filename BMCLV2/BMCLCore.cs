@@ -7,7 +7,9 @@ using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
+using BMCLV2.Game;
 using BMCLV2.I18N;
+using BMCLV2.JsonClass;
 using BMCLV2.Mirrors;
 using BMCLV2.Plugin;
 using BMCLV2.Resource;
@@ -17,10 +19,11 @@ namespace BMCLV2
 {
     public static class BmclCore
     {
-        public static string BmclVersion;
         public static Config Config;
-        public static Dictionary<string, object> Auths = new Dictionary<string, object>();
         public static Launcher.Launcher Game;
+        public static GameManager GameManager;
+        public static string BmclVersion;
+        public static Dictionary<string, object> Auths = new Dictionary<string, object>();
         public static bool GameRunning = false;
         public static string UrlResourceBase = Url.URL_RESOURCE_bangbang93;
         public static string UrlLibrariesBase = Url.URL_LIBRARIES_bangbang93;
@@ -29,9 +32,9 @@ namespace BMCLV2
         public static Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
         public static gameinfo GameInfo;
         public static Dictionary<string, object> Language = new Dictionary<string, object>();
-        public static string BaseDirectory = Environment.CurrentDirectory + '\\';
+        public static readonly string BaseDirectory = Environment.CurrentDirectory + '\\';
         private static readonly Application ThisApplication = Application.Current;
-        private readonly static string Cfgfile = BaseDirectory + "bmcl.xml";
+        private static readonly string Cfgfile = BaseDirectory + "bmcl.xml";
         public static MirrorManager MirrorManager = new MirrorManager();
 
         static BmclCore()
@@ -39,6 +42,9 @@ namespace BMCLV2
             BmclVersion = Application.ResourceAssembly.FullName.Split('=')[1];
             BmclVersion = BmclVersion.Substring(0, BmclVersion.IndexOf(','));
             Logger.log("BMCL V3 Ver." + BmclVersion + "正在启动");
+//            var version = new VersionInfo() {Id = "123"};
+//            var json = new JSON(typeof (VersionInfo)).Stringify(version);
+            GameManager = new GameManager();
             Config = Config.Load(Cfgfile);
             if (Config.Passwd == null)
             {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -141,51 +142,8 @@ namespace BMCLV2.Windows.MainWindowTab
         public void ReFlushlistver()
         {
             listVer.Items.Clear();
-
-            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft"))
-            {
-                {
-                    MessageBox.Show(LangManager.GetLangFromResource("NoClientFound"));
-                    BmclCore.MainWindow.SwitchStartButton(false);
-                    btnDelete.IsEnabled = false;
-                    btnModCfgMrg.IsEnabled = false;
-                    btnModdirMrg.IsEnabled = false;
-                    btnModMrg.IsEnabled = false;
-                    return;
-                }
-            }
-            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions\"))
-            {
-                MessageBox.Show(LangManager.GetLangFromResource("InvidMinecratDir"));
-                BmclCore.MainWindow.SwitchStartButton(false);
-                btnDelete.IsEnabled = false;
-                btnModCfgMrg.IsEnabled = false;
-                btnModdirMrg.IsEnabled = false;
-                btnModMrg.IsEnabled = false;
-                return;
-            }
-            DirectoryInfo[] versions = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions").GetDirectories();
-            foreach (DirectoryInfo version in versions)
-            {
-                listVer.Items.Add(version.Name);
-            }
-            if (listVer.Items.Count != 0)
-            {
-                listVer.SelectedIndex = 0;
-                BmclCore.MainWindow.SwitchStartButton(true);
-                btnDelete.IsEnabled = true;
-                btnModCfgMrg.IsEnabled = true;
-                btnModdirMrg.IsEnabled = true;
-                btnModMrg.IsEnabled = true;
-            }
-            else
-            {
-                BmclCore.MainWindow.SwitchStartButton(false);
-                btnDelete.IsEnabled = false;
-                btnModCfgMrg.IsEnabled = false;
-                btnModdirMrg.IsEnabled = false;
-                btnModMrg.IsEnabled = false;
-            }
+            BmclCore.GameManager.ReloadList();
+            listVer.ItemsSource = BmclCore.GameManager.GetVersions().Keys;
         }
 
         public string GetSelectedVersion()

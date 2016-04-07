@@ -100,6 +100,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Downloader\Version.cs" />
+    <Compile Include="Game\GameManager.cs" />
+    <Compile Include="Game\VersionInfo.cs" />
     <Compile Include="JsonClass\JSON.cs" />
     <Compile Include="Launcher\NoJavaException.cs" />
     <Compile Include="Launcher\UnSupportVersionException.cs" />
