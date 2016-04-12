@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Globalization;
 using System.Threading.Tasks;
 using System.Windows;
 using System.IO;
 using System.Diagnostics;
 using System.Net;
-using System.Windows.Forms;
+using System.Threading;
 using System.Windows.Markup;
-using BMCLV2.Lang;
 using BMCLV2.Windows;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
@@ -20,8 +18,9 @@ namespace BMCLV2
     /// </summary>
     public partial class App
     {
-        private static FileStream _appLock;
         private static bool _skipPlugin = false;
+
+        public static EventWaitHandle ProgramStarted;
 
         public static bool SkipPlugin
         {
@@ -29,6 +28,14 @@ namespace BMCLV2
         }
         protected override void OnStartup(StartupEventArgs e)
         {
+            bool createNew;
+            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, Process.GetCurrentProcess().ProcessName, out createNew);
+            if (!createNew)
+            {
+                ProgramStarted.Set();
+                Environment.Exit(3);
+                return;
+            }
             if (e.Args.Length == 0)   // 判断debug模式
                 Logger.debug = false;
             else
@@ -39,7 +46,7 @@ namespace BMCLV2
 #else
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
             TaskScheduler.UnobservedTaskException += TaskScheduler_UnobservedTaskException;
-
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
 #endif
             if (Array.IndexOf(e.Args, "-Update") != -1)
             {
@@ -60,25 +67,15 @@ namespace BMCLV2
             {
                 App._skipPlugin = true;
             }
-            try
-            {
-                _appLock = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "BMCL.lck", FileMode.Create);
-                byte[] buffer = System.Text.Encoding.UTF8.GetBytes(Process.GetCurrentProcess().Id.ToString(CultureInfo.InvariantCulture));
-                _appLock.Write(buffer, 0, buffer.Length);
-                _appLock.Close();
-                _appLock = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "BMCL.lck", FileMode.Open);
-            }
-            catch (IOException)
-            {
-                MessageBox.Show(LangManager.GetLangFromResource("StartupDuplicate"));
-                MessageBox.Show(LangManager.GetLangFromResource("StartupDuplicate"));
-                Environment.Exit(3);
-            }
             WebRequest.DefaultWebProxy = null;  //禁用默认代理
             base.OnStartup(e);
         }
 
-
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var crash = new CrashHandle(e.ExceptionObject as Exception);
+            crash.Show();
+        }
 
         protected override void OnExit(ExitEventArgs e)
         {
@@ -88,7 +85,6 @@ namespace BMCLV2
 
         public static void AboutToExit()
         {
-            _appLock.Close();
             Logger.stop();
         }
 

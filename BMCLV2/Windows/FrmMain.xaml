@@ -33,7 +33,7 @@
                     <TabItem x:Name="TabForge" Header="{DynamicResource tabForge}" Style="{StaticResource TabItemStyle}">
                         <mainWindowTab:GridForge x:Name="GridForge"></mainWindowTab:GridForge>
                     </TabItem>
-                    <TabItem x:Name="TabServer" Header="服务器列表" Style="{StaticResource TabItemStyle}">
+                    <TabItem x:Name="TabServer" Header="服务器列表" Style="{StaticResource TabItemStyle}" Visibility="Hidden">
                         <mainWindowTab:GridServer x:Name="GridServer"></mainWindowTab:GridServer>
                     </TabItem>
                     <TabItem x:Name="tabUpdateInfo" Header="更新信息" HorizontalAlignment="Left" Height="20" VerticalAlignment="Top" Width="61" Visibility="Hidden">

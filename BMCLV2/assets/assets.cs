@@ -1,29 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
+using System.IO;
 using System.Net;
 using System.Threading;
 using System.Web.Script.Serialization;
-using System.IO;
-
+using BMCLV2.I18N;
 using BMCLV2.util;
 
 namespace BMCLV2.Assets
 {
     public class Assets
     {
-        private readonly WebClient _downloader = new WebClient();
+        private readonly WebClient _downloader = new Downloader.Downloader();
         bool _init = true;
         readonly gameinfo _gameInfo;
-        Dictionary<string, string> _downloadUrlPathPair = new Dictionary<string, string>();
         private readonly string _urlDownloadBase;
         private readonly string _urlResourceBase;
         public Assets(gameinfo gameInfo, string urlDownloadBase = null, string urlResourceBase = null)
         {
-            this._gameInfo = gameInfo;
-            this._urlDownloadBase = urlDownloadBase ?? BmclCore.UrlDownloadBase;
-            this._urlResourceBase = urlResourceBase ?? BmclCore.UrlResourceBase;
-            _downloader.Headers.Add("User-Agent", "BMCL" + BmclCore.BmclVersion);
+            _gameInfo = gameInfo;
+            _urlResourceBase = urlResourceBase ?? BmclCore.UrlResourceBase;
             var thread = new Thread(Run);
             thread.Start();
         }
@@ -44,7 +42,7 @@ namespace BMCLV2.Assets
             _downloader.DownloadStringCompleted += Downloader_DownloadStringCompleted;
             _downloader.DownloadFileCompleted += Downloader_DownloadFileCompleted;
         }
-        void Downloader_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        void Downloader_DownloadFileCompleted(object sender, AsyncCompletedEventArgs e)
         {
             if (e.Error != null)
             {
@@ -58,9 +56,10 @@ namespace BMCLV2.Assets
             _downloader.DownloadStringCompleted -= Downloader_DownloadStringCompleted;
             if (e.Error != null)
             {
-                if (e.Error is WebException)
+                var error = e.Error as WebException;
+                if (error != null)
                 {
-                    var ex = e.Error as WebException;
+                    var ex = error;
                     Logger.log(ex.Response.ResponseUri.ToString());
                 }
                 Logger.error(e.Error);
@@ -80,7 +79,7 @@ namespace BMCLV2.Assets
                 foreach (KeyValuePair<string, AssetsEntity> entity in obj)
                 {
                     i++;
-                    string url = this._urlResourceBase + entity.Value.hash.Substring(0, 2) + "/" + entity.Value.hash;
+                    string url = _urlResourceBase + entity.Value.hash.Substring(0, 2) + "/" + entity.Value.hash;
                     string file = AppDomain.CurrentDomain.BaseDirectory + @".minecraft\assets\objects\" + entity.Value.hash.Substring(0, 2) + "\\" + entity.Value.hash;
                     FileHelper.CreateDirectoryForFile(file);
                     try
@@ -88,16 +87,15 @@ namespace BMCLV2.Assets
                         if (FileHelper.IfFileVaild(file, entity.Value.size)) continue;
                         if (_init)
                         {
-                            BmclCore.NIcon.ShowBalloonTip(3000, Lang.LangManager.GetLangFromResource("FoundAssetsModify"));
+                            BmclCore.NIcon.ShowBalloonTip(3000, LangManager.GetLangFromResource("FoundAssetsModify"));
                             _init = false;
                         }
-                        //Downloader.DownloadFileAsync(new Uri(Url), File,Url);
                         _downloader.DownloadFile(new Uri(url), file);
                         Logger.log(i.ToString(CultureInfo.InvariantCulture), "/", obj.Count.ToString(CultureInfo.InvariantCulture), file.Substring(AppDomain.CurrentDomain.BaseDirectory.Length), "下载完毕");
                         if (i == obj.Count)
                         {
                             Logger.log("assets下载完毕");
-                            BmclCore.NIcon.ShowBalloonTip(3000, Lang.LangManager.GetLangFromResource("SyncAssetsFinish"));
+                            BmclCore.NIcon.ShowBalloonTip(3000, LangManager.GetLangFromResource("SyncAssetsFinish"));
                         }
                     }
                     catch (WebException ex)

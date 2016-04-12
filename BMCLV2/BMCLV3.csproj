@@ -8,8 +8,8 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BMCLV2</RootNamespace>
-    <AssemblyName>BMCLV3</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <AssemblyName>BMCLNG</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -39,6 +39,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -48,6 +49,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>tofu.ico</ApplicationIcon>
@@ -60,6 +62,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
@@ -93,12 +96,26 @@
     <Compile Include="assets\AssetsEntity.cs" />
     <Compile Include="BmclCore.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="Downloader\DownloadQueue.cs" />
+    <Compile Include="Downloader\Downloader.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Downloader\Version.cs" />
+    <Compile Include="JsonClass\JSON.cs" />
     <Compile Include="Launcher\NoJavaException.cs" />
     <Compile Include="Launcher\UnSupportVersionException.cs" />
+    <Compile Include="Mirrors\BMCLAPI\Version.cs" />
+    <Compile Include="Mirrors\Interface\Version.cs" />
+    <Compile Include="Mirrors\MirrorManager.cs" />
+    <Compile Include="Mirrors\Vanilla\Version.cs" />
     <Compile Include="Mod\ModHelper.cs" />
+    <Compile Include="Objects\Mirrors\LibraryInfo.cs" />
+    <Compile Include="Objects\Mirrors\VersionInfo.cs" />
+    <Compile Include="Objects\Mirrors\VersionManifest.cs" />
     <Compile Include="Plugin\IBmclPlugin.cs" />
     <Compile Include="Plugin\IBmclAuthPlugin.cs" />
+    <Compile Include="Plugin\PluginManager.cs" />
+    <Compile Include="Themes\Background.cs" />
+    <Compile Include="util\PathHelper.cs" />
     <Compile Include="Windows\FrmUpdater.xaml.cs">
       <DependentUpon>FrmUpdater.xaml</DependentUpon>
     </Compile>
@@ -122,7 +139,7 @@
       <DependentUpon>CrashHandle.xaml</DependentUpon>
     </Compile>
     <Compile Include="Forge\ForgeListNotReadyException.cs" />
-    <Compile Include="Forge\ForgeVersionList.cs" />
+    <Compile Include="Forge\ForgeTask.cs" />
     <Compile Include="Windows\FrmCheckRes.xaml.cs">
       <DependentUpon>FrmCheckRes.xaml</DependentUpon>
     </Compile>
@@ -143,8 +160,8 @@
     </Compile>
     <Compile Include="JsonClass\ForgeVersion.cs" />
     <Compile Include="JsonClass\soundsJson.cs" />
-    <Compile Include="Lang\LangManager.cs" />
-    <Compile Include="Lang\LangType.cs" />
+    <Compile Include="I18N\LangManager.cs" />
+    <Compile Include="I18N\LangType.cs" />
     <Compile Include="Launcher\gameinfo.cs" />
     <Compile Include="libraries\extract.cs" />
     <Compile Include="libraries\libraryies.cs" />
@@ -295,7 +312,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Lang\zh-tw.xaml">
+    <Page Include="I18N\zh-tw.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -338,8 +355,9 @@
     <EmbeddedResource Include="Resource\Url.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Url.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Page Include="Lang\zh-cn.xaml">
+    <Page Include="I18N\zh-cn.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -350,7 +368,9 @@
     <AppDesigner Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="tofu.ico" />
@@ -384,11 +404,11 @@
   <ItemGroup>
     <Resource Include="Resource\tabitem.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>F:\Code\VS\IncBuildNo.exe "$(PROJECTDIR)\Properties\AssemblyInfo.cs" "\[assembly: AssemblyVersion\(\"\d+\.\d+\.\d+\.(\d+)" 1
-F:\Code\VS\IncBuildNo.exe "$(PROJECTDIR)\Properties\AssemblyInfo.cs" "\[assembly: AssemblyFileVersion\(\"\d+\.\d+\.\d+\.(\d+)" 1
-</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -56,6 +56,16 @@ namespace BMCLV2.util
         {
             CreateDirectoryIfNotExist(Path.GetDirectoryName(File));
         }
-        
+
+        public static void WriteFile(string path, string content)
+        {
+            var directory = System.IO.Path.GetDirectoryName(path);
+            if (!Directory.Exists(directory))
+            {
+                Directory.CreateDirectory(directory);
+            }
+            File.WriteAllText(path, content);
+        }
+
     }
 }

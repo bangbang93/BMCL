@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Windows;
-using System.Collections;
 
-namespace BMCLV2.Lang
+namespace BMCLV2.I18N
 {
     static class LangManager
     {
         private static readonly Dictionary<string, LangType> Languages = new Dictionary<string, LangType>();
-        private static readonly Dictionary<string, string> DisplayToName = new Dictionary<string, string>(); 
-        static private readonly ResourceDictionary DefaultLanguage = LoadLangFromResource("pack://application:,,,/Lang/zh-cn.xaml");
+        static private readonly ResourceDictionary DefaultLanguage = LoadLangFromResource("pack://application:,,,/I18N/zh-cn.xaml");
+        private static readonly string LocaleDirectory = AppDomain.CurrentDomain.BaseDirectory + "\\Lang";
         static public void Add(string languageName,string languageUrl)
         {
             if (Languages.ContainsKey(languageName))
@@ -31,8 +31,7 @@ namespace BMCLV2.Lang
 
         static public ResourceDictionary LoadLangFromResource(string path)
         {
-            var lang = new ResourceDictionary();
-            lang.Source = new Uri(path);
+            var lang = new ResourceDictionary {Source = new Uri(path)};
             return lang;
         }
         static public void UseLanguage(string languageName)
@@ -57,6 +56,35 @@ namespace BMCLV2.Lang
                 i++;
             }
             return langs;
+        }
+
+        public static void LoadLanguage()
+        {
+            ResourceDictionary lang = LangManager.LoadLangFromResource("pack://application:,,,/I18N/zh-cn.xaml");
+            BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
+            LangManager.Add(lang["LangName"] as string, "pack://application:,,,/I18N/zh-cn.xaml");
+
+            lang = LangManager.LoadLangFromResource("pack://application:,,,/I18N/zh-tw.xaml");
+            BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
+            LangManager.Add(lang["LangName"] as string, "pack://application:,,,/I18N/zh-tw.xaml");
+            if (Directory.Exists(LocaleDirectory))
+            {
+                foreach (var langFile in Directory.GetFiles(LocaleDirectory, "*.xaml", SearchOption.TopDirectoryOnly))
+                {
+                    lang = LangManager.LoadLangFromResource(langFile);
+                    BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
+                    LangManager.Add(lang["LangName"] as string, langFile);
+                }
+            }
+            else
+            {
+                Directory.CreateDirectory(AppDomain.CurrentDomain.BaseDirectory + "\\Lang");
+            }
+        }
+
+        public static void ChangeLanguage(string lang)
+        {
+            LangManager.UseLanguage(lang);
         }
     }
 }
