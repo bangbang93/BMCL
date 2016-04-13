@@ -66,7 +66,12 @@ namespace BMCLV2
                     return info;
                 String anotherJson = GetGameInfoJsonPath(info.inheritsFrom);
                 gameinfo anotherGameinfo = Read(anotherJson);
-                info.libraries = MixLibraries(info.libraries, anotherGameinfo.libraries);
+                info.type = (info.type == null || info.type == "") ? anotherGameinfo.type : info.type;//Type:覆盖
+                info.minecraftArguments = (info.minecraftArguments == null || info.minecraftArguments == "") ? anotherGameinfo.minecraftArguments : info.minecraftArguments;//MinecraftArguments:覆盖
+                info.mainClass = (info.mainClass == null || info.mainClass == "") ? anotherGameinfo.mainClass : info.mainClass;//MainClass:覆盖
+                info.libraries = MixLibraries(info.libraries, anotherGameinfo.libraries);//Libraries:拼接
+                info.assets = (info.assets == null || info.assets == "") ? anotherGameinfo.assets : info.assets;//Assets:覆盖
+                info.jar = (info.jar == null || info.jar == "") ? anotherGameinfo.jar : info.jar;//Jar:覆盖
                 return info;
             }
             catch (SerializationException ex)
