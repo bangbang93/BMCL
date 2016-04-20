@@ -243,7 +243,7 @@ namespace BMCLV2.Launcher
                 mcpath.Append(_info.jar).Append("\\").Append(_info.jar).Append(".jar\" ");
             mcpath.Append(_info.mainClass);
             arg.Append(mcpath);
-            //" --username ${auth_player_name} --session ${auth_session} --version ${version_name} --gameDir ${game_directory} --assetsDir ${game_assets}"
+            //"--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${assets_root} --assetIndex ${assets_index_name} --userType ${user_type} --versionType ${version_type}"
             var mcarg = new StringBuilder(_info.minecraftArguments);
             mcarg.Replace("${auth_player_name}", _username);
             mcarg.Replace("${version_name}", _version);
@@ -252,6 +252,7 @@ namespace BMCLV2.Launcher
             mcarg.Replace("${assets_root}", @"assets");
             mcarg.Replace("${user_type}", "Legacy");
             mcarg.Replace("${assets_index_name}", _info.assets);
+            mcarg.Replace("${version_type}", _info.type);
             if (!string.IsNullOrEmpty(_li.OutInfo))
             {
                 string[] replace = _li.OutInfo.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
