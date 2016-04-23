@@ -15,7 +15,7 @@ using ICSharpCode.SharpZipLib.Zip;
 
 namespace BMCLV2.Launcher
 {
-    public sealed class Launcher
+    public class OldLauncher
     {
 
 
@@ -41,7 +41,7 @@ namespace BMCLV2.Launcher
         public delegate void GameExitEvent();
         public delegate void StateChangeEventHandler(string state);
         public delegate void GameStartUpEventHandler(bool success);
-        public delegate void GameStartUpErrorHandler(Exception ex);
+        public delegate void GameStartUpErrorHandler(System.Exception ex);
         #endregion
 
 
@@ -78,7 +78,7 @@ namespace BMCLV2.Launcher
         /// <param name="info"></param>
         /// <param name="extarg"></param>
         /// <param name="li"></param>
-        public Launcher(string javaPath, string javaXmx, string userName, string name, gameinfo info, string[] extarg, LoginInfo li)
+        public OldLauncher(string javaPath, string javaXmx, string userName, string name, gameinfo info, string[] extarg, LoginInfo li)
         {
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherCheckJava"));
             if (!File.Exists(javaPath))

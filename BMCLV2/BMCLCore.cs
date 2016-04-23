@@ -20,7 +20,7 @@ namespace BMCLV2
     public static class BmclCore
     {
         public static Config Config;
-        public static Launcher.Launcher Game;
+        public static Launcher.OldLauncher Game;
         public static GameManager GameManager;
         public static string BmclVersion;
         public static Dictionary<string, object> Auths = new Dictionary<string, object>();

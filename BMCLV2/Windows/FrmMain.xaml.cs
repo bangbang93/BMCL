@@ -168,7 +168,7 @@ namespace BMCLV2.Windows
                     var javaXmx = GridConfig.txtJavaXmx.Text;
                     var selectVer = GridGame.listVer.SelectedItem.ToString();
                     var extArg = GridConfig.txtExtJArg.Text;
-                    BmclCore.Game = new Launcher.Launcher(javaPath, javaXmx, username, selectVer, BmclCore.GameInfo, new[] { extArg }, loginInfo);
+                    BmclCore.Game = new Launcher.OldLauncher(javaPath, javaXmx, username, selectVer, BmclCore.GameInfo, new[] { extArg }, loginInfo);
                     BmclCore.Game.StateChangeEvent += Game_StateChangeEvent;
                     BmclCore.Game.Gameexit += launcher_gameexit;
                     BmclCore.Game.GameStartUp += Game_GameStartUp;
