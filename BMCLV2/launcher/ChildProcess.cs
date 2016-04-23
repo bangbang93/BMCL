@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
-using BMCLV2.Exception;
+using BMCLV2.Exceptions;
 
 namespace BMCLV2.Launcher
 {
@@ -47,7 +48,7 @@ namespace BMCLV2.Launcher
             var sb = new StringBuilder();
             foreach (var argument in arguments)
             {
-                sb.Append(Regex.Replace(argument, @"(\\*)" + "\"", @"$1$1\" + "\"")).Append(" ");
+                sb.Append(@"\" + Regex.Replace(argument, @"(\\+)$", @"$1$1") + @"\").Append(" ");
             }
             return sb.ToString(0, Math.Max(sb.Length - 1, 0));
         }
@@ -95,6 +96,40 @@ namespace BMCLV2.Launcher
                 return;
             _childProcess.Close();
             _childProcess = null;
+        }
+
+        public static List<string> SplitCommandLine(string commandLine)
+        {
+            var inQuote = false;
+            var inEscape = false;
+            var sb = new StringBuilder();
+            var args = new List<string>();
+            foreach (var ch in commandLine)
+            {
+                switch (ch)
+                {
+                    case '\\':
+                        inEscape = true;
+                        break;
+                    case '"':
+                        if (inEscape)
+                        {
+                            sb.Append("\\\"");
+                            inEscape = false;
+                        }
+                        else
+                        {
+                            inQuote = !inQuote;
+                            args.Add(sb.ToString());
+                            sb.Clear();
+                        }
+                        break;
+                    default:
+                        sb.Append(ch);
+                        break;
+                }
+            }
+            return args;
         }
     }
 }

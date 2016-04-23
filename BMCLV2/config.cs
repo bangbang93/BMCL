@@ -89,7 +89,7 @@ namespace BMCLV2
             return (Config)this.MemberwiseClone();
         }
 
-        public static Config Load(string file)
+        public static Config Load(string file = "bmcl.xml")
         {
             if (!File.Exists(file))
                 return new Config();
