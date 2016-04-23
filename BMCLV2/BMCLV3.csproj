@@ -100,14 +100,14 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Downloader\Version.cs" />
-    <Compile Include="Exception\ProcessNotStartException.cs" />
+    <Compile Include="Exceptions\ProcessNotStartException.cs" />
     <Compile Include="Game\GameManager.cs" />
     <Compile Include="Game\VersionInfo.cs" />
     <Compile Include="JsonClass\JSON.cs" />
     <Compile Include="Launcher\ChildProcess.cs" />
     <Compile Include="Launcher\Launcher.cs" />
-    <Compile Include="Launcher\NoJavaException.cs" />
-    <Compile Include="Launcher\UnSupportVersionException.cs" />
+    <Compile Include="Exceptions\NoJavaException.cs" />
+    <Compile Include="Exceptions\UnSupportVersionException.cs" />
     <Compile Include="Mirrors\BMCLAPI\Version.cs" />
     <Compile Include="Mirrors\Interface\Version.cs" />
     <Compile Include="Mirrors\MirrorManager.cs" />
@@ -409,7 +409,9 @@
   <ItemGroup>
     <Resource Include="Resource\tabitem.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Event\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

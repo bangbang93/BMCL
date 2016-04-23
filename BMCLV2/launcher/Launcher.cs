@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using BMCLV2.Game;
 
@@ -28,7 +29,15 @@ namespace BMCLV2.Launcher
         public void Start()
         {
             _childProcess = new ChildProcess(_config.Javaw, _arguments.ToArray());
+            _childProcess.Start();
+            _childProcess.OnStdOut += OnStdOut;
+            _childProcess.OnStdErr += OnStdOut;
             //TODO LAUNCH THE GAME
+        }
+
+        private void OnStdOut(object sender, string log)
+        {
+            Logger.log(log);
         }
 
 

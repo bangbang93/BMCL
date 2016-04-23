@@ -19,11 +19,25 @@ namespace BMCLV2.Launcher
         private readonly string[] _arguments;
         private Process _childProcess;
         private EventHandler _onExit;
+        private OnLogEventHandler _onStdOut;
+        private OnLogEventHandler _onStdErr;
 
         public event EventHandler OnExit
         {
             add { _onExit += value; }
             remove { _onExit -= value; }
+        }
+
+        public event OnLogEventHandler OnStdOut
+        {
+            add { _onStdOut += value; }
+            remove { _onStdOut -= value; }
+        }
+
+        public event OnLogEventHandler OnStdErr
+        {
+            add { _onStdErr += value; }
+            remove { _onStdErr -= value; }
         }
 
         public ChildProcess(ProcessStartInfo processStartInfo)
@@ -56,7 +70,8 @@ namespace BMCLV2.Launcher
         public bool Start()
         {
             Close();
-            _childProcess = new Process {StartInfo = new ProcessStartInfo(_filename, JoinArguments(_arguments))};
+            _processStartInfo = new ProcessStartInfo(_filename, JoinArguments(_arguments));
+            _childProcess = new Process {StartInfo = _processStartInfo};
             var result = _childProcess.Start();
             if (!result) return false;
             _childProcess.Exited += (sender, args) => _onExit?.Invoke(sender, args);
@@ -96,6 +111,7 @@ namespace BMCLV2.Launcher
                 return;
             _childProcess.Close();
             _childProcess = null;
+            _onExit(this, EventArgs.Empty);
         }
 
         public static List<string> SplitCommandLine(string commandLine)
