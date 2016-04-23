@@ -95,7 +95,7 @@ namespace BMCLV2
             StreamReader sr = new StreamReader(s);
             write(sr.ReadToEnd(), type);
         }
-        static public void log(Exception ex, LogType type = LogType.Exception)
+        static public void log(System.Exception ex, LogType type = LogType.Exception)
         {
             StringBuilder message = new StringBuilder();
             message.AppendLine(ex.Source);
@@ -149,7 +149,7 @@ namespace BMCLV2
             Logger.log(message, LogType.Error);
         }
 
-        static public void error(Exception ex)
+        static public void error(System.Exception ex)
         {
             Logger.log(ex);
         }

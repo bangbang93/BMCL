@@ -9,7 +9,7 @@ using BMCLV2.I18N;
 
 namespace BMCLV2.Launcher
 {
-    class NoJavaException : Exception
+    class NoJavaException : System.Exception
     {
         private readonly string _message;
 
