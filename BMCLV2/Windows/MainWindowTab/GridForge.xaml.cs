@@ -26,7 +26,7 @@ namespace BMCLV2.Windows.MainWindowTab
             InitializeComponent();
         }
 
-        readonly ForgeTask _forgeTask = new ForgeTask();
+        private readonly ForgeTask _forgeTask = new ForgeTask();
         private ForgeVersion[] _forgeVersions;
         private async void RefreshForgeVersionList()
         {

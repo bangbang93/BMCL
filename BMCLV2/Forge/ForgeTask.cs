@@ -49,7 +49,7 @@ namespace BMCLV2.Forge
             w.Close();
             await downer.DownloadFileTaskAsync(url, "forge.jar");
 
-            Boolean stat = false;
+            var stat = false;
             try {
                 stat = InstallForge(forgeVersion);
             } catch (Exception ex) {
@@ -78,11 +78,11 @@ namespace BMCLV2.Forge
             forgeIns.WaitForExit();
         }
  
-        public Boolean InstallForge(ForgeVersion forgeVersion)
+        public bool InstallForge(ForgeVersion forgeVersion)
         {
             //将installer中的forge universal提取出来
-            string tempDir = BmclCore.BaseDirectory + "temp";
-            new FastZip().ExtractZip(BmclCore.BaseDirectory + "forge.jar", tempDir, "\\w*\\.jar");
+            string tempDir = Path.Combine(BmclCore.BaseDirectory, "temp");
+            new FastZip().ExtractZip(Path.Combine(BmclCore.BaseDirectory, "forge.jar"), tempDir, "\\w*\\.jar");
 
             //获得universal的完整名称
             DirectoryInfo tempFolder = new DirectoryInfo(tempDir);
