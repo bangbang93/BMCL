@@ -18,11 +18,11 @@ namespace BMCLV2.Launcher
         private readonly string _filename;
         private readonly string[] _arguments;
         private Process _childProcess;
-        private EventHandler _onExit;
+        private OnChildProcessExit _onExit;
         private OnLogEventHandler _onStdOut;
         private OnLogEventHandler _onStdErr;
 
-        public event EventHandler OnExit
+        public event OnChildProcessExit OnExit
         {
             add { _onExit += value; }
             remove { _onExit -= value; }
@@ -110,8 +110,8 @@ namespace BMCLV2.Launcher
             if (_childProcess.HasExited)
                 return;
             _childProcess.Close();
+            _onExit(this, _childProcess.ExitCode);
             _childProcess = null;
-            _onExit(this, EventArgs.Empty);
         }
 
         public static List<string> SplitCommandLine(string commandLine)

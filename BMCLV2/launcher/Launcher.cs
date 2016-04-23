@@ -28,11 +28,24 @@ namespace BMCLV2.Launcher
 
         public void Start()
         {
+
+            Launch();
+        }
+
+        private void Launch()
+        {
             _childProcess = new ChildProcess(_config.Javaw, _arguments.ToArray());
-            _childProcess.Start();
-            _childProcess.OnStdOut += OnStdOut;
-            _childProcess.OnStdErr += OnStdOut;
-            //TODO LAUNCH THE GAME
+            if (_childProcess.Start())
+            {
+                _childProcess.OnStdOut += OnStdOut;
+                _childProcess.OnStdErr += OnStdOut;
+                _childProcess.OnExit += ChildProcessOnOnExit;
+            }
+        }
+
+        private void ChildProcessOnOnExit(object sender, int exitCode)
+        {
+            Logger.log($"{_versionInfo.Id} has exited with exit code {exitCode}");
         }
 
         private void OnStdOut(object sender, string log)

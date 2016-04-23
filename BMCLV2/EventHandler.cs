@@ -7,4 +7,6 @@ using System.Threading.Tasks;
 namespace BMCLV2
 {
     public delegate void OnLogEventHandler(object sender, string log);
+
+    public delegate void OnChildProcessExit(object sender, int exitCode);
 }
