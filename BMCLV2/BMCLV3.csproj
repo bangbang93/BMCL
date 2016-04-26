@@ -114,14 +114,14 @@
     <Compile Include="Mirrors\MirrorManager.cs" />
     <Compile Include="Mirrors\Vanilla\Version.cs" />
     <Compile Include="Mod\ModHelper.cs" />
-    <Compile Include="Objects\Mirrors\LibraryInfo.cs" />
-    <Compile Include="Objects\Mirrors\VersionInfo.cs" />
-    <Compile Include="Objects\Mirrors\VersionManifest.cs" />
+    <Compile Include="Game\LibraryInfo.cs" />
+    <Compile Include="Mirrors\VersionManifest.cs" />
     <Compile Include="Plugin\IBmclPlugin.cs" />
     <Compile Include="Plugin\IBmclAuthPlugin.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Themes\Background.cs" />
-    <Compile Include="util\PathHelper.cs" />
+    <Compile Include="Util\PathHelper.cs" />
+    <Compile Include="Util\TimeHelper.cs" />
     <Compile Include="Windows\FrmUpdater.xaml.cs">
       <DependentUpon>FrmUpdater.xaml</DependentUpon>
     </Compile>
@@ -133,9 +133,6 @@
     </Compile>
     <Compile Include="Windows\MainWindowTab\GridGame.xaml.cs">
       <DependentUpon>GridGame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MainWindowTab\GridServer.xaml.cs">
-      <DependentUpon>GridServer.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MainWindowTab\GridVersion.xaml.cs">
       <DependentUpon>GridVersion.xaml</DependentUpon>
@@ -198,9 +195,9 @@
     <Compile Include="Texturepack\TexturePack.cs" />
     <Compile Include="Texturepack\TexturePackEntity.cs" />
     <Compile Include="UpdateChecker.cs" />
-    <Compile Include="util\FileHelper.cs" />
-    <Compile Include="util\MathHelper.cs" />
-    <Compile Include="util\Crypto.cs" />
+    <Compile Include="Util\FileHelper.cs" />
+    <Compile Include="Util\MathHelper.cs" />
+    <Compile Include="Util\Crypto.cs" />
     <Compile Include="Versions\RawVersionListType.cs" />
     <Compile Include="Versions\RemoteVerType.cs" />
     <Compile Include="Windows\NotiIcon.cs" />
@@ -262,10 +259,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\MainWindowTab\GridGame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MainWindowTab\GridServer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

@@ -5,15 +5,18 @@ using BMCLV2.util;
 
 namespace BMCLV2.Objects.Mirrors
 {
+    [DataContract]
     public class LibraryInfo
     {
+        [DataContract]
         public class ExtractRule
         {
             [DataMember (Name = "exclude")] public string[] Exclude;
         }
-
+        [DataContract]
         public class Download
         {
+            [DataContract]
             public class ArtifactInfo
             {
                 [DataMember(Name= "size")] public int Size;
@@ -21,7 +24,7 @@ namespace BMCLV2.Objects.Mirrors
                 [DataMember(Name = "path")] public string Path;
                 [DataMember(Name= "url")] public string Url;
             }
-
+            [DataContract]
             public class ClassifiersInfo
             {
                 [DataMember(Name = "natives-linux")] public ArtifactInfo Linux;
@@ -29,12 +32,13 @@ namespace BMCLV2.Objects.Mirrors
                 [DataMember(Name = "natives-windows")] public ArtifactInfo Windows;
             }
 
-            [DataMember] public ArtifactInfo Artifact;
-            [DataMember] public ClassifiersInfo Classifiers;
+            [DataMember(Name = "artifact")] public ArtifactInfo Artifact;
+            [DataMember(Name = "classifiers")] public ClassifiersInfo Classifiers;
         }
-
+        [DataContract]
         public class Rule
         {
+            [DataContract]
             public class OSInfo
             {
                 [DataMember(Name = "name")] public string Name;
@@ -44,18 +48,29 @@ namespace BMCLV2.Objects.Mirrors
             [DataMember(Name="os")] public OSInfo OS;
         }
 
+        [DataContract]
+        public class NativesName
+        {
+            [DataMember(Name = "linux")] public string Linux;
+            [DataMember(Name = "osx")] public string OSX;
+            [DataMember(Name = "windows")] public string Windows;
+        }
+
         [DataMember(Name = "name")] public string Name;
         [DataMember(Name = "downloads")] public Download Downloads;
         [DataMember(Name = "rules")] public Rule[] Rules;
         [DataMember(Name= "extract")] public ExtractRule Extract;
+        [DataMember(Name = "natives")] public NativesName Natives;
 
-        public string Path => Rules == null ? Downloads.Artifact.Path : Downloads.Classifiers.Windows.Path;
+        public string Path => Downloads.Artifact != null ? Downloads.Artifact.Path : Downloads.Classifiers.Windows.Path;
 
-        public string Url => Rules == null ? Downloads.Artifact.Url : Downloads.Classifiers.Windows.Url;
+        public string Url => Downloads.Artifact != null ? Downloads.Artifact.Url : Downloads.Classifiers.Windows.Url;
 
-        public string Sha1 => Rules == null ? Downloads.Artifact.Sha1 : Downloads.Classifiers.Windows.Sha1;
+        public string Sha1 => Downloads.Artifact != null ? Downloads.Artifact.Sha1 : Downloads.Classifiers.Windows.Sha1;
 
-        public int Size => Rules == null ? Downloads.Artifact.Size : Downloads.Classifiers.Windows.Size;
+        public int Size => Downloads.Artifact?.Size ?? Downloads.Classifiers.Windows.Size;
+
+        public bool IsNative => Natives != null;
 
         public bool ShouldDeployOnOs(string os = "windows", string version = null)
         {

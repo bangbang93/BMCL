@@ -66,7 +66,7 @@ namespace BMCLV2.Launcher
             var sb = new StringBuilder();
             foreach (var argument in arguments)
             {
-                sb.Append(@"\" + Regex.Replace(argument, @"(\\+)$", @"$1$1") + @"\").Append(" ");
+                sb.Append("\"" + argument.Replace("\"", "\\\"") + "\"").Append(" ");
             }
             return sb.ToString(0, Math.Max(sb.Length - 1, 0));
         }
@@ -77,14 +77,20 @@ namespace BMCLV2.Launcher
             _processStartInfo = new ProcessStartInfo(_filename, JoinArguments(_arguments))
             {
                 RedirectStandardError = true,
+                RedirectStandardOutput = true,
                 RedirectStandardInput = true,
-                RedirectStandardOutput = true
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                WorkingDirectory = BmclCore.MinecraftDirectory
             };
             _childProcess = new Process {StartInfo = _processStartInfo};
-            var result = _childProcess.Start();
-            if (!result) return false;
-            StartTime = DateTime.Now;
             _childProcess.Exited += (sender, args) => _onExit?.Invoke(sender, _childProcess.ExitCode);
+            _childProcess.OutputDataReceived += (sender, args) => _onStdOut?.Invoke(sender, args.Data);
+            _childProcess.ErrorDataReceived += (sender, args) => _onStdErr?.Invoke(sender, args.Data);
+            _childProcess.Start();
+            _childProcess.BeginOutputReadLine();
+            _childProcess.BeginErrorReadLine();
+            StartTime = DateTime.Now;
             return true;
         }
 
@@ -117,8 +123,7 @@ namespace BMCLV2.Launcher
 
         public void Close()
         {
-            if (_childProcess.HasExited)
-                return;
+            if (_childProcess == null || _childProcess.HasExited) return;
             _childProcess.Close();
             _onExit(this, _childProcess.ExitCode);
             _childProcess = null;

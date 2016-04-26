@@ -168,10 +168,13 @@ namespace BMCLV2.Windows
                     var javaXmx = GridConfig.txtJavaXmx.Text;
                     var selectVer = GridGame.listVer.SelectedItem.ToString();
                     var extArg = GridConfig.txtExtJArg.Text;
-                    BmclCore.Game = new Launcher.OldLauncher(javaPath, javaXmx, username, selectVer, BmclCore.GameInfo, new[] { extArg }, loginInfo);
-                    BmclCore.Game.StateChangeEvent += Game_StateChangeEvent;
-                    BmclCore.Game.Gameexit += launcher_gameexit;
-                    BmclCore.Game.GameStartUp += Game_GameStartUp;
+                    var launcher = new Launcher.Launcher(
+                        BmclCore.GameManager.GetVersion(GridGame.GetSelectedVersion()), BmclCore.Config);
+                    launcher.Start();
+//                    BmclCore.Game = new Launcher.OldLauncher(javaPath, javaXmx, username, selectVer, BmclCore.GameInfo, new[] { extArg }, loginInfo);
+//                    BmclCore.Game.StateChangeEvent += Game_StateChangeEvent;
+//                    BmclCore.Game.Gameexit += launcher_gameexit;
+//                    BmclCore.Game.GameStartUp += Game_GameStartUp;
                 }
                 catch (Exception ex)
                 {
@@ -422,11 +425,7 @@ namespace BMCLV2.Windows
                     GridForge.BeginAnimation(FrameworkElement.WidthProperty, da1); GridForge.BeginAnimation(FrameworkElement.HeightProperty, da2); 
                     if (GridForge.btnReForge.IsEnabled && GridForge.treeForgeVer.HasItems == false) GridForge.RefreshForge(); 
                     break;
-                case 4: 
-                    GridServer.BeginAnimation(FrameworkElement.WidthProperty, da1); GridServer.BeginAnimation(FrameworkElement.HeightProperty, da2); 
-                    if(GridServer.btnReflushServer.IsEnabled && GridServer.listServer.HasItems == false) GridServer.ReflushSever();
-                    break;
-                case 5:
+                case 4:
                     gridUpdateInfo.BeginAnimation(FrameworkElement.WidthProperty, da1); 
                     gridUpdateInfo.BeginAnimation(FrameworkElement.HeightProperty, da2); 
                     break;

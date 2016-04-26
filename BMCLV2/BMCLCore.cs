@@ -33,8 +33,9 @@ namespace BMCLV2
         public static gameinfo GameInfo;
         public static Dictionary<string, object> Language = new Dictionary<string, object>();
         public static readonly string BaseDirectory = Environment.CurrentDirectory + '\\';
+        public static readonly string MinecraftDirectory = Path.Combine(BaseDirectory, ".minecraft");
         private static readonly Application ThisApplication = Application.Current;
-        private static readonly string Cfgfile = BaseDirectory + "bmcl.xml";
+        private static readonly string Cfgfile = Path.Combine(BaseDirectory, "bmcl.xml");
         public static MirrorManager MirrorManager = new MirrorManager();
         public static readonly string OS = "windows";
 

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BMCLV2.Exceptions;
+using BMCLV2.JsonClass;
 using BMCLV2.Objects.Mirrors;
 using BMCLV2.util;
 using ICSharpCode.SharpZipLib.Zip;
@@ -44,9 +44,13 @@ namespace BMCLV2.Launcher
         public async void Start()
         {
             if (!SetupJava()) return;
-            _arguments.Add($"-Djava.library.path =\"{_versionDirectory}\"");
+            _arguments.Add($"-Djava.library.path={_nativesDirectory}");
             if (!await SetupLibraries()) return;
+            if (!await SetupNatives()) return;
+            _arguments.Add(_versionInfo.MainClass);
+            _arguments.AddRange(McArguments());
             if (!Launch()) return;
+            Logger.log(ChildProcess.JoinArguments(_arguments.ToArray()));
         }
 
         private bool Launch()
@@ -56,13 +60,13 @@ namespace BMCLV2.Launcher
             {
                 _childProcess.OnStdOut += OnStdOut;
                 _childProcess.OnStdErr += OnStdOut;
-                _childProcess.OnExit += ChildProcessOnOnExit;
+                _childProcess.OnExit += ChildProcessOnExit;
                 return true;
             }
             return false;
         }
 
-        private void ChildProcessOnOnExit(object sender, int exitCode)
+        private void ChildProcessOnExit(object sender, int exitCode)
         {
             Logger.log(
                 $"{_versionInfo.Id} has exited with exit code {exitCode}, Running for {new TimeSpan(0, 0, 0, _childProcess.UpTime)}");
@@ -91,11 +95,11 @@ namespace BMCLV2.Launcher
             foreach (var libraryInfo in libraries)
             {
                 // skip natives
-                if (libraryInfo.Rules != null) continue;
+                if (libraryInfo.IsNative) continue;
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 if (!libraryInfo.IsVaild(_libraryDirectory))
                 {
-                    await new Downloader.Downloader().DownloadFileTaskAsync(libraryInfo.Url, filePath);
+                    await Downloader.Downloader.GetFile(libraryInfo.Url, filePath);
                 }
                 libraryPath.Append(filePath).Append(";");
             }
@@ -110,11 +114,11 @@ namespace BMCLV2.Launcher
             foreach (var libraryInfo in _versionInfo.Libraries)
             {
                 //skip non-natives
-                if (libraryInfo.Rules == null) continue;
+                if (!libraryInfo.IsNative) continue;
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 if (!libraryInfo.IsVaild(_libraryDirectory))
                 {
-                    await new Downloader.Downloader().DownloadFileTaskAsync(libraryInfo.Url, filePath);
+                    await Downloader.Downloader.GetFile(libraryInfo.Url, filePath);
                 }
                 await UnzipNative(filePath, libraryInfo.Extract);
             }
@@ -126,12 +130,34 @@ namespace BMCLV2.Launcher
             var zipFile = new ZipFile(filename);
             foreach (ZipEntry entry in zipFile)
             {
-                if (extractRules.Exclude.Any(entryName => entry.Name.Contains(entryName))) continue;
-                var file = File.Create(Path.Combine(_nativesDirectory, entry.Name));
+                if (extractRules != null && extractRules.Exclude.Any(entryName => entry.Name.Contains(entryName))) continue;
+                var filePath = Path.Combine(_nativesDirectory, entry.Name);
+                FileHelper.CreateDirectoryForFile(filePath);
+                if (entry.IsDirectory) continue;
+                var file = File.Create(filePath);
                 var stream = zipFile.GetInputStream(entry);
                 await stream.CopyToAsync(file);
+                file.Close();
+                stream.Close();
             }
             zipFile.Close();
+        }
+
+        private string[] McArguments()
+        {
+            var values = new Dictionary<string ,string>();
+            values.Add("${auth_player_name}", _config.Username);
+            values.Add("${version_name}", _versionInfo.Id);
+            values.Add("${game_directory}", BmclCore.MinecraftDirectory);
+            values.Add("${assets_root}", "assets");
+            values.Add("${assets_index_name}", _versionInfo.Assets);
+            values.Add("${auth_uuid}", "0000");
+            values.Add("${auth_access_token}", "0000");
+            values.Add("${user_type}", "Legacy");
+            values.Add("${version_type}", "Legacy");
+            var arguments = new StringBuilder(_versionInfo.MinecraftArguments);
+            arguments = values.Aggregate(arguments, (current, value) => current.Replace(value.Key, value.Value));
+            return arguments.ToString().Split(' ');
         }
     }
 }

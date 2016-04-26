@@ -85,7 +85,7 @@ namespace BMCLV2.Launcher
             if (!File.Exists(javaPath))
             {
                 BMCLV2.Logger.log("找不到java",BMCLV2.Logger.LogType.Error);
-                throw new NoJavaException();
+                throw new NoJavaException(javaPath);
             }
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherCheckMem"));
             _javaxmx = javaXmx;
@@ -445,7 +445,6 @@ namespace BMCLV2.Launcher
                         }
                     }
                     fileWriter.Close();
-
                 }
             }
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherSolveMod"));
