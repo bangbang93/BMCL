@@ -36,6 +36,7 @@ namespace BMCLV2
         private static readonly Application ThisApplication = Application.Current;
         private static readonly string Cfgfile = BaseDirectory + "bmcl.xml";
         public static MirrorManager MirrorManager = new MirrorManager();
+        public static readonly string OS = "windows";
 
         static BmclCore()
         {

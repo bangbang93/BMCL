@@ -22,6 +22,10 @@ namespace BMCLV2.Launcher
         private OnLogEventHandler _onStdOut;
         private OnLogEventHandler _onStdErr;
 
+        public DateTime StartTime;
+
+        public int UpTime => (int)(DateTime.Now - StartTime).TotalSeconds;
+
         public event OnChildProcessExit OnExit
         {
             add { _onExit += value; }
@@ -70,11 +74,17 @@ namespace BMCLV2.Launcher
         public bool Start()
         {
             Close();
-            _processStartInfo = new ProcessStartInfo(_filename, JoinArguments(_arguments));
+            _processStartInfo = new ProcessStartInfo(_filename, JoinArguments(_arguments))
+            {
+                RedirectStandardError = true,
+                RedirectStandardInput = true,
+                RedirectStandardOutput = true
+            };
             _childProcess = new Process {StartInfo = _processStartInfo};
             var result = _childProcess.Start();
             if (!result) return false;
-            _childProcess.Exited += (sender, args) => _onExit?.Invoke(sender, args);
+            StartTime = DateTime.Now;
+            _childProcess.Exited += (sender, args) => _onExit?.Invoke(sender, _childProcess.ExitCode);
             return true;
         }
 

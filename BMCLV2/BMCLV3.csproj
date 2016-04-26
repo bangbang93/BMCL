@@ -100,6 +100,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Downloader\Version.cs" />
+    <Compile Include="EventHandler.cs" />
     <Compile Include="Exceptions\ProcessNotStartException.cs" />
     <Compile Include="Game\GameManager.cs" />
     <Compile Include="Game\VersionInfo.cs" />
@@ -192,11 +193,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Url.resx</DependentUpon>
     </Compile>
-    <Compile Include="serverlist\AddServer.xaml.cs">
-      <DependentUpon>AddServer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="serverlist\serverinfo.cs" />
-    <Compile Include="serverlist\serverlist.cs" />
     <Compile Include="Texturepack\NoResourcePackDirException.cs" />
     <Compile Include="Texturepack\TextureInfo.cs" />
     <Compile Include="Texturepack\TexturePack.cs" />
@@ -204,7 +200,7 @@
     <Compile Include="UpdateChecker.cs" />
     <Compile Include="util\FileHelper.cs" />
     <Compile Include="util\MathHelper.cs" />
-    <Compile Include="util\MD5.cs" />
+    <Compile Include="util\Crypto.cs" />
     <Compile Include="Versions\RawVersionListType.cs" />
     <Compile Include="Versions\RemoteVerType.cs" />
     <Compile Include="Windows\NotiIcon.cs" />
@@ -321,10 +317,6 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="serverlist\AddServer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Windows\Style.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -409,9 +401,7 @@
   <ItemGroup>
     <Resource Include="Resource\tabitem.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Event\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

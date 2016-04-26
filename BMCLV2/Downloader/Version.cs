@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Threading.Tasks;
+using BMCLV2.Game;
 using BMCLV2.JsonClass;
-using BMCLV2.Objects.Mirrors;
 using BMCLV2.util;
 
 namespace BMCLV2.Downloader
@@ -26,11 +26,11 @@ namespace BMCLV2.Downloader
             var json = await _downloader.DownloadStringTaskAsync(_url);
             var versionInfo = (VersionInfo) new JSON(typeof(VersionInfo)).Parse(json);
             ProcessChange("VersionProcessingJSON");
-            var clientUrl = versionInfo.downloads.client.url;
+            var clientUrl = versionInfo.Downloads.Client.Url;
             ProcessChange("VersionDownloadingJar");
-            FileHelper.CreateDirectoryForFile(PathHelper.VersionFile(versionInfo.id, "jar"));
-            await _downloader.DownloadFileTaskAsync(clientUrl, PathHelper.VersionFile(versionInfo.id, "jar"));
-            FileHelper.WriteFile(PathHelper.VersionFile(versionInfo.id, "json"), json);
+            FileHelper.CreateDirectoryForFile(PathHelper.VersionFile(versionInfo.Id, "jar"));
+            await _downloader.DownloadFileTaskAsync(clientUrl, PathHelper.VersionFile(versionInfo.Id, "jar"));
+            FileHelper.WriteFile(PathHelper.VersionFile(versionInfo.Id, "json"), json);
         }
     }
 }

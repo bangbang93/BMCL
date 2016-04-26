@@ -1,7 +1,8 @@
 ﻿using System.Runtime.Serialization;
+
 // ReSharper disable InconsistentNaming
 
-namespace BMCLV2.Objects.Mirrors
+namespace BMCLV2.Mirrors
 {
     public class VersionManifest
     {
