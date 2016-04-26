@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BMCLV2.Exceptions;
 using BMCLV2.Objects.Mirrors;
 using BMCLV2.util;
+using ICSharpCode.SharpZipLib.Zip;
 using VersionInfo = BMCLV2.Game.VersionInfo;
 
 namespace BMCLV2.Launcher
@@ -39,7 +41,7 @@ namespace BMCLV2.Launcher
             }
         }
 
-        public void Start()
+        public async void Start()
         {
             if (!SetupJava()) return;
             _arguments.Add($"-Djava.library.path =\"{_versionDirectory}\"");
@@ -89,8 +91,8 @@ namespace BMCLV2.Launcher
             foreach (var libraryInfo in libraries)
             {
                 // skip natives
-                var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 if (libraryInfo.Rules != null) continue;
+                var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 if (!libraryInfo.IsVaild(_libraryDirectory))
                 {
                     await new Downloader.Downloader().DownloadFileTaskAsync(libraryInfo.Url, filePath);
@@ -101,6 +103,35 @@ namespace BMCLV2.Launcher
             _arguments.Add("-cp");
             _arguments.Add(libraryPath.ToString());
             return true;
+        }
+
+        private async Task<bool> SetupNatives()
+        {
+            foreach (var libraryInfo in _versionInfo.Libraries)
+            {
+                //skip non-natives
+                if (libraryInfo.Rules == null) continue;
+                var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
+                if (!libraryInfo.IsVaild(_libraryDirectory))
+                {
+                    await new Downloader.Downloader().DownloadFileTaskAsync(libraryInfo.Url, filePath);
+                }
+                await UnzipNative(filePath, libraryInfo.Extract);
+            }
+            return true;
+        }
+
+        private async Task UnzipNative(string filename, LibraryInfo.ExtractRule extractRules)
+        {
+            var zipFile = new ZipFile(filename);
+            foreach (ZipEntry entry in zipFile)
+            {
+                if (extractRules.Exclude.Any(entryName => entry.Name.Contains(entryName))) continue;
+                var file = File.Create(Path.Combine(_nativesDirectory, entry.Name));
+                var stream = zipFile.GetInputStream(entry);
+                await stream.CopyToAsync(file);
+            }
+            zipFile.Close();
         }
     }
 }
