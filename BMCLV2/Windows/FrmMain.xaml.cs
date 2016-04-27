@@ -13,7 +13,6 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using BMCLV2.Game;
 using BMCLV2.I18N;
-using BMCLV2.Login;
 using BMCLV2.Plugin;
 using BMCLV2.Themes;
 
@@ -138,63 +137,9 @@ namespace BMCLV2.Windows
                 GridConfig.txtUserName.Focus();
                 return;
             }
-            _clientCrashReportCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count() : 0;
             _hsErrorCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Count(s => s.StartsWith("hs_err")) : 0;
             Logger.Info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
             BmclCore.GameManager.LaunchGame(GridGame.GetSelectedVersion());
-        }
-
-        private void LoginThreadOnLoginFinishEvent(LoginInfo loginInfo)
-        {
-            if (loginInfo.Suc)
-            {
-                GridConfig.SaveConfig();
-                var username = loginInfo.UN;
-                try
-                {
-                    var javaPath = GridConfig.txtJavaPath.Text;
-                    var javaXmx = GridConfig.txtJavaXmx.Text;
-                    var selectVer = GridGame.listVer.SelectedItem.ToString();
-                    var extArg = GridConfig.txtExtJArg.Text;
-                    var launcher = new Launcher.Launcher(
-                        BmclCore.GameManager.GetVersion(GridGame.GetSelectedVersion()), BmclCore.Config);
-                    launcher.Start();
-//                    BmclCore.Game = new Launcher.OldLauncher(javaPath, javaXmx, username, selectVer, BmclCore.GameInfo, new[] { extArg }, loginInfo);
-//                    BmclCore.Game.StateChangeEvent += Game_StateChangeEvent;
-//                    BmclCore.Game.Gameexit += launcher_gameexit;
-//                    BmclCore.Game.GameStartUp += Game_GameStartUp;
-                }
-                catch (Exception ex)
-                {
-                    _starter.Topmost = false;
-                    _starter.Close();
-                    MessageBox.Show("启动失败：" + ex.Message);
-                    Logger.Log(ex);
-                    return;
-                }
-            }
-            else
-            {
-                _starter.Topmost = false;
-                MessageBox.Show("登录失败:" + loginInfo.Errinfo);
-                Logger.Log("登录失败" + loginInfo.Errinfo, Logger.LogType.Error);
-            }
-            if (BmclCore.Game == null)
-            {
-                _starter.Topmost = false;
-                Logger.Log("启动器初始化失败，放弃启动", Logger.LogType.Crash);
-            }
-            else
-            {
-                BmclCore.Game.Start();
-                this.Hide();
-            }
-            
-        }
-
-        void Game_StateChangeEvent(string state)
-        {
-            _starter.ChangeEventH(state);
         }
 
         void Game_GameStartUp(bool success)
@@ -220,54 +165,6 @@ namespace BMCLV2.Windows
 
         private void launcher_gameexit()
         {
-            BmclCore.Game.Gameexit -= launcher_gameexit;
-            if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports"))
-            {
-                if (_clientCrashReportCount != Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count())
-                {
-                    Logger.Log("发现新的错误报告");
-                    var clientCrashReportDir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports");
-                    var lastClientCrashReportPath = "";
-                    var lastClientCrashReportModifyTime=DateTime.MinValue;
-                    foreach (var clientCrashReport in clientCrashReportDir.GetFiles())
-                    {
-                        if (lastClientCrashReportModifyTime < clientCrashReport.LastWriteTime)
-                        {
-                            lastClientCrashReportModifyTime = clientCrashReport.LastWriteTime;
-                            lastClientCrashReportPath = clientCrashReport.FullName;
-                        }
-                    }
-                    var crashReportReader = new StreamReader(lastClientCrashReportPath);
-                    Logger.Log(crashReportReader.ReadToEnd(),Logger.LogType.Crash);
-                    crashReportReader.Close();
-                    if (MessageBox.Show("客户端好像崩溃了，是否查看崩溃报告？", "客户端崩溃", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                    {
-                        Process.Start(lastClientCrashReportPath);
-                    }
-                }
-            }
-            if (_hsErrorCount != Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Count(s => s.StartsWith("hs_err")))
-                {
-                    Logger.Log("发现新的JVM错误报告");
-                    var lastClientCrashReportPath = "";
-                    var lastClientCrashReportModifyTime=DateTime.MinValue;
-                    foreach (var clientCrashReport in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Where(s => s.StartsWith("hs_err")))
-                    {
-                        var jvmCrashReport = new FileInfo(clientCrashReport);
-                        if (lastClientCrashReportModifyTime < jvmCrashReport.LastWriteTime)
-                        {
-                            lastClientCrashReportModifyTime = jvmCrashReport.LastWriteTime;
-                            lastClientCrashReportPath = jvmCrashReport.FullName;
-                        }
-                }
-                    var crashReportReader = new StreamReader(lastClientCrashReportPath);
-                    Logger.Log(crashReportReader.ReadToEnd(),Logger.LogType.Crash);
-                    crashReportReader.Close();
-                    if (MessageBox.Show("JVM好像崩溃了，是否查看崩溃报告？", "JVM崩溃", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                    {
-                        Process.Start(lastClientCrashReportPath);
-                    }
-                }
             if (Logger.Debug)
             {
                 Logger.Log("游戏退出，Debug模式保留Log信息窗口，程序不退出");

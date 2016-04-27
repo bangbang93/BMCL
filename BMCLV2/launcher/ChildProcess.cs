@@ -166,5 +166,12 @@ namespace BMCLV2.Launcher
             }
             return args;
         }
+
+        public static ChildProcess Exec(string filename, string[] arguments = null)
+        {
+            var childProcess = new ChildProcess(filename, arguments);
+            childProcess.Start();
+            return childProcess;
+        }
     }
 }

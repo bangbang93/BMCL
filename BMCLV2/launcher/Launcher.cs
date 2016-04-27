@@ -21,6 +21,7 @@ namespace BMCLV2.Launcher
         private readonly string _versionDirectory;
         private readonly string _libraryDirectory;
         private readonly string _nativesDirectory;
+        private Dictionary<string ,int> _errorCount = new Dictionary<string, int>(); 
 
         private OnGameExit _onGameExit;
 
@@ -68,18 +69,36 @@ namespace BMCLV2.Launcher
                 _childProcess.OnStdOut += OnStdOut;
                 _childProcess.OnStdErr += OnStdOut;
                 _childProcess.OnExit += ChildProcessOnExit;
+                _errorCount = CountError();
                 return true;
             }
             return false;
         }
 
+        private Dictionary<string, int> CountError()
+        {
+            var values = new Dictionary<string, int>();
+            var crashReportDir = Path.Combine(BmclCore.MinecraftDirectory, "crash-reports");
+            values["crashReports"] = Directory.Exists(crashReportDir) ? Directory.GetFiles(crashReportDir).Length : 0;
+            var hsErrorDir = BmclCore.MinecraftDirectory;
+            values["hsError"] = Directory.Exists(hsErrorDir) ? Directory.GetFiles(hsErrorDir).Count(s => s.StartsWith("hs_err")) : 0;
+            return values;
+        }
+
         private void ChildProcessOnExit(object sender, int exitCode)
         {
+            _onGameExit(sender, _versionInfo, exitCode);
             Logger.Log(
                 $"{_versionInfo.Id} has exited with exit code {exitCode}, Running for {new TimeSpan(0, 0, 0, _childProcess.UpTime)}");
             if (_childProcess.UpTime < 10)
             {
                 //TODO maybe startup problem
+            }
+            else
+            {
+                var newValue = CountError();
+                HandleCrashReport(newValue);
+                HandleHsError(newValue);
             }
         }
 
@@ -166,6 +185,40 @@ namespace BMCLV2.Launcher
             var arguments = new StringBuilder(_versionInfo.MinecraftArguments);
             arguments = values.Aggregate(arguments, (current, value) => current.Replace(value.Key, value.Value));
             return arguments.ToString().Split(' ');
+        }
+
+        private void HandleCrashReport(Dictionary<string, int> nowValue)
+        {
+            var crashReportsPath = Path.Combine(BmclCore.MinecraftDirectory, "crash-reports");
+            if (nowValue["crashReport"] != _errorCount["crashReport"] && Directory.Exists(crashReportsPath))
+            {
+                Logger.Log("发现新的错误报告");
+                var clientCrashReportDir = new DirectoryInfo(crashReportsPath);
+                var clientReports = clientCrashReportDir.GetFiles();
+                Array.Sort(clientReports,
+                    (info1, info2) => (int) (info1.LastWriteTime - info2.LastWriteTime).TotalSeconds);
+                var crashReportReader = new StreamReader(clientReports[0].FullName);
+                Logger.Log(crashReportReader.ReadToEnd(), Logger.LogType.Crash);
+                crashReportReader.Close();
+                ChildProcess.Exec(clientReports[0].FullName);
+            }
+        }
+
+        private void HandleHsError(Dictionary<string, int> nowValue)
+        {
+            var hsErrorPath = BmclCore.MinecraftDirectory;
+            if (nowValue["hsError"] != _errorCount["hsError"])
+            {
+                Logger.Log("发现新的JVM错误报告");
+                var hsErrorDir = new DirectoryInfo(hsErrorPath);
+                var hsErrors = hsErrorDir.GetFiles().Where(s => s.FullName.StartsWith("hs_err")).ToArray();
+                Array.Sort(hsErrors,
+                    (info1, info2) => (int)(info1.LastWriteTime - info2.LastWriteTime).TotalSeconds);
+                var crashReportReader = new StreamReader(hsErrors[0].FullName);
+                Logger.Log(crashReportReader.ReadToEnd(), Logger.LogType.Crash);
+                crashReportReader.Close();
+                ChildProcess.Exec(hsErrors[0].FullName);
+            }
         }
     }
 }
