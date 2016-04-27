@@ -11,6 +11,7 @@ namespace BMCLV2.Game
         public static readonly string VersionDirectory = Path.Combine(BmclCore.BaseDirectory, @".minecraft\versions");
         private Dictionary<string, VersionInfo> _versions = new Dictionary<string, VersionInfo>();
         private Launcher.Launcher _launcher;
+        private readonly string[] _inheritFields = new[] {"Type", "MinecraftArguments", "MainClass", "Assets", "Jar"};
 
         public bool IsGameRunning => _launcher == null;
 
@@ -26,7 +27,7 @@ namespace BMCLV2.Game
             var jsonFiles = new List<string>();
             dirs.ForEach(dir => jsonFiles.AddRange(Directory.GetFiles(dir).Where(file => file.EndsWith(".json"))));
             var jsonParser = new JSON(typeof(VersionInfo));
-            jsonFiles.ForEach((jsonFile) =>
+            foreach (var jsonFile in jsonFiles)
             {
                 using (var jsonStream = new FileStream(jsonFile, FileMode.Open))
                 {
@@ -37,7 +38,18 @@ namespace BMCLV2.Game
                     }
                     jsonStream.Close();
                 }
-            });
+            }
+            foreach (var version in _versions.Values)
+            {
+                if (version.InheritsFrom == null) continue;
+                var inherbits = _versions[version.InheritsFrom];
+                if (inherbits == null) continue;
+                foreach (var field in _inheritFields.Where(field => version.GetType().GetField(field).GetValue(version) == null))
+                {
+                    version.GetType().GetField(field).SetValue(version, inherbits.GetType().GetField(field).GetValue(inherbits));
+                }
+                version.Libraries = version.Libraries.Concat(inherbits.Libraries).ToArray();
+            }
         }
 
         public Dictionary<string, VersionInfo> GetVersions()
@@ -57,7 +69,7 @@ namespace BMCLV2.Game
             if (game == null) throw new NoSuchVersionException(id);
             _launcher = new Launcher.Launcher(game, BmclCore.Config);
             _launcher.Start();
-            _launcher.OnGameExit += (sender, info) => _launcher = null;
+            _launcher.OnGameExit += (sender, info, exitcode) => _launcher = null;
             return true;
         }
     }

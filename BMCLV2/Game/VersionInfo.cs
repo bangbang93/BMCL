@@ -47,11 +47,5 @@ namespace BMCLV2.Game
         [DataMember(Name = "libraries")] public LibraryInfo[] Libraries;
         [DataMember(Name = "downloads")] public VersionDownload Downloads;
         [DataMember(Name = "assets")] public string Assets;
-
-        [OnSerializing]
-        public void DoInherits(StreamingContext context)
-        {
-            Logger.Log("it works");
-        }
     }
 }
