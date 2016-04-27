@@ -73,7 +73,7 @@ namespace BMCLV2.Forge
                     Arguments = "-jar \"" + BmclCore.BaseDirectory + "\\forge.jar\""
                 }
             };
-            Logger.log(forgeIns.StartInfo.Arguments);
+            Logger.Log(forgeIns.StartInfo.Arguments);
             forgeIns.Start();
             forgeIns.WaitForExit();
         }

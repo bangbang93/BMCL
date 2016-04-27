@@ -42,7 +42,7 @@ namespace BMCLV2
                 var verTable = (VerList)verJsonSerializer.ReadObject(res.GetResponseStream());
                 if (verTable.Lastest.Build == 0)
                 {
-                    Logger.log("解析返回的更新日志失败", Logger.LogType.Error);
+                    Logger.Log("解析返回的更新日志失败", Logger.LogType.Error);
                     HasUpdate = false;
                     return;
                 }
@@ -50,13 +50,13 @@ namespace BMCLV2
                 {
                     HasUpdate = true;
                     LastestDownloadUrl = verTable.Lastest.DownloadUrl;
-                    Logger.log("需要更新，最新版本为" + verTable.Lastest);
-                    Logger.log("下载地址为" + LastestDownloadUrl);
+                    Logger.Log("需要更新，最新版本为" + verTable.Lastest);
+                    Logger.Log("下载地址为" + LastestDownloadUrl);
                 }
                 else
                 {
                     HasUpdate = false;
-                    Logger.log("无需更新");
+                    Logger.Log("无需更新");
                 }
                 var sb = new StringBuilder();
                 foreach (UpdateInfo verInfo in verTable.Update)
@@ -72,7 +72,7 @@ namespace BMCLV2
             }
             catch (Exception ex)
             {
-                Logger.log(ex);
+                Logger.Log(ex);
                 HasUpdate = false;
             }
         }

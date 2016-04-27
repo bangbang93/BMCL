@@ -196,8 +196,8 @@ namespace BMCLV2
             }
             catch (Exception ex)
             {
-                Logger.error("获取内存失败");
-                Logger.error(ex);
+                Logger.Fatal("获取内存失败");
+                Logger.Fatal(ex);
                 return ulong.MaxValue;
             }
         }

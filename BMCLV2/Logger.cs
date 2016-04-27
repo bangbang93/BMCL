@@ -4,37 +4,37 @@ using System.Text;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Collections;
-using System.Linq;
 
 namespace BMCLV2
 {
-    static public class Logger
+    public static class Logger
     {
         public enum LogType
         {
             Error,Info,Crash,Exception,Game,Fml,
         }
         
-        static public bool debug = false;
-        static readonly FrmLog frmLog = new FrmLog();
-        static public void start()
+        public static bool Debug = false;
+        private static readonly FrmLog FrmLog = new FrmLog();
+        private static FileStream _logFile;
+        public static void Start()
         {
-            FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bmcl.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-            fs.Close();
-            if (debug)
+            _logFile = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bmcl.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            _logFile.Flush(true);
+            if (Debug)
             {
-                frmLog.Show();
+                FrmLog.Show();
             }
         }
-        static public void stop()
+        public static void Stop()
         {
-            if (debug)
+            if (Debug)
             {
-                frmLog.Close();
+                FrmLog.Close();
             }
         }
 
-        static private string writeInfo(LogType type = LogType.Info)
+        private static string WriteInfo(LogType type = LogType.Info)
         {
             switch (type)
             {
@@ -54,55 +54,54 @@ namespace BMCLV2
                     return (DateTime.Now.ToString(CultureInfo.InvariantCulture) + "信息:");
             }
         }
-        static private void write(string str, LogType type = LogType.Info)
+        private static void Write(string str, LogType type = LogType.Info)
         {
-            FileStream fs = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bmcl.log", FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
-            StreamWriter sw = new StreamWriter(fs, Encoding.UTF8);
-            sw.WriteLine(writeInfo(type) + str);
+            var sw = new StreamWriter(_logFile, Encoding.UTF8);
+            sw.WriteLine(WriteInfo(type) + str);
             sw.Close();
-            fs.Close();
-            if (debug)
+            _logFile.Flush(true);
+            if (Debug)
             {
-                frmLog.WriteLine(str, type);
+                FrmLog.WriteLine(str, type);
             }
         }
-        static private void write(Stream s, LogType type = LogType.Info)
+        private static void Write(Stream s, LogType type = LogType.Info)
         {
             StreamReader sr = new StreamReader(s);
-            write(sr.ReadToEnd(), type);
-            if (debug)
+            Write(sr.ReadToEnd(), type);
+            if (Debug)
             {
                 s.Position = 0;
-                frmLog.WriteLine(sr.ReadToEnd(),type);
+                FrmLog.WriteLine(sr.ReadToEnd(),type);
             }
         }
 
 
-        static public void log(string str, LogType type = LogType.Info)
+        public static void Log(string str, LogType type = LogType.Info)
         {
-            write(str, type);
+            Write(str, type);
         }
-        static public void log(Config cfg, LogType type = LogType.Info)
+        public static void Log(Config cfg, LogType type = LogType.Info)
         {
             DataContractSerializer cfgSerializer = new DataContractSerializer(typeof(Config));
             MemoryStream ms=new MemoryStream();
             cfgSerializer.WriteObject(ms, cfg);
             ms.Position = 0;
-            write(ms, type);
+            Write(ms, type);
         }
-        static public void log(Stream s, LogType type = LogType.Info)
+        public static void Log(Stream s, LogType type = LogType.Info)
         {
             StreamReader sr = new StreamReader(s);
-            write(sr.ReadToEnd(), type);
+            Write(sr.ReadToEnd(), type);
         }
-        static public void log(System.Exception ex, LogType type = LogType.Exception)
+        public static void Log(Exception ex, LogType type = LogType.Exception)
         {
             StringBuilder message = new StringBuilder();
             message.AppendLine(ex.Source);
             message.AppendLine(ex.ToString());
             message.AppendLine(ex.Message);
             foreach (DictionaryEntry data in ex.Data)
-                message.AppendLine(string.Format("Key:{0}\nValue:{1}", data.Key, data.Value));
+                message.AppendLine($"Key:{data.Key}\nValue:{data.Value}");
             message.AppendLine(ex.StackTrace);
             var iex = ex;
             while (iex.InnerException != null)
@@ -113,45 +112,45 @@ namespace BMCLV2
                 message.AppendLine(iex.ToString());
                 message.AppendLine(iex.Message);
                 foreach (DictionaryEntry data in ex.Data)
-                    message.AppendLine(string.Format("Key:{0}\nValue:{1}", data.Key, data.Value));
+                    message.AppendLine($"Key:{data.Key}\nValue:{data.Value}");
                 message.AppendLine(iex.StackTrace);
             }
-            write(message.ToString(), type);
+            Write(message.ToString(), type);
         }
 
-        static public void log(LogType type = LogType.Info, params string[] messages)
+        public static void Log(LogType type = LogType.Info, params string[] messages)
         {
             StringBuilder sb = new StringBuilder();
             foreach (string str in messages)
             {
                 sb.Append(str);
             }
-            write(sb.ToString(), type);
+            Write(sb.ToString(), type);
         }
 
-        static public void log(params string[] messages)
+        public static void Log(params string[] messages)
         {
             StringBuilder sb = new StringBuilder();
             foreach (string str in messages)
             {
                 sb.Append(str).Append(" ");
             }
-            write(sb.ToString());
+            Write(sb.ToString());
         }
 
-        static public void info(string message)
+        public static void Info(string message)
         {
-            Logger.log(message);
+            Log(message);
         }
 
-        static public void error(string message)
+        public static void Fatal(string message)
         {
-            Logger.log(message, LogType.Error);
+            Log(message, LogType.Error);
         }
 
-        static public void error(System.Exception ex)
+        public static void Fatal(Exception ex)
         {
-            Logger.log(ex);
+            Log(ex);
         }
         
 

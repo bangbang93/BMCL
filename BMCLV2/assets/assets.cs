@@ -60,7 +60,7 @@ namespace BMCLV2.Assets
                 if (error != null)
                 {
                     var ex = error;
-                    Logger.log(ex.Response.ResponseUri.ToString());
+                    Logger.Log(ex.Response.ResponseUri.ToString());
                 }
                 Logger.error(e.Error);
             }
@@ -74,7 +74,7 @@ namespace BMCLV2.Assets
                 var jsSerializer = new JavaScriptSerializer();
                 var assetsObject = jsSerializer.Deserialize<Dictionary<string, Dictionary<string, AssetsEntity>>>(e.Result);
                 Dictionary<string, AssetsEntity> obj = assetsObject["objects"];
-                Logger.log("共", obj.Count.ToString(CultureInfo.InvariantCulture), "项assets");
+                Logger.Log("共", obj.Count.ToString(CultureInfo.InvariantCulture), "项assets");
                 int i = 0;
                 foreach (KeyValuePair<string, AssetsEntity> entity in obj)
                 {
@@ -91,16 +91,16 @@ namespace BMCLV2.Assets
                             _init = false;
                         }
                         _downloader.DownloadFile(new Uri(url), file);
-                        Logger.log(i.ToString(CultureInfo.InvariantCulture), "/", obj.Count.ToString(CultureInfo.InvariantCulture), file.Substring(AppDomain.CurrentDomain.BaseDirectory.Length), "下载完毕");
+                        Logger.Log(i.ToString(CultureInfo.InvariantCulture), "/", obj.Count.ToString(CultureInfo.InvariantCulture), file.Substring(AppDomain.CurrentDomain.BaseDirectory.Length), "下载完毕");
                         if (i == obj.Count)
                         {
-                            Logger.log("assets下载完毕");
+                            Logger.Log("assets下载完毕");
                             BmclCore.NIcon.ShowBalloonTip(3000, LangManager.GetLangFromResource("SyncAssetsFinish"));
                         }
                     }
                     catch (WebException ex)
                     {
-                        Logger.log(ex.Response.ResponseUri.ToString());
+                        Logger.Log(ex.Response.ResponseUri.ToString());
                         Logger.error(ex);
                     }
                 }

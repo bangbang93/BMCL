@@ -46,7 +46,7 @@ namespace BMCLV2.Windows.MainWindowTab
                 _prs.Show();
                 versionDownloader.ProcessChange += VersionDownloader_ProcessChange;
                 await versionDownloader.Start();
-                Logger.log("下载客户端文件成功");
+                Logger.Log("下载客户端文件成功");
                 MessageBox.Show(LangManager.GetLangFromResource("RemoteVerDownloadSuccess"));
                 btnDownloadVer.Content = LangManager.GetLangFromResource("btnDownloadVer");
                 btnDownloadVer.IsEnabled = true;

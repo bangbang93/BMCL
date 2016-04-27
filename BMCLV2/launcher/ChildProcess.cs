@@ -83,7 +83,11 @@ namespace BMCLV2.Launcher
                 UseShellExecute = false,
                 WorkingDirectory = BmclCore.MinecraftDirectory
             };
-            _childProcess = new Process {StartInfo = _processStartInfo};
+            _childProcess = new Process
+            {
+                StartInfo = _processStartInfo,
+                EnableRaisingEvents = true
+            };
             _childProcess.Exited += (sender, args) => _onExit?.Invoke(sender, _childProcess.ExitCode);
             _childProcess.OutputDataReceived += (sender, args) => _onStdOut?.Invoke(sender, args.Data);
             _childProcess.ErrorDataReceived += (sender, args) => _onStdErr?.Invoke(sender, args.Data);

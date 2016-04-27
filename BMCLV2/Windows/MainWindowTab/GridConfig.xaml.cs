@@ -91,14 +91,14 @@ namespace BMCLV2.Windows.MainWindowTab
             }
             catch (FormatException ex)
             {
-                Logger.log(ex);
+                Logger.Log(ex);
                 MessageBox.Show("请输入一个有效数字");
                 txtJavaXmx.Text = (Config.GetMemory()/4).ToString(CultureInfo.InvariantCulture);
                 txtJavaXmx.SelectAll();
             }
             catch (XamlParseException ex)
             {
-                Logger.log(ex);
+                Logger.Log(ex);
                 MessageBox.Show("请输入一个有效数字");
                 txtJavaXmx.Text = (Config.GetMemory() / 4).ToString(CultureInfo.InvariantCulture);
                 txtJavaXmx.SelectAll();

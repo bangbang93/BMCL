@@ -76,21 +76,21 @@ namespace BMCLV2
             }
             catch (SerializationException ex)
             {
-                Logger.log(ex);
+                Logger.Log(ex);
                 try
                 {
                     StreamReader JsonFile = new StreamReader(path, Encoding.Default);
                     DataContractJsonSerializer InfoReader = new DataContractJsonSerializer(typeof(gameinfo));
                     gameinfo info = InfoReader.ReadObject(JsonFile.BaseStream) as gameinfo;
                     JsonFile.Close();
-                    Logger.log("JSON文件使用", Encoding.Default.EncodingName, "解析成功，将转换为UTF8编码");
+                    Logger.Log("JSON文件使用", Encoding.Default.EncodingName, "解析成功，将转换为UTF8编码");
                     JsonFile = new StreamReader(path, Encoding.Default);
                     string JsonString = JsonFile.ReadToEnd();
                     JsonFile.Close();
                     StreamWriter sw = new StreamWriter(path, false, Encoding.UTF8);
                     sw.WriteLine(JsonString);
                     sw.Close();
-                    Logger.log("JSON文件转存完毕");
+                    Logger.Log("JSON文件转存完毕");
                     if(info.inheritsFrom == "" || info.inheritsFrom == null)
                         return info;
                     String anotherJson = GetGameInfoJsonPath(info.inheritsFrom);
@@ -100,7 +100,7 @@ namespace BMCLV2
                 }
                 catch (SerializationException ex1)
                 {
-                    Logger.log(ex1);
+                    Logger.Log(ex1);
                     return null;
                 }
             }

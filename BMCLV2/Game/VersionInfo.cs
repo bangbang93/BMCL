@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Data.Common;
+using System.Net.Mime;
 using System.Runtime.Serialization;
 using BMCLV2.Objects.Mirrors;
+using ICSharpCode.SharpZipLib.Core;
 
 namespace BMCLV2.Game
 {
@@ -45,5 +47,11 @@ namespace BMCLV2.Game
         [DataMember(Name = "libraries")] public LibraryInfo[] Libraries;
         [DataMember(Name = "downloads")] public VersionDownload Downloads;
         [DataMember(Name = "assets")] public string Assets;
+
+        [OnSerializing]
+        public void DoInherits(StreamingContext context)
+        {
+            Logger.log("it works");
+        }
     }
 }
