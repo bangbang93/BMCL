@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BMCLV2.Exceptions;
-using BMCLV2.JsonClass;
 using BMCLV2.Objects.Mirrors;
 using BMCLV2.util;
 using ICSharpCode.SharpZipLib.Zip;
@@ -22,6 +21,14 @@ namespace BMCLV2.Launcher
         private readonly string _versionDirectory;
         private readonly string _libraryDirectory;
         private readonly string _nativesDirectory;
+
+        private OnGameExit _onGameExit;
+
+        public event OnGameExit OnGameExit
+        {
+            add { _onGameExit += value; }
+            remove { _onGameExit -= value; }
+        }
 
         public Launcher(VersionInfo versionInfo, Config config = null, bool disableXincgc = false)
         {

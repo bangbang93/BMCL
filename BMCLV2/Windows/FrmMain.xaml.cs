@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using BMCLV2.Game;
 using BMCLV2.I18N;
 using BMCLV2.Login;
 using BMCLV2.Plugin;
@@ -130,11 +131,6 @@ namespace BMCLV2.Windows
         }
         private void btnStart_Click(object sender, RoutedEventArgs e)
         {
-            if (BmclCore.GameRunning)
-            {
-                MessageBox.Show(this, "同时只能运行一个客户端", "运行冲突", MessageBoxButton.OK, MessageBoxImage.Stop);
-                return;
-            }
             if (GridConfig.txtUserName.Text == "!!!")
             {
                 MessageBox.Show(this, "请先修改用户名");
@@ -144,16 +140,8 @@ namespace BMCLV2.Windows
             }
             _clientCrashReportCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count() : 0;
             _hsErrorCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Count(s => s.StartsWith("hs_err")) : 0;
-            _starter = new FrmPrs("正在准备游戏环境及启动游戏");
             Logger.Info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
-            _starter.ShowInTaskbar = false;
-            _starter.Show();
-            _starter.Activate();
-            _starter.Focus();
-            _starter.ChangeEventH("正在登陆");
-            var loginThread = new LoginThread(GridConfig.txtUserName.Text, GridConfig.txtPwd.Password, GridConfig.listAuth.SelectedItem.ToString(), GridConfig.listAuth.SelectedIndex);
-            loginThread.LoginFinishEvent += LoginThreadOnLoginFinishEvent;
-            loginThread.Start();
+            BmclCore.GameManager.LaunchGame(GridGame.GetSelectedVersion());
         }
 
         private void LoginThreadOnLoginFinishEvent(LoginInfo loginInfo)
@@ -182,7 +170,6 @@ namespace BMCLV2.Windows
                     _starter.Close();
                     MessageBox.Show("启动失败：" + ex.Message);
                     Logger.Log(ex);
-                    BmclCore.GameRunning = false;
                     return;
                 }
             }
@@ -191,18 +178,15 @@ namespace BMCLV2.Windows
                 _starter.Topmost = false;
                 MessageBox.Show("登录失败:" + loginInfo.Errinfo);
                 Logger.Log("登录失败" + loginInfo.Errinfo, Logger.LogType.Error);
-                BmclCore.GameRunning = false;
             }
             if (BmclCore.Game == null)
             {
                 _starter.Topmost = false;
                 Logger.Log("启动器初始化失败，放弃启动", Logger.LogType.Crash);
-                BmclCore.GameRunning = false;
             }
             else
             {
                 BmclCore.Game.Start();
-                BmclCore.GameRunning = true;
                 this.Hide();
             }
             
@@ -219,7 +203,6 @@ namespace BMCLV2.Windows
             if (BmclCore.Game == null || !success)
             {
                 BmclCore.NIcon.ShowBalloonTip(10000, "启动失败" + BmclCore.Config.LastPlayVer, System.Windows.Forms.ToolTipIcon.Error);
-                BmclCore.GameRunning = false;
             }
             else
             {
@@ -237,7 +220,6 @@ namespace BMCLV2.Windows
 
         private void launcher_gameexit()
         {
-            BmclCore.GameRunning = false;
             BmclCore.Game.Gameexit -= launcher_gameexit;
             if (Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports"))
             {
