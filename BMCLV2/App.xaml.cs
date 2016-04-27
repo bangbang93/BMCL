@@ -18,14 +18,12 @@ namespace BMCLV2
     /// </summary>
     public partial class App
     {
-        private static bool _skipPlugin = false;
+        private static bool _skipPlugin;
 
         public static EventWaitHandle ProgramStarted;
 
-        public static bool SkipPlugin
-        {
-            get { return _skipPlugin; }
-        }
+        public static bool SkipPlugin => _skipPlugin;
+
         protected override void OnStartup(StartupEventArgs e)
         {
             bool createNew;

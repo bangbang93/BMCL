@@ -16,22 +16,18 @@ namespace BMCLV2
         
         public static bool Debug = false;
         private static readonly FrmLog FrmLog = new FrmLog();
-        private static FileStream _logFile;
+        private static StreamWriter _logFile;
         public static void Start()
         {
-            _logFile = new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bmcl.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-            _logFile.Flush(true);
-            if (Debug)
-            {
-                FrmLog.Show();
-            }
+            _logFile = new StreamWriter(new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bmcl.log", FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8);
+            _logFile.Flush();
+            _logFile.AutoFlush = true;
+            if (Debug) FrmLog.Show();
         }
         public static void Stop()
         {
-            if (Debug)
-            {
-                FrmLog.Close();
-            }
+            _logFile.Close();
+            if (Debug) FrmLog.Close();
         }
 
         private static string WriteInfo(LogType type = LogType.Info)
@@ -56,14 +52,8 @@ namespace BMCLV2
         }
         private static void Write(string str, LogType type = LogType.Info)
         {
-            var sw = new StreamWriter(_logFile, Encoding.UTF8);
-            sw.WriteLine(WriteInfo(type) + str);
-            sw.Close();
-            _logFile.Flush(true);
-            if (Debug)
-            {
-                FrmLog.WriteLine(str, type);
-            }
+            _logFile.WriteLine(WriteInfo(type) + str);
+            if (Debug) FrmLog.WriteLine(str, type);
         }
         private static void Write(Stream s, LogType type = LogType.Info)
         {
