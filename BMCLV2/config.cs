@@ -63,6 +63,11 @@ namespace BMCLV2
             FullScreen = false;
         }
 
+        public override string ToString()
+        {
+            return $"Javaw: {Javaw}, Username: {Username}, Javaxmx: {Javaxmx}, Login: {Login}, LastPlayVer: {LastPlayVer}, ExtraJvmArg: {ExtraJvmArg}, Lang: {Lang}, Passwd: {Passwd}, Autostart: {Autostart}, Report: {Report}, CheckUpdate: {CheckUpdate}, WindowTransparency: {WindowTransparency}, DownloadSource: {DownloadSource}, PluginConfig: {PluginConfig}, Guid: {GUID}, Height: {Height}, Width: {Width}, FullScreen: {FullScreen}";
+        }
+
         public object GetPluginConfig(string key)
         {
             if (PluginConfig.ContainsKey(key))

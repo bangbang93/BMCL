@@ -73,11 +73,7 @@ namespace BMCLV2
         }
         public static void Log(Config cfg, LogType type = LogType.Info)
         {
-            DataContractSerializer cfgSerializer = new DataContractSerializer(typeof(Config));
-            MemoryStream ms=new MemoryStream();
-            cfgSerializer.WriteObject(ms, cfg);
-            ms.Position = 0;
-            Write(ms, type);
+            Write(cfg.ToString(), type);
         }
         public static void Log(Stream s, LogType type = LogType.Info)
         {
