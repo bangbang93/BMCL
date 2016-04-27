@@ -47,5 +47,6 @@ namespace BMCLV2.Game
         [DataMember(Name = "libraries")] public LibraryInfo[] Libraries;
         [DataMember(Name = "downloads")] public VersionDownload Downloads;
         [DataMember(Name = "assets")] public string Assets;
+        [DataMember(Name = "jar")] public string Jar;
     }
 }

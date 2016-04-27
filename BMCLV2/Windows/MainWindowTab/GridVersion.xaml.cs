@@ -26,8 +26,9 @@ namespace BMCLV2.Windows.MainWindowTab
         private async void btnRefreshRemoteVer_Click(object sender, RoutedEventArgs e)
         {
             btnRefreshRemoteVer.IsEnabled = false;
-            await BmclCore.MirrorManager.CurrectMirror.Refresh();
-            listRemoteVer.DataContext = BmclCore.MirrorManager.CurrectMirror.GetDataTable();
+            var versionMirror = BmclCore.MirrorManager.CurrectMirror.Version;
+            await versionMirror.Refresh();
+            listRemoteVer.DataContext = versionMirror.GetDataTable();
             btnRefreshRemoteVer.IsEnabled = true;
         }
         private async void btnDownloadVer_Click(object sender, RoutedEventArgs e)

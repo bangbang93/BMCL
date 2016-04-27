@@ -1,6 +1,10 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Linq;
 using System.Net;
 using System.Runtime.Serialization;
+using System.Text;
+using BMCLV2.Launcher;
 using BMCLV2.util;
 
 namespace BMCLV2.Objects.Mirrors
@@ -62,13 +66,20 @@ namespace BMCLV2.Objects.Mirrors
         [DataMember(Name= "extract")] public ExtractRule Extract;
         [DataMember(Name = "natives")] public NativesName Natives;
 
-        public string Path => Downloads.Artifact != null ? Downloads.Artifact.Path : Downloads.Classifiers.Windows.Path;
+        public string Path
+        {
+            get
+            {
+                if (Downloads == null) return IsNative ? BuildNativePath() : BuildLibPath();
+                return Downloads.Artifact != null ? Downloads.Artifact.Path : Downloads.Classifiers.Windows.Path;
+            }
+        }
 
-        public string Url => Downloads.Artifact != null ? Downloads.Artifact.Url : Downloads.Classifiers.Windows.Url;
+        public string Url => Downloads == null ? "" : Downloads.Artifact != null ? Downloads.Artifact.Url : Downloads.Classifiers.Windows.Url;
 
-        public string Sha1 => Downloads.Artifact != null ? Downloads.Artifact.Sha1 : Downloads.Classifiers.Windows.Sha1;
+        public string Sha1 => Downloads == null ? null : Downloads.Artifact != null ? Downloads.Artifact.Sha1 : Downloads.Classifiers.Windows.Sha1;
 
-        public int Size => Downloads.Artifact?.Size ?? Downloads.Classifiers.Windows.Size;
+        public int Size => Downloads == null ? -1 :  Downloads.Artifact?.Size ?? Downloads.Classifiers.Windows.Size;
 
         public bool IsNative => Natives != null;
 
@@ -93,6 +104,36 @@ namespace BMCLV2.Objects.Mirrors
             return fileInfo.Exists 
                 && fileInfo.Length == Size 
                 && Crypto.GetSha1HashFromFile(path) == Sha1;
+        }
+
+        private string BuildLibPath()
+        {
+            var libp = new StringBuilder();
+            var split = Name.Split(':');//0 包;1 名字；2 版本
+            if (split.Length != 3)
+            {
+                throw new UnSupportVersionException();
+            }
+            libp.Append(split[0].Replace('.', '\\')).Append("\\");
+            libp.Append(split[1]).Append("\\");
+            libp.Append(split[2]).Append("\\");
+            libp.Append(split[1]).Append("-");
+            libp.Append(split[2]).Append(".jar");
+            return libp.ToString();
+        }
+
+        private string BuildNativePath()
+        {
+            var libp = new StringBuilder();
+            var split = Name.Split(':');//0 包;1 名字；2 版本
+            libp.Append(split[0].Replace('.', '\\'));
+            libp.Append("\\");
+            libp.Append(split[1]).Append("\\");
+            libp.Append(split[2]).Append("\\");
+            libp.Append(split[1]).Append("-").Append(split[2]).Append("-").Append(Natives.Windows);
+            libp.Append(".jar");
+            libp.Replace("${arch}", Environment.Is64BitOperatingSystem ? "64" : "32");
+            return libp.ToString();
         }
     }
 }

@@ -24,7 +24,6 @@ namespace BMCLV2
         public static GameManager GameManager;
         public static string BmclVersion;
         public static Dictionary<string, object> Auths = new Dictionary<string, object>();
-        public static bool GameRunning = false;
         public static string UrlResourceBase = Url.URL_RESOURCE_bangbang93;
         public static string UrlLibrariesBase = Url.URL_LIBRARIES_bangbang93;
         public static NotiIcon NIcon = new NotiIcon();

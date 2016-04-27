@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BMCLV2.Exceptions;
+using BMCLV2.Mirrors;
 using BMCLV2.Objects.Mirrors;
 using BMCLV2.util;
 using ICSharpCode.SharpZipLib.Zip;
@@ -125,7 +126,7 @@ namespace BMCLV2.Launcher
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 if (!libraryInfo.IsVaild(_libraryDirectory))
                 {
-                    await Downloader.Downloader.GetFile(libraryInfo.Url, filePath);
+                    await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo);
                 }
                 libraryPath.Append(filePath).Append(";");
             }
@@ -145,7 +146,7 @@ namespace BMCLV2.Launcher
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 if (!libraryInfo.IsVaild(_libraryDirectory))
                 {
-                    await Downloader.Downloader.GetFile(libraryInfo.Url, filePath);
+                    await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo);
                 }
                 await UnzipNative(filePath, libraryInfo.Extract);
             }

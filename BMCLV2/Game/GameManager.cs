@@ -11,7 +11,7 @@ namespace BMCLV2.Game
         public static readonly string VersionDirectory = Path.Combine(BmclCore.BaseDirectory, @".minecraft\versions");
         private Dictionary<string, VersionInfo> _versions = new Dictionary<string, VersionInfo>();
         private Launcher.Launcher _launcher;
-        private readonly string[] _inheritFields = new[] {"Type", "MinecraftArguments", "MainClass", "Assets", "Jar"};
+        private readonly string[] _inheritFields = {"Type", "MinecraftArguments", "MainClass", "Assets", "Jar"};
 
         public bool IsGameRunning => _launcher == null;
 
@@ -39,10 +39,11 @@ namespace BMCLV2.Game
                     jsonStream.Close();
                 }
             }
+            // I miss js
             foreach (var version in _versions.Values)
             {
                 if (version.InheritsFrom == null) continue;
-                var inherbits = _versions[version.InheritsFrom];
+                var inherbits = GetVersion(version.InheritsFrom);
                 if (inherbits == null) continue;
                 foreach (var field in _inheritFields.Where(field => version.GetType().GetField(field).GetValue(version) == null))
                 {
