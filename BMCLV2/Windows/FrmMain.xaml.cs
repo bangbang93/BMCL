@@ -125,7 +125,7 @@ namespace BMCLV2.Windows
                     this.btnMiniSize_Click(null, null);
                     return;
                 }
-            Logger.log($"BMCL V2 Ver.{BmclCore.BmclVersion} 正在退出");
+            Logger.Log($"BMCL V2 Ver.{BmclCore.BmclVersion} 正在退出");
             BmclCore.Halt();
         }
         private void btnStart_Click(object sender, RoutedEventArgs e)
@@ -145,7 +145,7 @@ namespace BMCLV2.Windows
             _clientCrashReportCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count() : 0;
             _hsErrorCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Count(s => s.StartsWith("hs_err")) : 0;
             _starter = new FrmPrs("正在准备游戏环境及启动游戏");
-            Logger.info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
+            Logger.Info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
             _starter.ShowInTaskbar = false;
             _starter.Show();
             _starter.Activate();
@@ -181,7 +181,7 @@ namespace BMCLV2.Windows
                     _starter.Topmost = false;
                     _starter.Close();
                     MessageBox.Show("启动失败：" + ex.Message);
-                    Logger.log(ex);
+                    Logger.Log(ex);
                     BmclCore.GameRunning = false;
                     return;
                 }
@@ -190,13 +190,13 @@ namespace BMCLV2.Windows
             {
                 _starter.Topmost = false;
                 MessageBox.Show("登录失败:" + loginInfo.Errinfo);
-                Logger.log("登录失败" + loginInfo.Errinfo, Logger.LogType.Error);
+                Logger.Log("登录失败" + loginInfo.Errinfo, Logger.LogType.Error);
                 BmclCore.GameRunning = false;
             }
             if (BmclCore.Game == null)
             {
                 _starter.Topmost = false;
-                Logger.log("启动器初始化失败，放弃启动", Logger.LogType.Crash);
+                Logger.Log("启动器初始化失败，放弃启动", Logger.LogType.Crash);
                 BmclCore.GameRunning = false;
             }
             else
@@ -243,7 +243,7 @@ namespace BMCLV2.Windows
             {
                 if (_clientCrashReportCount != Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports").Count())
                 {
-                    Logger.log("发现新的错误报告");
+                    Logger.Log("发现新的错误报告");
                     var clientCrashReportDir = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\crash-reports");
                     var lastClientCrashReportPath = "";
                     var lastClientCrashReportModifyTime=DateTime.MinValue;
@@ -256,7 +256,7 @@ namespace BMCLV2.Windows
                         }
                     }
                     var crashReportReader = new StreamReader(lastClientCrashReportPath);
-                    Logger.log(crashReportReader.ReadToEnd(),Logger.LogType.Crash);
+                    Logger.Log(crashReportReader.ReadToEnd(),Logger.LogType.Crash);
                     crashReportReader.Close();
                     if (MessageBox.Show("客户端好像崩溃了，是否查看崩溃报告？", "客户端崩溃", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                     {
@@ -266,7 +266,7 @@ namespace BMCLV2.Windows
             }
             if (_hsErrorCount != Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Count(s => s.StartsWith("hs_err")))
                 {
-                    Logger.log("发现新的JVM错误报告");
+                    Logger.Log("发现新的JVM错误报告");
                     var lastClientCrashReportPath = "";
                     var lastClientCrashReportModifyTime=DateTime.MinValue;
                     foreach (var clientCrashReport in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Where(s => s.StartsWith("hs_err")))
@@ -279,22 +279,22 @@ namespace BMCLV2.Windows
                         }
                 }
                     var crashReportReader = new StreamReader(lastClientCrashReportPath);
-                    Logger.log(crashReportReader.ReadToEnd(),Logger.LogType.Crash);
+                    Logger.Log(crashReportReader.ReadToEnd(),Logger.LogType.Crash);
                     crashReportReader.Close();
                     if (MessageBox.Show("JVM好像崩溃了，是否查看崩溃报告？", "JVM崩溃", MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                     {
                         Process.Start(lastClientCrashReportPath);
                     }
                 }
-            if (Logger.debug)
+            if (Logger.Debug)
             {
-                Logger.log("游戏退出，Debug模式保留Log信息窗口，程序不退出");
+                Logger.Log("游戏退出，Debug模式保留Log信息窗口，程序不退出");
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(this.Show));
                 return;
             }
             if (!_inscreen)
             {
-                Logger.log("BMCL V2 Ver" + BmclCore.BmclVersion + DateTime.Now + "由于游戏退出而退出");
+                Logger.Log("BMCL V2 Ver" + BmclCore.BmclVersion + DateTime.Now + "由于游戏退出而退出");
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(() => Application.Current.Shutdown(0)));
             }
         }
@@ -459,7 +459,7 @@ namespace BMCLV2.Windows
         private void MenuStartDebug_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(LangManager.GetLangFromResource("MenuDebugHint").Replace("\\n", "\n"));
-            Logger.debug = true;
+            Logger.Debug = true;
             btnStart_Click(null, null);
         }
 

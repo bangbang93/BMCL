@@ -50,7 +50,7 @@ namespace BMCLV2.Launcher
             _arguments.Add(_versionInfo.MainClass);
             _arguments.AddRange(McArguments());
             if (!Launch()) return;
-            Logger.log(ChildProcess.JoinArguments(_arguments.ToArray()));
+            Logger.Log(ChildProcess.JoinArguments(_arguments.ToArray()));
         }
 
         private bool Launch()
@@ -68,7 +68,7 @@ namespace BMCLV2.Launcher
 
         private void ChildProcessOnExit(object sender, int exitCode)
         {
-            Logger.log(
+            Logger.Log(
                 $"{_versionInfo.Id} has exited with exit code {exitCode}, Running for {new TimeSpan(0, 0, 0, _childProcess.UpTime)}");
             if (_childProcess.UpTime < 10)
             {
@@ -78,7 +78,7 @@ namespace BMCLV2.Launcher
 
         private void OnStdOut(object sender, string log)
         {
-            Logger.log(log);
+            Logger.Log(log);
         }
 
         private bool SetupJava()

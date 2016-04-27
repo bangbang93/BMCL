@@ -30,9 +30,9 @@ namespace BMCLV2.Forge
             var json = await downloder.DownloadStringTaskAsync(forgeUrl);
             var versions = new JSON(typeof (ForgeVersion[])).Parse(json) as ForgeVersion[];
             if (versions != null)
-                Logger.info($"获取到{versions.Length}个forge版本");
+                Logger.Info($"获取到{versions.Length}个forge版本");
             else 
-                Logger.error("获取到0个forge版本");
+                Logger.Fatal("获取到0个forge版本");
             return versions;
         }
 
@@ -53,13 +53,13 @@ namespace BMCLV2.Forge
             try {
                 stat = InstallForge(forgeVersion);
             } catch (Exception ex) {
-                Logger.error("内置forge安装器出错："+ex.Message);
+                Logger.Fatal("内置forge安装器出错："+ex.Message);
             }
             if (!stat) {
-                Logger.info("将使用传统forge安装器");
+                Logger.Info("将使用传统forge安装器");
                 InstallForgeInOldWay();
             } else {
-                Logger.info("已使用内置forge安装器成功安装");
+                Logger.Info("已使用内置forge安装器成功安装");
             }
         }
 

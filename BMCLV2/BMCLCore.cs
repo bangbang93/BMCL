@@ -43,18 +43,18 @@ namespace BMCLV2
         {
             BmclVersion = Application.ResourceAssembly.FullName.Split('=')[1];
             BmclVersion = BmclVersion.Substring(0, BmclVersion.IndexOf(','));
-            Logger.log("BMCL V3 Ver." + BmclVersion + "正在启动");
+            Logger.Log("BMCL V3 Ver." + BmclVersion + "正在启动");
             GameManager = new GameManager();
             Config = Config.Load(Cfgfile);
             if (Config.Passwd == null)
             {
                 Config.Passwd = new byte[0];   //V2的密码存储兼容
             }
-            Logger.log($"加载{Cfgfile}文件");
-            Logger.log(Config);
+            Logger.Log($"加载{Cfgfile}文件");
+            Logger.Log(Config);
             LangManager.LoadLanguage();
             LangManager.ChangeLanguage(Config.Lang);
-            Logger.log("加载默认配置");
+            Logger.Log("加载默认配置");
             if (!Directory.Exists(BaseDirectory + ".minecraft"))
             {
                 Directory.CreateDirectory(BaseDirectory + ".minecraft");

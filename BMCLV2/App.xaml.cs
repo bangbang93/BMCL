@@ -37,11 +37,11 @@ namespace BMCLV2
                 return;
             }
             if (e.Args.Length == 0)   // 判断debug模式
-                Logger.debug = false;
+                Logger.Debug = false;
             else
                 if (Array.IndexOf(e.Args, "-Debug") != -1)
-                    Logger.debug = true;
-            Logger.start();
+                    Logger.Debug = true;
+            Logger.Start();
 #if DEBUG
 #else
             Dispatcher.UnhandledException += Dispatcher_UnhandledException;
@@ -80,12 +80,12 @@ namespace BMCLV2
         protected override void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
-            Logger.stop();
+            Logger.Stop();
         }
 
         public static void AboutToExit()
         {
-            Logger.stop();
+            Logger.Stop();
         }
 
 // ReSharper disable once UnusedMember.Local
@@ -132,7 +132,7 @@ namespace BMCLV2
                 }
                 catch (Exception e)
                 {
-                    Logger.error(e);
+                    Logger.Fatal(e);
                 }
                 finally
                 {

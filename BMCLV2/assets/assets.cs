@@ -32,12 +32,12 @@ namespace BMCLV2.Assets
             try
             {
                 _downloader.DownloadStringAsync(new Uri(_urlDownloadBase + "indexes/" + gameVersion + ".json"));
-                Logger.info(_urlDownloadBase + "indexes/" + gameVersion + ".json");
+                Logger.Info(_urlDownloadBase + "indexes/" + gameVersion + ".json");
             }
             catch (WebException ex)
             {
-                Logger.info("游戏版本" + gameVersion);
-                Logger.error(ex);
+                Logger.Info("游戏版本" + gameVersion);
+                Logger.Fatal(ex);
             }
             _downloader.DownloadStringCompleted += Downloader_DownloadStringCompleted;
             _downloader.DownloadFileCompleted += Downloader_DownloadFileCompleted;
@@ -46,8 +46,8 @@ namespace BMCLV2.Assets
         {
             if (e.Error != null)
             {
-                Logger.error(e.UserState.ToString());
-                Logger.error(e.Error);
+                Logger.Fatal(e.UserState.ToString());
+                Logger.Fatal(e.Error);
             }
         }
 
@@ -62,7 +62,7 @@ namespace BMCLV2.Assets
                     var ex = error;
                     Logger.Log(ex.Response.ResponseUri.ToString());
                 }
-                Logger.error(e.Error);
+                Logger.Fatal(e.Error);
             }
             else
             {
@@ -101,12 +101,12 @@ namespace BMCLV2.Assets
                     catch (WebException ex)
                     {
                         Logger.Log(ex.Response.ResponseUri.ToString());
-                        Logger.error(ex);
+                        Logger.Fatal(ex);
                     }
                 }
                 if (_init)
                 {
-                    Logger.info("无需更新assets");
+                    Logger.Info("无需更新assets");
                 }
             }
             

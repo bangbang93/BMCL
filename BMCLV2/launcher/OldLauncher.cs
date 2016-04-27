@@ -84,7 +84,7 @@ namespace BMCLV2.Launcher
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherCheckJava"));
             if (!File.Exists(javaPath))
             {
-                BMCLV2.Logger.log("找不到java",BMCLV2.Logger.LogType.Error);
+                BMCLV2.Logger.Log("找不到java",BMCLV2.Logger.LogType.Error);
                 throw new NoJavaException(javaPath);
             }
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherCheckMem"));
@@ -93,7 +93,7 @@ namespace BMCLV2.Launcher
             _version = info.id;
             this._name = name;
             _game.StartInfo.FileName = javaPath;
-            if (BMCLV2.Logger.debug)
+            if (BMCLV2.Logger.Debug)
             {
                 _game.StartInfo.CreateNoWindow = true;
                 _game.StartInfo.RedirectStandardOutput = true;
@@ -176,7 +176,7 @@ namespace BMCLV2.Launcher
                 string libp = BuildLibPath(lib);
                 if (GetFileLength(libp) == 0)
                 {
-                    BMCLV2.Logger.log("未找到依赖" + lib.name + "开始下载", BMCLV2.Logger.LogType.Error);
+                    BMCLV2.Logger.Log("未找到依赖" + lib.name + "开始下载", BMCLV2.Logger.LogType.Error);
                     try
                     {
                         if (lib.url == null)
@@ -190,7 +190,7 @@ namespace BMCLV2.Launcher
 #if DEBUG
                             System.Windows.MessageBox.Show(_urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
 #endif
-                            BMCLV2.Logger.log(_urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
+                            BMCLV2.Logger.Log(_urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
                             _downer.DownloadFile(
                                 _urlLib +
                                 libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("/", "\\"), libp);
@@ -214,15 +214,15 @@ namespace BMCLV2.Launcher
 #if DEBUG
                             System.Windows.MessageBox.Show(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
 #endif
-                            BMCLV2.Logger.log(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
+                            BMCLV2.Logger.Log(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
                                 _downer.DownloadFile(urlLib + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), libp);
                         }
                     }
                     catch (WebException ex)
                     {
-                        BMCLV2.Logger.log(ex);
-                        BMCLV2.Logger.log("原地址下载失败，尝试作者源" + lib.name);
-                        Logger.log(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), libp);
+                        BMCLV2.Logger.Log(ex);
+                        BMCLV2.Logger.Log("原地址下载失败，尝试作者源" + lib.name);
+                        Logger.Log(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), libp);
                         try
                         {
                             _downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + libp.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), libp);
@@ -277,7 +277,7 @@ namespace BMCLV2.Launcher
 #if DEBUG
             System.Windows.MessageBox.Show(_game.StartInfo.Arguments);
 #endif
-            BMCLV2.Logger.log(_game.StartInfo.Arguments);
+            BMCLV2.Logger.Log(_game.StartInfo.Arguments);
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherCreateNativeDir"));
             var nativePath = new StringBuilder(Environment.CurrentDirectory + @"\.minecraft\versions\");
             nativePath.Append(_name).Append("\\");
@@ -344,7 +344,7 @@ namespace BMCLV2.Launcher
                 if (GetFileLength(libp) == 0)
                 {
                     {
-                        BMCLV2.Logger.log("未找到依赖" + lib.name + "开始下载", BMCLV2.Logger.LogType.Error);
+                        BMCLV2.Logger.Log("未找到依赖" + lib.name + "开始下载", BMCLV2.Logger.LogType.Error);
                         if (lib.url == null)
                         {
                             try
@@ -357,14 +357,14 @@ namespace BMCLV2.Launcher
                                 }
 #if DEBUG
                                 System.Windows.MessageBox.Show(_urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
-                                BMCLV2.Logger.log(_urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
+                                BMCLV2.Logger.Log(_urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"));
 #endif
                                 _downer.DownloadFile(_urlLib + nativep.Remove(0, Environment.CurrentDirectory.Length + 22).Replace("\\", "/"), nativep);
                             }
                             catch (WebException ex)
                             {
-                                BMCLV2.Logger.log(ex);
-                                BMCLV2.Logger.log("原地址下载失败，尝试作者源" + lib.name);
+                                BMCLV2.Logger.Log(ex);
+                                BMCLV2.Logger.Log("原地址下载失败，尝试作者源" + lib.name);
                                 string nativep = BuildLibPath(lib);
                                 try
                                 {
@@ -399,21 +399,21 @@ namespace BMCLV2.Launcher
                                 }
 #if DEBUG
                                 System.Windows.MessageBox.Show(urlLib.Replace("\\", "/"));
-                                BMCLV2.Logger.log(urlLib.Replace("\\", "/"));
+                                BMCLV2.Logger.Log(urlLib.Replace("\\", "/"));
 #endif
                                 _downer.DownloadFile(urlLib + nativep.Replace("/", "\\"), nativep);
                             }
                             catch (WebException ex)
                             {
-                                BMCLV2.Logger.log(ex);
-                                BMCLV2.Logger.log("原地址下载失败，尝试作者源" + lib.name);
+                                BMCLV2.Logger.Log(ex);
+                                BMCLV2.Logger.Log("原地址下载失败，尝试作者源" + lib.name);
                                 string nativep = BuildLibPath(lib);
                                 _downer.DownloadFile(Resource.Url.URL_DOWNLOAD_bangbang93 + "libraries/" + nativep.Replace("/", "\\"), nativep);
                             }
                         }
                     }
                 }
-                BMCLV2.Logger.log("解压native");
+                BMCLV2.Logger.Log("解压native");
                 var zipfile = new ZipInputStream(System.IO.File.OpenRead(libp));
                 ZipEntry theEntry;
                 while ((theEntry = zipfile.GetNextEntry()) != null)
@@ -429,7 +429,7 @@ namespace BMCLV2.Launcher
                     if (exc) continue;
                     var filepath = new StringBuilder(nativePath.ToString());
                     filepath.Append("\\").Append(theEntry.Name);
-                    BMCLV2.Logger.log(filepath.ToString());
+                    BMCLV2.Logger.Log(filepath.ToString());
                     FileStream fileWriter = File.Create(filepath.ToString());
                     var data = new byte[2048];
                     while (true)
@@ -448,45 +448,45 @@ namespace BMCLV2.Launcher
                 }
             }
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherSolveMod"));
-            BMCLV2.Logger.log("处理Mods");
+            BMCLV2.Logger.Log("处理Mods");
             if (Directory.Exists(@".minecraft\versions\" + _name + @"\mods"))
             {
                 if (Directory.Exists(@".minecraft\Config"))
                 {
-                    BMCLV2.Logger.log("找到旧的配置文件，备份并应用新配置文件");
+                    BMCLV2.Logger.Log("找到旧的配置文件，备份并应用新配置文件");
                     Directory.Move(@".minecraft\Config", @".minecraft\Config" + _timestamp);
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\Config"))
                         FileHelper.dircopy(@".minecraft\versions\" + _name + @"\Config", @".minecraft\Config");
                 }
                 else
                 {
-                    BMCLV2.Logger.log("应用新配置文件");
+                    BMCLV2.Logger.Log("应用新配置文件");
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\Config"))
                         FileHelper.dircopy(@".minecraft\versions\" + _name + @"\Config", @".minecraft\Config");
                 }
                 if (Directory.Exists(@".minecraft\mods"))
                 {
-                    BMCLV2.Logger.log("找到旧的mod文件，备份并应用新mod文件");
+                    BMCLV2.Logger.Log("找到旧的mod文件，备份并应用新mod文件");
                     Directory.Move(@".minecraft\mods", @".minecraft\mods" + _timestamp);
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\mods"))
                         FileHelper.dircopy(@".minecraft\versions\" + _name + @"\mods", @".minecraft\mods");
                 }
                 else
                 {
-                    BMCLV2.Logger.log("应用新mod文件");
+                    BMCLV2.Logger.Log("应用新mod文件");
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\mods"))
                         FileHelper.dircopy(@".minecraft\versions\" + _name + @"\mods", @".minecraft\mods");
                 }
                 if (Directory.Exists(@".minecraft\coremods"))
                 {
-                    BMCLV2.Logger.log("找到旧的coremod文件，备份并应用新coremod文件");
+                    BMCLV2.Logger.Log("找到旧的coremod文件，备份并应用新coremod文件");
                     Directory.Move(@".minecraft\coremods", @".minecraft\coremods" + _timestamp);
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\coremods"))
                         FileHelper.dircopy(@".minecraft\versions\" + _name + @"\coremods", @".minecraft\coremods");
                 }
                 else
                 {
-                    BMCLV2.Logger.log("应用新coremod文件");
+                    BMCLV2.Logger.Log("应用新coremod文件");
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\coremods"))
                         FileHelper.dircopy(@".minecraft\versions\" + _name + @"\coremods", @".minecraft\coremods");
                 }
@@ -495,12 +495,12 @@ namespace BMCLV2.Launcher
                     var moddirs = new DirectoryInfo(@".minecraft\versions\" + _name + @"\moddir");
                     foreach (DirectoryInfo moddir in moddirs.GetDirectories())
                     {
-                        BMCLV2.Logger.log("复制ModDir " + moddir.Name);
+                        BMCLV2.Logger.Log("复制ModDir " + moddir.Name);
                         FileHelper.dircopy(moddir.FullName, ".minecraft\\" + moddir.Name);
                     }
                     foreach (FileInfo modfile in moddirs.GetFiles())
                     {
-                        BMCLV2.Logger.log("复制ModDir " + modfile.Name);
+                        BMCLV2.Logger.Log("复制ModDir " + modfile.Name);
                         File.Copy(modfile.FullName, ".minecraft\\" + modfile.Name, true);
                     }
                 }
@@ -515,7 +515,7 @@ namespace BMCLV2.Launcher
             {
                 bool fin = _game.Start();
                 _gameStartTime = new DateTime();
-                if (BMCLV2.Logger.debug)
+                if (BMCLV2.Logger.Debug)
                 {
                     _game.OutputDataReceived += _game_OutputDataReceived;
                     _game.ErrorDataReceived += _game_ErrorDataReceived;
@@ -532,12 +532,12 @@ namespace BMCLV2.Launcher
 
         void _game_ErrorDataReceived(object sender, DataReceivedEventArgs e)
         {
-            BMCLV2.Logger.log(e.Data, BMCLV2.Logger.LogType.Fml);
+            BMCLV2.Logger.Log(e.Data, BMCLV2.Logger.LogType.Fml);
         }
 
         void _game_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            BMCLV2.Logger.log(e.Data, BMCLV2.Logger.LogType.Game);
+            BMCLV2.Logger.Log(e.Data, BMCLV2.Logger.LogType.Game);
         }
 
         void game_Exited(object sender, EventArgs e)
@@ -551,7 +551,7 @@ namespace BMCLV2.Launcher
             var nativePath = new StringBuilder(Environment.CurrentDirectory + @"\.minecraft\versions\");
             nativePath.Append(_name).Append("\\");
             var oldnative = new DirectoryInfo(nativePath.ToString());
-            if (!BMCLV2.Logger.debug)
+            if (!BMCLV2.Logger.Debug)
             {
                 foreach (DirectoryInfo dir in oldnative.GetDirectories())
                 {
@@ -583,7 +583,7 @@ namespace BMCLV2.Launcher
                     Directory.Delete(@".minecraft\" + moddir.Name, true);
                 }
             }
-            if (BMCLV2.Logger.debug)
+            if (BMCLV2.Logger.Debug)
             {
 //                _logthread.Abort();
 //                _thError.Abort();

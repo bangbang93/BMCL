@@ -51,7 +51,7 @@ namespace BMCLV2.Game
         [OnSerializing]
         public void DoInherits(StreamingContext context)
         {
-            Logger.log("it works");
+            Logger.Log("it works");
         }
     }
 }
