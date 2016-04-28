@@ -11,6 +11,8 @@ namespace BMCLV2.JsonClass
         {
             [DataMember(Name = "hash")] public string Hash;
             [DataMember(Name = "size")] public int Size;
+
+            public string Path => $"{Hash.Substring(0, 2)}\\{Hash}";
         }
 
         [DataMember(Name = "objects")] public Dictionary<string, Assets> Objects;

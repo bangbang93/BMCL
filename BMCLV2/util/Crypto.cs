@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Text;
 using System.IO;
 
-namespace BMCLV2.util
+namespace BMCLV2.Util
 {
-    class Crypto
+    internal static class Crypto
     {
         public static string GetMd5HashFromFile(string filename)
         {

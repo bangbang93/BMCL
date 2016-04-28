@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Runtime.Serialization;
 using System.Text;
 using BMCLV2.Launcher;
-using BMCLV2.util;
+using BMCLV2.Util;
 
 namespace BMCLV2.Objects.Mirrors
 {

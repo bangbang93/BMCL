@@ -8,5 +8,6 @@ namespace BMCLV2.Mirrors.Interface
     {
         protected readonly Downloader.Downloader Downloader = new Downloader.Downloader();
         public abstract Task<AssetsIndex> GetAssetsIndex(VersionInfo versionInfo, string savePath);
+        public abstract Task GetAssetsObject(AssetsIndex.Assets assets, string savePath);
     }
 }

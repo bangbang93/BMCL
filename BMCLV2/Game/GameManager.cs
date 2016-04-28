@@ -12,6 +12,7 @@ namespace BMCLV2.Game
         private readonly Dictionary<string, VersionInfo> _versions = new Dictionary<string, VersionInfo>();
         private Launcher.Launcher _launcher;
         private readonly string[] _inheritFields = {"Type", "MinecraftArguments", "MainClass", "Assets", "Jar"};
+        private AssetManager _assetManager;
 
         public bool IsGameRunning => _launcher == null;
 
@@ -75,8 +76,10 @@ namespace BMCLV2.Game
             return true;
         }
 
-        private void LauncherOnGameStart(object sender, VersionInfo versionInfo)
+        private async void LauncherOnGameStart(object sender, VersionInfo versionInfo)
         {
+            _assetManager = new AssetManager(versionInfo);
+            await _assetManager.Sync();
             //TODO 弹窗
         }
     }
