@@ -107,16 +107,16 @@ namespace BMCLV2.Versions
                 }
                 OnImportProgressChangeEvent(LangManager.GetLangFromResource("ImportSolveMod"));
                 if (Directory.Exists(importFrom + "\\mods"))
-                    util.FileHelper.dircopy(importFrom + "\\mods", ".minecraft\\versions\\" + importName + "\\mods");
+                    util.FileHelper.Dircopy(importFrom + "\\mods", ".minecraft\\versions\\" + importName + "\\mods");
                 else
                     Directory.CreateDirectory(".minecraft\\versions\\" + importName + "\\mods");
                 if (Directory.Exists(importFrom + "\\coremods"))
-                    util.FileHelper.dircopy(importFrom + "\\coremods",
+                    util.FileHelper.Dircopy(importFrom + "\\coremods",
                         ".minecraft\\versions\\" + importName + "\\coremods");
                 else
                     Directory.CreateDirectory(".minecraft\\versions\\" + importName + "\\coremods");
                 if (Directory.Exists(importFrom + "\\config"))
-                    util.FileHelper.dircopy(importFrom + "\\config", ".minecraft\\versions\\" + importName + "\\config");
+                    util.FileHelper.Dircopy(importFrom + "\\config", ".minecraft\\versions\\" + importName + "\\config");
                 else
                     Directory.CreateDirectory(".minecraft\\versions\\" + importName + "\\configmods");
                 OnImportFinish();

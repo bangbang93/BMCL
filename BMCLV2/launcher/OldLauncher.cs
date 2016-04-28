@@ -456,39 +456,39 @@ namespace BMCLV2.Launcher
                     BMCLV2.Logger.Log("找到旧的配置文件，备份并应用新配置文件");
                     Directory.Move(@".minecraft\Config", @".minecraft\Config" + _timestamp);
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\Config"))
-                        FileHelper.dircopy(@".minecraft\versions\" + _name + @"\Config", @".minecraft\Config");
+                        FileHelper.Dircopy(@".minecraft\versions\" + _name + @"\Config", @".minecraft\Config");
                 }
                 else
                 {
                     BMCLV2.Logger.Log("应用新配置文件");
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\Config"))
-                        FileHelper.dircopy(@".minecraft\versions\" + _name + @"\Config", @".minecraft\Config");
+                        FileHelper.Dircopy(@".minecraft\versions\" + _name + @"\Config", @".minecraft\Config");
                 }
                 if (Directory.Exists(@".minecraft\mods"))
                 {
                     BMCLV2.Logger.Log("找到旧的mod文件，备份并应用新mod文件");
                     Directory.Move(@".minecraft\mods", @".minecraft\mods" + _timestamp);
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\mods"))
-                        FileHelper.dircopy(@".minecraft\versions\" + _name + @"\mods", @".minecraft\mods");
+                        FileHelper.Dircopy(@".minecraft\versions\" + _name + @"\mods", @".minecraft\mods");
                 }
                 else
                 {
                     BMCLV2.Logger.Log("应用新mod文件");
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\mods"))
-                        FileHelper.dircopy(@".minecraft\versions\" + _name + @"\mods", @".minecraft\mods");
+                        FileHelper.Dircopy(@".minecraft\versions\" + _name + @"\mods", @".minecraft\mods");
                 }
                 if (Directory.Exists(@".minecraft\coremods"))
                 {
                     BMCLV2.Logger.Log("找到旧的coremod文件，备份并应用新coremod文件");
                     Directory.Move(@".minecraft\coremods", @".minecraft\coremods" + _timestamp);
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\coremods"))
-                        FileHelper.dircopy(@".minecraft\versions\" + _name + @"\coremods", @".minecraft\coremods");
+                        FileHelper.Dircopy(@".minecraft\versions\" + _name + @"\coremods", @".minecraft\coremods");
                 }
                 else
                 {
                     BMCLV2.Logger.Log("应用新coremod文件");
                     if (Directory.Exists(@".minecraft\versions\" + _name + @"\coremods"))
-                        FileHelper.dircopy(@".minecraft\versions\" + _name + @"\coremods", @".minecraft\coremods");
+                        FileHelper.Dircopy(@".minecraft\versions\" + _name + @"\coremods", @".minecraft\coremods");
                 }
                 if (Directory.Exists(@".minecraft\versions\" + _name + @"\moddir"))
                 {
@@ -496,7 +496,7 @@ namespace BMCLV2.Launcher
                     foreach (DirectoryInfo moddir in moddirs.GetDirectories())
                     {
                         BMCLV2.Logger.Log("复制ModDir " + moddir.Name);
-                        FileHelper.dircopy(moddir.FullName, ".minecraft\\" + moddir.Name);
+                        FileHelper.Dircopy(moddir.FullName, ".minecraft\\" + moddir.Name);
                     }
                     foreach (FileInfo modfile in moddirs.GetFiles())
                     {
@@ -564,13 +564,13 @@ namespace BMCLV2.Launcher
             if (Directory.Exists(@".minecraft\versions\" + _name + @"\mods"))
             {
                 Directory.Delete(@".minecraft\versions\" + _name + @"\mods", true);  
-                FileHelper.dircopy(@".minecraft\mods", @".minecraft\versions\" + _name + @"\mods");
+                FileHelper.Dircopy(@".minecraft\mods", @".minecraft\versions\" + _name + @"\mods");
                 Directory.Delete(@".minecraft\mods", true);
                 Directory.Delete(@".minecraft\versions\" + _name + @"\coremods", true);
-                FileHelper.dircopy(@".minecraft\coremods", @".minecraft\versions\" + _name + @"\coremods");
+                FileHelper.Dircopy(@".minecraft\coremods", @".minecraft\versions\" + _name + @"\coremods");
                 Directory.Delete(@".minecraft\coremods", true);
                 Directory.Delete(@".minecraft\versions\" + _name + @"\Config", true);
-                FileHelper.dircopy(@".minecraft\Config", @".minecraft\versions\" + _name + @"\Config");
+                FileHelper.Dircopy(@".minecraft\Config", @".minecraft\versions\" + _name + @"\Config");
                 Directory.Delete(@".minecraft\Config", true);
             }
             if (Directory.Exists(@".minecraft\versions\" + _name + @"\moddir"))
@@ -579,7 +579,7 @@ namespace BMCLV2.Launcher
                 foreach (DirectoryInfo moddir in moddirs.GetDirectories())
                 {
                     moddir.Delete(true);
-                    FileHelper.dircopy(@".minecraft\" + moddir.Name, moddir.FullName);
+                    FileHelper.Dircopy(@".minecraft\" + moddir.Name, moddir.FullName);
                     Directory.Delete(@".minecraft\" + moddir.Name, true);
                 }
             }
