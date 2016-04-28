@@ -9,7 +9,7 @@ namespace BMCLV2.Game
     public class GameManager
     {
         public static readonly string VersionDirectory = Path.Combine(BmclCore.BaseDirectory, @".minecraft\versions");
-        private Dictionary<string, VersionInfo> _versions = new Dictionary<string, VersionInfo>();
+        private readonly Dictionary<string, VersionInfo> _versions = new Dictionary<string, VersionInfo>();
         private Launcher.Launcher _launcher;
         private readonly string[] _inheritFields = {"Type", "MinecraftArguments", "MainClass", "Assets", "Jar"};
 
@@ -71,7 +71,13 @@ namespace BMCLV2.Game
             _launcher = new Launcher.Launcher(game, BmclCore.Config);
             _launcher.Start();
             _launcher.OnGameExit += (sender, info, exitcode) => _launcher = null;
+            _launcher.OnGameStart += LauncherOnGameStart;
             return true;
+        }
+
+        private void LauncherOnGameStart(object sender, VersionInfo versionInfo)
+        {
+            //TODO 弹窗
         }
     }
 }

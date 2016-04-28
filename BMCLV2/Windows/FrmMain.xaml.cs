@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,7 +7,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using BMCLV2.Game;
 using BMCLV2.I18N;
 using BMCLV2.Plugin;
 using BMCLV2.Themes;
@@ -26,7 +21,6 @@ namespace BMCLV2.Windows
         private bool _inscreen;
         private bool _isLaunchering;
         
-        private int _clientCrashReportCount, _hsErrorCount;
         private FrmPrs _starter;
 
         private readonly Background _background = new Background();
@@ -36,11 +30,10 @@ namespace BMCLV2.Windows
             BmclCore.NIcon.MainWindow = this;
             BmclCore.MainWindow = this;
             InitializeComponent();
-            this.Title = "BMCL Ver." + BmclCore.BmclVersion;
-            this.LoadConfig();
+            Title = "BMCL Ver." + BmclCore.BmclVersion;
+            LoadConfig();
             GridGame.ReFlushlistver();
             GridGame.listVer.SelectedItem = BmclCore.Config.LastPlayVer;
-            GridConfig.checkCheckUpdate.IsChecked = BmclCore.Config.CheckUpdate;
             BmclCore.SingleInstance(this);
         }
 
@@ -61,9 +54,10 @@ namespace BMCLV2.Windows
             GridForge.txtInsPath.Text = AppDomain.CurrentDomain.BaseDirectory + ".minecraft";
             GridConfig.listDownSource.SelectedIndex = BmclCore.Config.DownloadSource;
             GridConfig.comboLang.SelectedItem = LangManager.GetLangFromResource("DisplayName");
-            GridConfig.ScreenHeightTextBox.Text = BmclCore.Config.Height.ToString(CultureInfo.InvariantCulture);
-            GridConfig.ScreenWidthTextBox.Text = BmclCore.Config.Width.ToString(CultureInfo.InvariantCulture);
+            GridConfig.ScreenHeightTextBox.Text = BmclCore.Config.Height.ToString();
+            GridConfig.ScreenWidthTextBox.Text = BmclCore.Config.Width.ToString();
             GridConfig.FullScreenCheckBox.IsChecked = BmclCore.Config.FullScreen;
+            GridConfig.checkCheckUpdate.IsChecked = BmclCore.Config.CheckUpdate;
         }
 
         public void SwitchStartButton(bool isenable)
@@ -137,7 +131,6 @@ namespace BMCLV2.Windows
                 GridConfig.txtUserName.Focus();
                 return;
             }
-            _hsErrorCount = Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft") ? Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft").Count(s => s.StartsWith("hs_err")) : 0;
             Logger.Info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
             BmclCore.GameManager.LaunchGame(GridGame.GetSelectedVersion());
         }
@@ -344,17 +337,17 @@ namespace BMCLV2.Windows
 
         private void FrmMainWindow_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (this._isLaunchering && _starter != null)
+            if (_isLaunchering)
             {
-                _starter.Activate();
+                _starter?.Activate();
             }
         }
 
         private void FrmMainWindow_Activated(object sender, EventArgs e)
         {
-            if (this._isLaunchering && _starter != null)
+            if (_isLaunchering)
             {
-                _starter.Activate();
+                _starter?.Activate();
             }
         }
 

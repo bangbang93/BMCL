@@ -22,14 +22,21 @@ namespace BMCLV2.Launcher
         private readonly string _versionDirectory;
         private readonly string _libraryDirectory;
         private readonly string _nativesDirectory;
-        private Dictionary<string ,int> _errorCount = new Dictionary<string, int>(); 
+        private Dictionary<string, int> _errorCount = new Dictionary<string, int>();
 
         private OnGameExit _onGameExit;
+        private OnGameStart _onGameStart;
 
         public event OnGameExit OnGameExit
         {
             add { _onGameExit += value; }
             remove { _onGameExit -= value; }
+        }
+
+        public event OnGameStart OnGameStart
+        {
+            add { _onGameStart += value; }
+            remove { _onGameStart -= value; }
         }
 
         public Launcher(VersionInfo versionInfo, Config config = null, bool disableXincgc = false)
@@ -52,6 +59,7 @@ namespace BMCLV2.Launcher
 
         public async void Start()
         {
+            Logger.Log(ChildProcess.JoinArguments(_arguments.ToArray()));
             if (!SetupJava()) return;
             if (!CleanNatives()) return;
             _arguments.Add($"-Djava.library.path={_nativesDirectory}");
@@ -60,7 +68,7 @@ namespace BMCLV2.Launcher
             _arguments.Add(_versionInfo.MainClass);
             _arguments.AddRange(McArguments());
             if (!Launch()) return;
-            Logger.Log(ChildProcess.JoinArguments(_arguments.ToArray()));
+            _onGameStart(this, _versionInfo);
         }
 
         private bool Launch()
