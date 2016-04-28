@@ -7,7 +7,7 @@ namespace BMCLV2.Mirrors.Vanilla
     {
         private const string Server = "https://libraries.minecraft.net/";
 
-        public override async Task DownloadLibrary(LibraryInfo library)
+        public override async Task DownloadLibrary(LibraryInfo library, string savePath)
         {
             var path = library.Path;
             var url = library.Url ?? Server + library.Path;

@@ -111,9 +111,15 @@
     <Compile Include="Launcher\Launcher.cs" />
     <Compile Include="Exceptions\NoJavaException.cs" />
     <Compile Include="Exceptions\UnSupportVersionException.cs" />
+    <Compile Include="Mirrors\BMCLAPI\BMCLAPI.cs" />
+    <Compile Include="Mirrors\BMCLAPI\Library.cs" />
     <Compile Include="Mirrors\BMCLAPI\Version.cs" />
+    <Compile Include="Mirrors\Interface\Library.cs" />
+    <Compile Include="Mirrors\Interface\Mirror.cs" />
     <Compile Include="Mirrors\Interface\Version.cs" />
     <Compile Include="Mirrors\MirrorManager.cs" />
+    <Compile Include="Mirrors\Vanilla\Library.cs" />
+    <Compile Include="Mirrors\Vanilla\Vanilla.cs" />
     <Compile Include="Mirrors\Vanilla\Version.cs" />
     <Compile Include="Mod\ModHelper.cs" />
     <Compile Include="Game\LibraryInfo.cs" />

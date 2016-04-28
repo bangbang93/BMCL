@@ -37,7 +37,7 @@ namespace BMCLV2.Launcher
             _versionInfo = versionInfo;
             _config = config ?? Config.Load();
             _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", _versionInfo.Id);
-            _libraryDirectory = Path.Combine(BmclCore.BaseDirectory, "libraries");
+            _libraryDirectory = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
             _nativesDirectory = Path.Combine(_versionDirectory, $"{_versionInfo.Id}-natives-{TimeHelper.TimeStamp()}");
 
             if (!disableXincgc)
@@ -76,11 +76,11 @@ namespace BMCLV2.Launcher
             return false;
         }
 
-        private Dictionary<string, int> CountError()
+        private static Dictionary<string, int> CountError()
         {
             var values = new Dictionary<string, int>();
             var crashReportDir = Path.Combine(BmclCore.MinecraftDirectory, "crash-reports");
-            values["crashReports"] = Directory.Exists(crashReportDir) ? Directory.GetFiles(crashReportDir).Length : 0;
+            values["crashReport"] = Directory.Exists(crashReportDir) ? Directory.GetFiles(crashReportDir).Length : 0;
             var hsErrorDir = BmclCore.MinecraftDirectory;
             values["hsError"] = Directory.Exists(hsErrorDir) ? Directory.GetFiles(hsErrorDir).Count(s => s.StartsWith("hs_err")) : 0;
             return values;
@@ -126,7 +126,7 @@ namespace BMCLV2.Launcher
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 if (!libraryInfo.IsVaild(_libraryDirectory))
                 {
-                    await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo);
+                    await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
                 }
                 libraryPath.Append(filePath).Append(";");
             }
@@ -146,7 +146,7 @@ namespace BMCLV2.Launcher
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 if (!libraryInfo.IsVaild(_libraryDirectory))
                 {
-                    await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo);
+                    await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
                 }
                 await UnzipNative(filePath, libraryInfo.Extract);
             }

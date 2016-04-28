@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -66,6 +67,27 @@ namespace BMCLV2.Objects.Mirrors
         [DataMember(Name= "extract")] public ExtractRule Extract;
         [DataMember(Name = "natives")] public NativesName Natives;
 
+
+
+        private Dictionary<string, List<Rule.OSInfo>> _rule;
+
+        [OnDeserialized]
+        public void OnDeserialized(StreamingContext context)
+        {
+            if (Rules == null) return;
+            _rule = new Dictionary<string, List<Rule.OSInfo>>
+            {
+                {"allow", new List<Rule.OSInfo>()},
+                {"disallow", new List<Rule.OSInfo>()}
+            };
+            foreach (var rule in Rules)
+            {
+                var ruleList = _rule[rule.Action] ?? new List<Rule.OSInfo>();
+                ruleList.Add(rule.OS);
+                _rule[rule.Action] = ruleList;
+            }
+        }
+
         public string Path
         {
             get
@@ -75,7 +97,7 @@ namespace BMCLV2.Objects.Mirrors
             }
         }
 
-        public string Url => Downloads == null ? "" : Downloads.Artifact != null ? Downloads.Artifact.Url : Downloads.Classifiers.Windows.Url;
+        public string Url => Downloads == null ? null : Downloads.Artifact != null ? Downloads.Artifact.Url : Downloads.Classifiers.Windows.Url;
 
         public string Sha1 => Downloads == null ? null : Downloads.Artifact != null ? Downloads.Artifact.Sha1 : Downloads.Classifiers.Windows.Sha1;
 
@@ -86,13 +108,15 @@ namespace BMCLV2.Objects.Mirrors
         public bool ShouldDeployOnOs(string os = "windows", string version = null)
         {
             if (Rules == null) return true;
-            foreach (var rule in Rules)
+            var disallow = _rule["disallow"];
+            var allow = _rule["allow"];
+            if (disallow == null && allow != null)
             {
-                if (rule.Action == "allow")
-                {
-                    return rule.OS.Name == os;
-                }
-                return rule.OS.Name != os;
+                return allow.Any(osInfo=>osInfo.Name == os);
+            }
+            if (allow == null && disallow != null)
+            {
+                return disallow.All(osInfo => osInfo.Name != os);
             }
             return true;
         }

@@ -7,6 +7,6 @@ namespace BMCLV2.Mirrors.Interface
     {
         protected readonly Downloader.Downloader Downloader = new Downloader.Downloader();
 
-        public abstract Task DownloadLibrary(LibraryInfo library);
+        public abstract Task DownloadLibrary(LibraryInfo library, string savePath);
     }
 }
