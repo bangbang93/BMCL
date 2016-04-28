@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.IO;
+﻿using System.IO;
 
 namespace BMCLV2.util
 {
-    static class FileHelper
+    internal static class FileHelper
     {
-        static public void dircopy(string from, string to)
+        public static void Dircopy(string from, string to)
         {
             DirectoryInfo dir = new DirectoryInfo(from);
             if (!Directory.Exists(to))
@@ -18,7 +13,7 @@ namespace BMCLV2.util
             }
             foreach (DirectoryInfo sondir in dir.GetDirectories())
             {
-                dircopy(sondir.FullName, to + "\\" + sondir.Name);
+                Dircopy(sondir.FullName, to + "\\" + sondir.Name);
             }
             foreach (FileInfo file in dir.GetFiles())
             {
@@ -26,44 +21,40 @@ namespace BMCLV2.util
             }
         }
 
-        static public bool IfFileVaild(string Path, long Length = -1)
+        public static bool IfFileVaild(string path, long length = -1)
         {
-            if (!File.Exists(Path))
+            if (!File.Exists(path))
             {
                 return false;
             }
-            if (new FileInfo(Path).Length == 0)
+            if (new FileInfo(path).Length == 0)
             {
                 return false;
             }
-            if (Length != -1)
+            if (length != -1)
             {
-                if (new FileInfo(Path).Length != Length)
+                if (new FileInfo(path).Length != length)
                     return false;
             }
             return true;
         }
 
-        static public void CreateDirectoryIfNotExist(string Dir)
+        public static void CreateDirectoryIfNotExist(string dir)
         {
-            if (!Directory.Exists(Dir))
+            if (!Directory.Exists(dir))
             {
-                Directory.CreateDirectory(Dir);
+                Directory.CreateDirectory(dir);
             }
         }
 
-        static public void CreateDirectoryForFile(string File)
+        public static void CreateDirectoryForFile(string file)
         {
-            CreateDirectoryIfNotExist(Path.GetDirectoryName(File));
+            CreateDirectoryIfNotExist(Path.GetDirectoryName(file));
         }
 
         public static void WriteFile(string path, string content)
         {
-            var directory = System.IO.Path.GetDirectoryName(path);
-            if (!Directory.Exists(directory))
-            {
-                Directory.CreateDirectory(directory);
-            }
+            CreateDirectoryForFile(path);
             File.WriteAllText(path, content);
         }
 
