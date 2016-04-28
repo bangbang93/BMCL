@@ -6,12 +6,14 @@ namespace BMCLV2.Mirrors.Vanilla
     {
         public override Interface.Library Library { get; }
         public override Interface.Version Version { get; }
+        public override Interface.Asset Asset { get; }
         public override string Name => "Vanilla";
 
         public Vanilla()
         {
             Library = new Library();
             Version = new Version();
+            Asset = new Asset();
         }
     }
 }

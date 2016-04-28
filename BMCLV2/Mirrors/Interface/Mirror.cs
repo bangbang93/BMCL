@@ -4,6 +4,7 @@
     {
         public abstract Library Library { get; }
         public abstract Version Version { get; }
+        public abstract Asset Asset { get; }
 
         public abstract string Name { get; }
     }
