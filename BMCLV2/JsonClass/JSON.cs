@@ -5,21 +5,21 @@ using System.Text;
 
 namespace BMCLV2.JsonClass
 {
-    public class JSON
+    public class JSON<T>
     {
         private readonly DataContractJsonSerializer _serialzier;
 
-        public JSON(Type T)
+        public JSON()
         {
-            _serialzier = new DataContractJsonSerializer(T);
+            _serialzier = new DataContractJsonSerializer(typeof(T));
         }
 
-        public object Parse(Stream stream)
+        public T Parse(Stream stream)
         {
-            return _serialzier.ReadObject(stream);
+            return (T)_serialzier.ReadObject(stream);
         }
 
-        public object Parse(string json)
+        public T Parse(string json)
         {
             return Parse(new MemoryStream(Encoding.UTF8.GetBytes(json)));
         }

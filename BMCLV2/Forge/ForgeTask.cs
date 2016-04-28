@@ -28,7 +28,7 @@ namespace BMCLV2.Forge
         {
             var downloder = new Downloader.Downloader();
             var json = await downloder.DownloadStringTaskAsync(forgeUrl);
-            var versions = new JSON(typeof (ForgeVersion[])).Parse(json) as ForgeVersion[];
+            var versions = new JSON<ForgeVersion[]>().Parse(json);
             if (versions != null)
                 Logger.Info($"获取到{versions.Length}个forge版本");
             else 

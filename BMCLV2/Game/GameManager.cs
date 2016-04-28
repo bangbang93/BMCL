@@ -26,12 +26,12 @@ namespace BMCLV2.Game
             var dirs = new List<string>(Directory.GetDirectories(VersionDirectory));
             var jsonFiles = new List<string>();
             dirs.ForEach(dir => jsonFiles.AddRange(Directory.GetFiles(dir).Where(file => file.EndsWith(".json"))));
-            var jsonParser = new JSON(typeof(VersionInfo));
+            var jsonParser = new JSON<VersionInfo>();
             foreach (var jsonFile in jsonFiles)
             {
                 using (var jsonStream = new FileStream(jsonFile, FileMode.Open))
                 {
-                    var info = jsonParser.Parse(jsonStream) as VersionInfo;
+                    var info = jsonParser.Parse(jsonStream);
                     if (info != null)
                     {
                         _versions.Add(info.Id, info);

@@ -52,7 +52,7 @@ namespace BMCLV2.Mirrors.Interface
             var json =
                 await Downloader.DownloadStringTaskAsync(
                     new Uri(Url));
-            VersionManifest = (VersionManifest) new JSON(typeof (VersionManifest)).Parse(json);
+            VersionManifest = new JSON<VersionManifest>().Parse(json);
         }
     }
 }

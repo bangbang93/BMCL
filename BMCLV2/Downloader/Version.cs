@@ -24,7 +24,7 @@ namespace BMCLV2.Downloader
         {
             ProcessChange("VersionDownloadingJSON");
             var json = await _downloader.DownloadStringTaskAsync(_url);
-            var versionInfo = (VersionInfo) new JSON(typeof(VersionInfo)).Parse(json);
+            var versionInfo =  new JSON<VersionInfo>().Parse(json);
             ProcessChange("VersionProcessingJSON");
             var clientUrl = versionInfo.Downloads.Client.Url;
             ProcessChange("VersionDownloadingJar");
