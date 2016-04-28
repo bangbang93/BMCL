@@ -53,6 +53,7 @@ namespace BMCLV2.Launcher
         public async void Start()
         {
             if (!SetupJava()) return;
+            if (!CleanNatives()) return;
             _arguments.Add($"-Djava.library.path={_nativesDirectory}");
             if (!await SetupLibraries()) return;
             if (!await SetupNatives()) return;
@@ -88,9 +89,10 @@ namespace BMCLV2.Launcher
 
         private void ChildProcessOnExit(object sender, int exitCode)
         {
-            _onGameExit(sender, _versionInfo, exitCode);
             Logger.Log(
                 $"{_versionInfo.Id} has exited with exit code {exitCode}, Running for {new TimeSpan(0, 0, 0, _childProcess.UpTime)}");
+            CleanNatives();
+            _onGameExit(sender, _versionInfo, exitCode);
             if (_childProcess.UpTime < 10)
             {
                 //TODO maybe startup problem
@@ -220,6 +222,18 @@ namespace BMCLV2.Launcher
                 crashReportReader.Close();
                 ChildProcess.Exec(hsErrors[0].FullName);
             }
+        }
+
+        private bool CleanNatives()
+        {
+            var dir = _versionDirectory;
+            var dirInfo = new DirectoryInfo(dir);
+            var nativeDir = dirInfo.GetDirectories($"{_versionInfo.Id}-natives-*");
+            foreach (var directoryInfo in nativeDir)
+            {
+                directoryInfo.Delete(true);
+            }
+            return true;
         }
     }
 }
