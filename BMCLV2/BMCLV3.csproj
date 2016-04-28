@@ -209,47 +209,6 @@
     <Compile Include="Versions\RawVersionListType.cs" />
     <Compile Include="Versions\RemoteVerType.cs" />
     <Compile Include="Windows\NotiIcon.cs" />
-    <Compile Include="zip\Checksums\Adler32.cs" />
-    <Compile Include="zip\Checksums\CRC32.cs" />
-    <Compile Include="zip\Checksums\IChecksum.cs" />
-    <Compile Include="zip\Checksums\StrangeCRC.cs" />
-    <Compile Include="zip\Compression\Deflater.cs" />
-    <Compile Include="zip\Compression\DeflaterConstants.cs" />
-    <Compile Include="zip\Compression\DeflaterEngine.cs" />
-    <Compile Include="zip\Compression\DeflaterHuffman.cs" />
-    <Compile Include="zip\Compression\DeflaterPending.cs" />
-    <Compile Include="zip\Compression\Inflater.cs" />
-    <Compile Include="zip\Compression\InflaterDynHeader.cs" />
-    <Compile Include="zip\Compression\InflaterHuffmanTree.cs" />
-    <Compile Include="zip\Compression\PendingBuffer.cs" />
-    <Compile Include="zip\Compression\Streams\DeflaterOutputStream.cs" />
-    <Compile Include="zip\Compression\Streams\InflaterInputStream.cs" />
-    <Compile Include="zip\Compression\Streams\OutputWindow.cs" />
-    <Compile Include="zip\Compression\Streams\StreamManipulator.cs" />
-    <Compile Include="zip\Core\FileSystemScanner.cs" />
-    <Compile Include="zip\Core\INameTransform.cs" />
-    <Compile Include="zip\Core\IScanFilter.cs" />
-    <Compile Include="zip\Core\NameFilter.cs" />
-    <Compile Include="zip\Core\PathFilter.cs" />
-    <Compile Include="zip\Core\StreamUtils.cs" />
-    <Compile Include="zip\Core\WindowsPathUtils.cs" />
-    <Compile Include="zip\Encryption\PkzipClassic.cs" />
-    <Compile Include="zip\Encryption\ZipAESStream.cs" />
-    <Compile Include="zip\Encryption\ZipAESTransform.cs" />
-    <Compile Include="zip\FastZip.cs" />
-    <Compile Include="zip\IEntryFactory.cs" />
-    <Compile Include="zip\SharpZipBaseException.cs" />
-    <Compile Include="zip\WindowsNameTransform.cs" />
-    <Compile Include="zip\ZipConstants.cs" />
-    <Compile Include="zip\ZipEntry.cs" />
-    <Compile Include="zip\ZipEntryFactory.cs" />
-    <Compile Include="zip\ZipException.cs" />
-    <Compile Include="zip\ZipExtraData.cs" />
-    <Compile Include="zip\ZipFile.cs" />
-    <Compile Include="zip\ZipHelperStream.cs" />
-    <Compile Include="zip\ZipInputStream.cs" />
-    <Compile Include="zip\ZipNameTransform.cs" />
-    <Compile Include="zip\ZipOutputStream.cs" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -402,7 +361,12 @@
   <ItemGroup>
     <Resource Include="Resource\tabitem.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\SharpZipLib\ICSharpCode.SharpZipLib\ICSharpCode.SharpZipLib.csproj">
+      <Project>{0e7413ff-eb9e-4714-acf2-be3a6a7b2ffd}</Project>
+      <Name>ICSharpCode.SharpZipLib</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
