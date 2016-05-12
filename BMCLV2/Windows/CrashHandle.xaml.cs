@@ -44,7 +44,7 @@ namespace BMCLV2.Windows
             message.AppendLine(sr.ReadToEnd());
             sr.Close();
             TxtMessage.Text = message.ToString();
-            Logger.Start();
+            Logger.Start(true);
         }
 
         private void btnMyWeb_Click(object sender, RoutedEventArgs e)
