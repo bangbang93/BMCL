@@ -104,6 +104,7 @@
     <Compile Include="Exceptions\AnotherGameRunningException.cs" />
     <Compile Include="Exceptions\NoSuchVersionException.cs" />
     <Compile Include="Exceptions\ProcessNotStartException.cs" />
+    <Compile Include="Game\AssetManager.cs" />
     <Compile Include="Game\GameManager.cs" />
     <Compile Include="Game\VersionInfo.cs" />
     <Compile Include="JsonClass\AssetsIndex.cs" />

@@ -37,11 +37,14 @@ namespace BMCLV2.Windows
                     message.AppendLine($"Key:{data.Key}\nValue:{data.Value}");
                 message.AppendLine(iex.StackTrace);
             }
+            Logger.Fatal(message.ToString());
+            Logger.Stop();
             message.AppendLine("\n\n-----------------BMCL LOG----------------------\n");
             var sr = new StreamReader(AppDomain.CurrentDomain.BaseDirectory + "bmcl.log");
             message.AppendLine(sr.ReadToEnd());
             sr.Close();
             TxtMessage.Text = message.ToString();
+            Logger.Start();
         }
 
         private void btnMyWeb_Click(object sender, RoutedEventArgs e)
