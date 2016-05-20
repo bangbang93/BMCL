@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Windows.Controls;
-using System.Collections;
 using System.Diagnostics;
-using System.Net;
 using System.IO;
+using System.IO.Compression;
 using System.Threading.Tasks;
-using BMCLV2.I18N;
 using BMCLV2.JsonClass;
-using ICSharpCode.SharpZipLib.Zip;
 using System.Text.RegularExpressions;
-using BMCLV2.util;
 using System.Windows;
 
 namespace BMCLV2.Forge
@@ -82,7 +76,8 @@ namespace BMCLV2.Forge
         {
             //将installer中的forge universal提取出来
             string tempDir = Path.Combine(BmclCore.BaseDirectory, "temp");
-            new FastZip().ExtractZip(Path.Combine(BmclCore.BaseDirectory, "forge.jar"), tempDir, "\\w*\\.jar");
+            var archive = new ZipArchive(new FileStream(Path.Combine(BmclCore.BaseDirectory, "forge.jar"), FileMode.Open));
+            archive.ExtractToDirectory(tempDir);
 
             //获得universal的完整名称
             DirectoryInfo tempFolder = new DirectoryInfo(tempDir);
@@ -92,7 +87,8 @@ namespace BMCLV2.Forge
             string forge = tempFiles[0].Name;
 
             //再从universal中提出version.json
-            new FastZip().ExtractZip(tempDir + "\\"+forge, tempDir, "version\\.json");
+            archive = new ZipArchive(new FileStream(tempDir + "\\" + forge, FileMode.Open));
+            archive.GetEntry("version.json").ExtractToFile(Path.Combine(tempDir, "version.json"));
 
             //从version.json中获得目标游戏版本名，并在versions文件夹中创建
             string forge0 = gameinfo.Read(tempDir + "\\version.json").id;

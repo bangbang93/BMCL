@@ -148,6 +148,7 @@ namespace BMCLV2.Launcher
 
         private async Task<bool> SetupNatives()
         {
+            FileHelper.CreateDirectoryIfNotExist(_nativesDirectory);
             foreach (var libraryInfo in _versionInfo.Libraries)
             {
                 //skip non-natives
@@ -170,9 +171,8 @@ namespace BMCLV2.Launcher
                 var zipArchive = new ZipArchive(zipFile);
                 foreach (var entry in zipArchive.Entries)
                 {
-                    if (extractRules != null && extractRules.Exclude.Any(entryName => entry.Name.Contains(entryName))) continue;
-                    var filePath = Path.Combine(_nativesDirectory, entry.Name);
-                    FileHelper.CreateDirectoryForFile(filePath);
+                    if (extractRules != null && extractRules.Exclude.Any(entryName => entry.FullName.Contains(entryName))) continue;
+                    var filePath = Path.Combine(_nativesDirectory, entry.FullName);
                     entry.ExtractToFile(filePath);
                 }
             }

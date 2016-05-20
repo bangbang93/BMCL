@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization.Json;
 using System.Threading;
 using BMCLV2.I18N;
+using BMCLV2.util;
 
 namespace BMCLV2.Versions
 {
@@ -69,14 +71,17 @@ namespace BMCLV2.Versions
                     libfile.name = importName + ":" + file.Name.Substring(0, file.Name.Length - 4) + ":BMCL";
                     libs.Add(libfile);
                 }
-                var nativejar = new ICSharpCode.SharpZipLib.Zip.FastZip();
-                if (!Directory.Exists(".minecraft\\libraries\\" + importName + "\\BMCL\\"))
+                FileHelper.CreateDirectoryIfNotExist(".minecraft\\libraries\\" + importName + "\\BMCL\\");
+                var nativejar =
+                    new ZipArchive(
+                        new FileStream(
+                            ".minecraft\\libraries\\" + importName + "\\native\\BMCL\\native-BMCL-natives-windows.jar",
+                            FileMode.OpenOrCreate));
+                var nativeInfo = new DirectoryInfo(importFrom + "\\bin\\natives").GetFiles("\\.dll$");
+                foreach (var fileInfo in nativeInfo)
                 {
-                    Directory.CreateDirectory(".minecraft\\libraries\\" + importName + "\\native\\BMCL\\");
+                    nativejar.CreateEntryFromFile(fileInfo.FullName, fileInfo.Name);
                 }
-                nativejar.CreateZip(
-                    ".minecraft\\libraries\\" + importName + "\\native\\BMCL\\native-BMCL-natives-windows.jar",
-                    importFrom + "\\bin\\natives", false, @"\.dll");
                 var nativefile = new libraries.libraryies {name = importName + ":native:BMCL"};
                 var nativeos = new libraries.OS {windows = "natives-windows"};
                 nativefile.natives = nativeos;

@@ -70,9 +70,9 @@ namespace BMCLV2.Game
             var game = GetVersion(id);
             if (game == null) throw new NoSuchVersionException(id);
             _launcher = new Launcher.Launcher(game, BmclCore.Config);
-            _launcher.Start();
             _launcher.OnGameExit += (sender, info, exitcode) => _launcher = null;
             _launcher.OnGameStart += LauncherOnGameStart;
+            _launcher.Start();
             return true;
         }
 

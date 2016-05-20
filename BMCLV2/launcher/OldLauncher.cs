@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -12,7 +13,6 @@ using BMCLV2.I18N;
 using BMCLV2.libraries;
 using BMCLV2.Login;
 using BMCLV2.util;
-using ICSharpCode.SharpZipLib.Zip;
 
 namespace BMCLV2.Launcher
 {
@@ -414,9 +414,8 @@ namespace BMCLV2.Launcher
                     }
                 }
                 BMCLV2.Logger.Log("解压native");
-                var zipfile = new ZipInputStream(System.IO.File.OpenRead(libp));
-                ZipEntry theEntry;
-                while ((theEntry = zipfile.GetNextEntry()) != null)
+                var zipfile = new ZipArchive(new FileStream(libp, FileMode.Open));
+                foreach (var theEntry in zipfile.Entries)
                 {
                     bool exc = false;
                     if (lib.extract.exclude != null)
@@ -430,21 +429,7 @@ namespace BMCLV2.Launcher
                     var filepath = new StringBuilder(nativePath.ToString());
                     filepath.Append("\\").Append(theEntry.Name);
                     BMCLV2.Logger.Log(filepath.ToString());
-                    FileStream fileWriter = File.Create(filepath.ToString());
-                    var data = new byte[2048];
-                    while (true)
-                    {
-                        int size = zipfile.Read(data, 0, data.Length);
-                        if (size > 0)
-                        {
-                            fileWriter.Write(data, 0, size);
-                        }
-                        else
-                        {
-                            break;
-                        }
-                    }
-                    fileWriter.Close();
+                    theEntry.ExtractToFile(filepath.ToString());
                 }
             }
             OnStateChangeEvent(LangManager.GetLangFromResource("LauncherSolveMod"));

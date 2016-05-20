@@ -1,9 +1,5 @@
-﻿using System;
-using System.Data.Common;
-using System.Net.Mime;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 using BMCLV2.Objects.Mirrors;
-using ICSharpCode.SharpZipLib.Core;
 
 namespace BMCLV2.Game
 {
