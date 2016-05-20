@@ -124,9 +124,11 @@ namespace BMCLV2.Objects.Mirrors
         {
             var path = System.IO.Path.Combine(libraryPath, Path);
             var fileInfo = new FileInfo(path);
-            return fileInfo.Exists 
-                && fileInfo.Length == Size 
-                && Crypto.GetSha1HashFromFile(path) == Sha1;
+            if (Size == 0 || Sha1 == null)
+                return fileInfo.Exists;
+            return fileInfo.Exists
+                   && fileInfo.Length == Size
+                   && Crypto.GetSha1HashFromFile(path) == Sha1;
         }
 
         private string BuildLibPath()

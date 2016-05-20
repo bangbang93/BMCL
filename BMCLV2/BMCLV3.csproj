@@ -370,6 +370,7 @@
     <ProjectReference Include="..\SharpZipLib\ICSharpCode.SharpZipLib\ICSharpCode.SharpZipLib.csproj">
       <Project>{0e7413ff-eb9e-4714-acf2-be3a6a7b2ffd}</Project>
       <Name>ICSharpCode.SharpZipLib</Name>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

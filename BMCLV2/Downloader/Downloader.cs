@@ -37,14 +37,14 @@ namespace BMCLV2.Downloader
 
         public new Task DownloadFileTaskAsync(Uri uri, string path)
         {
-            Logger.Log(uri.ToString());
+            Logger.Log($"url: {uri}, path: {path}");
             FileHelper.CreateDirectoryForFile(path);
             return base.DownloadFileTaskAsync(uri, path);
         }
 
         public new Task DownloadFileTaskAsync(string uri, string path)
         {
-            Logger.Log(uri);
+            Logger.Log($"url: {uri}, path: {path}");
             FileHelper.CreateDirectoryForFile(path);
             return base.DownloadFileTaskAsync(uri, path);
         }

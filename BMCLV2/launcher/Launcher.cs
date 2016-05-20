@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,6 @@ using BMCLV2.Exceptions;
 using BMCLV2.Mirrors;
 using BMCLV2.Objects.Mirrors;
 using BMCLV2.util;
-using ICSharpCode.SharpZipLib.Zip;
 using VersionInfo = BMCLV2.Game.VersionInfo;
 
 namespace BMCLV2.Launcher
@@ -158,47 +158,46 @@ namespace BMCLV2.Launcher
                 {
                     await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
                 }
-                await UnzipNative(filePath, libraryInfo.Extract);
+                UnzipNative(filePath, libraryInfo.Extract);
             }
             return true;
         }
 
-        private async Task UnzipNative(string filename, LibraryInfo.ExtractRule extractRules)
+        private void UnzipNative(string filename, LibraryInfo.ExtractRule extractRules)
         {
-            var zipFile = new ZipFile(filename);
-            foreach (ZipEntry entry in zipFile)
+            using (var zipFile = new FileStream(filename, FileMode.Open))
             {
-                if (extractRules != null && extractRules.Exclude.Any(entryName => entry.Name.Contains(entryName))) continue;
-                var filePath = Path.Combine(_nativesDirectory, entry.Name);
-                FileHelper.CreateDirectoryForFile(filePath);
-                if (entry.IsDirectory) continue;
-                var file = File.Create(filePath);
-                var stream = zipFile.GetInputStream(entry);
-                await stream.CopyToAsync(file);
-                file.Close();
-                stream.Close();
+                var zipArchive = new ZipArchive(zipFile);
+                foreach (var entry in zipArchive.Entries)
+                {
+                    if (extractRules != null && extractRules.Exclude.Any(entryName => entry.Name.Contains(entryName))) continue;
+                    var filePath = Path.Combine(_nativesDirectory, entry.Name);
+                    FileHelper.CreateDirectoryForFile(filePath);
+                    entry.ExtractToFile(filePath);
+                }
             }
-            zipFile.Close();
         }
 
-        private string[] McArguments()
+        private IEnumerable<string> McArguments()
         {
-            var values = new Dictionary<string ,string>();
-            values.Add("${auth_player_name}", _config.Username);
-            values.Add("${version_name}", _versionInfo.Id);
-            values.Add("${game_directory}", BmclCore.MinecraftDirectory);
-            values.Add("${assets_root}", "assets");
-            values.Add("${assets_index_name}", _versionInfo.Assets);
-            values.Add("${auth_uuid}", "0000");
-            values.Add("${auth_access_token}", "0000");
-            values.Add("${user_type}", "Legacy");
-            values.Add("${version_type}", "Legacy");
+            var values = new Dictionary<string, string>
+            {
+                {"${auth_player_name}", _config.Username},
+                {"${version_name}", _versionInfo.Id},
+                {"${game_directory}", BmclCore.MinecraftDirectory},
+                {"${assets_root}", "assets"},
+                {"${assets_index_name}", _versionInfo.Assets},
+                {"${auth_uuid}", "0000"},
+                {"${auth_access_token}", "0000"},
+                {"${user_type}", "Legacy"},
+                {"${version_type}", "Legacy"}
+            };
             var arguments = new StringBuilder(_versionInfo.MinecraftArguments);
             arguments = values.Aggregate(arguments, (current, value) => current.Replace(value.Key, value.Value));
             return arguments.ToString().Split(' ');
         }
 
-        private void HandleCrashReport(Dictionary<string, int> nowValue)
+        private void HandleCrashReport(IReadOnlyDictionary<string, int> nowValue)
         {
             var crashReportsPath = Path.Combine(BmclCore.MinecraftDirectory, "crash-reports");
             if (nowValue["crashReport"] != _errorCount["crashReport"] && Directory.Exists(crashReportsPath))
@@ -215,7 +214,7 @@ namespace BMCLV2.Launcher
             }
         }
 
-        private void HandleHsError(Dictionary<string, int> nowValue)
+        private void HandleHsError(IReadOnlyDictionary<string, int> nowValue)
         {
             var hsErrorPath = BmclCore.MinecraftDirectory;
             if (nowValue["hsError"] != _errorCount["hsError"])
