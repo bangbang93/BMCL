@@ -20,7 +20,7 @@ namespace BMCLV2
         public static void Start(bool append = false)
         {
             var filemode = append ? FileMode.Append : FileMode.Create;
-            _logFile = new StreamWriter(new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bmcl.log", filemode, FileAccess.ReadWrite, FileShare.ReadWrite), Encoding.UTF8);
+            _logFile = new StreamWriter(new FileStream(AppDomain.CurrentDomain.BaseDirectory + "\\bmcl.log", filemode, FileAccess.Write, FileShare.ReadWrite), Encoding.UTF8);
             _logFile.Flush();
             _logFile.AutoFlush = true;
             if (Debug) FrmLog.Show();
