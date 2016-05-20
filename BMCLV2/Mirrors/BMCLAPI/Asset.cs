@@ -16,7 +16,7 @@ namespace BMCLV2.Mirrors.BMCLAPI
             string assetIndexString;
             var assetIndex = versionInfo.AssetIndex;
             if (assetIndex == null)
-                assetIndexString = await Downloader.DownloadStringTaskAsync($"{Server}indexes/{versionInfo.Id}.json");
+                assetIndexString = await Downloader.DownloadStringTaskAsync($"{Server}indexes/{versionInfo.Assets}.json");
             else
                 assetIndexString = await Downloader.DownloadStringTaskAsync(versionInfo.AssetIndex.Url);
             savePath = Path.Combine(savePath, $"{assetIndex?.Id ?? versionInfo.Assets}.json");

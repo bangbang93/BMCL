@@ -59,7 +59,6 @@ namespace BMCLV2.Launcher
 
         public async void Start()
         {
-            Logger.Log(ChildProcess.JoinArguments(_arguments.ToArray()));
             if (!SetupJava()) return;
             if (!CleanNatives()) return;
             _arguments.Add($"-Djava.library.path={_nativesDirectory}");
@@ -67,6 +66,7 @@ namespace BMCLV2.Launcher
             if (!await SetupNatives()) return;
             _arguments.Add(_versionInfo.MainClass);
             _arguments.AddRange(McArguments());
+            Logger.Log(ChildProcess.JoinArguments(_arguments.ToArray()));
             if (!Launch()) return;
             _onGameStart(this, _versionInfo);
         }

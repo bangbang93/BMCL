@@ -159,11 +159,18 @@ namespace BMCLV2.Launcher
                             sb.Clear();
                         }
                         break;
+                    case ' ':
+                        if (inQuote) break;
+                        args.Add(sb.ToString());
+                        sb.Clear();
+                        break;
                     default:
                         sb.Append(ch);
                         break;
                 }
             }
+            if (sb.Length > 0) args.Add(sb.ToString());
+            args.RemoveAll(str => str == "");
             return args;
         }
 
