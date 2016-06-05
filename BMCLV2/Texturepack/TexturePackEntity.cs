@@ -37,16 +37,14 @@ namespace BMCLV2.Texturepack
                         continue;
                 }
             }
-            if (_guiWidgets.Length != 0)
-            {
-                BitmapImage bitmap = new BitmapImage();
-                bitmap.BeginInit();
-                bitmap.StreamSource = this.GuiBackground;
-                bitmap.EndInit();
-                GuiButton.Source = bitmap;
-                RectangleGeometry clip = new RectangleGeometry(new System.Windows.Rect(0, bitmap.Height * 0.2578125, bitmap.Width * 0.78125, bitmap.Height * 0.0703125));
-                GuiButton.Clip = clip;
-            }
+            if (_guiWidgets.Length == 0) return;
+            BitmapImage bitmap = new BitmapImage();
+            bitmap.BeginInit();
+            bitmap.StreamSource = this.GuiBackground;
+            bitmap.EndInit();
+            GuiButton.Source = bitmap;
+            RectangleGeometry clip = new RectangleGeometry(new System.Windows.Rect(0, bitmap.Height * 0.2578125, bitmap.Width * 0.78125, bitmap.Height * 0.0703125));
+            GuiButton.Clip = clip;
         }
     }
 }

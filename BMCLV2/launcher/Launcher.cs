@@ -113,7 +113,7 @@ namespace BMCLV2.Launcher
             }
         }
 
-        private void OnStdOut(object sender, string log)
+        private static void OnStdOut(object sender, string log)
         {
             Logger.Log(log);
         }
@@ -190,7 +190,8 @@ namespace BMCLV2.Launcher
                 {"${auth_uuid}", "0000"},
                 {"${auth_access_token}", "0000"},
                 {"${user_type}", "Legacy"},
-                {"${version_type}", "Legacy"}
+                {"${version_type}", "Legacy"},
+                {"${user_properties}", "{}"}
             };
             var arguments = new StringBuilder(_versionInfo.MinecraftArguments);
             arguments = values.Aggregate(arguments, (current, value) => current.Replace(value.Key, value.Value));
