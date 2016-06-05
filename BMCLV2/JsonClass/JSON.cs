@@ -28,6 +28,7 @@ namespace BMCLV2.JsonClass
         {
             var stream = new MemoryStream();
             _serialzier.WriteObject(stream, obj);
+            stream.Position = 0;
             var sr = new StreamReader(stream, Encoding.UTF8);
             return sr.ReadToEnd();
         }

@@ -43,6 +43,11 @@ namespace BMCLV2
             BmclVersion = Application.ResourceAssembly.FullName.Split('=')[1];
             BmclVersion = BmclVersion.Substring(0, BmclVersion.IndexOf(','));
             Logger.Log("BMCL V3 Ver." + BmclVersion + "正在启动");
+            var test = new AssetsIndex
+            {
+                Objects = new Dictionary<string, AssetsIndex.Assets> {{"a", new AssetsIndex.Assets {Hash = "123", Size = 1} }}
+            };
+            Logger.Log(new JSON<AssetsIndex>().Stringify(test));
             GameManager = new GameManager();
             Config = Config.Load(Cfgfile);
             if (Config.Passwd == null)

@@ -22,6 +22,7 @@ namespace BMCLV2.Util
 
         public static string GetSha1HashFromFile(string filename)
         {
+            if (!File.Exists(filename)) return null;
             var file = new FileStream(filename, FileMode.Open);
             var sha1 = new System.Security.Cryptography.SHA1CryptoServiceProvider();
             var retVal = sha1.ComputeHash(file);
