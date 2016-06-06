@@ -164,7 +164,7 @@ namespace BMCLV2.Plugin
 
         public object GetAuth(string name)
         {
-            return _oldAuthPlugins[name];
+            return _oldAuthPlugins.ContainsKey(name) ? _oldAuthPlugins[name] : null;
         }
 
         public string[] GetAuthNames()

@@ -133,6 +133,7 @@ namespace BMCLV2.Windows
                 GridConfig.txtUserName.Focus();
                 return;
             }
+            GridConfig.SaveConfig();
             Logger.Info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
             _frmPrs = new FrmPrs(LangManager.GetLangFromResource(GridGame.GetSelectedVersion()));
             _frmPrs.Show();
