@@ -96,6 +96,10 @@
     </ApplicationDefinition>
     <Compile Include="assets\assets.cs" />
     <Compile Include="assets\AssetsEntity.cs" />
+    <Compile Include="Auth\AuthInfo.cs" />
+    <Compile Include="Auth\AuthManager.cs" />
+    <Compile Include="Auth\IAuth.cs" />
+    <Compile Include="Auth\OldPluginLogin.cs" />
     <Compile Include="BmclCore.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Downloader\Downloader.cs">
@@ -368,6 +372,7 @@
   <ItemGroup>
     <Resource Include="Resource\tabitem.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

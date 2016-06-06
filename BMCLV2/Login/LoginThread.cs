@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading;
+using BMCLV2.Util;
 
 namespace BMCLV2.Login
 {
@@ -29,7 +30,7 @@ namespace BMCLV2.Login
             this._password = password;
             if (selectIndex != 0)
             {
-                this._auth = BmclCore.Auths[auth];
+                this._auth = BmclCore.PluginManager.GetAuth(auth);
             }
         }
 
@@ -93,7 +94,7 @@ namespace BMCLV2.Login
             else
             {
                 _loginans.Suc = true;
-                _loginans.SID = BmclCore.Config.GUID;
+                _loginans.SID = Guid.Parse(Crypto.Md5("OfflinePlayer:" + _username)).ToString("D");
                 _loginans.UN = this._username;
                 OnLoginFinishEvent(_loginans);
             }

@@ -13,6 +13,7 @@ using BMCLV2.I18N;
 using BMCLV2.libraries;
 using BMCLV2.Login;
 using BMCLV2.util;
+using BMCLV2.Util;
 
 namespace BMCLV2.Launcher
 {
@@ -268,8 +269,9 @@ namespace BMCLV2.Launcher
             {
                 mcarg.Replace("{auth_session}", _li.SID);
             }
-            mcarg.Replace("${auth_uuid}", BmclCore.Config.GUID);
-            mcarg.Replace("${auth_access_token}", BmclCore.Config.GUID);
+            var uuid = Guid.Parse(Crypto.Md5("OfflinePlayer:" + _username)).ToString("D");
+            mcarg.Replace("${auth_uuid}", uuid);
+            mcarg.Replace("${auth_access_token}", uuid);
             mcarg.Replace("${user_properties}", "{}");
             arg.Append(" ");
             arg.Append(mcarg);

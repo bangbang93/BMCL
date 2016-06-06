@@ -29,7 +29,7 @@ namespace BMCLV2.Mirrors.BMCLAPI
             // assets的json比较奇葩，不能直接通过反序列化得到
             var jsSerializer = new JavaScriptSerializer();
             var assetsObject = jsSerializer.Deserialize<Dictionary<string, Dictionary<string, AssetsIndex.Assets>>>(assetIndexString);
-            return new AssetsIndex()
+            return new AssetsIndex
             {
                 Objects = assetsObject["objects"]
             };

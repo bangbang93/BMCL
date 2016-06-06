@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -9,9 +10,11 @@ namespace BMCLV2.Plugin
 {
     public class PluginManager
     {
-        public static void LoadPlugin(string language)
+
+        private readonly Dictionary<string, object> _oldAuthPlugins = new Dictionary<string, object>();
+        public void LoadOldAuthPlugin(string language)
         {
-            BmclCore.Auths.Clear();
+            _oldAuthPlugins.Clear();
             if (!Directory.Exists("auths")) return;
             var authplugins = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\auths");
             foreach (var auth in authplugins.Where(auth => auth.ToLower().EndsWith(".dll")))
@@ -53,7 +56,7 @@ namespace BMCLV2.Plugin
                                 var mAuthName = T.GetMethod("GetName");
                                 var authName =
                                     mAuthName.Invoke(authInstance, new object[] { language }).ToString();
-                                BmclCore.Auths.Add(authName, authInstance);
+                                _oldAuthPlugins.Add(authName, authInstance);
                                 Logger.Log($"{authInstance}加载成功，名称为{authName}",
                                     Logger.LogType.Error);
                             }
@@ -115,7 +118,7 @@ namespace BMCLV2.Plugin
                                 var mAuthName = T.GetMethod("GetName");
                                 var authName =
                                     mAuthName.Invoke(authInstance, new object[] { language }).ToString();
-                                BmclCore.Auths.Add(authName, authInstance);
+                                _oldAuthPlugins.Add(authName, authInstance);
                                 Logger.Log($"{authInstance}加载成功，名称为{authName}",
                                     Logger.LogType.Error);
                             }
@@ -157,6 +160,16 @@ namespace BMCLV2.Plugin
                     }
                 }
             }
+        }
+
+        public object GetAuth(string name)
+        {
+            return _oldAuthPlugins[name];
+        }
+
+        public string[] GetAuthNames()
+        {
+            return _oldAuthPlugins.Keys.ToArray();
         }
     }
 }

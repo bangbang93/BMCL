@@ -132,6 +132,7 @@ namespace BMCLV2.Windows
                 return;
             }
             Logger.Info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
+            //TODO Auth
             BmclCore.GameManager.LaunchGame(GridGame.GetSelectedVersion());
         }
 
@@ -325,7 +326,7 @@ namespace BMCLV2.Windows
         {
             GridConfig.listDownSource.Items[1] = LangManager.GetLangFromResource("listOfficalSource");
             GridConfig.listDownSource.Items[0] = LangManager.GetLangFromResource("listAuthorSource");
-            PluginManager.LoadPlugin(LangManager.GetLangFromResource("LangName"));
+            BmclCore.PluginManager.LoadOldAuthPlugin(LangManager.GetLangFromResource("LangName"));
         }
 
         private void MenuStartDebug_Click(object sender, RoutedEventArgs e)

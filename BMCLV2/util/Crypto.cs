@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Collections.Generic;
+using System.Text;
 using System.IO;
 
 namespace BMCLV2.Util
@@ -12,12 +13,14 @@ namespace BMCLV2.Util
             var retVal = md5.ComputeHash(file);
             file.Close();
 
-            var sb = new StringBuilder();
-            foreach (var t in retVal)
-            {
-                sb.Append(t.ToString("x2"));
-            }
-            return sb.ToString();
+            return Byte2String(retVal);
+        }
+
+        public static string Md5(string str)
+        {
+            var md5 = new System.Security.Cryptography.MD5CryptoServiceProvider();
+            var retVal = md5.ComputeHash(Encoding.UTF8.GetBytes(str));
+            return Byte2String(retVal);
         }
 
         public static string GetSha1HashFromFile(string filename)
@@ -28,8 +31,13 @@ namespace BMCLV2.Util
             var retVal = sha1.ComputeHash(file);
             file.Close();
 
+            return Byte2String(retVal);
+        }
+
+        private static string Byte2String(IEnumerable<byte> buffer)
+        {
             var sb = new StringBuilder();
-            foreach (var t in retVal)
+            foreach (var t in buffer)
             {
                 sb.Append(t.ToString("x2"));
             }

@@ -23,7 +23,6 @@ namespace BMCLV2
         public static Launcher.OldLauncher Game;
         public static GameManager GameManager;
         public static string BmclVersion;
-        public static Dictionary<string, object> Auths = new Dictionary<string, object>();
         public static string UrlResourceBase = Url.URL_RESOURCE_bangbang93;
         public static string UrlLibrariesBase = Url.URL_LIBRARIES_bangbang93;
         public static NotiIcon NIcon = new NotiIcon();
@@ -35,7 +34,8 @@ namespace BMCLV2
         public static readonly string MinecraftDirectory = Path.Combine(BaseDirectory, ".minecraft");
         private static readonly Application ThisApplication = Application.Current;
         private static readonly string Cfgfile = Path.Combine(BaseDirectory, "bmcl.xml");
-        public static MirrorManager MirrorManager = new MirrorManager();
+        public static readonly MirrorManager MirrorManager = new MirrorManager();
+        public static readonly PluginManager PluginManager = new PluginManager();
         public static readonly string OS = "windows";
 
         static BmclCore()
@@ -74,7 +74,7 @@ namespace BMCLV2
             LangManager.UseLanguage(Config.Lang);
             if (!App.SkipPlugin)
             {
-                PluginManager.LoadPlugin(LangManager.GetLangFromResource("LangName"));
+                PluginManager.LoadOldAuthPlugin(LangManager.GetLangFromResource("LangName"));
             }
 #if DEBUG
 #else
