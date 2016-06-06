@@ -122,7 +122,7 @@ namespace BMCLV2.Windows
             Logger.Log($"BMCL V2 Ver.{BmclCore.BmclVersion} 正在退出");
             BmclCore.Halt();
         }
-        private void btnStart_Click(object sender, RoutedEventArgs e)
+        private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
             if (GridConfig.txtUserName.Text == "!!!")
             {
@@ -132,8 +132,7 @@ namespace BMCLV2.Windows
                 return;
             }
             Logger.Info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
-            //TODO Auth
-            BmclCore.GameManager.LaunchGame(GridGame.GetSelectedVersion());
+            await BmclCore.GameManager.LaunchGame(GridGame.GetSelectedVersion(), false);
         }
 
         void Game_GameStartUp(bool success)

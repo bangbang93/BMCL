@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Threading;
 using System.Windows;
 using System.Windows.Threading;
+using BMCLV2.Auth;
 using BMCLV2.Game;
 using BMCLV2.I18N;
 using BMCLV2.JsonClass;
@@ -36,6 +37,7 @@ namespace BMCLV2
         private static readonly string Cfgfile = Path.Combine(BaseDirectory, "bmcl.xml");
         public static readonly MirrorManager MirrorManager = new MirrorManager();
         public static readonly PluginManager PluginManager = new PluginManager();
+        public static readonly AuthManager AuthManager = new AuthManager();
         public static readonly string OS = "windows";
 
         static BmclCore()
@@ -43,11 +45,6 @@ namespace BMCLV2
             BmclVersion = Application.ResourceAssembly.FullName.Split('=')[1];
             BmclVersion = BmclVersion.Substring(0, BmclVersion.IndexOf(','));
             Logger.Log("BMCL V3 Ver." + BmclVersion + "正在启动");
-            var test = new AssetsIndex
-            {
-                Objects = new Dictionary<string, AssetsIndex.Assets> {{"a", new AssetsIndex.Assets {Hash = "123", Size = 1} }}
-            };
-            Logger.Log(new JSON<AssetsIndex>().Stringify(test));
             GameManager = new GameManager();
             Config = Config.Load(Cfgfile);
             if (Config.Passwd == null)

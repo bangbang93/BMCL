@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using BMCLV2.Auth;
 using BMCLV2.Exceptions;
 using BMCLV2.JsonClass;
@@ -65,17 +66,20 @@ namespace BMCLV2.Game
             return _versions[id];
         }
 
-        public bool LaunchGame(string id, bool offline = true)
+        public async Task<bool> LaunchGame(string id, bool offline = true)
         {
             AuthResult authResult;
-            if (offline) authResult = new AuthResult(BmclCore.Config);
+            if (offline)
+                authResult = new AuthResult(BmclCore.Config);
+            else
+                authResult = await BmclCore.AuthManager.Login(BmclCore.Config.Username, BmclCore.Config.GetPassword());
             if (_launcher != null) throw new AnotherGameRunningException(_launcher);
             var game = GetVersion(id);
             if (game == null) throw new NoSuchVersionException(id);
             _launcher = new Launcher.Launcher(game, BmclCore.Config);
             _launcher.OnGameExit += (sender, info, exitcode) => _launcher = null;
             _launcher.OnGameStart += LauncherOnGameStart;
-            _launcher.Start();
+            _launcher.Start(authResult);
             return true;
         }
 

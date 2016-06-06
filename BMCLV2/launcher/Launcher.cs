@@ -5,8 +5,8 @@ using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BMCLV2.Auth;
 using BMCLV2.Exceptions;
-using BMCLV2.Mirrors;
 using BMCLV2.Objects.Mirrors;
 using BMCLV2.util;
 using VersionInfo = BMCLV2.Game.VersionInfo;
@@ -23,6 +23,7 @@ namespace BMCLV2.Launcher
         private readonly string _libraryDirectory;
         private readonly string _nativesDirectory;
         private Dictionary<string, int> _errorCount = new Dictionary<string, int>();
+        private AuthResult _authResult;
 
         private OnGameExit _onGameExit;
         private OnGameStart _onGameStart;
@@ -57,8 +58,9 @@ namespace BMCLV2.Launcher
             }
         }
 
-        public async void Start()
+        public async void Start(AuthResult authResult)
         {
+            _authResult = authResult;
             if (!SetupJava()) return;
             if (!CleanNatives()) return;
             _arguments.Add($"-Djava.library.path={_nativesDirectory}");
@@ -105,12 +107,9 @@ namespace BMCLV2.Launcher
             {
                 //TODO maybe startup problem
             }
-            else
-            {
-                var newValue = CountError();
-                HandleCrashReport(newValue);
-                HandleHsError(newValue);
-            }
+            var newValue = CountError();
+            HandleCrashReport(newValue);
+            HandleHsError(newValue);
         }
 
         private static void OnStdOut(object sender, string log)
@@ -182,13 +181,13 @@ namespace BMCLV2.Launcher
         {
             var values = new Dictionary<string, string>
             {
-                {"${auth_player_name}", _config.Username},
+                {"${auth_player_name}", _authResult.Username},
                 {"${version_name}", _versionInfo.Id},
                 {"${game_directory}", BmclCore.MinecraftDirectory},
                 {"${assets_root}", "assets"},
                 {"${assets_index_name}", _versionInfo.Assets},
-                {"${auth_uuid}", "0000"},
-                {"${auth_access_token}", "0000"},
+                {"${auth_uuid}", _authResult.Uid},
+                {"${auth_access_token}", _authResult.Uid},
                 {"${user_type}", "Legacy"},
                 {"${version_type}", "Legacy"},
                 {"${user_properties}", "{}"}
