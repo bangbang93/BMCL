@@ -6,7 +6,7 @@ using System.Text;
 
 namespace BMCLV2.Plugin
 {
-    interface IBmclAuthPlugin
+    interface IBmclAuthPlugin : IBmclPlugin 
     {
         string GetName(string language = "zh-cn");
         long GetVer();

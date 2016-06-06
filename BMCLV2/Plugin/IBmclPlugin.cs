@@ -1,12 +1,15 @@
 ﻿namespace BMCLV2.Plugin
 {
-    interface IBmclPlugin
+    public interface IBmclPlugin
     {
         PluginType GetType();
     }
 
-    enum PluginType
+    public enum PluginType
     {
-        MainWindowTab
+        Normal,
+        MainWindowTab,
+        Auth,
+        Mirror
     }
 }
