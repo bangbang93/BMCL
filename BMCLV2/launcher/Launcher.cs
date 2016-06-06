@@ -7,9 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using BMCLV2.Auth;
 using BMCLV2.Exceptions;
+using BMCLV2.Game;
 using BMCLV2.Objects.Mirrors;
 using BMCLV2.util;
-using VersionInfo = BMCLV2.Game.VersionInfo;
 
 namespace BMCLV2.Launcher
 {
@@ -27,6 +27,7 @@ namespace BMCLV2.Launcher
 
         private OnGameExit _onGameExit;
         private OnGameStart _onGameStart;
+        private OnGameLaunch _onGameLaunch;
 
         public event OnGameExit OnGameExit
         {
@@ -38,6 +39,12 @@ namespace BMCLV2.Launcher
         {
             add { _onGameStart += value; }
             remove { _onGameStart -= value; }
+        }
+
+        public event OnGameLaunch OnGameLaunch
+        {
+            add { _onGameLaunch += value; }
+            remove { _onGameLaunch -= value;}
         }
 
         public Launcher(VersionInfo versionInfo, Config config = null, bool disableXincgc = false)
@@ -186,12 +193,17 @@ namespace BMCLV2.Launcher
                 {"${game_directory}", BmclCore.MinecraftDirectory},
                 {"${assets_root}", "assets"},
                 {"${assets_index_name}", _versionInfo.Assets},
-                {"${auth_uuid}", _authResult.Uid},
-                {"${auth_access_token}", _authResult.Uid},
                 {"${user_type}", "Legacy"},
                 {"${version_type}", "Legacy"},
                 {"${user_properties}", "{}"}
             };
+            if (_authResult.OtherInfo != null)
+            {
+                foreach (var info in _authResult.OtherInfo)
+                {
+                    values.Add(info.Key, info.Value);
+                }
+            }
             var arguments = new StringBuilder(_versionInfo.MinecraftArguments);
             arguments = values.Aggregate(arguments, (current, value) => current.Replace(value.Key, value.Value));
             return arguments.ToString().Split(' ');

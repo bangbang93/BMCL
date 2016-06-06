@@ -1,5 +1,10 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
+using System.Runtime.Serialization;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using BMCLV2.Login;
@@ -31,19 +36,21 @@ namespace BMCLV2.Auth
                     authInfo.SID = li.GetField("SID").GetValue(loginansobj) as string;
                     authInfo.ClientIdentifier =
                         li.GetField("Client_identifier").GetValue(loginansobj) as string;
-                    authInfo.Uid = li.GetField("UID").GetValue(loginansobj) as string;
-                    authInfo.OtherInfo = li.GetField("OtherInfo").GetValue(loginansobj) as string;
+                    authInfo.Uuid = li.GetField("UID").GetValue(loginansobj) as string;
+                    authInfo.OtherInfo = DecodeOtherInfo(li.GetField("OtherInfo").GetValue(loginansobj) as string);
                     if (li.GetField("OutInfo") != null)
                     {
                         authInfo.OutInfo = li.GetField("OutInfo").GetValue(loginansobj) as string;
                     }
+                    authInfo.Uuid = authInfo.Uuid ?? authInfo.OtherInfo["${auth_uuid}"];
+                    authInfo.AccessToken = authInfo.AccessToken ?? authInfo.OtherInfo["${auth_access_token}"];
                     Logger.Log(
-                        $"登陆成功，使用用户名{authInfo.Username},sid{authInfo.SID},Client_identifier{authInfo.ClientIdentifier},uid{authInfo.Uid}");
+                        $"登陆成功，使用用户名{authInfo.Username},sid{authInfo.SID},Client_identifier{authInfo.ClientIdentifier},uid{authInfo.Uuid}");
                     return authInfo;
                 }
-                authInfo.Message = li.GetField("Errinfo").GetValue(loginansobj) as string;
-                authInfo.OtherInfo = li.GetField("OtherInfo").GetValue(loginansobj) as string;
-                Logger.Log($"登陆失败，错误信息:{authInfo.Message}，其他信息:{authInfo.OtherInfo}");
+                var otherInfoString = li.GetField("OtherInfo").GetValue(loginansobj) as string;
+                authInfo.OtherInfo = DecodeOtherInfo(otherInfoString);
+                Logger.Log($"登陆失败，错误信息:{authInfo.Message}，其他信息:{otherInfoString}");
                 return authInfo;
             }
             catch (Exception ex)
@@ -58,6 +65,20 @@ namespace BMCLV2.Auth
                 }
                 return authInfo;
             }
+        }
+
+        private static Dictionary<string, string> DecodeOtherInfo(string otherInfoString)
+        {
+            var deserialzer = new DataContractSerializer(typeof(SortedList));
+            var stream = new MemoryStream(Encoding.UTF8.GetBytes(otherInfoString));
+            var list = deserialzer.ReadObject(stream) as SortedList;
+            if (list == null) return new Dictionary<string, string>();
+            var dic = new Dictionary<string, string>(list.Count);
+            foreach (DictionaryEntry entry in list)
+            {
+                dic.Add((string)entry.Key, (string)entry.Value);
+            }
+            return dic;
         }
     }
 }

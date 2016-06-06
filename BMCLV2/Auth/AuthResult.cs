@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using BMCLV2.Util;
 
 namespace BMCLV2.Auth
@@ -6,19 +7,20 @@ namespace BMCLV2.Auth
     public class AuthResult
     {
         public string Username;
-        public string Uid;
+        public string Uuid;
+        public string AccessToken;
         public string SID;
         public bool IsSuccess;
         public string Message;
         public string ErrCode;
-        public string OtherInfo;
+        public Dictionary<string, string> OtherInfo;
         public string ClientIdentifier;
         public string OutInfo;
 
         public AuthResult(string username, string uid = null, string clientIdentifier = null)
         {
             Username = username;
-            Uid = uid ?? Guid.Parse(Crypto.Md5("OfflinePlayer:" + username)).ToString();
+            Uuid = AccessToken = uid ?? Guid.Parse(Crypto.Md5("OfflinePlayer:" + username)).ToString();
             ClientIdentifier = clientIdentifier ?? Guid.NewGuid().ToString();
         }
 

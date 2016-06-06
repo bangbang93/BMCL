@@ -61,7 +61,7 @@ namespace BMCLV2.Windows.MainWindowTab
 
         private void VersionDownloader_ProcessChange(string status)
         {
-            _prs.ChangeEventH(status);
+            _prs.ChangeStatus(status);
         }
         private void listRemoteVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

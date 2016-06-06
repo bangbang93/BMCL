@@ -9,4 +9,6 @@ namespace BMCLV2
     public delegate void OnGameExit(object sender, VersionInfo versionInfo, int exitCode);
 
     public delegate void OnGameStart(object sender, VersionInfo versionInfo);
+
+    public delegate void OnGameLaunch(object sender, string status, VersionInfo versionInfo);
 }

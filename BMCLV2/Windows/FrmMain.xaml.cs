@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using BMCLV2.Game;
 using BMCLV2.I18N;
 using BMCLV2.Plugin;
 using BMCLV2.Themes;
@@ -20,8 +21,8 @@ namespace BMCLV2.Windows
     {
         private bool _inscreen;
         private bool _isLaunchering;
-        
-        private FrmPrs _starter;
+
+        private FrmPrs _frmPrs;
 
         private readonly Background _background = new Background();
 
@@ -132,31 +133,29 @@ namespace BMCLV2.Windows
                 return;
             }
             Logger.Info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
-            await BmclCore.GameManager.LaunchGame(GridGame.GetSelectedVersion(), false);
+            _frmPrs = new FrmPrs(LangManager.GetLangFromResource(GridGame.GetSelectedVersion()));
+            var launcher = await BmclCore.GameManager.LaunchGame(GridGame.GetSelectedVersion(), false);
+            if (launcher == null) return;
+            launcher.OnGameLaunch += Launcher_OnGameLaunch;
+            launcher.OnGameStart += Game_GameStartUp;
+            launcher.OnGameExit += launcher_gameexit;
         }
 
-        void Game_GameStartUp(bool success)
+        private void Launcher_OnGameLaunch(object sender, string status, VersionInfo versionInfo)
+        {
+            _frmPrs.ChangeStatus(LangManager.GetLangFromResource(status));
+        }
+
+        private void Game_GameStartUp(object sender, VersionInfo versionInfo)
         {
             BmclCore.NIcon.NIcon.Visible = true;
-            if (BmclCore.Game == null || !success)
-            {
-                BmclCore.NIcon.ShowBalloonTip(10000, "启动失败" + BmclCore.Config.LastPlayVer, System.Windows.Forms.ToolTipIcon.Error);
-            }
-            else
-            {
-                BmclCore.NIcon.ShowBalloonTip(10000, "已启动" + BmclCore.Config.LastPlayVer);
-            }
-            _starter.Close();
-            _starter = null;
+            BmclCore.NIcon.ShowBalloonTip(10000, "启动成功" + versionInfo.Id);
+            _frmPrs.Close();
+            _frmPrs = null;
             _isLaunchering = false;
-            if (BmclCore.GameInfo.assets != null)
-            {
-// ReSharper disable once ObjectCreationAsStatement
-                new Assets.Assets(BmclCore.GameInfo);
-            }
         }
 
-        private void launcher_gameexit()
+        private void launcher_gameexit(object sender, VersionInfo versionInfo, int exitCode)
         {
             if (Logger.Debug)
             {
@@ -164,11 +163,9 @@ namespace BMCLV2.Windows
                 Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(this.Show));
                 return;
             }
-            if (!_inscreen)
-            {
-                Logger.Log("BMCL V2 Ver" + BmclCore.BmclVersion + DateTime.Now + "由于游戏退出而退出");
-                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(() => Application.Current.Shutdown(0)));
-            }
+            if (_inscreen) return;
+            Logger.Log("BMCL V2 Ver" + BmclCore.BmclVersion + DateTime.Now + "由于游戏退出而退出");
+            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(() => Application.Current.Shutdown(0)));
         }
 
         private void btnMiniSize_Click(object sender, RoutedEventArgs e)
@@ -339,7 +336,7 @@ namespace BMCLV2.Windows
         {
             if (_isLaunchering)
             {
-                _starter?.Activate();
+                _frmPrs?.Activate();
             }
         }
 
@@ -347,7 +344,7 @@ namespace BMCLV2.Windows
         {
             if (_isLaunchering)
             {
-                _starter?.Activate();
+                _frmPrs?.Activate();
             }
         }
 
