@@ -125,6 +125,7 @@ namespace BMCLV2.Windows
         }
         private async void btnStart_Click(object sender, RoutedEventArgs e)
         {
+            //TODO 分离launcher方法
             if (GridConfig.txtUserName.Text == "!!!")
             {
                 MessageBox.Show(this, "请先修改用户名");
@@ -134,11 +135,19 @@ namespace BMCLV2.Windows
             }
             Logger.Info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
             _frmPrs = new FrmPrs(LangManager.GetLangFromResource(GridGame.GetSelectedVersion()));
+            _frmPrs.Show();
+            _frmPrs.ChangeStatus(LangManager.GetLangFromResource("LauncherAuth"));
             var launcher = await BmclCore.GameManager.LaunchGame(GridGame.GetSelectedVersion(), false);
-            if (launcher == null) return;
+            if (launcher == null)
+            {
+                _frmPrs.Close();
+                _frmPrs = null;
+                return;
+            }
             launcher.OnGameLaunch += Launcher_OnGameLaunch;
             launcher.OnGameStart += Game_GameStartUp;
             launcher.OnGameExit += launcher_gameexit;
+            launcher.Start();
         }
 
         private void Launcher_OnGameLaunch(object sender, string status, VersionInfo versionInfo)

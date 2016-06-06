@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using BMCLV2.Auth;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
+using BMCLV2.I18N;
 using BMCLV2.Objects.Mirrors;
 using BMCLV2.util;
 
@@ -47,8 +48,9 @@ namespace BMCLV2.Launcher
             remove { _onGameLaunch -= value;}
         }
 
-        public Launcher(VersionInfo versionInfo, Config config = null, bool disableXincgc = false)
+        public Launcher(VersionInfo versionInfo, AuthResult authResult, Config config = null, bool disableXincgc = false)
         {
+            _authResult = authResult;
             _versionInfo = versionInfo;
             _config = config ?? Config.Load();
             _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", _versionInfo.Id);
@@ -65,17 +67,20 @@ namespace BMCLV2.Launcher
             }
         }
 
-        public async void Start(AuthResult authResult)
+        public async void Start()
         {
-            _authResult = authResult;
+            _onGameLaunch(this, "LauncherCheckJava", _versionInfo);
             if (!SetupJava()) return;
             if (!CleanNatives()) return;
             _arguments.Add($"-Djava.library.path={_nativesDirectory}");
+            _onGameLaunch(this, "LauncherSolveLib", _versionInfo);
             if (!await SetupLibraries()) return;
             if (!await SetupNatives()) return;
+            _onGameLaunch(this, "LauncherBuildMCArg", _versionInfo);
             _arguments.Add(_versionInfo.MainClass);
             _arguments.AddRange(McArguments());
             Logger.Log(ChildProcess.JoinArguments(_arguments.ToArray()));
+            _onGameLaunch(this, "LauncherGo", _versionInfo);
             if (!Launch()) return;
             _onGameStart(this, _versionInfo);
         }
