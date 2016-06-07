@@ -126,7 +126,6 @@ namespace BMCLV2.Windows.MainWindowTab
 
         public void ReFlushlistver()
         {
-            listVer.Items.Clear();
             BmclCore.GameManager.ReloadList();
             listVer.ItemsSource = BmclCore.GameManager.GetVersions().Keys;
         }

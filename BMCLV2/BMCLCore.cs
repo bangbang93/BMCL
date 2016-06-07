@@ -45,6 +45,11 @@ namespace BMCLV2
             BmclVersion = Application.ResourceAssembly.FullName.Split('=')[1];
             BmclVersion = BmclVersion.Substring(0, BmclVersion.IndexOf(','));
             Logger.Log("BMCL V3 Ver." + BmclVersion + "正在启动");
+            if (!Directory.Exists(MinecraftDirectory))
+            {
+                Logger.Log($"{MinecraftDirectory}不存在，正在创建");
+                Directory.CreateDirectory(MinecraftDirectory);
+            }
             GameManager = new GameManager();
             Config = Config.Load(Cfgfile);
             if (Config.Passwd == null)
