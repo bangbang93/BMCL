@@ -39,24 +39,22 @@ namespace BMCLV2.Windows.MainWindowTab
                 return;
             }
             var selectVer = listRemoteVer.SelectedItem as DataRowView;
-            if (selectVer != null)
-            {
-                var url = selectVer[3] as string;
-                var versionDownloader = new Version(url);
-                _prs = new FrmPrs(LangManager.GetLangFromResource("btnDownloadVer"));
-                _prs.Show();
-                versionDownloader.ProcessChange += VersionDownloader_ProcessChange;
-                await versionDownloader.Start();
-                Logger.Log("下载客户端文件成功");
-                MessageBox.Show(LangManager.GetLangFromResource("RemoteVerDownloadSuccess"));
-                btnDownloadVer.Content = LangManager.GetLangFromResource("btnDownloadVer");
-                btnDownloadVer.IsEnabled = true;
-                BmclCore.MainWindow.GridGame.ReFlushlistver();
-                BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Hidden);
-                BmclCore.MainWindow.TabMain.SelectedIndex = 0;
-                _prs.Close();
-                _prs = null;
-            }
+            if (selectVer == null) return;
+            var url = selectVer[3] as string;
+            var versionDownloader = new Version(url);
+            _prs = new FrmPrs(LangManager.GetLangFromResource("btnDownloadVer"));
+            _prs.Show();
+            versionDownloader.ProcessChange += VersionDownloader_ProcessChange;
+            await versionDownloader.Start();
+            Logger.Log("下载客户端文件成功");
+            MessageBox.Show(LangManager.GetLangFromResource("RemoteVerDownloadSuccess"));
+            btnDownloadVer.Content = LangManager.GetLangFromResource("btnDownloadVer");
+            btnDownloadVer.IsEnabled = true;
+            BmclCore.MainWindow.GridGame.ReFlushlistver();
+            BmclCore.MainWindow.SwitchDownloadGrid(Visibility.Hidden);
+            BmclCore.MainWindow.TabMain.SelectedIndex = 0;
+            _prs.Close();
+            _prs = null;
         }
 
         private void VersionDownloader_ProcessChange(string status)

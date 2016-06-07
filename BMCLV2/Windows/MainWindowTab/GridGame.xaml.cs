@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Windows;
 using System.Windows.Controls;
@@ -39,37 +41,35 @@ namespace BMCLV2.Windows.MainWindowTab
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show(LangManager.GetLangFromResource("DeleteMessageBoxInfo"), LangManager.GetLangFromResource("DeleteMessageBoxTitle"), MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK)
+            if (
+                MessageBox.Show(LangManager.GetLangFromResource("DeleteMessageBoxInfo"),
+                    LangManager.GetLangFromResource("DeleteMessageBoxTitle"), MessageBoxButton.OKCancel,
+                    MessageBoxImage.Question) != MessageBoxResult.OK) return;
+            try
             {
-                try
+                if (BmclCore.GameInfo != null)
                 {
-                    if (BmclCore.GameInfo != null)
-                    {
-                        FileStream isused = File.OpenWrite(".minecraft\\versions\\" + listVer.SelectedItem + "\\" + BmclCore.GameInfo.id + ".jar");
-                        isused.Close();
-                    }
-                    Directory.Delete(".minecraft\\versions\\" + listVer.SelectedItem, true);
-                    if (Directory.Exists(".minecraft\\libraries\\" + listVer.SelectedItem))
-                    {
-                        Directory.Delete(".minecraft\\libraries\\" + listVer.SelectedItem, true);
-                    }
+                    FileStream isused = File.OpenWrite(".minecraft\\versions\\" + listVer.SelectedItem + "\\" + BmclCore.GameInfo.id + ".jar");
+                    isused.Close();
                 }
-                catch (SystemException)
+                Directory.Delete(".minecraft\\versions\\" + listVer.SelectedItem, true);
+                if (Directory.Exists(".minecraft\\libraries\\" + listVer.SelectedItem))
                 {
-                    MessageBox.Show(LangManager.GetLangFromResource("DeleteFailedMessageInfo"));
-                }
-                finally
-                {
-                    ReFlushlistver();
+                    Directory.Delete(".minecraft\\libraries\\" + listVer.SelectedItem, true);
                 }
             }
+            catch (SystemException)
+            {
+                MessageBox.Show(LangManager.GetLangFromResource("DeleteFailedMessageInfo"));
+            }
+            ReFlushlistver();
         }
 
         private void btnReName_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                string rname = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("RenameNewName"), LangManager.GetLangFromResource("RenameTitle"), listVer.SelectedItem.ToString());
+                var rname = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("RenameNewName"), LangManager.GetLangFromResource("RenameTitle"), listVer.SelectedItem.ToString());
                 if (rname == "") return;
                 if (rname == listVer.SelectedItem.ToString()) return;
                 if (listVer.Items.IndexOf(rname) != -1) throw new Exception(LangManager.GetLangFromResource("RenameFailedExist"));
@@ -83,10 +83,7 @@ namespace BMCLV2.Windows.MainWindowTab
             {
                 MessageBox.Show(ex.Message);
             }
-            finally
-            {
-                this.ReFlushlistver();
-            }
+            ReFlushlistver();
         }
 
         private void btnModMrg_Click(object sender, RoutedEventArgs e)
@@ -127,7 +124,7 @@ namespace BMCLV2.Windows.MainWindowTab
         public void ReFlushlistver()
         {
             BmclCore.GameManager.ReloadList();
-            listVer.ItemsSource = BmclCore.GameManager.GetVersions().Keys;
+            BmclCore.Invoke(new Action(()=> listVer.ItemsSource = BmclCore.GameManager.GetVersions().Keys.ToList()));
         }
 
         public string GetSelectedVersion()
