@@ -6,6 +6,7 @@ using System.Windows;
 using BMCLV2.Auth;
 using BMCLV2.Exceptions;
 using BMCLV2.JsonClass;
+using BMCLV2.util;
 
 namespace BMCLV2.Game
 {
@@ -27,6 +28,7 @@ namespace BMCLV2.Game
         public void ReloadList()
         {
             _versions.Clear();
+            FileHelper.CreateDirectoryIfNotExist(VersionDirectory);
             var dirs = new List<string>(Directory.GetDirectories(VersionDirectory));
             var jsonFiles = new List<string>();
             dirs.ForEach(dir => jsonFiles.AddRange(Directory.GetFiles(dir).Where(file => file.EndsWith(".json"))));
