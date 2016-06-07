@@ -66,26 +66,31 @@ namespace BMCLV2
                     return info;
                 String anotherJson = GetGameInfoJsonPath(info.inheritsFrom);
                 gameinfo anotherGameinfo = Read(anotherJson);
-                info.libraries = MixLibraries(info.libraries, anotherGameinfo.libraries);
+                info.type = (info.type == null || info.type == "") ? anotherGameinfo.type : info.type;//Type:覆盖
+                info.minecraftArguments = (info.minecraftArguments == null || info.minecraftArguments == "") ? anotherGameinfo.minecraftArguments : info.minecraftArguments;//MinecraftArguments:覆盖
+                info.mainClass = (info.mainClass == null || info.mainClass == "") ? anotherGameinfo.mainClass : info.mainClass;//MainClass:覆盖
+                info.libraries = MixLibraries(info.libraries, anotherGameinfo.libraries);//Libraries:拼接
+                info.assets = (info.assets == null || info.assets == "") ? anotherGameinfo.assets : info.assets;//Assets:覆盖
+                info.jar = (info.jar == null || info.jar == "") ? anotherGameinfo.jar : info.jar;//Jar:覆盖
                 return info;
             }
             catch (SerializationException ex)
             {
-                Logger.log(ex);
+                Logger.Log(ex);
                 try
                 {
                     StreamReader JsonFile = new StreamReader(path, Encoding.Default);
                     DataContractJsonSerializer InfoReader = new DataContractJsonSerializer(typeof(gameinfo));
                     gameinfo info = InfoReader.ReadObject(JsonFile.BaseStream) as gameinfo;
                     JsonFile.Close();
-                    Logger.log("JSON文件使用", Encoding.Default.EncodingName, "解析成功，将转换为UTF8编码");
+                    Logger.Log("JSON文件使用", Encoding.Default.EncodingName, "解析成功，将转换为UTF8编码");
                     JsonFile = new StreamReader(path, Encoding.Default);
                     string JsonString = JsonFile.ReadToEnd();
                     JsonFile.Close();
                     StreamWriter sw = new StreamWriter(path, false, Encoding.UTF8);
                     sw.WriteLine(JsonString);
                     sw.Close();
-                    Logger.log("JSON文件转存完毕");
+                    Logger.Log("JSON文件转存完毕");
                     if(info.inheritsFrom == "" || info.inheritsFrom == null)
                         return info;
                     String anotherJson = GetGameInfoJsonPath(info.inheritsFrom);
@@ -95,7 +100,7 @@ namespace BMCLV2
                 }
                 catch (SerializationException ex1)
                 {
-                    Logger.log(ex1);
+                    Logger.Log(ex1);
                     return null;
                 }
             }

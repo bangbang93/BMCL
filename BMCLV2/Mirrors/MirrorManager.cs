@@ -6,25 +6,25 @@ namespace BMCLV2.Mirrors
 {
     public class MirrorManager
     {
-        private readonly List<Version> _version = new List<Version>
+        private readonly List<Mirror> _version = new List<Mirror>
         {
-            new BMCLAPI.Version(),
-            new Vanilla.Version()
+            new BMCLAPI.Bmclapi(),
+            new Vanilla.Vanilla()
         };
-        public Version CurrectMirror;
+        public Mirror CurrectMirror;
 
-        public MirrorManager ()
+        public MirrorManager()
         {
             CurrectMirror = _version[0];
         }
 
-        public Version GetByName(string name)
+        public Mirror GetByName(string name)
         {
             return _version.FirstOrDefault(version => version.Name == name);
         }
 
-        public Version this[int index] => _version[index];
+        public Mirror this[int index] => _version[index];
 
-        public Version this[string name] => GetByName(name);
+        public Mirror this[string name] => GetByName(name);
     }
 }

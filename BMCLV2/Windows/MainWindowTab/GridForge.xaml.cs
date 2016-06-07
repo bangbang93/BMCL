@@ -21,15 +21,12 @@ namespace BMCLV2.Windows.MainWindowTab
     /// </summary>
     public partial class GridForge
     {
-        int _downedtime;
-        int _downed;
-
         public GridForge()
         {
             InitializeComponent();
         }
 
-        readonly ForgeTask _forgeTask = new ForgeTask();
+        private readonly ForgeTask _forgeTask = new ForgeTask();
         private ForgeVersion[] _forgeVersions;
         private async void RefreshForgeVersionList()
         {

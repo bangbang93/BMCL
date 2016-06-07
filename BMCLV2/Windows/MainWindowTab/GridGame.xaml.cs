@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using BMCLV2.Game;
 using BMCLV2.I18N;
 using BMCLV2.Mod;
 
@@ -26,64 +30,46 @@ namespace BMCLV2.Windows.MainWindowTab
                 listVer.SelectedIndex = 0;
                 return;
             }
-            this.listVer.ScrollIntoView(listVer.SelectedItem);
-            string jsonFilePath = gameinfo.GetGameInfoJsonPath(listVer.SelectedItem.ToString());
-            if (string.IsNullOrEmpty(jsonFilePath))
-            {
-                MessageBox.Show(LangManager.GetLangFromResource("ErrorNoGameJson"));
-                _mainWindow.SwitchStartButton(false);
-                return;
-            }
-            _mainWindow.SwitchStartButton(true);
-            BmclCore.GameInfo = gameinfo.Read(jsonFilePath);
-            if (BmclCore.GameInfo == null)
-            {
-                MessageBox.Show(LangManager.GetLangFromResource("ErrorJsonEncoding"));
-                return;
-            }
-            labVer.Content = BmclCore.GameInfo.id;
-            labTime.Content = DateTime.Parse(BmclCore.GameInfo.time);
-            labRelTime.Content = DateTime.Parse(BmclCore.GameInfo.releaseTime);
-            labType.Content = BmclCore.GameInfo.type;
+            listVer.ScrollIntoView(listVer.SelectedItem);
+            var id = GetSelectedVersion();
+            var game = BmclCore.GameManager.GetVersion(id);
+            labVer.Content = game.Id;
+            labTime.Content = DateTime.Parse(game.Time);
+            labRelTime.Content = DateTime.Parse(game.ReleaseTime);
+            labType.Content = game.Type;
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show(LangManager.GetLangFromResource("DeleteMessageBoxInfo"), LangManager.GetLangFromResource("DeleteMessageBoxTitle"), MessageBoxButton.OKCancel, MessageBoxImage.Question) == MessageBoxResult.OK)
+            if (
+                MessageBox.Show(LangManager.GetLangFromResource("DeleteMessageBoxInfo"),
+                    LangManager.GetLangFromResource("DeleteMessageBoxTitle"), MessageBoxButton.OKCancel,
+                    MessageBoxImage.Question) != MessageBoxResult.OK) return;
+            try
             {
-                try
+                if (BmclCore.GameInfo != null)
                 {
-                    if (BmclCore.GameInfo != null)
-                    {
-                        FileStream isused = File.OpenWrite(".minecraft\\versions\\" + listVer.SelectedItem + "\\" + BmclCore.GameInfo.id + ".jar");
-                        isused.Close();
-                    }
-                    Directory.Delete(".minecraft\\versions\\" + listVer.SelectedItem, true);
-                    if (Directory.Exists(".minecraft\\libraries\\" + listVer.SelectedItem))
-                    {
-                        Directory.Delete(".minecraft\\libraries\\" + listVer.SelectedItem, true);
-                    }
+                    FileStream isused = File.OpenWrite(".minecraft\\versions\\" + listVer.SelectedItem + "\\" + BmclCore.GameInfo.id + ".jar");
+                    isused.Close();
                 }
-                catch (UnauthorizedAccessException)
+                Directory.Delete(".minecraft\\versions\\" + listVer.SelectedItem, true);
+                if (Directory.Exists(".minecraft\\libraries\\" + listVer.SelectedItem))
                 {
-                    MessageBox.Show(LangManager.GetLangFromResource("DeleteFailedMessageInfo"));
-                }
-                catch (IOException)
-                {
-                    MessageBox.Show(LangManager.GetLangFromResource("DeleteFailedMessageInfo"));
-                }
-                finally
-                {
-                    ReFlushlistver();
+                    Directory.Delete(".minecraft\\libraries\\" + listVer.SelectedItem, true);
                 }
             }
+            catch (SystemException)
+            {
+                MessageBox.Show(LangManager.GetLangFromResource("DeleteFailedMessageInfo"));
+            }
+            ReFlushlistver();
         }
 
         private void btnReName_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                string rname = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("RenameNewName"), LangManager.GetLangFromResource("RenameTitle"), listVer.SelectedItem.ToString());
+                var rname = Microsoft.VisualBasic.Interaction.InputBox(LangManager.GetLangFromResource("RenameNewName"), LangManager.GetLangFromResource("RenameTitle"), listVer.SelectedItem.ToString());
                 if (rname == "") return;
                 if (rname == listVer.SelectedItem.ToString()) return;
                 if (listVer.Items.IndexOf(rname) != -1) throw new Exception(LangManager.GetLangFromResource("RenameFailedExist"));
@@ -97,10 +83,7 @@ namespace BMCLV2.Windows.MainWindowTab
             {
                 MessageBox.Show(ex.Message);
             }
-            finally
-            {
-                this.ReFlushlistver();
-            }
+            ReFlushlistver();
         }
 
         private void btnModMrg_Click(object sender, RoutedEventArgs e)
@@ -140,52 +123,8 @@ namespace BMCLV2.Windows.MainWindowTab
 
         public void ReFlushlistver()
         {
-            listVer.Items.Clear();
-
-            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft"))
-            {
-                {
-                    MessageBox.Show(LangManager.GetLangFromResource("NoClientFound"));
-                    BmclCore.MainWindow.SwitchStartButton(false);
-                    btnDelete.IsEnabled = false;
-                    btnModCfgMrg.IsEnabled = false;
-                    btnModdirMrg.IsEnabled = false;
-                    btnModMrg.IsEnabled = false;
-                    return;
-                }
-            }
-            if (!Directory.Exists(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions\"))
-            {
-                MessageBox.Show(LangManager.GetLangFromResource("InvidMinecratDir"));
-                BmclCore.MainWindow.SwitchStartButton(false);
-                btnDelete.IsEnabled = false;
-                btnModCfgMrg.IsEnabled = false;
-                btnModdirMrg.IsEnabled = false;
-                btnModMrg.IsEnabled = false;
-                return;
-            }
-            DirectoryInfo[] versions = new DirectoryInfo(AppDomain.CurrentDomain.BaseDirectory + @"\.minecraft\versions").GetDirectories();
-            foreach (DirectoryInfo version in versions)
-            {
-                listVer.Items.Add(version.Name);
-            }
-            if (listVer.Items.Count != 0)
-            {
-                listVer.SelectedIndex = 0;
-                BmclCore.MainWindow.SwitchStartButton(true);
-                btnDelete.IsEnabled = true;
-                btnModCfgMrg.IsEnabled = true;
-                btnModdirMrg.IsEnabled = true;
-                btnModMrg.IsEnabled = true;
-            }
-            else
-            {
-                BmclCore.MainWindow.SwitchStartButton(false);
-                btnDelete.IsEnabled = false;
-                btnModCfgMrg.IsEnabled = false;
-                btnModdirMrg.IsEnabled = false;
-                btnModMrg.IsEnabled = false;
-            }
+            BmclCore.GameManager.ReloadList();
+            BmclCore.Invoke(new Action(()=> listVer.ItemsSource = BmclCore.GameManager.GetVersions().Keys.ToList()));
         }
 
         public string GetSelectedVersion()

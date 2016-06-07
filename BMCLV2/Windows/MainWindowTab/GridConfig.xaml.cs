@@ -91,14 +91,14 @@ namespace BMCLV2.Windows.MainWindowTab
             }
             catch (FormatException ex)
             {
-                Logger.log(ex);
+                Logger.Log(ex);
                 MessageBox.Show("请输入一个有效数字");
                 txtJavaXmx.Text = (Config.GetMemory()/4).ToString(CultureInfo.InvariantCulture);
                 txtJavaXmx.SelectAll();
             }
             catch (XamlParseException ex)
             {
-                Logger.log(ex);
+                Logger.Log(ex);
                 MessageBox.Show("请输入一个有效数字");
                 txtJavaXmx.Text = (Config.GetMemory() / 4).ToString(CultureInfo.InvariantCulture);
                 txtJavaXmx.SelectAll();
@@ -169,9 +169,9 @@ namespace BMCLV2.Windows.MainWindowTab
         {
             listAuth.Items.Clear();
             listAuth.Items.Add(LangManager.GetLangFromResource("NoneAuth"));
-            foreach (var auth in BmclCore.Auths)
+            foreach (var auth in BmclCore.PluginManager.GetAuthNames())
             {
-                listAuth.Items.Add(auth.Key);
+                listAuth.Items.Add(auth);
             }
             listAuth.SelectedItem = BmclCore.Config.Login;
             if (listAuth.SelectedItem == null)

@@ -9,6 +9,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "yggdrasil", "yggdrasil\yggd
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BmclNG", "BmclNG\BmclNG.csproj", "{82CDA6C0-1562-4A49-86DC-01EA3BC61760}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Configuration", "Solution Configuration", "{F1097E98-4DEB-4A0A-81EE-5CEC667EBDF0}"
+	ProjectSection(SolutionItems) = preProject
+		SharpZipLib\.editorconfig = SharpZipLib\.editorconfig
+		SharpZipLib\.gitattributes = SharpZipLib\.gitattributes
+		SharpZipLib\.gitignore = SharpZipLib\.gitignore
+		SharpZipLib\Rebracer.xml = SharpZipLib\Rebracer.xml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
+using BMCLV2.Game;
 using BMCLV2.JsonClass;
 using BMCLV2.Objects.Mirrors;
 
@@ -52,7 +53,10 @@ namespace BMCLV2.Mirrors.Interface
             var json =
                 await Downloader.DownloadStringTaskAsync(
                     new Uri(Url));
-            VersionManifest = (VersionManifest) new JSON(typeof (VersionManifest)).Parse(json);
+            VersionManifest = new JSON<VersionManifest>().Parse(json);
         }
+
+        public abstract Task<string> DownloadJson(string url);
+        public abstract Task DownloadJar(string url, string savePath);
     }
 }

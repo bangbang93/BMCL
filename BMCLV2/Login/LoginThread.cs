@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Threading;
+using BMCLV2.Util;
 
 namespace BMCLV2.Login
 {
@@ -29,7 +30,7 @@ namespace BMCLV2.Login
             this._password = password;
             if (selectIndex != 0)
             {
-                this._auth = BmclCore.Auths[auth];
+                this._auth = BmclCore.PluginManager.GetAuth(auth);
             }
         }
 
@@ -63,7 +64,7 @@ namespace BMCLV2.Login
                         {
                             _loginans.OutInfo = li.GetField("OutInfo").GetValue(loginansobj) as string;
                         }
-                        Logger.log(string.Format("登陆成功，使用用户名{0},sid{1},Client_identifier{2},uid{3}",
+                        Logger.Log(string.Format("登陆成功，使用用户名{0},sid{1},Client_identifier{2},uid{3}",
                             _loginans.UN ?? "", _loginans.SID ?? "", _loginans.Client_identifier ?? "",
                             _loginans.UID ?? ""));
                         OnLoginFinishEvent(_loginans);
@@ -72,14 +73,14 @@ namespace BMCLV2.Login
                     {
                         _loginans.Errinfo = li.GetField("Errinfo").GetValue(loginansobj) as string;
                         _loginans.OtherInfo = li.GetField("OtherInfo").GetValue(loginansobj) as string;
-                        Logger.log(string.Format("登陆失败，错误信息:{0}，其他信息:{1}", _loginans.Errinfo ?? "",
+                        Logger.Log(string.Format("登陆失败，错误信息:{0}，其他信息:{1}", _loginans.Errinfo ?? "",
                             _loginans.OtherInfo ?? ""));
                         OnLoginFinishEvent(_loginans);
                     }
                 }
                 catch (Exception ex)
                 {
-                    Logger.log(ex);
+                    Logger.Log(ex);
                     _loginans.Suc = false;
                     _loginans.Errinfo = ex.Message;
                     while (ex.InnerException != null)
@@ -93,7 +94,7 @@ namespace BMCLV2.Login
             else
             {
                 _loginans.Suc = true;
-                _loginans.SID = BmclCore.Config.GUID;
+                _loginans.SID = Guid.Parse(Crypto.Md5("OfflinePlayer:" + _username)).ToString("D");
                 _loginans.UN = this._username;
                 OnLoginFinishEvent(_loginans);
             }

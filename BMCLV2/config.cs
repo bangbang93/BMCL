@@ -6,6 +6,7 @@ using Microsoft.Win32;
 using System.Runtime.Serialization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows;
 
 namespace BMCLV2
@@ -36,8 +37,7 @@ namespace BMCLV2
         [DataMember]
         public int DownloadSource;
         [DataMember]
-        public Dictionary<string, object> PluginConfig = new Dictionary<string, object>();
-        [DataMember] public string GUID;
+        public Dictionary<string, object> PluginConfig;
         [DataMember] public int Height;
         [DataMember] public int Width;
         [DataMember] public bool FullScreen;
@@ -56,11 +56,15 @@ namespace BMCLV2
             DownloadSource = 0;
             Lang = "zh-cn";
             CheckUpdate = true;
-            PluginConfig = null;
-            GUID = GetGuid();
+            PluginConfig = new Dictionary<string, object>();
             Height = -1;
             Width = -1;
             FullScreen = false;
+        }
+
+        public override string ToString()
+        {
+            return $"Javaw: {Javaw}, Username: {Username}, Javaxmx: {Javaxmx}, Login: {Login}, LastPlayVer: {LastPlayVer}, ExtraJvmArg: {ExtraJvmArg}, Lang: {Lang}, Passwd: {Passwd}, Autostart: {Autostart}, Report: {Report}, CheckUpdate: {CheckUpdate}, WindowTransparency: {WindowTransparency}, DownloadSource: {DownloadSource}, PluginConfig: {PluginConfig}, Height: {Height}, Width: {Width}, FullScreen: {FullScreen}";
         }
 
         public object GetPluginConfig(string key)
@@ -89,7 +93,7 @@ namespace BMCLV2
             return (Config)this.MemberwiseClone();
         }
 
-        public static Config Load(string file)
+        public static Config Load(string file = "bmcl.xml")
         {
             if (!File.Exists(file))
                 return new Config();
@@ -99,10 +103,6 @@ namespace BMCLV2
                 var ser = new DataContractSerializer(typeof(Config));
                 var cfg = (Config)ser.ReadObject(fs);
                 fs.Close();
-                if (cfg.GUID == null)
-                {
-                    cfg.GUID = GetGuid();
-                }
                 return cfg;
             }
             catch
@@ -196,8 +196,8 @@ namespace BMCLV2
             }
             catch (Exception ex)
             {
-                Logger.error("获取内存失败");
-                Logger.error(ex);
+                Logger.Fatal("获取内存失败");
+                Logger.Fatal(ex);
                 return ulong.MaxValue;
             }
         }
@@ -205,6 +205,11 @@ namespace BMCLV2
         public static string GetGuid()
         {
             return Guid.NewGuid().ToString();
+        }
+
+        public string GetPassword()
+        {
+            return Encoding.UTF8.GetString(Passwd);
         }
     }
 }

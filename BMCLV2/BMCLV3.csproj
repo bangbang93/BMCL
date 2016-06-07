@@ -14,6 +14,7 @@
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>发布\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -26,7 +27,6 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ApplicationRevision>0</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -69,6 +69,8 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
     <Reference Include="System.Management" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Web" />
@@ -94,28 +96,51 @@
     </ApplicationDefinition>
     <Compile Include="assets\assets.cs" />
     <Compile Include="assets\AssetsEntity.cs" />
+    <Compile Include="Auth\AuthResult.cs" />
+    <Compile Include="Auth\AuthManager.cs" />
+    <Compile Include="Auth\IAuth.cs" />
+    <Compile Include="Auth\OldPluginLogin.cs" />
     <Compile Include="BmclCore.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Downloader\Downloader.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Downloader\Version.cs" />
+    <Compile Include="EventHandler.cs" />
+    <Compile Include="Exceptions\AnotherGameRunningException.cs" />
+    <Compile Include="Exceptions\NoSuchVersionException.cs" />
+    <Compile Include="Exceptions\ProcessNotStartException.cs" />
+    <Compile Include="Game\AssetManager.cs" />
+    <Compile Include="Game\GameManager.cs" />
+    <Compile Include="Game\VersionInfo.cs" />
+    <Compile Include="JsonClass\AssetsIndex.cs" />
     <Compile Include="JsonClass\JSON.cs" />
-    <Compile Include="Launcher\NoJavaException.cs" />
-    <Compile Include="Launcher\UnSupportVersionException.cs" />
+    <Compile Include="Launcher\ChildProcess.cs" />
+    <Compile Include="Launcher\Launcher.cs" />
+    <Compile Include="Exceptions\NoJavaException.cs" />
+    <Compile Include="Exceptions\UnSupportVersionException.cs" />
+    <Compile Include="Mirrors\BMCLAPI\Asset.cs" />
+    <Compile Include="Mirrors\BMCLAPI\BMCLAPI.cs" />
+    <Compile Include="Mirrors\BMCLAPI\Library.cs" />
     <Compile Include="Mirrors\BMCLAPI\Version.cs" />
+    <Compile Include="Mirrors\Interface\Asset.cs" />
+    <Compile Include="Mirrors\Interface\Library.cs" />
+    <Compile Include="Mirrors\Interface\Mirror.cs" />
     <Compile Include="Mirrors\Interface\Version.cs" />
     <Compile Include="Mirrors\MirrorManager.cs" />
+    <Compile Include="Mirrors\Vanilla\Asset.cs" />
+    <Compile Include="Mirrors\Vanilla\Library.cs" />
+    <Compile Include="Mirrors\Vanilla\Vanilla.cs" />
     <Compile Include="Mirrors\Vanilla\Version.cs" />
     <Compile Include="Mod\ModHelper.cs" />
-    <Compile Include="Objects\Mirrors\LibraryInfo.cs" />
-    <Compile Include="Objects\Mirrors\VersionInfo.cs" />
-    <Compile Include="Objects\Mirrors\VersionManifest.cs" />
+    <Compile Include="Game\LibraryInfo.cs" />
+    <Compile Include="Mirrors\VersionManifest.cs" />
     <Compile Include="Plugin\IBmclPlugin.cs" />
     <Compile Include="Plugin\IBmclAuthPlugin.cs" />
     <Compile Include="Plugin\PluginManager.cs" />
     <Compile Include="Themes\Background.cs" />
-    <Compile Include="util\PathHelper.cs" />
+    <Compile Include="Util\PathHelper.cs" />
+    <Compile Include="Util\TimeHelper.cs" />
     <Compile Include="Windows\FrmUpdater.xaml.cs">
       <DependentUpon>FrmUpdater.xaml</DependentUpon>
     </Compile>
@@ -127,9 +152,6 @@
     </Compile>
     <Compile Include="Windows\MainWindowTab\GridGame.xaml.cs">
       <DependentUpon>GridGame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MainWindowTab\GridServer.xaml.cs">
-      <DependentUpon>GridServer.xaml</DependentUpon>
     </Compile>
     <Compile Include="Windows\MainWindowTab\GridVersion.xaml.cs">
       <DependentUpon>GridVersion.xaml</DependentUpon>
@@ -187,63 +209,17 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Url.resx</DependentUpon>
     </Compile>
-    <Compile Include="serverlist\AddServer.xaml.cs">
-      <DependentUpon>AddServer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="serverlist\serverinfo.cs" />
-    <Compile Include="serverlist\serverlist.cs" />
     <Compile Include="Texturepack\NoResourcePackDirException.cs" />
     <Compile Include="Texturepack\TextureInfo.cs" />
     <Compile Include="Texturepack\TexturePack.cs" />
     <Compile Include="Texturepack\TexturePackEntity.cs" />
     <Compile Include="UpdateChecker.cs" />
-    <Compile Include="util\FileHelper.cs" />
-    <Compile Include="util\MathHelper.cs" />
-    <Compile Include="util\MD5.cs" />
+    <Compile Include="Util\FileHelper.cs" />
+    <Compile Include="Util\MathHelper.cs" />
+    <Compile Include="Util\Crypto.cs" />
     <Compile Include="Versions\RawVersionListType.cs" />
     <Compile Include="Versions\RemoteVerType.cs" />
     <Compile Include="Windows\NotiIcon.cs" />
-    <Compile Include="zip\Checksums\Adler32.cs" />
-    <Compile Include="zip\Checksums\CRC32.cs" />
-    <Compile Include="zip\Checksums\IChecksum.cs" />
-    <Compile Include="zip\Checksums\StrangeCRC.cs" />
-    <Compile Include="zip\Compression\Deflater.cs" />
-    <Compile Include="zip\Compression\DeflaterConstants.cs" />
-    <Compile Include="zip\Compression\DeflaterEngine.cs" />
-    <Compile Include="zip\Compression\DeflaterHuffman.cs" />
-    <Compile Include="zip\Compression\DeflaterPending.cs" />
-    <Compile Include="zip\Compression\Inflater.cs" />
-    <Compile Include="zip\Compression\InflaterDynHeader.cs" />
-    <Compile Include="zip\Compression\InflaterHuffmanTree.cs" />
-    <Compile Include="zip\Compression\PendingBuffer.cs" />
-    <Compile Include="zip\Compression\Streams\DeflaterOutputStream.cs" />
-    <Compile Include="zip\Compression\Streams\InflaterInputStream.cs" />
-    <Compile Include="zip\Compression\Streams\OutputWindow.cs" />
-    <Compile Include="zip\Compression\Streams\StreamManipulator.cs" />
-    <Compile Include="zip\Core\FileSystemScanner.cs" />
-    <Compile Include="zip\Core\INameTransform.cs" />
-    <Compile Include="zip\Core\IScanFilter.cs" />
-    <Compile Include="zip\Core\NameFilter.cs" />
-    <Compile Include="zip\Core\PathFilter.cs" />
-    <Compile Include="zip\Core\StreamUtils.cs" />
-    <Compile Include="zip\Core\WindowsPathUtils.cs" />
-    <Compile Include="zip\Encryption\PkzipClassic.cs" />
-    <Compile Include="zip\Encryption\ZipAESStream.cs" />
-    <Compile Include="zip\Encryption\ZipAESTransform.cs" />
-    <Compile Include="zip\FastZip.cs" />
-    <Compile Include="zip\IEntryFactory.cs" />
-    <Compile Include="zip\SharpZipBaseException.cs" />
-    <Compile Include="zip\WindowsNameTransform.cs" />
-    <Compile Include="zip\ZipConstants.cs" />
-    <Compile Include="zip\ZipEntry.cs" />
-    <Compile Include="zip\ZipEntryFactory.cs" />
-    <Compile Include="zip\ZipException.cs" />
-    <Compile Include="zip\ZipExtraData.cs" />
-    <Compile Include="zip\ZipFile.cs" />
-    <Compile Include="zip\ZipHelperStream.cs" />
-    <Compile Include="zip\ZipInputStream.cs" />
-    <Compile Include="zip\ZipNameTransform.cs" />
-    <Compile Include="zip\ZipOutputStream.cs" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -261,10 +237,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Windows\MainWindowTab\GridGame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MainWindowTab\GridServer.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -316,17 +288,13 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="serverlist\AddServer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Windows\Style.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Launcher\launcher.cs" />
+    <Compile Include="Launcher\OldLauncher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
