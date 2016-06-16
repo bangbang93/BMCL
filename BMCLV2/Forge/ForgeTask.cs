@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BMCLV2.JsonClass;
 using System.Text.RegularExpressions;
 using System.Windows;
+using BMCLV2.util;
 
 namespace BMCLV2.Forge
 {
@@ -107,6 +108,7 @@ namespace BMCLV2.Forge
             File.Copy(tempDir + "\\"+forge, forgeFolder + "\\forge-" + forge0 + ".jar");
 
             archive.Dispose();
+            Directory.Delete(tempDir, true);
 
             return true;
         }
