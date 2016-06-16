@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using BMCLV2.Game;
 using BMCLV2.JsonClass;
-using BMCLV2.Objects.Mirrors;
 
 namespace BMCLV2.Mirrors.Interface
 {

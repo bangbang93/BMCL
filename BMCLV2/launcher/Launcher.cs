@@ -9,7 +9,6 @@ using BMCLV2.Auth;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
 using BMCLV2.I18N;
-using BMCLV2.Objects.Mirrors;
 using BMCLV2.util;
 
 namespace BMCLV2.Launcher
@@ -53,7 +52,7 @@ namespace BMCLV2.Launcher
             _authResult = authResult;
             _versionInfo = versionInfo;
             _config = config ?? Config.Load();
-            _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", _versionInfo.Id);
+            _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", _versionInfo.InheritsFrom ?? _versionInfo.Id);
             _libraryDirectory = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
             _nativesDirectory = Path.Combine(_versionDirectory, $"{_versionInfo.Id}-natives-{TimeHelper.TimeStamp()}");
 
@@ -151,7 +150,7 @@ namespace BMCLV2.Launcher
                 }
                 libraryPath.Append(filePath).Append(";");
             }
-            libraryPath.Append(Path.Combine(_versionDirectory, $"{_versionInfo.Id}.jar"));
+            libraryPath.Append(Path.Combine(_versionDirectory, $"{_versionInfo.Jar ?? _versionInfo.Id}.jar"));
             _arguments.Add("-cp");
             _arguments.Add(libraryPath.ToString());
             return true;

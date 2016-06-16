@@ -1,5 +1,4 @@
 ﻿using System.Runtime.Serialization;
-using BMCLV2.Objects.Mirrors;
 
 namespace BMCLV2.Game
 {
