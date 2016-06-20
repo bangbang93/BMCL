@@ -183,7 +183,7 @@ namespace BMCLV2.Launcher
                 {
                     if (extractRules != null && extractRules.Exclude.Any(entryName => entry.FullName.Contains(entryName))) continue;
                     var filePath = Path.Combine(_nativesDirectory, entry.FullName);
-                    entry.ExtractToFile(filePath);
+                    entry.ExtractToFile(filePath, true);
                 }
             }
         }
@@ -201,9 +201,9 @@ namespace BMCLV2.Launcher
                 {"${version_type}", "Legacy"},
                 {"${user_properties}", "{}"}
             };
-            if (_authResult.OtherInfo != null)
+            if (_authResult.OutInfo != null)
             {
-                foreach (var info in _authResult.OtherInfo)
+                foreach (var info in _authResult.OutInfo)
                 {
                     values.Add(info.Key, info.Value);
                 }

@@ -7,6 +7,7 @@ namespace BMCLV2.util
 {
     class MathHelper
     {
+        private static Random _rand = new Random();
         public static int parseIntWithDefault(String par0Str, int par1)
         {
             int j = par1;
@@ -21,6 +22,11 @@ namespace BMCLV2.util
             }
 
             return j;
+        }
+
+        public static int Rand(int max = 1000)
+        {
+            return _rand.Next(max);
         }
     }
 }
