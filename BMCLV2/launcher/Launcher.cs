@@ -208,9 +208,15 @@ namespace BMCLV2.Launcher
                     values.Add(info.Key, info.Value);
                 }
             }
-            var arguments = new StringBuilder(_versionInfo.MinecraftArguments);
-            arguments = values.Aggregate(arguments, (current, value) => current.Replace(value.Key, value.Value));
-            return arguments.ToString().Split(' ');
+            var arguments = _versionInfo.MinecraftArguments.Split(' ');
+            for (var i = 0; i < arguments.Length; i ++)
+            {
+                if (values.ContainsKey(arguments[i]))
+                {
+                    arguments[i] = values[arguments[i]];
+                }
+            }
+            return arguments;
         }
 
         private void HandleCrashReport(IReadOnlyDictionary<string, int> nowValue)
