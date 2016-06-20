@@ -13,9 +13,9 @@ namespace BMCLV2.Auth
         public bool IsSuccess;
         public string Message;
         public string ErrCode;
-        public Dictionary<string, string> OtherInfo;
+        public string OtherInfo;
         public string ClientIdentifier;
-        public string OutInfo;
+        public Dictionary<string, string> OutInfo;
 
         public AuthResult(string username, string uid = null, string clientIdentifier = null)
         {
