@@ -36,7 +36,9 @@ namespace BMCLV2.Windows.MainWindowTab
             var versionList = new SortedList<string, TreeViewItem>();
             foreach (var version in _forgeVersions)
             {
-                if (!versionList.ContainsKey(version.GetMc()))
+                var mc = version.GetMc();
+                if (mc == null) continue;
+                if (!versionList.ContainsKey(mc))
                 {
                     versionList[version.GetMc()] = new TreeViewItem()
                     {
