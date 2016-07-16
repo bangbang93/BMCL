@@ -119,7 +119,7 @@
     <s:String x:Key="NoJavaException">找不到java({0})</s:String>
     <s:String x:Key="NoEnoughMemException">沒有足夠實體記憶體</s:String>
     <s:String x:Key="UnSupportVersionExcepton">啟動器不支持這個版本</s:String>
-    <s:String x:Key="AnotherGameRunningException">已經有另一份Minecraft正在運行中</s:String>
+    <s:String x:Key="AnotherGameRunningException">已經有另一份Minecraft正在運行中,名稱{0}</s:String>
     <s:String x:Key="FailInLibException">無法獲得所需的依賴({0})</s:String>
     <s:String x:Key="LauncherCheckJava">檢查Java</s:String>
     <s:String x:Key="LauncherCheckMem">檢查記憶體</s:String>

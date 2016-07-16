@@ -159,22 +159,22 @@ namespace BMCLV2.Windows
                 launcher.OnGameExit += launcher_gameexit;
                 launcher.Start();
             }
-            catch (NoJavaException ex)
+            catch (NoJavaException exception)
             {
                 somethingBad = true;
-                MessageBox.Show(this, LangManager.Transalte("NoJavaException", ex.Javaw), Title, MessageBoxButton.OK,
+                MessageBox.Show(this, LangManager.Transalte("NoJavaException", exception.Javaw), Title, MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
-            catch (AnotherGameRunningException)
+            catch (AnotherGameRunningException exception)
             {
                 somethingBad = true;
-                MessageBox.Show(this, LangManager.Transalte("AnotherGameRunningException"), Title, MessageBoxButton.OK,
+                MessageBox.Show(this, LangManager.Transalte("AnotherGameRunningException", exception.Launcher.VersionInfo.Id), Title, MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
-            catch (DownloadLibException ex)
+            catch (DownloadLibException exception)
             {
                 somethingBad = true;
-                MessageBox.Show(this, LangManager.Transalte("FailInLibException", ex.Library.Name), Title, MessageBoxButton.OK,
+                MessageBox.Show(this, LangManager.Transalte("FailInLibException", exception.Library.Name), Title, MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
             finally
