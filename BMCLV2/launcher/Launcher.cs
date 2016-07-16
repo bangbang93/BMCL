@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using BMCLV2.Auth;
@@ -146,7 +147,14 @@ namespace BMCLV2.Launcher
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 if (!libraryInfo.IsVaild(_libraryDirectory))
                 {
-                    await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
+                    try
+                    {
+                        await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
+                    }
+                    catch (WebException exception)
+                    {
+                        throw new DownloadLibException(libraryInfo, exception);
+                    }
                 }
                 libraryPath.Append(filePath).Append(";");
             }
@@ -167,7 +175,14 @@ namespace BMCLV2.Launcher
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 if (!libraryInfo.IsVaild(_libraryDirectory))
                 {
-                    await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
+                    try
+                    {
+                        await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
+                    }
+                    catch (WebException exception)
+                    {
+                        throw new DownloadLibException(libraryInfo, exception);
+                    }
                 }
                 UnzipNative(filePath, libraryInfo.Extract);
             }

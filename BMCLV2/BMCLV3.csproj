@@ -108,6 +108,7 @@
     <Compile Include="Downloader\Version.cs" />
     <Compile Include="EventHandler.cs" />
     <Compile Include="Exceptions\AnotherGameRunningException.cs" />
+    <Compile Include="Exceptions\DownloadLibException.cs" />
     <Compile Include="Exceptions\NoSuchVersionException.cs" />
     <Compile Include="Exceptions\ProcessNotStartException.cs" />
     <Compile Include="Game\AssetManager.cs" />

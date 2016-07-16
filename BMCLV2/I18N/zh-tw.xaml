@@ -118,9 +118,9 @@
     <s:String x:Key="ImportSolveMod">處理mods</s:String>
     <s:String x:Key="NoJavaException">找不到java({0})</s:String>
     <s:String x:Key="NoEnoughMemException">沒有足夠實體記憶體</s:String>
-    <s:String x:Key="UnSupportVersionExcepton">啟動器不支援這個版本</s:String>
+    <s:String x:Key="UnSupportVersionExcepton">啟動器不支持這個版本</s:String>
     <s:String x:Key="AnotherGameRunningException">已經有另一份Minecraft正在運行中</s:String>
-    <s:String x:Key="FailInLibException">無法獲得所需的依賴</s:String>
+    <s:String x:Key="FailInLibException">無法獲得所需的依賴({0})</s:String>
     <s:String x:Key="LauncherCheckJava">檢查Java</s:String>
     <s:String x:Key="LauncherCheckMem">檢查記憶體</s:String>
     <s:String x:Key="LauncherAuth">正在登陸</s:String>
@@ -164,9 +164,6 @@
     <s:String x:Key="StartupDuplicate">請勿同時啟動兩個啟動器</s:String>
     <s:String x:Key="FoundAssetsModify">發現資源檔修改，正在同步</s:String>
     <s:String x:Key="SyncAssetsFinish">同步資源檔完畢，若未生效，請重啟用戶端</s:String>
-    <s:String x:Key="ResourceTipForFirstLauncher">可能是第一次啟動，未找到資源檔，是否下載？</s:String>
-    <s:String x:Key="ResourceTipTitleForFirstLauncher">未找到資源檔</s:String>
     <s:String x:Key="ScreenSetting">遊戲窗口設定</s:String>
     <s:String x:Key="FullScreen">全屏</s:String>
-    <s:String x:Key="ResourceDeprecatedWarning">該選項是為了相容1.6而存在的，若你使用的是1.7以上的用戶端，請不要使用該功能</s:String>
 </ResourceDictionary>
