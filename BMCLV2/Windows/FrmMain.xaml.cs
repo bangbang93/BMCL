@@ -140,23 +140,23 @@ namespace BMCLV2.Windows
             {
                 MessageBox.Show(this, LangManager.Transalte("AnotherGameRunningException"), Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            Logger.Info($"正在启动{selectedVersion},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
-            _frmPrs = new FrmPrs(LangManager.GetLangFromResource(selectedVersion));
-            _frmPrs.Show();
-            _frmPrs.ChangeStatus(LangManager.GetLangFromResource("LauncherAuth"));
-            var launcher = await BmclCore.GameManager.LaunchGame(selectedVersion, false);
-            if (launcher == null)
-            {
-                _frmPrs.Close();
-                _frmPrs = null;
-                return;
-            }
-            launcher.OnGameLaunch += Launcher_OnGameLaunch;
-            launcher.OnGameStart += Game_GameStartUp;
-            launcher.OnGameExit += launcher_gameexit;
             var somethingBad = false;
             try
             {
+                Logger.Info($"正在启动{selectedVersion},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
+                _frmPrs = new FrmPrs(LangManager.GetLangFromResource(selectedVersion));
+                _frmPrs.Show();
+                _frmPrs.ChangeStatus(LangManager.GetLangFromResource("LauncherAuth"));
+                var launcher = await BmclCore.GameManager.LaunchGame(selectedVersion, false);
+                if (launcher == null)
+                {
+                    _frmPrs.Close();
+                    _frmPrs = null;
+                    return;
+                }
+                launcher.OnGameLaunch += Launcher_OnGameLaunch;
+                launcher.OnGameStart += Game_GameStartUp;
+                launcher.OnGameExit += launcher_gameexit;
                 launcher.Start();
             }
             catch (NoJavaException ex)
@@ -181,7 +181,7 @@ namespace BMCLV2.Windows
             {
                 if (somethingBad)
                 {
-                    _frmPrs.Close();
+                    _frmPrs?.Close();
                     _frmPrs = null;
                 }
             }
