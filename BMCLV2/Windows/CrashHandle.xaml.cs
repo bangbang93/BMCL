@@ -73,7 +73,7 @@ namespace BMCLV2.Windows
 
         private void btnEmail_Click(object sender, RoutedEventArgs e)
         {
-            Process.Start("mailto:bangbang93@163.com?subject=" + HttpUtility.UrlEncode("BMCL崩溃报告") + "&body=" + HttpUtility.UrlEncode(TxtMessage.Text));
+            Process.Start("mailto:bangbang93@163.com?subject=" + HttpUtility.UrlEncode("BMCL崩溃报告"));
             Copy();
         }
 
