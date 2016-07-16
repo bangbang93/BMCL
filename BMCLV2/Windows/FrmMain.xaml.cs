@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using BMCLV2.Exceptions;
 using BMCLV2.Game;
 using BMCLV2.I18N;
 using BMCLV2.Plugin;
@@ -134,11 +135,16 @@ namespace BMCLV2.Windows
                 return;
             }
             GridConfig.SaveConfig();
-            Logger.Info($"正在启动{GridGame.listVer.SelectedItem},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
-            _frmPrs = new FrmPrs(LangManager.GetLangFromResource(GridGame.GetSelectedVersion()));
+            var selectedVersion = GridGame.GetSelectedVersion();
+            if (selectedVersion == null)
+            {
+                MessageBox.Show(this, LangManager.Transalte("AnotherGameRunningException"), Title, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            Logger.Info($"正在启动{selectedVersion},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
+            _frmPrs = new FrmPrs(LangManager.GetLangFromResource(selectedVersion));
             _frmPrs.Show();
             _frmPrs.ChangeStatus(LangManager.GetLangFromResource("LauncherAuth"));
-            var launcher = await BmclCore.GameManager.LaunchGame(GridGame.GetSelectedVersion(), false);
+            var launcher = await BmclCore.GameManager.LaunchGame(selectedVersion, false);
             if (launcher == null)
             {
                 _frmPrs.Close();
@@ -148,7 +154,38 @@ namespace BMCLV2.Windows
             launcher.OnGameLaunch += Launcher_OnGameLaunch;
             launcher.OnGameStart += Game_GameStartUp;
             launcher.OnGameExit += launcher_gameexit;
-            launcher.Start();
+            var somethingBad = false;
+            try
+            {
+                launcher.Start();
+            }
+            catch (NoJavaException ex)
+            {
+                somethingBad = true;
+                MessageBox.Show(this, LangManager.Transalte("NoJavaException", ex.Javaw), Title, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            catch (AnotherGameRunningException)
+            {
+                somethingBad = true;
+                MessageBox.Show(this, LangManager.Transalte("AnotherGameRunningException"), Title, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            catch (DownloadLibException ex)
+            {
+                somethingBad = true;
+                MessageBox.Show(this, LangManager.Transalte("FailInLibException", ex.Library.Name), Title, MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            finally
+            {
+                if (somethingBad)
+                {
+                    _frmPrs.Close();
+                    _frmPrs = null;
+                }
+            }
+            
         }
 
         private void Launcher_OnGameLaunch(object sender, string status, VersionInfo versionInfo)

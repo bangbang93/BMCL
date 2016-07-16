@@ -37,20 +37,21 @@ namespace BMCLV2.Auth
                     authInfo.ClientIdentifier =
                         li.GetField("Client_identifier").GetValue(loginansobj) as string;
                     authInfo.Uuid = li.GetField("UID").GetValue(loginansobj) as string;
-                    authInfo.OtherInfo = DecodeOtherInfo(li.GetField("OtherInfo").GetValue(loginansobj) as string);
+                    authInfo.OtherInfo = li.GetField("OtherInfo").GetValue(loginansobj) as string;
                     if (li.GetField("OutInfo") != null)
                     {
-                        authInfo.OutInfo = li.GetField("OutInfo").GetValue(loginansobj) as string;
+                        authInfo.OutInfo = DecodeOutInfo(li.GetField("OutInfo").GetValue(loginansobj) as string);
                     }
-                    authInfo.Uuid = authInfo.Uuid ?? authInfo.OtherInfo["${auth_uuid}"];
-                    authInfo.AccessToken = authInfo.AccessToken ?? authInfo.OtherInfo["${auth_access_token}"];
+                    authInfo.Uuid = authInfo.Uuid ?? authInfo.OutInfo?["${auth_uuid}"];
+                    authInfo.AccessToken = authInfo.AccessToken ?? authInfo.OutInfo?["${auth_access_token}"];
                     Logger.Log(
                         $"登陆成功，使用用户名{authInfo.Username},sid{authInfo.SID},Client_identifier{authInfo.ClientIdentifier},uid{authInfo.Uuid}");
                     return authInfo;
                 }
-                var otherInfoString = li.GetField("OtherInfo").GetValue(loginansobj) as string;
-                authInfo.OtherInfo = DecodeOtherInfo(otherInfoString);
-                Logger.Log($"登陆失败，错误信息:{authInfo.Message}，其他信息:{otherInfoString}");
+                authInfo.OtherInfo = li.GetField("OtherInfo").GetValue(loginansobj) as string;
+                var outinfoString = li.GetField("OutInfo").GetValue(loginansobj) as string;
+                authInfo.OutInfo = DecodeOutInfo(outinfoString);
+                Logger.Log($"登陆失败，错误信息:{authInfo.Message}，其他信息:{outinfoString}");
                 return authInfo;
             }
             catch (Exception ex)
@@ -67,18 +68,31 @@ namespace BMCLV2.Auth
             }
         }
 
-        private static Dictionary<string, string> DecodeOtherInfo(string otherInfoString)
+        private static Dictionary<string, string> DecodeOutInfo(string outInfoString)
         {
-            var deserialzer = new DataContractSerializer(typeof(SortedList));
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes(otherInfoString));
-            var list = deserialzer.ReadObject(stream) as SortedList;
-            if (list == null) return new Dictionary<string, string>();
-            var dic = new Dictionary<string, string>(list.Count);
-            foreach (DictionaryEntry entry in list)
+            try
             {
-                dic.Add((string)entry.Key, (string)entry.Value);
+                var deserialzer = new DataContractSerializer(typeof (SortedList));
+                var stream = new MemoryStream(Encoding.UTF8.GetBytes(outInfoString));
+                var list = deserialzer.ReadObject(stream) as SortedList;
+                if (list == null) return new Dictionary<string, string>();
+                var dic = new Dictionary<string, string>(list.Count);
+                foreach (DictionaryEntry entry in list)
+                {
+                    dic.Add((string) entry.Key, (string) entry.Value);
+                }
+                return dic;
             }
-            return dic;
+            catch (SerializationException)
+            {
+                var outinfo = outInfoString.Split(':');
+                var dic = new Dictionary<string, string>(outinfo.Length/2);
+                for (var i = 0; i < outinfo.Length; i += 2)
+                {
+                    dic.Add(outinfo[i], outinfo[i+1]);
+                }
+                return dic;
+            }
         }
     }
 }

@@ -32,7 +32,7 @@ namespace BMCLV2.JsonClass
 
         public string GetMc()
         {
-            return build.mcversion;
+            return build?.mcversion;
         }
 
         public string GetDownloadUrl()

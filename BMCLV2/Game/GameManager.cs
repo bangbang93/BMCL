@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using BMCLV2.Auth;
@@ -35,14 +37,29 @@ namespace BMCLV2.Game
             var jsonParser = new JSON<VersionInfo>();
             foreach (var jsonFile in jsonFiles)
             {
-                using (var jsonStream = new FileStream(jsonFile, FileMode.Open))
+                try
                 {
-                    var info = jsonParser.Parse(jsonStream);
-                    if (info != null)
+                    using (var jsonStream = new FileStream(jsonFile, FileMode.Open))
                     {
-                        _versions.Add(info.Id, info);
+                        var info = jsonParser.Parse(jsonStream);
+                        if (info != null)
+                        {
+                            var id = info.Id ?? PathHelper.GetDirectoryName(jsonFile);
+                            if (id != null)
+                            {
+                                if (_versions.ContainsKey(id))
+                                    _versions.Add(id + MathHelper.Rand(), info);
+                                else
+                                    _versions.Add(id, info);
+                            }
+                        }
+                        jsonStream.Close();
                     }
-                    jsonStream.Close();
+                }
+                catch (SerializationException ex)
+                {
+                    Logger.Log($"无法加载{jsonFile}");
+                    Logger.Log(ex);
                 }
             }
             // I miss js

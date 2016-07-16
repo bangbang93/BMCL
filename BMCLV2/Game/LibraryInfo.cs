@@ -7,7 +7,7 @@ using System.Text;
 using BMCLV2.Launcher;
 using BMCLV2.Util;
 
-namespace BMCLV2.Objects.Mirrors
+namespace BMCLV2.Game
 {
     [DataContract]
     public class LibraryInfo
@@ -34,6 +34,8 @@ namespace BMCLV2.Objects.Mirrors
                 [DataMember(Name = "natives-linux")] public ArtifactInfo Linux;
                 [DataMember(Name = "natives-osx")] public ArtifactInfo OSX;
                 [DataMember(Name = "natives-windows")] public ArtifactInfo Windows;
+                [DataMember(Name = "natives-windows-32")] public ArtifactInfo Windowsx32;
+                [DataMember(Name = "natives-windows-64")] public ArtifactInfo Windowsx64;
             }
 
             [DataMember(Name = "artifact")] public ArtifactInfo Artifact;
@@ -92,15 +94,15 @@ namespace BMCLV2.Objects.Mirrors
             get
             {
                 if (Downloads == null) return IsNative ? BuildNativePath() : BuildLibPath();
-                return Downloads.Artifact != null ? Downloads.Artifact.Path : Downloads.Classifiers.Windows.Path;
+                return GetArtifact().Path;
             }
         }
 
-        public string Url => Downloads == null ? null : Downloads.Artifact != null ? Downloads.Artifact.Url : Downloads.Classifiers.Windows.Url;
+        public string Url => Downloads == null ? null : GetArtifact().Url;
 
-        public string Sha1 => Downloads == null ? null : Downloads.Artifact != null ? Downloads.Artifact.Sha1 : Downloads.Classifiers.Windows.Sha1;
+        public string Sha1 => Downloads == null ? null : GetArtifact().Sha1;
 
-        public int Size => Downloads == null ? -1 :  Downloads.Artifact?.Size ?? Downloads.Classifiers.Windows.Size;
+        public int Size => Downloads == null ? -1 : GetArtifact().Size;
 
         public bool IsNative => Natives != null;
 
@@ -159,6 +161,18 @@ namespace BMCLV2.Objects.Mirrors
             libp.Append(".jar");
             libp.Replace("${arch}", Environment.Is64BitOperatingSystem ? "64" : "32");
             return libp.ToString();
+        }
+
+        private Download.ArtifactInfo GetArtifact()
+        {
+            if (Downloads.Artifact != null) return Downloads.Artifact;
+            if (IsNative && Downloads.Classifiers.Windows == null)
+            {
+                return Environment.Is64BitOperatingSystem
+                    ? Downloads.Classifiers.Windowsx64
+                    : Downloads.Classifiers.Windowsx32;
+            }
+            return Downloads.Classifiers.Windows;
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using BMCLV2.Objects.Mirrors;
+using BMCLV2.Game;
 
 namespace BMCLV2.Mirrors.Vanilla
 {

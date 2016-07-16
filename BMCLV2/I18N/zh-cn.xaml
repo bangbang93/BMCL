@@ -116,10 +116,11 @@
     <s:String x:Key="ImportWriteJson">写入Json</s:String>
     <s:String x:Key="ImportSolveLib">处理lib"</s:String>
     <s:String x:Key="ImportSolveMod">处理mods</s:String>
-    <s:String x:Key="NoJavaException">找不到java</s:String>
+    <s:String x:Key="NoJavaException">找不到java({0})</s:String>
     <s:String x:Key="NoEnoughMemException">没有足够物理内存</s:String>
     <s:String x:Key="UnSupportVersionExcepton">启动器不支持这个版本</s:String>
-    <s:String x:Key="FailInLibException">无法获得所需的依赖</s:String>
+    <s:String x:Key="AnotherGameRunningException">已经有另一份Minecraft正在运行中</s:String>
+    <s:String x:Key="FailInLibException">无法获得所需的依赖({0})</s:String>
     <s:String x:Key="LauncherCheckJava">检查Java</s:String>
     <s:String x:Key="LauncherCheckMem">检查内存</s:String>
     <s:String x:Key="LauncherAuth">正在登陆</s:String>
@@ -163,9 +164,6 @@
     <s:String x:Key="StartupDuplicate">请勿同时启动两个启动器</s:String>
     <s:String x:Key="FoundAssetsModify">发现资源文件修改，正在同步</s:String>
     <s:String x:Key="SyncAssetsFinish">同步资源文件完毕，若未生效，请重启客户端</s:String>
-    <s:String x:Key="ResourceTipForFirstLauncher">可能是第一次启动，未找到资源文件，是否下载？</s:String>
-    <s:String x:Key="ResourceTipTitleForFirstLauncher">未找到资源文件</s:String>
     <s:String x:Key="ScreenSetting">游戏窗口设定</s:String>
     <s:String x:Key="FullScreen">全屏</s:String>
-    <s:String x:Key="ResourceDeprecatedWarning">该选项是为了兼容1.6而存在的，若你使用的是1.7以上的客户端，请不要使用该功能</s:String>
 </ResourceDictionary>

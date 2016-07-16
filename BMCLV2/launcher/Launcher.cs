@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using BMCLV2.Auth;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
 using BMCLV2.I18N;
-using BMCLV2.Objects.Mirrors;
 using BMCLV2.util;
 
 namespace BMCLV2.Launcher
@@ -53,7 +53,7 @@ namespace BMCLV2.Launcher
             _authResult = authResult;
             _versionInfo = versionInfo;
             _config = config ?? Config.Load();
-            _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", _versionInfo.Id);
+            _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", _versionInfo.InheritsFrom ?? _versionInfo.Id);
             _libraryDirectory = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
             _nativesDirectory = Path.Combine(_versionDirectory, $"{_versionInfo.Id}-natives-{TimeHelper.TimeStamp()}");
 
@@ -147,11 +147,18 @@ namespace BMCLV2.Launcher
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 if (!libraryInfo.IsVaild(_libraryDirectory))
                 {
-                    await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
+                    try
+                    {
+                        await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
+                    }
+                    catch (WebException exception)
+                    {
+                        throw new DownloadLibException(libraryInfo, exception);
+                    }
                 }
                 libraryPath.Append(filePath).Append(";");
             }
-            libraryPath.Append(Path.Combine(_versionDirectory, $"{_versionInfo.Id}.jar"));
+            libraryPath.Append(Path.Combine(_versionDirectory, $"{_versionInfo.Jar ?? _versionInfo.Id}.jar"));
             _arguments.Add("-cp");
             _arguments.Add(libraryPath.ToString());
             return true;
@@ -168,7 +175,14 @@ namespace BMCLV2.Launcher
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 if (!libraryInfo.IsVaild(_libraryDirectory))
                 {
-                    await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
+                    try
+                    {
+                        await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
+                    }
+                    catch (WebException exception)
+                    {
+                        throw new DownloadLibException(libraryInfo, exception);
+                    }
                 }
                 UnzipNative(filePath, libraryInfo.Extract);
             }
@@ -184,7 +198,7 @@ namespace BMCLV2.Launcher
                 {
                     if (extractRules != null && extractRules.Exclude.Any(entryName => entry.FullName.Contains(entryName))) continue;
                     var filePath = Path.Combine(_nativesDirectory, entry.FullName);
-                    entry.ExtractToFile(filePath);
+                    entry.ExtractToFile(filePath, true);
                 }
             }
         }
@@ -202,16 +216,22 @@ namespace BMCLV2.Launcher
                 {"${version_type}", "Legacy"},
                 {"${user_properties}", "{}"}
             };
-            if (_authResult.OtherInfo != null)
+            if (_authResult.OutInfo != null)
             {
-                foreach (var info in _authResult.OtherInfo)
+                foreach (var info in _authResult.OutInfo)
                 {
                     values.Add(info.Key, info.Value);
                 }
             }
-            var arguments = new StringBuilder(_versionInfo.MinecraftArguments);
-            arguments = values.Aggregate(arguments, (current, value) => current.Replace(value.Key, value.Value));
-            return arguments.ToString().Split(' ');
+            var arguments = _versionInfo.MinecraftArguments.Split(' ');
+            for (var i = 0; i < arguments.Length; i ++)
+            {
+                if (values.ContainsKey(arguments[i]))
+                {
+                    arguments[i] = values[arguments[i]];
+                }
+            }
+            return arguments;
         }
 
         private void HandleCrashReport(IReadOnlyDictionary<string, int> nowValue)

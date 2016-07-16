@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BMCLV2.JsonClass;
 using System.Text.RegularExpressions;
 using System.Windows;
+using BMCLV2.util;
 
 namespace BMCLV2.Forge
 {
@@ -41,7 +42,7 @@ namespace BMCLV2.Forge
             var w = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft\\launcher_profiles.json");
             w.Write(Resource.NormalProfile.Profile);
             w.Close();
-            await downer.DownloadFileTaskAsync(url, "forge.jar");
+            await downer.DownloadFileTaskAsync(url, Path.Combine(BmclCore.BaseDirectory, "forge.jar"));
 
             var stat = false;
             try {
@@ -86,6 +87,7 @@ namespace BMCLV2.Forge
                 return false;
             string forge = tempFiles[0].Name;
 
+            archive.Dispose();
             //再从universal中提出version.json
             archive = new ZipArchive(new FileStream(tempDir + "\\" + forge, FileMode.Open));
             archive.GetEntry("version.json").ExtractToFile(Path.Combine(tempDir, "version.json"));
@@ -104,6 +106,9 @@ namespace BMCLV2.Forge
             string forgeFolder = BmclCore.BaseDirectory + ".minecraft\\libraries\\net\\minecraftforge\\forge\\" + forge0;
             Directory.CreateDirectory(forgeFolder);
             File.Copy(tempDir + "\\"+forge, forgeFolder + "\\forge-" + forge0 + ".jar");
+
+            archive.Dispose();
+            Directory.Delete(tempDir, true);
 
             return true;
         }
