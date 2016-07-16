@@ -28,12 +28,12 @@ namespace BMCLV2.Windows
 
         private void ClientOnDownloadFileCompleted(object sender, AsyncCompletedEventArgs asyncCompletedEventArgs)
         {
+            Close();
             _client.Dispose();
-            App.AboutToExit();
             Thread.Sleep(1000);
             Process.Start("BMCL." + _build + ".exe", "-Update");
-            Logger.Log(string.Format("BMCL V2 Ver.{0} 由于更新正在退出", BmclCore.BmclVersion));
-            this.Close();
+            Logger.Log($"BMCL V2 Ver.{BmclCore.BmclVersion} 由于更新正在退出");
+            App.AboutToExit();
             Environment.Exit(0);
         }
 
