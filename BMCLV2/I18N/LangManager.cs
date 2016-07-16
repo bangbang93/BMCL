@@ -5,12 +5,12 @@ using System.Windows;
 
 namespace BMCLV2.I18N
 {
-    static class LangManager
+    internal static class LangManager
     {
         private static readonly Dictionary<string, LangType> Languages = new Dictionary<string, LangType>();
-        static private readonly ResourceDictionary DefaultLanguage = LoadLangFromResource("pack://application:,,,/I18N/zh-cn.xaml");
+        private static readonly ResourceDictionary DefaultLanguage = LoadLangFromResource("pack://application:,,,/I18N/zh-cn.xaml");
         private static readonly string LocaleDirectory = AppDomain.CurrentDomain.BaseDirectory + "\\Lang";
-        static public void Add(string languageName,string languageUrl)
+        public static void Add(string languageName,string languageUrl)
         {
             if (Languages.ContainsKey(languageName))
             {
@@ -20,8 +20,9 @@ namespace BMCLV2.I18N
             Languages.Add(languageName, new LangType(languageName, languageUrl));
 
         }
-        static public string GetLangFromResource(string key)
+        public static string GetLangFromResource(string key)
         {
+            key = key ?? "null";
             if (Application.Current.Resources.Contains(key))
                 return Application.Current.Resources[key] as string;
             if (DefaultLanguage.Contains(key))
@@ -29,12 +30,12 @@ namespace BMCLV2.I18N
             return key;
         }
 
-        static public ResourceDictionary LoadLangFromResource(string path)
+        public static ResourceDictionary LoadLangFromResource(string path)
         {
             var lang = new ResourceDictionary {Source = new Uri(path)};
             return lang;
         }
-        static public void UseLanguage(string languageName)
+        public static void UseLanguage(string languageName)
         {
             if (!Languages.ContainsKey(languageName))
             {
@@ -60,20 +61,20 @@ namespace BMCLV2.I18N
 
         public static void LoadLanguage()
         {
-            ResourceDictionary lang = LangManager.LoadLangFromResource("pack://application:,,,/I18N/zh-cn.xaml");
+            var lang = LoadLangFromResource("pack://application:,,,/I18N/zh-cn.xaml");
             BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
-            LangManager.Add(lang["LangName"] as string, "pack://application:,,,/I18N/zh-cn.xaml");
+            Add(lang["LangName"] as string, "pack://application:,,,/I18N/zh-cn.xaml");
 
-            lang = LangManager.LoadLangFromResource("pack://application:,,,/I18N/zh-tw.xaml");
+            lang = LoadLangFromResource("pack://application:,,,/I18N/zh-tw.xaml");
             BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
-            LangManager.Add(lang["LangName"] as string, "pack://application:,,,/I18N/zh-tw.xaml");
+            Add(lang["LangName"] as string, "pack://application:,,,/I18N/zh-tw.xaml");
             if (Directory.Exists(LocaleDirectory))
             {
                 foreach (var langFile in Directory.GetFiles(LocaleDirectory, "*.xaml", SearchOption.TopDirectoryOnly))
                 {
-                    lang = LangManager.LoadLangFromResource(langFile);
+                    lang = LoadLangFromResource(langFile);
                     BmclCore.Language.Add((string)lang["DisplayName"], lang["LangName"]);
-                    LangManager.Add(lang["LangName"] as string, langFile);
+                    Add(lang["LangName"] as string, langFile);
                 }
             }
             else
@@ -84,7 +85,7 @@ namespace BMCLV2.I18N
 
         public static void ChangeLanguage(string lang)
         {
-            LangManager.UseLanguage(lang);
+            UseLanguage(lang);
         }
     }
 }
