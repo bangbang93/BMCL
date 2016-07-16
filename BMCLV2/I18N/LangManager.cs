@@ -30,6 +30,12 @@ namespace BMCLV2.I18N
             return key;
         }
 
+        public static string Transalte(string key, params object[] param)
+        {
+            var str = GetLangFromResource(key);
+            return string.Format(str, param);
+        }
+
         public static ResourceDictionary LoadLangFromResource(string path)
         {
             var lang = new ResourceDictionary {Source = new Uri(path)};

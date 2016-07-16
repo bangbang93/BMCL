@@ -116,9 +116,10 @@
     <s:String x:Key="ImportWriteJson">写入Json</s:String>
     <s:String x:Key="ImportSolveLib">处理lib"</s:String>
     <s:String x:Key="ImportSolveMod">处理mods</s:String>
-    <s:String x:Key="NoJavaException">找不到java</s:String>
+    <s:String x:Key="NoJavaException">找不到java({0})</s:String>
     <s:String x:Key="NoEnoughMemException">没有足够物理内存</s:String>
     <s:String x:Key="UnSupportVersionExcepton">启动器不支持这个版本</s:String>
+    <s:String x:Key="AnotherGameRunningException">已经有另一份Minecraft正在运行中</s:String>
     <s:String x:Key="FailInLibException">无法获得所需的依赖</s:String>
     <s:String x:Key="LauncherCheckJava">检查Java</s:String>
     <s:String x:Key="LauncherCheckMem">检查内存</s:String>

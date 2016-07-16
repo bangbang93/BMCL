@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using BMCLV2.Exceptions;
 using BMCLV2.Game;
 using BMCLV2.I18N;
 using BMCLV2.Plugin;
@@ -148,7 +149,19 @@ namespace BMCLV2.Windows
             launcher.OnGameLaunch += Launcher_OnGameLaunch;
             launcher.OnGameStart += Game_GameStartUp;
             launcher.OnGameExit += launcher_gameexit;
-            launcher.Start();
+            try
+            {
+                launcher.Start();
+            }
+            catch (NoJavaException ex)
+            {
+                MessageBox.Show(this, LangManager.Transalte("NoJavaException", ex.Javaw));
+            }
+            catch (AnotherGameRunningException)
+            {
+                MessageBox.Show(this, LangManager.Transalte("AnotherGameRunningException"));
+            }
+            
         }
 
         private void Launcher_OnGameLaunch(object sender, string status, VersionInfo versionInfo)
