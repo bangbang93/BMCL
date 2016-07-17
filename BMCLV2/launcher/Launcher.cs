@@ -30,6 +30,9 @@ namespace BMCLV2.Launcher
         private OnGameStart _onGameStart;
         private OnGameLaunch _onGameLaunch;
 
+
+        public LauncherState State { get; private set; }
+
         public event OnGameExit OnGameExit
         {
             add { _onGameExit += value; }
@@ -52,6 +55,7 @@ namespace BMCLV2.Launcher
         {
             _authResult = authResult;
             VersionInfo = versionInfo;
+            State = LauncherState.Initializing;
             _config = config ?? Config.Load();
             _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.InheritsFrom ?? VersionInfo.Id);
             _libraryDirectory = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
@@ -67,7 +71,7 @@ namespace BMCLV2.Launcher
             }
         }
 
-        public async void Start()
+        public async Task Start()
         {
             _onGameLaunch(this, "LauncherCheckJava", VersionInfo);
             if (!SetupJava()) return;

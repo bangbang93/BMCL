@@ -120,6 +120,7 @@
     <Compile Include="Launcher\Launcher.cs" />
     <Compile Include="Exceptions\NoJavaException.cs" />
     <Compile Include="Exceptions\UnSupportVersionException.cs" />
+    <Compile Include="Launcher\LauncherState.cs" />
     <Compile Include="Mirrors\BMCLAPI\Asset.cs" />
     <Compile Include="Mirrors\BMCLAPI\BMCLAPI.cs" />
     <Compile Include="Mirrors\BMCLAPI\Library.cs" />

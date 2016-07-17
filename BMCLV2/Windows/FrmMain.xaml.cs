@@ -135,14 +135,10 @@ namespace BMCLV2.Windows
                 return;
             }
             GridConfig.SaveConfig();
-            var selectedVersion = GridGame.GetSelectedVersion();
-            if (selectedVersion == null)
-            {
-                MessageBox.Show(this, LangManager.Transalte("AnotherGameRunningException"), Title, MessageBoxButton.OK, MessageBoxImage.Error);
-            }
             var somethingBad = false;
             try
             {
+                var selectedVersion = GridGame.GetSelectedVersion();
                 Logger.Info($"正在启动{selectedVersion},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
                 _frmPrs = new FrmPrs(LangManager.GetLangFromResource(selectedVersion));
                 _frmPrs.Show();
@@ -157,25 +153,31 @@ namespace BMCLV2.Windows
                 launcher.OnGameLaunch += Launcher_OnGameLaunch;
                 launcher.OnGameStart += Game_GameStartUp;
                 launcher.OnGameExit += launcher_gameexit;
-                launcher.Start();
+                await launcher.Start();
+            }
+            catch (NoSelectGameException exception)
+            {
+                Logger.Fatal(exception);
+                somethingBad = true;
+                MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (NoJavaException exception)
             {
+                Logger.Fatal(exception);
                 somethingBad = true;
-                MessageBox.Show(this, LangManager.Transalte("NoJavaException", exception.Javaw), Title, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (AnotherGameRunningException exception)
             {
+                Logger.Fatal(exception);
                 somethingBad = true;
-                MessageBox.Show(this, LangManager.Transalte("AnotherGameRunningException", exception.Launcher.VersionInfo.Id), Title, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (DownloadLibException exception)
             {
+                Logger.Fatal(exception);
                 somethingBad = true;
-                MessageBox.Show(this, LangManager.Transalte("FailInLibException", exception.Library.Name), Title, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
