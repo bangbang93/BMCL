@@ -109,6 +109,7 @@
     <Compile Include="EventHandler.cs" />
     <Compile Include="Exceptions\AnotherGameRunningException.cs" />
     <Compile Include="Exceptions\DownloadLibException.cs" />
+    <Compile Include="Exceptions\NoSelectGameException.cs" />
     <Compile Include="Exceptions\NoSuchVersionException.cs" />
     <Compile Include="Exceptions\ProcessNotStartException.cs" />
     <Compile Include="Game\AssetManager.cs" />
@@ -219,7 +220,6 @@
     <Compile Include="Util\FileHelper.cs" />
     <Compile Include="Util\MathHelper.cs" />
     <Compile Include="Util\Crypto.cs" />
-    <Compile Include="Versions\RawVersionListType.cs" />
     <Compile Include="Versions\RemoteVerType.cs" />
     <Compile Include="Windows\NotiIcon.cs" />
     <Page Include="Themes\Generic.xaml">
