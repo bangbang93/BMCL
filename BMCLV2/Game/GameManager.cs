@@ -17,7 +17,7 @@ namespace BMCLV2.Game
         public static readonly string VersionDirectory = Path.Combine(BmclCore.BaseDirectory, @".minecraft\versions");
         private readonly Dictionary<string, VersionInfo> _versions = new Dictionary<string, VersionInfo>();
         private Launcher.Launcher _launcher;
-        private readonly string[] _inheritFields = {"Type", "MinecraftArguments", "MainClass", "Assets", "Jar"};
+        private readonly string[] _inheritFields = {"Type", "MinecraftArguments", "MainClass", "Assets", "Jar", "AssetIndex"};
         private AssetManager _assetManager;
 
         public bool IsGameRunning => _launcher == null;
