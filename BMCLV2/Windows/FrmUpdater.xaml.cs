@@ -33,7 +33,6 @@ namespace BMCLV2.Windows
             Process.Start("BMCL." + _build + ".exe", "-Update");
             Thread.Sleep(1000);
             Logger.Log($"BMCLNG Ver.{BmclCore.BmclVersion} 由于更新正在退出");
-            App.AboutToExit();
             Environment.Exit(0);
         }
 

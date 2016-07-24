@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using BMCLV2.JsonClass;
 using BMCLV2.Util;
@@ -31,7 +32,15 @@ namespace BMCLV2.Game
                 var hash = Crypto.GetSha1HashFromFile(path);
                 if (hash == obj.Hash) continue;
                 Logger.Log($"{index}/{_assetsIndex.Objects.Count} Sync {obj.Path}");
-                await BmclCore.MirrorManager.CurrectMirror.Asset.GetAssetsObject(obj, _objectsDirectory);
+                try
+                {
+                    await BmclCore.MirrorManager.CurrectMirror.Asset.GetAssetsObject(obj, _objectsDirectory);
+                }
+                catch (WebException exception)
+                {
+                    Logger.Log($"{index}/{_assetsIndex.Objects.Count} SyncFailed {obj.Path}");
+                    Logger.Fatal(exception);
+                }
             }
             Logger.Log("Sync assets finish");
         }

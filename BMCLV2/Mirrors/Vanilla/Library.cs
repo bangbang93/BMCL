@@ -11,7 +11,7 @@ namespace BMCLV2.Mirrors.Vanilla
         {
             var path = library.Path;
             var url = library.Url ?? Server + library.Path;
-            await Downloader.DownloadFileTaskAsync(path, url);
+            await Downloader.DownloadFileTaskAsync(url, path);
         }
     }
 }

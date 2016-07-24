@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Runtime.Serialization;
@@ -58,12 +59,12 @@ namespace BMCLV2.Yggdrasil
                 authResult.IsSuccess = true;
                 authResult.Username = response.SelectedProfile.Name;
                 authResult.ClientIdentifier = ClientToken;
-                var otherInfoList = new SortedList
+                var otherInfoList = new Dictionary<string, string>()
                 {
                     {"${auth_uuid}", response.SelectedProfile.Id},
                     {"${auth_access_token}", response.AccessToken}
                 };
-                authResult.OtherInfo = new JSON<SortedList>().Stringify(otherInfoList);
+                authResult.OutInfo = otherInfoList;
                 return authResult;
             }
             catch (TimeoutException exception)
