@@ -202,6 +202,7 @@ namespace BMCLV2.Windows
             _frmPrs.Close();
             _frmPrs = null;
             _isLaunchering = false;
+            Hide();
         }
 
         private void launcher_gameexit(object sender, VersionInfo versionInfo, int exitCode)
@@ -219,7 +220,7 @@ namespace BMCLV2.Windows
 
         private void btnMiniSize_Click(object sender, RoutedEventArgs e)
         {
-            this.Hide();
+            Hide();
             BmclCore.NIcon.NIcon.ShowBalloonTip(2000, "BMCL", LangManager.GetLangFromResource("BMCLHiddenInfo"), System.Windows.Forms.ToolTipIcon.Info);
         }
         private void MenuSelectFile_Click(object sender, RoutedEventArgs e)
