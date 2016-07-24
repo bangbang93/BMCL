@@ -139,41 +139,33 @@ namespace BMCLV2
         {
             try
             {
-                RegistryKey reg = Registry.LocalMachine;
+                var reg = Registry.LocalMachine;
                 var openSubKey = reg.OpenSubKey("SOFTWARE");
-                if (openSubKey != null)
+                var registryKey = openSubKey?.OpenSubKey("JavaSoft");
+                if (registryKey != null)
+                    reg = registryKey.OpenSubKey("Java Runtime Environment");
+                if (reg == null) return null;
+                var javaList = new List<string>();
+                foreach (var ver in reg.GetSubKeyNames())
                 {
-                    var registryKey = openSubKey.OpenSubKey("JavaSoft");
-                    if (registryKey != null)
-                        reg = registryKey.OpenSubKey("Java Runtime Environment");
-                }
-                if (reg != null){
-                    List<string> javaList = new List<string>();
-                    foreach (string ver in reg.GetSubKeyNames())
+                    try
                     {
-                        try
-                        {
-                            RegistryKey command = reg.OpenSubKey(ver);
-                            if (command != null)
-                            {
-                                string str = command.GetValue("JavaHome").ToString();
-                                if (str != "")
-                                    javaList.Add(str + @"\bin\javaw.exe");
-                            }
-                        }
-                        catch { return null; }
+                        var command = reg.OpenSubKey(ver);
+                        if (command == null) continue;
+                        var str = command.GetValue("JavaHome").ToString();
+                        if (str != "")
+                            javaList.Add(str + @"\bin\javaw.exe");
                     }
-                    //先找出Java7 因为Java8不能正常启动1.7.2
-                    foreach (string java in javaList)
-                    {
-                        if(java.ToLower().Contains("jre7")||java.ToLower().Contains("jdk1.7")||java.ToLower().Contains("jre1.7")){//可能这样判断版本的方法不太好
-                            return java;
-                        }
-                    }
-                    //没有Java7的时候返回第一个Java
-                    return javaList[0];
+                    catch { return null; }
                 }
-                return null;
+                //优先java8
+                foreach (var java in javaList)
+                {
+                    if(java.ToLower().Contains("jre8")||java.ToLower().Contains("jdk1.8")||java.ToLower().Contains("jre1.8")){
+                        return java;
+                    }
+                }
+                return javaList[0];
             }
             catch { return null; }
 
