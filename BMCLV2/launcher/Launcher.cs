@@ -19,16 +19,19 @@ namespace BMCLV2.Launcher
         private ChildProcess _childProcess;
         private readonly Config _config;
         private readonly List<string> _arguments = new List<string>();
-        private readonly VersionInfo _versionInfo;
+        public VersionInfo VersionInfo { get; }
         private readonly string _versionDirectory;
         private readonly string _libraryDirectory;
         private readonly string _nativesDirectory;
         private Dictionary<string, int> _errorCount = new Dictionary<string, int>();
-        private AuthResult _authResult;
+        private readonly AuthResult _authResult;
 
         private OnGameExit _onGameExit;
         private OnGameStart _onGameStart;
         private OnGameLaunch _onGameLaunch;
+
+
+        public LauncherState State { get; private set; }
 
         public event OnGameExit OnGameExit
         {
@@ -51,11 +54,12 @@ namespace BMCLV2.Launcher
         public Launcher(VersionInfo versionInfo, AuthResult authResult, Config config = null, bool disableXincgc = false)
         {
             _authResult = authResult;
-            _versionInfo = versionInfo;
+            VersionInfo = versionInfo;
+            State = LauncherState.Initializing;
             _config = config ?? Config.Load();
-            _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", _versionInfo.InheritsFrom ?? _versionInfo.Id);
+            _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.InheritsFrom ?? VersionInfo.Id);
             _libraryDirectory = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
-            _nativesDirectory = Path.Combine(_versionDirectory, $"{_versionInfo.Id}-natives-{TimeHelper.TimeStamp()}");
+            _nativesDirectory = Path.Combine(_versionDirectory, $"{VersionInfo.Id}-natives-{TimeHelper.TimeStamp()}");
 
             if (!disableXincgc)
             {
@@ -67,22 +71,22 @@ namespace BMCLV2.Launcher
             }
         }
 
-        public async void Start()
+        public async Task Start()
         {
-            _onGameLaunch(this, "LauncherCheckJava", _versionInfo);
+            _onGameLaunch(this, "LauncherCheckJava", VersionInfo);
             if (!SetupJava()) return;
             if (!CleanNatives()) return;
             _arguments.Add($"-Djava.library.path={_nativesDirectory}");
-            _onGameLaunch(this, "LauncherSolveLib", _versionInfo);
+            _onGameLaunch(this, "LauncherSolveLib", VersionInfo);
             if (!await SetupLibraries()) return;
             if (!await SetupNatives()) return;
-            _onGameLaunch(this, "LauncherBuildMCArg", _versionInfo);
-            _arguments.Add(_versionInfo.MainClass);
+            _onGameLaunch(this, "LauncherBuildMCArg", VersionInfo);
+            _arguments.Add(VersionInfo.MainClass);
             _arguments.AddRange(McArguments());
             Logger.Log(ChildProcess.JoinArguments(_arguments.ToArray()));
-            _onGameLaunch(this, "LauncherGo", _versionInfo);
+            _onGameLaunch(this, "LauncherGo", VersionInfo);
             if (!Launch()) return;
-            _onGameStart(this, _versionInfo);
+            _onGameStart(this, VersionInfo);
         }
 
         private bool Launch()
@@ -112,9 +116,9 @@ namespace BMCLV2.Launcher
         private void ChildProcessOnExit(object sender, int exitCode)
         {
             Logger.Log(
-                $"{_versionInfo.Id} has exited with exit code {exitCode}, Running for {new TimeSpan(0, 0, 0, _childProcess.UpTime)}");
+                $"{VersionInfo.Id} has exited with exit code {exitCode}, Running for {new TimeSpan(0, 0, 0, _childProcess.UpTime)}");
             CleanNatives();
-            _onGameExit(sender, _versionInfo, exitCode);
+            _onGameExit(sender, VersionInfo, exitCode);
             if (_childProcess.UpTime < 10)
             {
                 //TODO maybe startup problem
@@ -139,7 +143,7 @@ namespace BMCLV2.Launcher
         private async Task<bool> SetupLibraries()
         {
             var libraryPath = new StringBuilder();
-            var libraries = _versionInfo.Libraries;
+            var libraries = VersionInfo.Libraries;
             foreach (var libraryInfo in libraries)
             {
                 // skip natives
@@ -158,7 +162,7 @@ namespace BMCLV2.Launcher
                 }
                 libraryPath.Append(filePath).Append(";");
             }
-            libraryPath.Append(Path.Combine(_versionDirectory, $"{_versionInfo.Jar ?? _versionInfo.Id}.jar"));
+            libraryPath.Append(Path.Combine(_versionDirectory, $"{VersionInfo.Jar ?? VersionInfo.Id}.jar"));
             _arguments.Add("-cp");
             _arguments.Add(libraryPath.ToString());
             return true;
@@ -167,7 +171,7 @@ namespace BMCLV2.Launcher
         private async Task<bool> SetupNatives()
         {
             FileHelper.CreateDirectoryIfNotExist(_nativesDirectory);
-            foreach (var libraryInfo in _versionInfo.Libraries)
+            foreach (var libraryInfo in VersionInfo.Libraries)
             {
                 //skip non-natives
                 if (!libraryInfo.IsNative) continue;
@@ -208,10 +212,10 @@ namespace BMCLV2.Launcher
             var values = new Dictionary<string, string>
             {
                 {"${auth_player_name}", _authResult.Username},
-                {"${version_name}", _versionInfo.Id},
+                {"${version_name}", VersionInfo.Id},
                 {"${game_directory}", BmclCore.MinecraftDirectory},
                 {"${assets_root}", "assets"},
-                {"${assets_index_name}", _versionInfo.Assets},
+                {"${assets_index_name}", VersionInfo.Assets},
                 {"${user_type}", "Legacy"},
                 {"${version_type}", "Legacy"},
                 {"${user_properties}", "{}"}
@@ -223,7 +227,7 @@ namespace BMCLV2.Launcher
                     values.Add(info.Key, info.Value);
                 }
             }
-            var arguments = _versionInfo.MinecraftArguments.Split(' ');
+            var arguments = VersionInfo.MinecraftArguments.Split(' ');
             for (var i = 0; i < arguments.Length; i ++)
             {
                 if (values.ContainsKey(arguments[i]))
@@ -272,7 +276,7 @@ namespace BMCLV2.Launcher
         {
             var dir = _versionDirectory;
             var dirInfo = new DirectoryInfo(dir);
-            var nativeDir = dirInfo.GetDirectories($"{_versionInfo.Id}-natives-*");
+            var nativeDir = dirInfo.GetDirectories($"{VersionInfo.Id}-natives-*");
             foreach (var directoryInfo in nativeDir)
             {
                 directoryInfo.Delete(true);

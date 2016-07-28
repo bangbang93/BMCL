@@ -7,22 +7,19 @@ using System.Threading.Tasks;
 using BMCLV2.JsonClass;
 using System.Text.RegularExpressions;
 using System.Windows;
-using BMCLV2.util;
 
 namespace BMCLV2.Forge
 {
-    class ForgeTask
+    internal class ForgeTask
     {
-        private readonly string forgeUrl = "http://bmclapi2.bangbang93.com/forge/promos";
+        private const string ForgeUrl = "http://bmclapi2.bangbang93.com/forge/promos";
         public delegate void ForgePageReadyHandle();
-        public event ForgePageReadyHandle ForgePageReadyEvent;
-        private ForgeVersion[] _forgeNew;
         public Dictionary<string, string> ForgeDownloadUrl = new Dictionary<string, string>(), 
             ForgeChangeLogUrl = new Dictionary<string, string>();
         public async Task<ForgeVersion[]> GetVersion()
         {
             var downloder = new Downloader.Downloader();
-            var json = await downloder.DownloadStringTaskAsync(forgeUrl);
+            var json = await downloder.DownloadStringTaskAsync(ForgeUrl);
             var versions = new JSON<ForgeVersion[]>().Parse(json);
             if (versions != null)
                 Logger.Info($"获取到{versions.Length}个forge版本");

@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using BMCLV2.Forge;
 using BMCLV2.I18N;
 using BMCLV2.JsonClass;
+using Clipboard = System.Windows.Clipboard;
+using MessageBox = System.Windows.MessageBox;
 
 namespace BMCLV2.Windows.MainWindowTab
 {
@@ -58,7 +55,7 @@ namespace BMCLV2.Windows.MainWindowTab
 
         private void btnLastForge_Click(object sender, RoutedEventArgs e)
         {
-            DownloadForge("Latest");
+            DownloadForge("latest");
         }
         private void btnReForge_Click(object sender, RoutedEventArgs e)
         {
@@ -71,8 +68,17 @@ namespace BMCLV2.Windows.MainWindowTab
         }
         private async void DownloadForge(string ver)
         {
-            var forgeVersion = _forgeVersions.First(version => version.name == ver);
-            await _forgeTask.DownloadForge(forgeVersion);
+            try
+            {
+                var forgeVersion = _forgeVersions.First(version => version.name == ver);
+                await _forgeTask.DownloadForge(forgeVersion);
+            }
+            catch (InvalidOperationException exception)
+            {
+                Logger.Fatal(exception);
+                MessageBox.Show(BmclCore.MainWindow, LangManager.Transalte("ForgeNoSuchVersion", ver), BmclCore.MainWindow.Title,
+                    MessageBoxButton.OK, MessageBoxImage.Error);
+            }
             BmclCore.MainWindow.GridGame.ReFlushlistver();
             BmclCore.MainWindow.TabMain.SelectedIndex = 0;
         }

@@ -135,53 +135,55 @@ namespace BMCLV2.Windows
                 return;
             }
             GridConfig.SaveConfig();
-            var selectedVersion = GridGame.GetSelectedVersion();
-            if (selectedVersion == null)
-            {
-                MessageBox.Show(this, LangManager.Transalte("AnotherGameRunningException"), Title, MessageBoxButton.OK, MessageBoxImage.Error);
-            }
-            Logger.Info($"正在启动{selectedVersion},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
-            _frmPrs = new FrmPrs(LangManager.GetLangFromResource(selectedVersion));
-            _frmPrs.Show();
-            _frmPrs.ChangeStatus(LangManager.GetLangFromResource("LauncherAuth"));
-            var launcher = await BmclCore.GameManager.LaunchGame(selectedVersion, false);
-            if (launcher == null)
-            {
-                _frmPrs.Close();
-                _frmPrs = null;
-                return;
-            }
-            launcher.OnGameLaunch += Launcher_OnGameLaunch;
-            launcher.OnGameStart += Game_GameStartUp;
-            launcher.OnGameExit += launcher_gameexit;
             var somethingBad = false;
             try
             {
-                launcher.Start();
+                var selectedVersion = GridGame.GetSelectedVersion();
+                Logger.Info($"正在启动{selectedVersion},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
+                _frmPrs = new FrmPrs(LangManager.GetLangFromResource(selectedVersion));
+                _frmPrs.Show();
+                _frmPrs.ChangeStatus(LangManager.GetLangFromResource("LauncherAuth"));
+                var launcher = await BmclCore.GameManager.LaunchGame(selectedVersion, false);
+                if (launcher == null)
+                {
+                    _frmPrs.Close();
+                    _frmPrs = null;
+                    return;
+                }
+                launcher.OnGameLaunch += Launcher_OnGameLaunch;
+                launcher.OnGameStart += Game_GameStartUp;
+                launcher.OnGameExit += launcher_gameexit;
+                await launcher.Start();
             }
-            catch (NoJavaException ex)
+            catch (NoSelectGameException exception)
             {
+                Logger.Fatal(exception);
                 somethingBad = true;
-                MessageBox.Show(this, LangManager.Transalte("NoJavaException", ex.Javaw), Title, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            catch (AnotherGameRunningException)
+            catch (NoJavaException exception)
             {
+                Logger.Fatal(exception);
                 somethingBad = true;
-                MessageBox.Show(this, LangManager.Transalte("AnotherGameRunningException"), Title, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            catch (DownloadLibException ex)
+            catch (AnotherGameRunningException exception)
             {
+                Logger.Fatal(exception);
                 somethingBad = true;
-                MessageBox.Show(this, LangManager.Transalte("FailInLibException", ex.Library.Name), Title, MessageBoxButton.OK,
-                    MessageBoxImage.Error);
+                MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (DownloadLibException exception)
+            {
+                Logger.Fatal(exception);
+                somethingBad = true;
+                MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
             finally
             {
                 if (somethingBad)
                 {
-                    _frmPrs.Close();
+                    _frmPrs?.Close();
                     _frmPrs = null;
                 }
             }
@@ -200,6 +202,7 @@ namespace BMCLV2.Windows
             _frmPrs.Close();
             _frmPrs = null;
             _isLaunchering = false;
+            Hide();
         }
 
         private void launcher_gameexit(object sender, VersionInfo versionInfo, int exitCode)
@@ -217,7 +220,7 @@ namespace BMCLV2.Windows
 
         private void btnMiniSize_Click(object sender, RoutedEventArgs e)
         {
-            this.Hide();
+            Hide();
             BmclCore.NIcon.NIcon.ShowBalloonTip(2000, "BMCL", LangManager.GetLangFromResource("BMCLHiddenInfo"), System.Windows.Forms.ToolTipIcon.Info);
         }
         private void MenuSelectFile_Click(object sender, RoutedEventArgs e)

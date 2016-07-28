@@ -2,7 +2,7 @@
 {
     public interface IBmclPlugin
     {
-        PluginType GetType();
+        PluginType GetPluginType();
     }
 
     public enum PluginType
