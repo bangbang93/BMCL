@@ -51,5 +51,5 @@ using System.Windows;
 // 可以指定所有这些值，也可以使用“生成号”和“修订号”的默认值，
 // 方法是按如下所示使用“*”:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("4.3.2.1790")]
+[assembly: AssemblyVersion("4.4.0.1800")]
 //[assembly: AssemblyFileVersion("3.4.3.1472")]

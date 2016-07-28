@@ -78,7 +78,8 @@ namespace BMCLV2.Game
 
         public Dictionary<string, VersionInfo> GetVersions()
         {
-            return _versions;
+            return _versions.Where(pair => pair.Value.Type != "hidden")
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         public VersionInfo GetVersion(string id)
