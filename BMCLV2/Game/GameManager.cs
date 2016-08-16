@@ -44,14 +44,8 @@ namespace BMCLV2.Game
                         var info = jsonParser.Parse(jsonStream);
                         if (info != null)
                         {
-                            var id = info.Id ?? PathHelper.GetDirectoryName(jsonFile);
-                            if (id != null)
-                            {
-                                if (_versions.ContainsKey(id))
-                                    _versions.Add(id + MathHelper.Rand(), info);
-                                else
-                                    _versions.Add(id, info);
-                            }
+                            var id = PathHelper.GetDirectoryName(jsonFile);
+                            _versions.Add(_versions.ContainsKey(id) ? $"{id}({jsonFile})" : id, info);
                         }
                         jsonStream.Close();
                     }
