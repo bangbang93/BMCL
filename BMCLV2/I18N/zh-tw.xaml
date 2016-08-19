@@ -31,7 +31,7 @@
     <s:String x:Key="checkOptifine">Optifine和中文補丁</s:String>
     <s:String x:Key="checkReport">發送匿名統計資訊</s:String>
     <s:String x:Key="checkCheckUpdate">檢查更新</s:String>
-    <s:String x:Key="chkLaunchMode">啟動模式</s:String>
+    <s:String x:Key="chkLaunchMode">各版本存檔和Mod獨立</s:String>
     <s:String x:Key="btnSaveConfig">保存配置</s:String>
     <s:String x:Key="labSaveSucc">保存成功！</s:String>
     <s:String x:Key="listOfficalSource">官方源（國外，更新快）</s:String>
