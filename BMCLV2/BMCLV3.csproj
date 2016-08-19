@@ -102,6 +102,7 @@
     <Compile Include="Auth\OldPluginLogin.cs" />
     <Compile Include="BmclCore.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Cfg\LaunchMode.cs" />
     <Compile Include="Downloader\Downloader.cs">
       <SubType>Component</SubType>
     </Compile>

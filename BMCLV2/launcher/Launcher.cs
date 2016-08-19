@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using BMCLV2.Auth;
+using BMCLV2.Cfg;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
 using BMCLV2.I18N;
@@ -91,16 +92,20 @@ namespace BMCLV2.Launcher
 
         private bool Launch()
         {
-            _childProcess = new ChildProcess(_config.Javaw, _arguments.ToArray());
-            if (_childProcess.Start())
+            if (_config.LaunchMode == LaunchMode.Normal)
             {
-                _childProcess.OnStdOut += OnStdOut;
-                _childProcess.OnStdErr += OnStdOut;
-                _childProcess.OnExit += ChildProcessOnExit;
-                _errorCount = CountError();
-                return true;
+                _childProcess = new ChildProcess(_config.Javaw, _arguments.ToArray());
             }
-            return false;
+            else
+            {
+                _childProcess = new ChildProcess(_config.Javaw, _versionDirectory, _arguments.ToArray());
+            }
+            if (!_childProcess.Start()) return false;
+            _childProcess.OnStdOut += OnStdOut;
+            _childProcess.OnStdErr += OnStdOut;
+            _childProcess.OnExit += ChildProcessOnExit;
+            _errorCount = CountError();
+            return true;
         }
 
         private static Dictionary<string, int> CountError()
