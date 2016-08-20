@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using BMCLV2.Auth;
+using BMCLV2.Cfg;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
 using BMCLV2.I18N;
@@ -57,7 +58,7 @@ namespace BMCLV2.Launcher
             VersionInfo = versionInfo;
             State = LauncherState.Initializing;
             _config = config ?? Config.Load();
-            _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.InheritsFrom ?? VersionInfo.Id);
+            _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.Id);
             _libraryDirectory = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
             _nativesDirectory = Path.Combine(_versionDirectory, $"{VersionInfo.Id}-natives-{TimeHelper.TimeStamp()}");
 
@@ -91,16 +92,16 @@ namespace BMCLV2.Launcher
 
         private bool Launch()
         {
-            _childProcess = new ChildProcess(_config.Javaw, _arguments.ToArray());
-            if (_childProcess.Start())
-            {
-                _childProcess.OnStdOut += OnStdOut;
-                _childProcess.OnStdErr += OnStdOut;
-                _childProcess.OnExit += ChildProcessOnExit;
-                _errorCount = CountError();
-                return true;
-            }
-            return false;
+            _childProcess = 
+                _config.LaunchMode == LaunchMode.Normal 
+                ? new ChildProcess(_config.Javaw, _arguments.ToArray())
+                : new ChildProcess(_config.Javaw, _versionDirectory, _arguments.ToArray());
+            if (!_childProcess.Start()) return false;
+            _childProcess.OnStdOut += OnStdOut;
+            _childProcess.OnStdErr += OnStdOut;
+            _childProcess.OnExit += ChildProcessOnExit;
+            _errorCount = CountError();
+            return true;
         }
 
         private static Dictionary<string, int> CountError()
@@ -162,7 +163,15 @@ namespace BMCLV2.Launcher
                 }
                 libraryPath.Append(filePath).Append(";");
             }
-            libraryPath.Append(Path.Combine(_versionDirectory, $"{VersionInfo.Jar ?? VersionInfo.Id}.jar"));
+            if (VersionInfo.InheritsFrom == null)
+            {
+                libraryPath.Append(Path.Combine(_versionDirectory, $"{VersionInfo.Jar ?? VersionInfo.Id}.jar"));
+            }
+            else
+            {
+                libraryPath.Append(Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.InheritsFrom, $"{VersionInfo.Jar ?? VersionInfo.Id}.jar"));
+            }
+            
             _arguments.Add("-cp");
             _arguments.Add(libraryPath.ToString());
             return true;
@@ -214,12 +223,16 @@ namespace BMCLV2.Launcher
                 {"${auth_player_name}", _authResult.Username},
                 {"${version_name}", VersionInfo.Id},
                 {"${game_directory}", BmclCore.MinecraftDirectory},
-                {"${assets_root}", "assets"},
+                {"${assets_root}", Path.Combine(BmclCore.MinecraftDirectory, "assets")},
                 {"${assets_index_name}", VersionInfo.Assets},
                 {"${user_type}", "Legacy"},
                 {"${version_type}", "Legacy"},
                 {"${user_properties}", "{}"}
             };
+            if (_config.LaunchMode == LaunchMode.Standalone)
+            {
+                values["${game_directory}"] = _versionDirectory;
+            }
             if (_authResult.OutInfo != null)
             {
                 foreach (var info in _authResult.OutInfo)
