@@ -102,6 +102,7 @@
     <Compile Include="Auth\OldPluginLogin.cs" />
     <Compile Include="BmclCore.cs" />
     <Compile Include="Config.cs" />
+    <Compile Include="Cfg\LaunchMode.cs" />
     <Compile Include="Downloader\Downloader.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -109,6 +110,7 @@
     <Compile Include="EventHandler.cs" />
     <Compile Include="Exceptions\AnotherGameRunningException.cs" />
     <Compile Include="Exceptions\DownloadLibException.cs" />
+    <Compile Include="Exceptions\NoSelectGameException.cs" />
     <Compile Include="Exceptions\NoSuchVersionException.cs" />
     <Compile Include="Exceptions\ProcessNotStartException.cs" />
     <Compile Include="Game\AssetManager.cs" />
@@ -120,6 +122,7 @@
     <Compile Include="Launcher\Launcher.cs" />
     <Compile Include="Exceptions\NoJavaException.cs" />
     <Compile Include="Exceptions\UnSupportVersionException.cs" />
+    <Compile Include="Launcher\LauncherState.cs" />
     <Compile Include="Mirrors\BMCLAPI\Asset.cs" />
     <Compile Include="Mirrors\BMCLAPI\BMCLAPI.cs" />
     <Compile Include="Mirrors\BMCLAPI\Library.cs" />
@@ -218,9 +221,14 @@
     <Compile Include="Util\FileHelper.cs" />
     <Compile Include="Util\MathHelper.cs" />
     <Compile Include="Util\Crypto.cs" />
-    <Compile Include="Versions\RawVersionListType.cs" />
     <Compile Include="Versions\RemoteVerType.cs" />
     <Compile Include="Windows\NotiIcon.cs" />
+    <Compile Include="Yggdrasil\Agent.cs" />
+    <Compile Include="Yggdrasil\AuthenticationRequest.cs" />
+    <Compile Include="Yggdrasil\AuthenticationResponse.cs" />
+    <Compile Include="Yggdrasil\GameProfile.cs" />
+    <Compile Include="Yggdrasil\Yggdrasil.cs" />
+    <Compile Include="Yggdrasil\Response.cs" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

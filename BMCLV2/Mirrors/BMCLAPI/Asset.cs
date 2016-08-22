@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
-using BMCLV2.Assets;
 using BMCLV2.Game;
 using BMCLV2.JsonClass;
 using BMCLV2.util;

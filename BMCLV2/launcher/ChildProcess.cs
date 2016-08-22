@@ -17,6 +17,7 @@ namespace BMCLV2.Launcher
         private ProcessStartInfo _processStartInfo;
         private readonly string _filename;
         private readonly string[] _arguments;
+        private readonly string _workingDirectory;
         private Process _childProcess;
         private OnChildProcessExit _onExit;
         private OnLogEventHandler _onStdOut;
@@ -51,14 +52,17 @@ namespace BMCLV2.Launcher
             _arguments = processStartInfo.Arguments.Split();
         }
 
-        public ChildProcess(string filename, string[] arguments = null)
+        public ChildProcess( string filename, string[] arguments)
         {
-            if (arguments != null)
-            {
-                _processStartInfo = new ProcessStartInfo(filename, JoinArguments(arguments));
-            }
+            _arguments = arguments;
+            _filename = filename;
+        }
+
+        public ChildProcess(string filename, string workingDirectory = null, string[] arguments = null)
+        {
             _filename = filename;
             _arguments = arguments;
+            _workingDirectory = workingDirectory;
         }
 
         public static string JoinArguments(string[] arguments)
@@ -83,6 +87,10 @@ namespace BMCLV2.Launcher
                 UseShellExecute = false,
                 WorkingDirectory = BmclCore.MinecraftDirectory
             };
+            if (_workingDirectory != null)
+            {
+                _processStartInfo.WorkingDirectory = _workingDirectory;
+            }
             _childProcess = new Process
             {
                 StartInfo = _processStartInfo,

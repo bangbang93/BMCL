@@ -12,6 +12,14 @@ namespace BMCLV2.Plugin
     {
 
         private readonly Dictionary<string, object> _oldAuthPlugins = new Dictionary<string, object>();
+        private readonly Dictionary<string, IBmclAuthPlugin> _authPlugins = new Dictionary<string, IBmclAuthPlugin>();
+
+        public PluginManager()
+        {
+            var yggdrasil = new Yggdrasil.Yggdrasil();
+            _authPlugins.Add(yggdrasil.GetName(), yggdrasil);
+        }
+
         public void LoadOldAuthPlugin(string language)
         {
             _oldAuthPlugins.Clear();
@@ -164,12 +172,20 @@ namespace BMCLV2.Plugin
 
         public object GetAuth(string name)
         {
-            return _oldAuthPlugins.ContainsKey(name) ? _oldAuthPlugins[name] : null;
+            if (_oldAuthPlugins.ContainsKey(name))
+            {
+                return _oldAuthPlugins[name];
+            }
+            if (_authPlugins.ContainsKey(name))
+            {
+                return _authPlugins[name];
+            }
+            return null;
         }
 
         public string[] GetAuthNames()
         {
-            return _oldAuthPlugins.Keys.ToArray();
+            return _oldAuthPlugins.Keys.ToArray().Concat(_authPlugins.Keys.ToArray()).ToArray();
         }
     }
 }

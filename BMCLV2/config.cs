@@ -8,39 +8,29 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows;
+using BMCLV2.Cfg;
 
 namespace BMCLV2
 {
     [DataContract]
-    public class Config : ICloneable
+    public class Config
     {
-        [DataMember]
-        public string Javaw;
-        [DataMember]
-        public string Username;
-        [DataMember]
-        public string Javaxmx;
-        [DataMember]
-        public string Login;
-        [DataMember]
-        public string LastPlayVer;
-        [DataMember]
-        public string ExtraJvmArg;
-        [DataMember]
-        public string Lang;
-        [DataMember]
-        public byte[] Passwd;
-        [DataMember]
-        public bool Autostart, Report,CheckUpdate;
-        [DataMember]
-        public double WindowTransparency;
-        [DataMember]
-        public int DownloadSource;
-        [DataMember]
-        public Dictionary<string, object> PluginConfig;
+        [DataMember] public string Javaw;
+        [DataMember] public string Username;
+        [DataMember] public string Javaxmx;
+        [DataMember] public string Login;
+        [DataMember] public string LastPlayVer;
+        [DataMember] public string ExtraJvmArg;
+        [DataMember] public string Lang;
+        [DataMember] public byte[] Passwd;
+        [DataMember] public bool Autostart, Report,CheckUpdate;
+        [DataMember] public double WindowTransparency;
+        [DataMember] public int DownloadSource;
+        [DataMember] public Dictionary<string, object> PluginConfig;
         [DataMember] public int Height;
         [DataMember] public int Width;
         [DataMember] public bool FullScreen;
+        [DataMember] public LaunchMode LaunchMode;
 
         public Config()
         {
@@ -60,20 +50,17 @@ namespace BMCLV2
             Height = -1;
             Width = -1;
             FullScreen = false;
+            LaunchMode = LaunchMode.Normal;
         }
 
         public override string ToString()
         {
-            return $"Javaw: {Javaw}, Username: {Username}, Javaxmx: {Javaxmx}, Login: {Login}, LastPlayVer: {LastPlayVer}, ExtraJvmArg: {ExtraJvmArg}, Lang: {Lang}, Passwd: {Passwd}, Autostart: {Autostart}, Report: {Report}, CheckUpdate: {CheckUpdate}, WindowTransparency: {WindowTransparency}, DownloadSource: {DownloadSource}, PluginConfig: {PluginConfig}, Height: {Height}, Width: {Width}, FullScreen: {FullScreen}";
+            return $"Javaw: {Javaw}, Username: {Username}, Javaxmx: {Javaxmx}, Login: {Login}, LastPlayVer: {LastPlayVer}, ExtraJvmArg: {ExtraJvmArg}, Lang: {Lang}, Passwd: {Passwd}, Autostart: {Autostart}, Report: {Report}, CheckUpdate: {CheckUpdate}, WindowTransparency: {WindowTransparency}, DownloadSource: {DownloadSource}, PluginConfig: {PluginConfig}, Height: {Height}, Width: {Width}, FullScreen: {FullScreen}, LaunchMode: {LaunchMode}";
         }
 
         public object GetPluginConfig(string key)
         {
-            if (PluginConfig.ContainsKey(key))
-            {
-                return PluginConfig[key];
-            }
-            return null;
+            return PluginConfig.ContainsKey(key) ? PluginConfig[key] : null;
         }
 
         public void SetPluginConfig(string key, object value)
@@ -86,11 +73,6 @@ namespace BMCLV2
             {
                 PluginConfig.Add(key, value);
             }
-        }
-
-        public object Clone()
-        {
-            return (Config)this.MemberwiseClone();
         }
 
         public static Config Load(string file = "bmcl.xml")
@@ -131,6 +113,7 @@ namespace BMCLV2
         {
             Save(this, file);
         }
+
         /// <summary>
         /// 读取注册表，寻找安装的java路径
         /// </summary>
@@ -139,41 +122,33 @@ namespace BMCLV2
         {
             try
             {
-                RegistryKey reg = Registry.LocalMachine;
+                var reg = Registry.LocalMachine;
                 var openSubKey = reg.OpenSubKey("SOFTWARE");
-                if (openSubKey != null)
+                var registryKey = openSubKey?.OpenSubKey("JavaSoft");
+                if (registryKey != null)
+                    reg = registryKey.OpenSubKey("Java Runtime Environment");
+                if (reg == null) return null;
+                var javaList = new List<string>();
+                foreach (var ver in reg.GetSubKeyNames())
                 {
-                    var registryKey = openSubKey.OpenSubKey("JavaSoft");
-                    if (registryKey != null)
-                        reg = registryKey.OpenSubKey("Java Runtime Environment");
-                }
-                if (reg != null){
-                    List<string> javaList = new List<string>();
-                    foreach (string ver in reg.GetSubKeyNames())
+                    try
                     {
-                        try
-                        {
-                            RegistryKey command = reg.OpenSubKey(ver);
-                            if (command != null)
-                            {
-                                string str = command.GetValue("JavaHome").ToString();
-                                if (str != "")
-                                    javaList.Add(str + @"\bin\javaw.exe");
-                            }
-                        }
-                        catch { return null; }
+                        var command = reg.OpenSubKey(ver);
+                        if (command == null) continue;
+                        var str = command.GetValue("JavaHome").ToString();
+                        if (str != "")
+                            javaList.Add(str + @"\bin\javaw.exe");
                     }
-                    //先找出Java7 因为Java8不能正常启动1.7.2
-                    foreach (string java in javaList)
-                    {
-                        if(java.ToLower().Contains("jre7")||java.ToLower().Contains("jdk1.7")||java.ToLower().Contains("jre1.7")){//可能这样判断版本的方法不太好
-                            return java;
-                        }
-                    }
-                    //没有Java7的时候返回第一个Java
-                    return javaList[0];
+                    catch { return null; }
                 }
-                return null;
+                //优先java8
+                foreach (var java in javaList)
+                {
+                    if(java.ToLower().Contains("jre8")||java.ToLower().Contains("jdk1.8")||java.ToLower().Contains("jre1.8")){
+                        return java;
+                    }
+                }
+                return javaList[0];
             }
             catch { return null; }
 
@@ -187,11 +162,11 @@ namespace BMCLV2
             try
             {
                 var cimobject1 = new ManagementClass("Win32_PhysicalMemory");
-                ManagementObjectCollection moc1 = cimobject1.GetInstances();
-                double capacity = moc1.Cast<ManagementObject>().Sum(mo1 => ((Math.Round(long.Parse(mo1.Properties["Capacity"].Value.ToString())/1024.0/1024.0, 1))));
+                var moc1 = cimobject1.GetInstances();
+                var capacity = moc1.Cast<ManagementObject>().Sum(mo1 => Math.Round(long.Parse(mo1.Properties["Capacity"].Value.ToString())/1024.0/1024.0, 1));
                 moc1.Dispose();
                 cimobject1.Dispose();
-                UInt64 qmem = Convert.ToUInt64(capacity.ToString(CultureInfo.InvariantCulture));
+                var qmem = Convert.ToUInt64(capacity.ToString(CultureInfo.InvariantCulture));
                 return qmem;
             }
             catch (Exception ex)

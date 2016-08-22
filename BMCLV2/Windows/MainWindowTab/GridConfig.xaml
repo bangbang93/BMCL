@@ -65,4 +65,5 @@
             <CheckBox x:Name="FullScreenCheckBox" Content="{DynamicResource FullScreen}" HorizontalAlignment="Center" Margin="73,50,73,0" VerticalAlignment="Top"/>
         </Grid>
     </GroupBox>
+    <CheckBox x:Name="chkLaunchMode" Content="{DynamicResource chkLaunchMode}" HorizontalAlignment="Left" Margin="640,166,0,0" VerticalAlignment="Top" Checked="chkLaunchMode_Checked"/>
 </Grid>

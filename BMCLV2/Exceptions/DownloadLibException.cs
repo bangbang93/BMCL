@@ -1,5 +1,6 @@
 ﻿using System;
 using BMCLV2.Game;
+using BMCLV2.I18N;
 
 namespace BMCLV2.Exceptions
 {
@@ -7,7 +8,7 @@ namespace BMCLV2.Exceptions
     {
         public LibraryInfo Library { get; }
 
-        public DownloadLibException(LibraryInfo library, Exception innerException):base($"{library.Name} download failed", innerException)
+        public DownloadLibException(LibraryInfo library, Exception innerException):base(LangManager.Transalte("DownloadLibException", library.Name), innerException)
         {
             Library = library;
         }

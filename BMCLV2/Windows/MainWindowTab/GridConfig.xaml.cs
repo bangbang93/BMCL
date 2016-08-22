@@ -7,6 +7,8 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using BMCLV2.Cfg;
+using BMCLV2.Exceptions;
 using BMCLV2.I18N;
 using BMCLV2.Mirrors;
 
@@ -30,7 +32,14 @@ namespace BMCLV2.Windows.MainWindowTab
             BmclCore.Config.Javaw = txtJavaPath.Text;
             BmclCore.Config.Javaxmx = txtJavaXmx.Text;
             BmclCore.Config.Login = listAuth.SelectedItem.ToString();
-            BmclCore.Config.LastPlayVer = BmclCore.MainWindow.GridGame.GetSelectedVersion();
+            try
+            {
+                BmclCore.Config.LastPlayVer = BmclCore.MainWindow.GridGame.GetSelectedVersion();
+            }
+            catch (NoSelectGameException)
+            {
+                BmclCore.Config.LastPlayVer = null;
+            }
             BmclCore.Config.Passwd = Encoding.UTF8.GetBytes(txtPwd.Password);
             BmclCore.Config.Username = txtUserName.Text;
             BmclCore.Config.WindowTransparency = sliderWindowTransparency.Value;
@@ -191,6 +200,14 @@ namespace BMCLV2.Windows.MainWindowTab
             {
                 tip.IsOpen = false;
             }
+        }
+
+        private void chkLaunchMode_Checked(object sender, RoutedEventArgs e)
+        {
+            BmclCore.Config.LaunchMode = 
+                BmclCore.Config.LaunchMode == LaunchMode.Normal
+                ? LaunchMode.Standalone
+                : LaunchMode.Normal;
         }
     }
 }

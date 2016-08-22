@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using BMCLV2.Plugin;
 
 namespace BMCLV2.Auth
 {

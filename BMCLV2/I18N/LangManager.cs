@@ -5,7 +5,7 @@ using System.Windows;
 
 namespace BMCLV2.I18N
 {
-    internal static class LangManager
+    public static class LangManager
     {
         private static readonly Dictionary<string, LangType> Languages = new Dictionary<string, LangType>();
         private static readonly ResourceDictionary DefaultLanguage = LoadLangFromResource("pack://application:,,,/I18N/zh-cn.xaml");

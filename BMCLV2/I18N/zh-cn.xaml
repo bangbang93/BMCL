@@ -31,6 +31,7 @@
     <s:String x:Key="checkOptifine">Optifine和中文补丁</s:String>
     <s:String x:Key="checkReport">发送匿名统计信息</s:String>
     <s:String x:Key="checkCheckUpdate">检查更新</s:String>
+    <s:String x:Key="chkLaunchMode">各版本存档和Mod独立</s:String>
     <s:String x:Key="btnSaveConfig">保存配置</s:String>
     <s:String x:Key="labSaveSucc">保存成功！</s:String>
     <s:String x:Key="listOfficalSource">官方源（国外，更新快）</s:String>
@@ -119,8 +120,8 @@
     <s:String x:Key="NoJavaException">找不到java({0})</s:String>
     <s:String x:Key="NoEnoughMemException">没有足够物理内存</s:String>
     <s:String x:Key="UnSupportVersionExcepton">启动器不支持这个版本</s:String>
-    <s:String x:Key="AnotherGameRunningException">已经有另一份Minecraft正在运行中</s:String>
-    <s:String x:Key="FailInLibException">无法获得所需的依赖({0})</s:String>
+    <s:String x:Key="AnotherGameRunningException">已经有另一份Minecraft正在运行中,名称{0}</s:String>
+    <s:String x:Key="DownloadLibException">无法获得所需的依赖({0})</s:String>
     <s:String x:Key="LauncherCheckJava">检查Java</s:String>
     <s:String x:Key="LauncherCheckMem">检查内存</s:String>
     <s:String x:Key="LauncherAuth">正在登陆</s:String>

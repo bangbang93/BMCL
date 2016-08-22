@@ -17,7 +17,7 @@ namespace BMCLV2.Game
         public static readonly string VersionDirectory = Path.Combine(BmclCore.BaseDirectory, @".minecraft\versions");
         private readonly Dictionary<string, VersionInfo> _versions = new Dictionary<string, VersionInfo>();
         private Launcher.Launcher _launcher;
-        private readonly string[] _inheritFields = {"Type", "MinecraftArguments", "MainClass", "Assets", "Jar"};
+        private readonly string[] _inheritFields = {"Type", "MinecraftArguments", "MainClass", "Assets", "Jar", "AssetIndex"};
         private AssetManager _assetManager;
 
         public bool IsGameRunning => _launcher == null;
@@ -44,14 +44,8 @@ namespace BMCLV2.Game
                         var info = jsonParser.Parse(jsonStream);
                         if (info != null)
                         {
-                            var id = info.Id ?? PathHelper.GetDirectoryName(jsonFile);
-                            if (id != null)
-                            {
-                                if (_versions.ContainsKey(id))
-                                    _versions.Add(id + MathHelper.Rand(), info);
-                                else
-                                    _versions.Add(id, info);
-                            }
+                            var id = PathHelper.GetDirectoryName(jsonFile);
+                            _versions.Add(_versions.ContainsKey(id) ? $"{id}({jsonFile})" : id, info);
                         }
                         jsonStream.Close();
                     }
@@ -78,7 +72,8 @@ namespace BMCLV2.Game
 
         public Dictionary<string, VersionInfo> GetVersions()
         {
-            return _versions;
+            return _versions.Where(pair => pair.Value.Type != "hidden")
+                .ToDictionary(pair => pair.Key, pair => pair.Value);
         }
 
         public VersionInfo GetVersion(string id)

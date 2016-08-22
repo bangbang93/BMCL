@@ -1,4 +1,6 @@
-﻿namespace BMCLV2.Exceptions
+﻿using BMCLV2.I18N;
+
+namespace BMCLV2.Exceptions
 {
     internal class NoJavaException : System.Exception
     {
@@ -9,7 +11,7 @@
         public NoJavaException(string javaw)
         {
             Javaw = javaw;
-            Message = $"{javaw} No Such File";
+            Message = LangManager.Transalte("NoJavaException", javaw);
         }
     }
 }
