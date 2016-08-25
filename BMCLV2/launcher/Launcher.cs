@@ -231,7 +231,9 @@ namespace BMCLV2.Launcher
             };
             if (_config.LaunchMode == LaunchMode.Standalone)
             {
-                values["${game_directory}"] = _versionDirectory;
+                var gameDirectory = Path.Combine(_versionDirectory, ".minecraft");
+                FileHelper.CreateDirectoryIfNotExist(gameDirectory);
+                values["${game_directory}"] = gameDirectory;
             }
             if (_authResult.OutInfo != null)
             {
