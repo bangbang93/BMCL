@@ -7,6 +7,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
+using BMCLV2.Cfg;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
 using BMCLV2.I18N;
@@ -60,6 +61,7 @@ namespace BMCLV2.Windows
             GridConfig.ScreenWidthTextBox.Text = BmclCore.Config.Width.ToString();
             GridConfig.FullScreenCheckBox.IsChecked = BmclCore.Config.FullScreen;
             GridConfig.checkCheckUpdate.IsChecked = BmclCore.Config.CheckUpdate;
+            GridConfig.chkLaunchMode.IsChecked = BmclCore.Config.LaunchMode == LaunchMode.Standalone;
         }
 
         public void SwitchStartButton(bool isenable)
