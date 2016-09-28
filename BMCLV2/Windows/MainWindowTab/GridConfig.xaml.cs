@@ -50,6 +50,7 @@ namespace BMCLV2.Windows.MainWindowTab
             BmclCore.Config.Height = int.Parse(ScreenHeightTextBox.Text);
             BmclCore.Config.Width = int.Parse(ScreenWidthTextBox.Text);
             BmclCore.Config.FullScreen = FullScreenCheckBox.IsChecked??false;
+            BmclCore.Config.LaunchMode = chkLaunchMode.IsChecked == true ? LaunchMode.Standalone : LaunchMode.Normal;
             BmclCore.Config.Save(null);
             var dak = new DoubleAnimationUsingKeyFrames();
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(0)));
