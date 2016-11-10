@@ -1,7 +1,6 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
 
-namespace BMCLV2.Yggdrasil
+namespace BMCLV2.Plugin.InnerPlugin.Yggdrasil
 {
     [DataContract]
     public class AuthenticationResponse : Response

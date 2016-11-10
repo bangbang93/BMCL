@@ -16,7 +16,7 @@ namespace BMCLV2.Plugin
 
         public PluginManager()
         {
-            var yggdrasil = new Yggdrasil.Yggdrasil();
+            var yggdrasil = new InnerPlugin.Yggdrasil.Yggdrasil();
             _authPlugins.Add(yggdrasil.GetName(), yggdrasil);
         }
 

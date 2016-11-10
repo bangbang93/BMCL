@@ -1,7 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using System.Text;
 
-namespace BMCLV2.Yggdrasil
+namespace BMCLV2.Plugin.InnerPlugin.Yggdrasil
 {
     [DataContract]
     public class Agent

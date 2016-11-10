@@ -38,7 +38,7 @@ namespace BMCLV2
         public static readonly MirrorManager MirrorManager = new MirrorManager();
         public static readonly PluginManager PluginManager = new PluginManager();
         public static readonly AuthManager AuthManager = new AuthManager();
-        public static readonly string OS = "windows";
+        public static readonly string Platform = "windows";
 
         static BmclCore()
         {
