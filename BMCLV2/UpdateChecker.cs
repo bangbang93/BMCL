@@ -20,7 +20,7 @@ namespace BMCLV2
         }
 
 
-        private const string CheckUrl = @"http://www.bangbang93.com/bmcl/checkupdate.php";
+        private const string CheckUrl = @"http://bbs.bangbang93.com/bmcl/checkupdate.php";
         public bool HasUpdate {get; private set; }
         public string UpdateInfo {get; private set; }
         public string LastestDownloadUrl {get; private set; }
