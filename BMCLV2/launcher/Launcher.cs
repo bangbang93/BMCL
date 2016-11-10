@@ -200,20 +200,17 @@ namespace BMCLV2.Launcher
                 if (!libraryInfo.IsNative) continue;
                 if (!libraryInfo.ShouldDeployOnOs()) continue;
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
-                if (!libraryInfo.IsVaild(_libraryDirectory))
+                try
                 {
-                    try
+                    if (!libraryInfo.IsVaild(_libraryDirectory))
                     {
                         await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
                     }
-                    catch (WebException exception)
-                    {
-                        throw new DownloadLibException(libraryInfo, exception);
-                    }
-                }
-                try
-                {
                     UnzipNative(filePath, libraryInfo.Extract);
+                }
+                catch (WebException exception)
+                {
+                    throw new DownloadLibException(libraryInfo, exception);
                 }
                 catch (InvalidDataException exception)
                 {
