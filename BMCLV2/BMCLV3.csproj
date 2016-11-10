@@ -107,6 +107,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Downloader\Version.cs" />
+    <Compile Include="Util\ErrorHandler.cs" />
     <Compile Include="EventHandler.cs" />
     <Compile Include="Exceptions\AnotherGameRunningException.cs" />
     <Compile Include="Exceptions\DownloadLibException.cs" />
