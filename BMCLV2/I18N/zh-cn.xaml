@@ -167,4 +167,5 @@
     <s:String x:Key="SyncAssetsFinish">同步资源文件完毕，若未生效，请重启客户端</s:String>
     <s:String x:Key="ScreenSetting">游戏窗口设定</s:String>
     <s:String x:Key="FullScreen">全屏</s:String>
+    <s:String x:Key="ExceptionDotNet4.5">BMCLNG需要.net 4.5的支持</s:String>
 </ResourceDictionary>

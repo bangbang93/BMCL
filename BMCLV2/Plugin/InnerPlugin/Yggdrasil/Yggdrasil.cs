@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Net;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using BMCLV2.Auth;
 using BMCLV2.JsonClass;
-using BMCLV2.Plugin;
 
-namespace BMCLV2.Yggdrasil
+namespace BMCLV2.Plugin.InnerPlugin.Yggdrasil
 {
     public class Yggdrasil : IBmclAuthPlugin
     {

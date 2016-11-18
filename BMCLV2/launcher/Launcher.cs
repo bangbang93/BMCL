@@ -30,6 +30,7 @@ namespace BMCLV2.Launcher
         private OnGameExit _onGameExit;
         private OnGameStart _onGameStart;
         private OnGameLaunch _onGameLaunch;
+        private OnLaunchError _onLaunchError;
 
 
         public LauncherState State { get; private set; }
@@ -50,6 +51,12 @@ namespace BMCLV2.Launcher
         {
             add { _onGameLaunch += value; }
             remove { _onGameLaunch -= value;}
+        }
+
+        public event OnLaunchError OnLaunchError
+        {
+            add { _onLaunchError += value; }
+            remove { _onLaunchError -= value; }
         }
 
         public Launcher(VersionInfo versionInfo, AuthResult authResult, Config config = null, bool disableXincgc = false)
@@ -92,15 +99,22 @@ namespace BMCLV2.Launcher
 
         private bool Launch()
         {
-            _childProcess = 
-                _config.LaunchMode == LaunchMode.Normal 
-                ? new ChildProcess(_config.Javaw, _arguments.ToArray())
-                : new ChildProcess(_config.Javaw, _versionDirectory, _arguments.ToArray());
-            if (!_childProcess.Start()) return false;
-            _childProcess.OnStdOut += OnStdOut;
-            _childProcess.OnStdErr += OnStdOut;
-            _childProcess.OnExit += ChildProcessOnExit;
-            _errorCount = CountError();
+            try
+            {
+                _childProcess =
+                    _config.LaunchMode == LaunchMode.Normal
+                        ? new ChildProcess(_config.Javaw, _arguments.ToArray())
+                        : new ChildProcess(_config.Javaw, _versionDirectory, _arguments.ToArray());
+                if (!_childProcess.Start()) return false;
+                _childProcess.OnStdOut += OnStdOut;
+                _childProcess.OnStdErr += OnStdOut;
+                _childProcess.OnExit += ChildProcessOnExit;
+                _errorCount = CountError();
+            }
+            catch (Exception exception)
+            {
+                _onLaunchError(this, exception);
+            }
             return true;
         }
 
@@ -186,18 +200,22 @@ namespace BMCLV2.Launcher
                 if (!libraryInfo.IsNative) continue;
                 if (!libraryInfo.ShouldDeployOnOs()) continue;
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
-                if (!libraryInfo.IsVaild(_libraryDirectory))
+                try
                 {
-                    try
+                    if (!libraryInfo.IsVaild(_libraryDirectory))
                     {
                         await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
                     }
-                    catch (WebException exception)
-                    {
-                        throw new DownloadLibException(libraryInfo, exception);
-                    }
+                    UnzipNative(filePath, libraryInfo.Extract);
                 }
-                UnzipNative(filePath, libraryInfo.Extract);
+                catch (WebException exception)
+                {
+                    throw new DownloadLibException(libraryInfo, exception);
+                }
+                catch (InvalidDataException exception)
+                {
+                    throw new DownloadLibException(libraryInfo, exception);
+                }
             }
             return true;
         }
@@ -209,7 +227,8 @@ namespace BMCLV2.Launcher
                 var zipArchive = new ZipArchive(zipFile);
                 foreach (var entry in zipArchive.Entries)
                 {
-                    if (extractRules != null && extractRules.Exclude.Any(entryName => entry.FullName.Contains(entryName))) continue;
+                    if (extractRules != null &&
+                        extractRules.Exclude.Any(entryName => entry.FullName.Contains(entryName))) continue;
                     var filePath = Path.Combine(_nativesDirectory, entry.FullName);
                     entry.ExtractToFile(filePath, true);
                 }

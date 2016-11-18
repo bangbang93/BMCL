@@ -107,6 +107,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Downloader\Version.cs" />
+    <Compile Include="Util\ErrorHandler.cs" />
     <Compile Include="EventHandler.cs" />
     <Compile Include="Exceptions\AnotherGameRunningException.cs" />
     <Compile Include="Exceptions\DownloadLibException.cs" />
@@ -223,12 +224,12 @@
     <Compile Include="Util\Crypto.cs" />
     <Compile Include="Versions\RemoteVerType.cs" />
     <Compile Include="Windows\NotiIcon.cs" />
-    <Compile Include="Yggdrasil\Agent.cs" />
-    <Compile Include="Yggdrasil\AuthenticationRequest.cs" />
-    <Compile Include="Yggdrasil\AuthenticationResponse.cs" />
-    <Compile Include="Yggdrasil\GameProfile.cs" />
-    <Compile Include="Yggdrasil\Yggdrasil.cs" />
-    <Compile Include="Yggdrasil\Response.cs" />
+    <Compile Include="Plugin\InnerPlugin\Yggdrasil\Agent.cs" />
+    <Compile Include="Plugin\InnerPlugin\Yggdrasil\AuthenticationRequest.cs" />
+    <Compile Include="Plugin\InnerPlugin\Yggdrasil\AuthenticationResponse.cs" />
+    <Compile Include="Plugin\InnerPlugin\Yggdrasil\GameProfile.cs" />
+    <Compile Include="Plugin\InnerPlugin\Yggdrasil\Yggdrasil.cs" />
+    <Compile Include="Plugin\InnerPlugin\Yggdrasil\Response.cs" />
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

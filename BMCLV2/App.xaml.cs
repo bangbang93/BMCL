@@ -18,11 +18,9 @@ namespace BMCLV2
     /// </summary>
     public partial class App
     {
-        private static bool _skipPlugin;
-
         public static EventWaitHandle ProgramStarted;
 
-        public static bool SkipPlugin => _skipPlugin;
+        public static bool SkipPlugin { get; private set; }
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -63,7 +61,7 @@ namespace BMCLV2
             }
             if (Array.IndexOf(e.Args, "-SkipPlugin") != -1)
             {
-                App._skipPlugin = true;
+                App.SkipPlugin = true;
             }
             WebRequest.DefaultWebProxy = null;  //禁用默认代理
             base.OnStartup(e);
@@ -102,13 +100,10 @@ namespace BMCLV2
             e.Handled = true;
             if (e.Exception is XamlParseException)
             {
-                if (e.Exception.InnerException != null)
+                if (e.Exception.InnerException is FileLoadException)
                 {
-                    if (e.Exception.InnerException is FileLoadException)
-                    {
-                        //TODO 资源加载
-                        return;
-                    }
+                    //TODO 资源加载
+                    return;
                 }
             }
             var crash = new CrashHandle(e.Exception);
