@@ -165,14 +165,13 @@ namespace BMCLV2.Game
 
         private Download.ArtifactInfo GetArtifact()
         {
-            if (Downloads.Artifact != null) return Downloads.Artifact;
             if (IsNative && Downloads.Classifiers.Windows == null)
             {
                 return Environment.Is64BitOperatingSystem
                     ? Downloads.Classifiers.Windowsx64
                     : Downloads.Classifiers.Windowsx32;
             }
-            return Downloads.Classifiers.Windows;
+            return Downloads.Classifiers?.Windows ?? Downloads.Artifact;
         }
     }
 }
