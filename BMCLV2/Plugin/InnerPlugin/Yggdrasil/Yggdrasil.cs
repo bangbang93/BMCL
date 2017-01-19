@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using System.Web;
 using BMCLV2.Auth;
+using BMCLV2.I18N;
 using BMCLV2.JsonClass;
 
 namespace BMCLV2.Plugin.InnerPlugin.Yggdrasil
@@ -65,6 +67,17 @@ namespace BMCLV2.Plugin.InnerPlugin.Yggdrasil
                 authResult.IsSuccess = false;
                 authResult.ErrCode = exception.Message;
                 return authResult;
+            }
+            catch (WebException exception)
+            {
+                var res = (HttpWebResponse)exception.Response;
+                if (res.StatusCode == HttpStatusCode.Forbidden)
+                {
+                    authResult.IsSuccess = false;
+                    authResult.ErrCode = LangManager.Transalte("UsernameOrPasswordError");
+                    return authResult;
+                }
+                throw;
             }
         }
     }
