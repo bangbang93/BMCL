@@ -65,19 +65,16 @@ namespace BMCLV2.Plugin.InnerPlugin.Yggdrasil
             catch (TimeoutException exception)
             {
                 authResult.IsSuccess = false;
-                authResult.ErrCode = exception.Message;
+                authResult.ErrCode = authResult.Message = exception.Message;
                 return authResult;
             }
             catch (WebException exception)
             {
                 var res = (HttpWebResponse)exception.Response;
-                if (res.StatusCode == HttpStatusCode.Forbidden)
-                {
-                    authResult.IsSuccess = false;
-                    authResult.ErrCode = LangManager.Transalte("UsernameOrPasswordError");
-                    return authResult;
-                }
-                throw;
+                if (res.StatusCode != HttpStatusCode.Forbidden) throw;
+                authResult.IsSuccess = false;
+                authResult.ErrCode = authResult.Message = LangManager.Transalte("UsernameOrPasswordError");
+                return authResult;
             }
         }
     }
