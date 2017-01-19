@@ -111,13 +111,13 @@ namespace BMCLV2.Game
             if (Rules == null) return true;
             var disallow = _rule["disallow"];
             var allow = _rule["allow"];
-            if (disallow == null && allow != null)
-            {
-                return allow.Any(osInfo=>osInfo.Name == os);
-            }
-            if (allow == null && disallow != null)
+            if (disallow.Count != 0 && allow.Count == 0)
             {
                 return disallow.All(osInfo => osInfo.Name != os);
+            }
+            if (allow.Count != 0 && disallow.Count == 0)
+            {
+                return allow.Any(osInfo => osInfo.Name == os);
             }
             return true;
         }

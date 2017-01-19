@@ -197,6 +197,7 @@ namespace BMCLV2.Launcher
             foreach (var libraryInfo in VersionInfo.Libraries)
             {
                 //skip non-natives
+                Logger.Info(libraryInfo.Name);
                 if (!libraryInfo.IsNative) continue;
                 if (!libraryInfo.ShouldDeployOnOs()) continue;
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
