@@ -197,8 +197,10 @@ namespace BMCLV2.Launcher
             foreach (var libraryInfo in VersionInfo.Libraries)
             {
                 //skip non-natives
+                Logger.Info(libraryInfo.Name);
                 if (!libraryInfo.IsNative) continue;
                 if (!libraryInfo.ShouldDeployOnOs()) continue;
+                Logger.Info("unarchive");
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
                 try
                 {
@@ -230,6 +232,7 @@ namespace BMCLV2.Launcher
                     if (extractRules != null &&
                         extractRules.Exclude.Any(entryName => entry.FullName.Contains(entryName))) continue;
                     var filePath = Path.Combine(_nativesDirectory, entry.FullName);
+                    Logger.Log($"extract ${filePath}");
                     entry.ExtractToFile(filePath, true);
                 }
             }

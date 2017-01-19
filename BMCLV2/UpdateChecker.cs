@@ -50,7 +50,7 @@ namespace BMCLV2
                 {
                     HasUpdate = true;
                     LastestDownloadUrl = verTable.Lastest.DownloadUrl;
-                    Logger.Log("需要更新，最新版本为" + verTable.Lastest);
+                    Logger.Log("需要更新，最新版本为" + verTable.Lastest.Version);
                     Logger.Log("下载地址为" + LastestDownloadUrl);
                 }
                 else
