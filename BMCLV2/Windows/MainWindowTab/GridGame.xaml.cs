@@ -97,16 +97,6 @@ namespace BMCLV2.Windows.MainWindowTab
             });
         }
 
-        private void btnModdirMrg_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "explorer.exe",
-                Arguments =
-                    Path.Combine(ModHelper.SetupModPath(listVer.SelectedItem.ToString()), "moddir")
-            });
-        }
-
         private void btnModCfgMrg_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo
