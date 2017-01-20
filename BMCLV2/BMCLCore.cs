@@ -42,8 +42,7 @@ namespace BMCLV2
 
         static BmclCore()
         {
-            BmclVersion = Application.ResourceAssembly.FullName.Split('=')[1];
-            BmclVersion = BmclVersion.Substring(0, BmclVersion.IndexOf(','));
+            BmclVersion = Application.ResourceAssembly.GetName().Version.ToString();
             Logger.Log("BMCLNG Ver." + BmclVersion + "正在启动");
             if (!Directory.Exists(MinecraftDirectory))
             {
