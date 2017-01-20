@@ -98,25 +98,18 @@ namespace BMCLV2
 
         private static void UpdateCheckerOnCheckUpdateFinishEvent(bool hasUpdate, string updateAddr, string updateInfo, int updateBuild)
         {
-            if (hasUpdate)
+            if (!hasUpdate) return;
+            var a = MessageBox.Show(MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
+                MessageBoxImage.Information);
+            var updater = new FrmUpdater(updateBuild, updateAddr);
+            if (a == MessageBoxResult.OK)
             {
-                var a = MessageBox.Show(MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
-                    MessageBoxImage.Information);
-                if (a == MessageBoxResult.OK)
-                {
-                    var updater = new FrmUpdater(updateBuild, updateAddr);
-                    updater.ShowDialog();
-                }
-                if (a == MessageBoxResult.No || a == MessageBoxResult.None) //若窗口直接消失
-                {
-                    if (MessageBox.Show(MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
-                    MessageBoxImage.Information) == MessageBoxResult.OK)
-                    {
-                        var updater = new FrmUpdater(updateBuild, updateAddr);
-                        updater.ShowDialog();
-                    }
-                }
+                updater.ShowDialog();
             }
+            if (a != MessageBoxResult.No && a != MessageBoxResult.None) return;
+            if (MessageBox.Show(MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
+                MessageBoxImage.Information) != MessageBoxResult.OK) return;
+            updater.ShowDialog();
         }
 
         public static void Invoke(Delegate invoke, object[] argObjects = null)
