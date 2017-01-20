@@ -131,11 +131,12 @@ namespace BMCLV2.Windows.MainWindowTab
         public string GetSelectedVersion()
         {
             var version = listVer.SelectedItem as string;
-            if (version == null)
+            if (version != null) return version;
+            if (listVer.Items.Count == 1)
             {
-                throw new NoSelectGameException();
+                return listVer.Items[0] as string;
             }
-            return version;
+            throw new NoSelectGameException();
         }
     }
 }
