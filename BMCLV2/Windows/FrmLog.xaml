@@ -3,6 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="BMCL日志" Height="300" Width="691" Icon="../screenLaunch.png">
     <Grid x:Name="gridBoard">
-        <ListBox x:Name="listLog"/>
+        <ListBox x:Name="listLog" MouseRightButtonUp="listLog_MouseRightButtonUp" SelectionMode="Extended"/>
     </Grid>
 </Window>

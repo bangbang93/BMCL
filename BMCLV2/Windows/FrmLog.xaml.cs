@@ -27,29 +27,51 @@ namespace BMCLV2
             switch (Type)
             {
                 case Logger.LogType.Error:
-                    Log = DateTime.Now.ToString() + "错误:" + Log;
+                    Log = DateTime.Now + "错误:" + Log;
                     break;
                 case Logger.LogType.Info:
-                    Log = DateTime.Now.ToString() + "信息:" + Log;
+                    Log = DateTime.Now + "信息:" + Log;
                     break;
                 case Logger.LogType.Crash:
-                    Log = DateTime.Now.ToString() + "崩溃:" + Log;
+                    Log = DateTime.Now + "崩溃:" + Log;
                     break;
                 case Logger.LogType.Exception:
-                    Log = DateTime.Now.ToString() + "异常:" + Log;
+                    Log = DateTime.Now + "异常:" + Log;
                     break;
                 case Logger.LogType.Game:
-                    Log = DateTime.Now.ToString() + "游戏:" + Log;
+                    Log = DateTime.Now + "游戏:" + Log;
                     break;
                 case Logger.LogType.Fml:
-                    Log = DateTime.Now.ToString() + "FML :" + Log;
+                    Log = DateTime.Now + "FML :" + Log;
                     break;
                 default:
-                    Log = DateTime.Now.ToString() + "信息:" + Log;
+                    Log = DateTime.Now + "信息:" + Log;
                     break;
             }
             Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(delegate {listLog.Items.Add(Log); listLog.ScrollIntoView(listLog.Items[listLog.Items.Count - 1]); }));
         }
 
+        private void listLog_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                var log = "";
+                if (listLog.SelectedItems.Count > 0)
+                {
+                    var sb = new StringBuilder();
+                    foreach (var selectedItem in listLog.SelectedItems)
+                    {
+                        sb.AppendLine(selectedItem as string);
+                    }
+                    log = sb.ToString();
+                    Clipboard.SetDataObject(log);
+                    MessageBox.Show(this, "复制成功");
+                }
+            }
+            catch (Exception ignore)
+            {
+                // ignored
+            }
+        }
     }
 }
