@@ -19,6 +19,7 @@ namespace BMCLV2
         {
             var thread = new Thread(run);
             thread.Start();
+            thread.IsBackground = true;
         }
 
         private void run()

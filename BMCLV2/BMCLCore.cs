@@ -4,7 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using BMCLV2.Auth;
@@ -83,7 +85,7 @@ namespace BMCLV2
 #endif
         }
         
-        private static void ReleaseCheck()
+        private static async Task ReleaseCheck()
         {
             if (Config.Report)
             {
@@ -92,24 +94,21 @@ namespace BMCLV2
             if (Config.CheckUpdate)
             {
                 var updateChecker = new UpdateChecker();
-                updateChecker.CheckUpdateFinishEvent += UpdateCheckerOnCheckUpdateFinishEvent;
+                var updateInfo = await updateChecker.Run();
+                if (updateInfo == null) return;
+                var a = MessageBox.Show(MainWindow, updateInfo.Description, "更新", MessageBoxButton.OKCancel,
+                    MessageBoxImage.Information);
+                if (a == MessageBoxResult.OK)
+                {
+                    var updater = new FrmUpdater(updateInfo.LastBuild, updateInfo.Url);
+                    updater.ShowDialog();
+                }
+//                if (a != MessageBoxResult.No && a != MessageBoxResult.None) return;
+//                if (MessageBox.Show(MainWindow, updateInfo.Description, "更新", MessageBoxButton.OKCancel,
+//                    MessageBoxImage.Information) != MessageBoxResult.OK)
+//                    return;
+//                updater.ShowDialog();
             }
-        }
-
-        private static void UpdateCheckerOnCheckUpdateFinishEvent(bool hasUpdate, string updateAddr, string updateInfo, int updateBuild)
-        {
-            if (!hasUpdate) return;
-            var a = MessageBox.Show(MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
-                MessageBoxImage.Information);
-            var updater = new FrmUpdater(updateBuild, updateAddr);
-            if (a == MessageBoxResult.OK)
-            {
-                updater.ShowDialog();
-            }
-            if (a != MessageBoxResult.No && a != MessageBoxResult.None) return;
-            if (MessageBox.Show(MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
-                MessageBoxImage.Information) != MessageBoxResult.OK) return;
-            updater.ShowDialog();
         }
 
         public static void Invoke(Delegate invoke, object[] argObjects = null)
