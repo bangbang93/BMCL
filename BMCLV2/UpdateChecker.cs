@@ -11,7 +11,7 @@ namespace BMCLV2
 {
     internal class UpdateChecker
     {
-        private const string CheckUrl = @"http://bbs.bangbang93.com/bmcl/checkupdate.php";
+        private const string CheckUrl = @"https://bbs.bangbang93.com/bmcl/checkupdate.php";
 
         public async Task<UpdateDescription> Run()
         {
