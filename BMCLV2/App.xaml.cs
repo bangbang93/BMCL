@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Net;
 using System.Threading;
 using System.Windows.Markup;
+using BMCLV2.Util;
 using BMCLV2.Windows;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
@@ -67,12 +68,6 @@ namespace BMCLV2
             base.OnStartup(e);
         }
 
-        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            var crash = new CrashHandle(e.ExceptionObject as Exception);
-            crash.Show();
-        }
-
         protected override void OnExit(ExitEventArgs e)
         {
             base.OnExit(e);
@@ -84,11 +79,23 @@ namespace BMCLV2
             Logger.Stop();
         }
 
-// ReSharper disable once UnusedMember.Local
-// ReSharper disable once UnusedParameter.Local
+        // ReSharper disable once UnusedMember.Local
+        // ReSharper disable once UnusedParameter.Local
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var resolved = new ErrorHandler(e.ExceptionObject as Exception).Resolve();
+            if (resolved) return;
+            var crash = new CrashHandle(e.ExceptionObject as Exception);
+            crash.Show();
+        }
+
+        // ReSharper disable once UnusedMember.Local
+        // ReSharper disable once UnusedParameter.Local
         void TaskScheduler_UnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
         {
             e.SetObserved();
+            var resolved = new ErrorHandler(e.Exception).Resolve();
+            if (resolved) return;
             var crash = new CrashHandle(e.Exception);
             crash.Show();
         }
@@ -98,14 +105,8 @@ namespace BMCLV2
         private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
-            if (e.Exception is XamlParseException)
-            {
-                if (e.Exception.InnerException is FileLoadException)
-                {
-                    //TODO 资源加载
-                    return;
-                }
-            }
+            var resolved = new ErrorHandler(e.Exception).Resolve();
+            if (resolved) return;
             var crash = new CrashHandle(e.Exception);
             crash.Show();
         }

@@ -17,9 +17,9 @@ namespace BMCLV2.Util
             Logger.Fatal(exception);
         }
 
-        public void Resolve()
+        public bool Resolve()
         {
-            
+            return _match();
         }
 
         private bool _match()
