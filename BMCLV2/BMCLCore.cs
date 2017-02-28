@@ -4,7 +4,9 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using BMCLV2.Auth;
@@ -42,8 +44,7 @@ namespace BMCLV2
 
         static BmclCore()
         {
-            BmclVersion = Application.ResourceAssembly.FullName.Split('=')[1];
-            BmclVersion = BmclVersion.Substring(0, BmclVersion.IndexOf(','));
+            BmclVersion = Application.ResourceAssembly.GetName().Version.ToString();
             Logger.Log("BMCLNG Ver." + BmclVersion + "正在启动");
             if (!Directory.Exists(MinecraftDirectory))
             {
@@ -84,7 +85,7 @@ namespace BMCLV2
 #endif
         }
         
-        private static void ReleaseCheck()
+        private static async Task ReleaseCheck()
         {
             if (Config.Report)
             {
@@ -93,30 +94,20 @@ namespace BMCLV2
             if (Config.CheckUpdate)
             {
                 var updateChecker = new UpdateChecker();
-                updateChecker.CheckUpdateFinishEvent += UpdateCheckerOnCheckUpdateFinishEvent;
-            }
-        }
-
-        private static void UpdateCheckerOnCheckUpdateFinishEvent(bool hasUpdate, string updateAddr, string updateInfo, int updateBuild)
-        {
-            if (hasUpdate)
-            {
-                var a = MessageBox.Show(MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
+                var updateInfo = await updateChecker.Run();
+                if (updateInfo == null) return;
+                var a = MessageBox.Show(MainWindow, updateInfo.Description, "更新", MessageBoxButton.OKCancel,
                     MessageBoxImage.Information);
                 if (a == MessageBoxResult.OK)
                 {
-                    var updater = new FrmUpdater(updateBuild, updateAddr);
+                    var updater = new FrmUpdater(updateInfo.LastBuild, updateInfo.Url);
                     updater.ShowDialog();
                 }
-                if (a == MessageBoxResult.No || a == MessageBoxResult.None) //若窗口直接消失
-                {
-                    if (MessageBox.Show(MainWindow, updateInfo, "更新", MessageBoxButton.OKCancel,
-                    MessageBoxImage.Information) == MessageBoxResult.OK)
-                    {
-                        var updater = new FrmUpdater(updateBuild, updateAddr);
-                        updater.ShowDialog();
-                    }
-                }
+//                if (a != MessageBoxResult.No && a != MessageBoxResult.None) return;
+//                if (MessageBox.Show(MainWindow, updateInfo.Description, "更新", MessageBoxButton.OKCancel,
+//                    MessageBoxImage.Information) != MessageBoxResult.OK)
+//                    return;
+//                updater.ShowDialog();
             }
         }
 

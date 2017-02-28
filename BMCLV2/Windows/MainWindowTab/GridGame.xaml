@@ -28,10 +28,8 @@
     </Border>
     <Button x:Name="btnReName" Content="{DynamicResource btnReName}" HorizontalAlignment="Left" Margin="556,205,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnReName_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
     </Button>
-    <Button x:Name="btnModMrg" Content="{DynamicResource btnModMrg}" HorizontalAlignment="Left" Margin="392,248,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModMrg_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
+    <Button x:Name="btnModMrg" Content="{DynamicResource btnModMrg}" HorizontalAlignment="Left" Margin="447,248,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModMrg_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
     </Button>
-    <Button x:Name="btnModdirMrg" Content="{DynamicResource btnModdirMrg}" HorizontalAlignment="Left" Margin="501,248,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModdirMrg_Click" ToolTip="如果MOD在.minecraft下创建了文件夹（例如Flan's mod,Custom NPC等），请使用这个管理" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
-    </Button>
-    <Button x:Name="btnModCfgMrg" Content="{DynamicResource btnModCfgMrg}" HorizontalAlignment="Left" Margin="611,248,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModCfgMrg_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
+    <Button x:Name="btnModCfgMrg" Content="{DynamicResource btnModCfgMrg}" HorizontalAlignment="Left" Margin="557,248,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModCfgMrg_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}">
     </Button>
 </Grid>

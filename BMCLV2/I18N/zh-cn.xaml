@@ -169,4 +169,5 @@
     <s:String x:Key="FullScreen">全屏</s:String>
     <s:String x:Key="ExceptionDotNet4.5">BMCLNG需要.net 4.5的支持</s:String>
     <s:String x:Key="UsernameOrPasswordError">用户名或密码错误</s:String>
+    <s:String x:Key="NoSelectGameException">未选择游戏版本</s:String>
 </ResourceDictionary>

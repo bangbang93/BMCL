@@ -19,6 +19,7 @@ namespace BMCLV2
         {
             var thread = new Thread(run);
             thread.Start();
+            thread.IsBackground = true;
         }
 
         private void run()
@@ -39,7 +40,7 @@ namespace BMCLV2
                     {"version", BmclCore.BmclVersion}
                 };
                 string postdata = ParsToString(ht);
-                var req = (HttpWebRequest)WebRequest.Create("http://bbs.bangbang93.com/bmcl/bmcllog.php");
+                var req = (HttpWebRequest)WebRequest.Create("https://bbs.bangbang93.com/bmcl/bmcllog.php");
                 req.Method = "POST";
                 req.ContentType = "application/x-www-form-urlencoded";
                 byte[] buffer = Encoding.UTF8.GetBytes(postdata);

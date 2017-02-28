@@ -97,16 +97,6 @@ namespace BMCLV2.Windows.MainWindowTab
             });
         }
 
-        private void btnModdirMrg_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo
-            {
-                FileName = "explorer.exe",
-                Arguments =
-                    Path.Combine(ModHelper.SetupModPath(listVer.SelectedItem.ToString()), "moddir")
-            });
-        }
-
         private void btnModCfgMrg_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(new ProcessStartInfo
@@ -131,11 +121,12 @@ namespace BMCLV2.Windows.MainWindowTab
         public string GetSelectedVersion()
         {
             var version = listVer.SelectedItem as string;
-            if (version == null)
+            if (version != null) return version;
+            if (listVer.Items.Count == 1)
             {
-                throw new NoSelectGameException();
+                return listVer.Items[0] as string;
             }
-            return version;
+            throw new NoSelectGameException();
         }
     }
 }
