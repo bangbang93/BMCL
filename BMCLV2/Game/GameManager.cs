@@ -107,6 +107,7 @@ namespace BMCLV2.Game
             var game = GetVersion(id);
             if (game == null) throw new NoSuchVersionException(id);
             _launcher = new Launcher.Launcher(game, authResult, BmclCore.Config);
+          _launcher.OnLaunchError += (launcher, exception) => _launcher = null;
             _launcher.OnGameExit += (sender, info, exitcode) => _launcher = null;
             _launcher.OnGameStart += LauncherOnGameStart;
             return _launcher;
@@ -117,6 +118,11 @@ namespace BMCLV2.Game
             _assetManager = new AssetManager(versionInfo);
             await _assetManager.Sync();
             //TODO 弹窗
+        }
+
+        private void registerWatcher()
+        {
+            
         }
     }
 }

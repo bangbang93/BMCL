@@ -81,6 +81,8 @@ namespace BMCLV2.Launcher
 
         public async Task Start()
         {
+          try
+          {
             _onGameLaunch(this, "LauncherCheckJava", VersionInfo);
             if (!SetupJava()) return;
             if (!CleanNatives()) return;
@@ -95,6 +97,12 @@ namespace BMCLV2.Launcher
             _onGameLaunch(this, "LauncherGo", VersionInfo);
             if (!Launch()) return;
             _onGameStart(this, VersionInfo);
+          }
+          catch (Exception e)
+          {
+            _onLaunchError(this, e);
+            throw e;
+          }
         }
 
         private bool Launch()
@@ -161,10 +169,9 @@ namespace BMCLV2.Launcher
             var libraries = VersionInfo.Libraries;
             foreach (var libraryInfo in libraries)
             {
-                // skip natives
                 if (libraryInfo.IsNative) continue;
-                var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
-                if (!libraryInfo.IsVaild(_libraryDirectory))
+                var filePath = Path.Combine(_libraryDirectory, libraryInfo.GetLibraryPath());
+                if (!libraryInfo.IsVaildLibrary(_libraryDirectory))
                 {
                     try
                     {
@@ -201,10 +208,10 @@ namespace BMCLV2.Launcher
                 if (!libraryInfo.IsNative) continue;
                 if (!libraryInfo.ShouldDeployOnOs()) continue;
                 Logger.Info("unarchive");
-                var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
+                var filePath = Path.Combine(_libraryDirectory, libraryInfo.GetNativePath());
                 try
                 {
-                    if (!libraryInfo.IsVaild(_libraryDirectory))
+                    if (!libraryInfo.IsVaildNative(_libraryDirectory))
                     {
                         await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
                     }
