@@ -97,7 +97,14 @@ namespace BMCLV2.Game
       }
     }
 
-    public bool HasLibrary => Downloads.Artifact != null;
+    public bool HasLibrary()
+    {
+      if (Downloads == null)
+      {
+        return true;
+      }
+      return Downloads.Artifact != null;
+    }
 
     public bool IsNative => Natives != null;
 
@@ -122,6 +129,11 @@ namespace BMCLV2.Game
       var path = Path.Combine(libraryPath, GetLibraryPath());
 
       var fileInfo = new FileInfo(path);
+      var library = GetLibrary();
+      if (library == null)
+      {
+        return fileInfo.Exists;
+      }
       if (GetLibrary().Size == 0 || GetLibrary().Sha1 == null)
         return fileInfo.Exists;
       return fileInfo.Exists
@@ -135,7 +147,7 @@ namespace BMCLV2.Game
 
       var fileInfo = new FileInfo(path);
       if (GetNative().Size == 0 || GetNative().Sha1 == null)
-        return fileInfo.Exists;
+        return fileInfo.Exists && fileInfo.Length > 0;
       return fileInfo.Exists
              && fileInfo.Length == GetNative().Size
              && Crypto.GetSha1HashFromFile(path) == GetNative().Sha1;
@@ -190,7 +202,7 @@ namespace BMCLV2.Game
 
     public Download.ArtifactInfo GetLibrary()
     {
-      return Downloads.Artifact;
+      return Downloads?.Artifact;
     }
 
     public Download.ArtifactInfo GetNative()

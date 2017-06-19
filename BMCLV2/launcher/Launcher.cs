@@ -101,7 +101,7 @@ namespace BMCLV2.Launcher
           catch (Exception e)
           {
             _onLaunchError(this, e);
-            throw e;
+            throw;
           }
         }
 

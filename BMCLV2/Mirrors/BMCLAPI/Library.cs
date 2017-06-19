@@ -11,15 +11,15 @@ namespace BMCLV2.Mirrors.BMCLAPI
 
     public override async Task DownloadLibrary(LibraryInfo library, string savePath)
     {
-      if (library.HasLibrary)
+      if (library.HasLibrary())
       {
-        var url = library.GetLibrary().Url ?? Server + library.GetLibraryPath();
+        var url = library.GetLibrary()?.Url ?? Server + library.GetLibraryPath();
         url = _vanillaServer.Replace(url, Server);
         await Downloader.DownloadFileTaskAsync(url, savePath);
       }
       if (library.IsNative)
       {
-        var url = library.GetLibrary().Url ?? Server + library.GetNativePath();
+        var url = library.GetNative().Url ?? Server + library.GetNativePath();
         url = _vanillaServer.Replace(url, Server);
         await Downloader.DownloadFileTaskAsync(url, savePath);
       }
