@@ -8,13 +8,13 @@ namespace BMCLV2.Mirrors.BMCLAPI
     {
         public override string Name { get; } = "BMCLAPI";
 
-        private const string Server = "http://bmclapi2.bangbang93.com/";
+        private const string Server = "https://bmclapi2.bangbang93.com/";
 
         private readonly string[] _originServers = new []{"https://launchermeta.mojang.com", "https://launcher.mojang.com/" };
 
     public Version()
         {
-            Url = "http://bmclapi2.bangbang93.com/mc/game/version_manifest.json";
+            Url = "https://bmclapi2.bangbang93.com/mc/game/version_manifest.json";
         }
 
         public override async Task<string> DownloadJson(string url)
