@@ -207,9 +207,19 @@ namespace BMCLV2.Game
 
     public Download.ArtifactInfo GetNative()
     {
-      return (Environment.Is64BitOperatingSystem
-        ? Downloads.Classifiers.Windowsx64
-        : Downloads.Classifiers.Windowsx32) ?? Downloads.Classifiers.Windows;
+      Download.ArtifactInfo path = null;
+      if (Downloads?.Classifiers != null)
+      {
+        path = (Environment.Is64BitOperatingSystem
+                 ? Downloads.Classifiers.Windowsx64
+                 : Downloads.Classifiers.Windowsx32) ?? Downloads.Classifiers.Windows;
+      }
+      if (path != null) return path;
+      path = new Download.ArtifactInfo()
+      {
+        Path = this.GetNativePath()
+      };
+      return path;
     }
 
     private Download.ArtifactInfo GetArtifact()
