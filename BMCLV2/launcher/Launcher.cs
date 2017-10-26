@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -271,15 +272,25 @@ namespace BMCLV2.Launcher
                     values.Add(info.Key, info.Value);
                 }
             }
+          if (VersionInfo.Arguments == null)
+          {
             var arguments = VersionInfo.MinecraftArguments.Split(' ');
-            for (var i = 0; i < arguments.Length; i ++)
+            for (var i = 0; i < arguments.Length; i++)
             {
-                if (values.ContainsKey(arguments[i]))
-                {
-                    arguments[i] = values[arguments[i]];
-                }
+              if (values.ContainsKey(arguments[i]))
+              {
+                arguments[i] = values[arguments[i]];
+              }
             }
             return arguments;
+          }
+          else
+          {
+            var arguments = new List<string>(20);
+            var gameArgs = VersionInfo.Arguments.Game;
+            arguments.AddRange(gameArgs.OfType<string>().Select(s => values.ContainsKey(s) ? values[s] : s));
+            return arguments;
+          }
         }
 
         private void HandleCrashReport(IReadOnlyDictionary<string, int> nowValue)

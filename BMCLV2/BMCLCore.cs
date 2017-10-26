@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -136,5 +136,10 @@ namespace BMCLV2
                 Dispatcher.Invoke(window.Show);
             }
         }
+
+      public static void Notify(string message)
+      {
+        NIcon?.ShowBalloonTip(5, message);
+      }
     }
 }

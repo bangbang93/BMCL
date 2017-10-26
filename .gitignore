@@ -216,3 +216,5 @@ pip-log.txt
 
 *.orig
 packages/
+
+.vs/
