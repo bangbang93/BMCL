@@ -34,30 +34,30 @@ namespace BMCLV2.Launcher
         private OnLaunchError _onLaunchError;
 
 
-        public LauncherState State { get; private set; }
+        public LauncherState State { get; }
 
         public event OnGameExit OnGameExit
         {
-            add { _onGameExit += value; }
-            remove { _onGameExit -= value; }
+            add => _onGameExit += value;
+          remove => _onGameExit -= value;
         }
 
         public event OnGameStart OnGameStart
         {
-            add { _onGameStart += value; }
-            remove { _onGameStart -= value; }
+            add => _onGameStart += value;
+          remove => _onGameStart -= value;
         }
 
         public event OnGameLaunch OnGameLaunch
         {
-            add { _onGameLaunch += value; }
-            remove { _onGameLaunch -= value;}
+            add => _onGameLaunch += value;
+          remove => _onGameLaunch -= value;
         }
 
         public event OnLaunchError OnLaunchError
         {
-            add { _onLaunchError += value; }
-            remove { _onLaunchError -= value; }
+            add => _onLaunchError += value;
+          remove => _onLaunchError -= value;
         }
 
         public Launcher(VersionInfo versionInfo, AuthResult authResult, Config config = null, bool disableXincgc = false)
@@ -295,36 +295,32 @@ namespace BMCLV2.Launcher
 
         private void HandleCrashReport(IReadOnlyDictionary<string, int> nowValue)
         {
-            var crashReportsPath = Path.Combine(BmclCore.MinecraftDirectory, "crash-reports");
-            if (nowValue["crashReport"] != _errorCount["crashReport"] && Directory.Exists(crashReportsPath))
-            {
-                Logger.Log("发现新的错误报告");
-                var clientCrashReportDir = new DirectoryInfo(crashReportsPath);
-                var clientReports = clientCrashReportDir.GetFiles();
-                Array.Sort(clientReports,
-                    (info1, info2) => (int) (info1.LastWriteTime - info2.LastWriteTime).TotalSeconds);
-                var crashReportReader = new StreamReader(clientReports[0].FullName);
-                Logger.Log(crashReportReader.ReadToEnd(), Logger.LogType.Crash);
-                crashReportReader.Close();
-                ChildProcess.Exec(clientReports[0].FullName);
-            }
+          var crashReportsPath = Path.Combine(BmclCore.MinecraftDirectory, "crash-reports");
+          if (nowValue["crashReport"] == _errorCount["crashReport"] || !Directory.Exists(crashReportsPath)) return;
+          Logger.Log("发现新的错误报告");
+          var clientCrashReportDir = new DirectoryInfo(crashReportsPath);
+          var clientReports = clientCrashReportDir.GetFiles();
+          Array.Sort(clientReports,
+            (info1, info2) => (int) (info1.LastWriteTime - info2.LastWriteTime).TotalSeconds);
+          var crashReportReader = new StreamReader(clientReports[0].FullName);
+          Logger.Log(crashReportReader.ReadToEnd(), Logger.LogType.Crash);
+          crashReportReader.Close();
+          ChildProcess.Exec(clientReports[0].FullName);
         }
 
         private void HandleHsError(IReadOnlyDictionary<string, int> nowValue)
         {
-            var hsErrorPath = BmclCore.MinecraftDirectory;
-            if (nowValue["hsError"] != _errorCount["hsError"])
-            {
-                Logger.Log("发现新的JVM错误报告");
-                var hsErrorDir = new DirectoryInfo(hsErrorPath);
-                var hsErrors = hsErrorDir.GetFiles().Where(s => s.FullName.StartsWith("hs_err")).ToArray();
-                Array.Sort(hsErrors,
-                    (info1, info2) => (int)(info1.LastWriteTime - info2.LastWriteTime).TotalSeconds);
-                var crashReportReader = new StreamReader(hsErrors[0].FullName);
-                Logger.Log(crashReportReader.ReadToEnd(), Logger.LogType.Crash);
-                crashReportReader.Close();
-                ChildProcess.Exec(hsErrors[0].FullName);
-            }
+          var hsErrorPath = BmclCore.MinecraftDirectory;
+          if (nowValue["hsError"] == _errorCount["hsError"]) return;
+          Logger.Log("发现新的JVM错误报告");
+          var hsErrorDir = new DirectoryInfo(hsErrorPath);
+          var hsErrors = hsErrorDir.GetFiles().Where(s => s.FullName.StartsWith("hs_err")).ToArray();
+          Array.Sort(hsErrors,
+            (info1, info2) => (int)(info1.LastWriteTime - info2.LastWriteTime).TotalSeconds);
+          var crashReportReader = new StreamReader(hsErrors[0].FullName);
+          Logger.Log(crashReportReader.ReadToEnd(), Logger.LogType.Crash);
+          crashReportReader.Close();
+          ChildProcess.Exec(hsErrors[0].FullName);
         }
 
         private bool CleanNatives()

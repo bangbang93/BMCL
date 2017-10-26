@@ -1,8 +1,10 @@
-﻿using System;
+using System;
+using System.ComponentModel;
 using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -11,8 +13,10 @@ using BMCLV2.Cfg;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
 using BMCLV2.I18N;
-using BMCLV2.Plugin;
+using BMCLV2.Texturepack;
 using BMCLV2.Themes;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace BMCLV2.Windows
 {
@@ -85,7 +89,7 @@ namespace BMCLV2.Windows
 
         public void ChangeDownloadProgress(long value, long maxValue)
         {
-            this.ChangeDownloadProgress((int)value, (int)maxValue);
+            ChangeDownloadProgress((int)value, (int)maxValue);
         }
 
         public void SwitchDownloadGrid(Visibility visibility)
@@ -120,7 +124,7 @@ namespace BMCLV2.Windows
             if (BmclCore.Game!=null)
                 if (BmclCore.Game.IsRunning())
                 {
-                    this.btnMiniSize_Click(null, null);
+                    btnMiniSize_Click(null, null);
                     return;
                 }
             Logger.Log($"BMCL V2 Ver.{BmclCore.BmclVersion} 正在退出");
@@ -212,22 +216,22 @@ namespace BMCLV2.Windows
             if (Logger.Debug)
             {
                 Logger.Log("游戏退出，Debug模式保留Log信息窗口，程序不退出");
-                Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(this.Show));
+                Dispatcher.Invoke(new MethodInvoker(Show));
                 return;
             }
             if (_inscreen) return;
             Logger.Log("BMCL V2 Ver" + BmclCore.BmclVersion + DateTime.Now + "由于游戏退出而退出");
-            Dispatcher.Invoke(new System.Windows.Forms.MethodInvoker(() => Application.Current.Shutdown(0)));
+            Dispatcher.Invoke(new MethodInvoker(() => Application.Current.Shutdown(0)));
         }
 
         private void btnMiniSize_Click(object sender, RoutedEventArgs e)
         {
             Hide();
-            BmclCore.NIcon.NIcon.ShowBalloonTip(2000, "BMCL", LangManager.GetLangFromResource("BMCLHiddenInfo"), System.Windows.Forms.ToolTipIcon.Info);
+            BmclCore.NIcon.NIcon.ShowBalloonTip(2000, "BMCL", LangManager.GetLangFromResource("BMCLHiddenInfo"), ToolTipIcon.Info);
         }
         private void MenuSelectFile_Click(object sender, RoutedEventArgs e)
         {
-            var ofbg = new System.Windows.Forms.OpenFileDialog
+            var ofbg = new OpenFileDialog
             {
                 CheckFileExists = true,
                 Filter = @"支持的图片|*.jpg;*.png;*.bmp",
@@ -240,17 +244,17 @@ namespace BMCLV2.Windows
                 return;
             var b = new ImageBrush {ImageSource = new BitmapImage(new Uri((pic))), Stretch = Stretch.Fill};
             var da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
-            this.BeginAnimation(OpacityProperty, da);
-            this.Container.Background = b;
+            BeginAnimation(OpacityProperty, da);
+            Container.Background = b;
             da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
-            this.BeginAnimation(OpacityProperty, da);
+            BeginAnimation(OpacityProperty, da);
         }
         private void MenuSelectTexturePack_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("这是个正在试验的功能，请不要报告有关任何该功能的bug");
             var frmTexturepack = new FrmTexturepack();
             frmTexturepack.ShowDialog();
-            Texturepack.TexturePackEntity texture = frmTexturepack.GetSelected();
+            TexturePackEntity texture = frmTexturepack.GetSelected();
             var b = new ImageBrush();
             var bitmap = new BitmapImage();
             bitmap.BeginInit();
@@ -264,15 +268,15 @@ namespace BMCLV2.Windows
             var button = new ImageBrush {ImageSource = texture.GuiButton.Source};
 
             var da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
-            this.BeginAnimation(UIElement.OpacityProperty, da);
-            this.Container.Background = b;
+            BeginAnimation(OpacityProperty, da);
+            Container.Background = b;
             btnStart.Background = button;
             da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
-            this.BeginAnimation(UIElement.OpacityProperty, da);
+            BeginAnimation(OpacityProperty, da);
         }
         #endregion
 
-        public bool LoadOk = false;
+        public bool LoadOk;
         private void FrmMainWindow_Loaded(object sender, RoutedEventArgs e)
         {
             if (BmclCore.Config.Username == "!!!")
@@ -287,12 +291,12 @@ namespace BMCLV2.Windows
                 {
                     btnStart_Click(null, null);
                     LoadOk = true;
-                    this.Hide();
+                    Hide();
                     return;
                 }
             }
             var da = new DoubleAnimation {From = 0, To = 1, Duration = TimeSpan.FromSeconds(0.8)};
-            this.FrmMainWindow.BeginAnimation(UIElement.OpacityProperty, da);
+            FrmMainWindow.BeginAnimation(OpacityProperty, da);
             try
             {
                 var rand = new Random();
@@ -304,12 +308,12 @@ namespace BMCLV2.Windows
                             new Uri((Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg")[img]))),
                     Stretch = Stretch.Fill
                 };
-                this.Container.Background = b;
+                Container.Background = b;
             }
             catch
             {
                 var b=new SolidColorBrush(Color.FromRgb(255,255,255));
-                this.Container.Background = b;
+                Container.Background = b;
             }
             LoadOk = true;
         }
@@ -317,7 +321,7 @@ namespace BMCLV2.Windows
         {
             if (e.LeftButton == MouseButtonState.Pressed)
             {
-                this.DragMove();
+                DragMove();
             }
         }
         int _lasttabMainSelectIndex = -1;
@@ -333,34 +337,34 @@ namespace BMCLV2.Windows
             switch (TabMain.SelectedIndex)
             {
                 case 0: 
-                    GridGame.BeginAnimation(FrameworkElement.WidthProperty, da1); GridGame.BeginAnimation(FrameworkElement.HeightProperty, da2); 
+                    GridGame.BeginAnimation(WidthProperty, da1); GridGame.BeginAnimation(HeightProperty, da2); 
                     break;
                 case 1: 
-                    GridConfig.BeginAnimation(FrameworkElement.WidthProperty, da1); GridConfig.BeginAnimation(FrameworkElement.HeightProperty, da2); 
+                    GridConfig.BeginAnimation(WidthProperty, da1); GridConfig.BeginAnimation(HeightProperty, da2); 
                     break;
                 case 2: 
-                    GridVersion.BeginAnimation(FrameworkElement.WidthProperty, da1); GridVersion.BeginAnimation(FrameworkElement.HeightProperty, da2); 
+                    GridVersion.BeginAnimation(WidthProperty, da1); GridVersion.BeginAnimation(HeightProperty, da2); 
                     if (GridVersion.btnRefreshRemoteVer.IsEnabled && GridVersion.listRemoteVer.HasItems == false) GridVersion.RefreshVersion(); 
                     break;
                 case 3: 
-                    GridForge.BeginAnimation(FrameworkElement.WidthProperty, da1); GridForge.BeginAnimation(FrameworkElement.HeightProperty, da2); 
+                    GridForge.BeginAnimation(WidthProperty, da1); GridForge.BeginAnimation(HeightProperty, da2); 
                     if (GridForge.btnReForge.IsEnabled && GridForge.treeForgeVer.HasItems == false) GridForge.RefreshForge(); 
                     break;
                 case 4:
-                    gridUpdateInfo.BeginAnimation(FrameworkElement.WidthProperty, da1); 
-                    gridUpdateInfo.BeginAnimation(FrameworkElement.HeightProperty, da2); 
+                    gridUpdateInfo.BeginAnimation(WidthProperty, da1); 
+                    gridUpdateInfo.BeginAnimation(HeightProperty, da2); 
                     break;
             }
         }
 
-        private void FrmMainWindow_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void FrmMainWindow_Closing(object sender, CancelEventArgs e)
         {
             BmclCore.NIcon.Hide();
         }
 
         private void FrmMainWindow_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (this.IsVisible)
+            if (IsVisible)
             {
                 _inscreen = true;
                 btnChangeBg_Click(null, null);
