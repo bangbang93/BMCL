@@ -78,7 +78,7 @@ namespace BMCLV2.Game
 
         public VersionInfo GetVersion(string id)
         {
-            return _versions[id];
+          return _versions.ContainsKey(id) ? _versions[id] : null;
         }
 
         public async Task<Launcher.Launcher> LaunchGame(string id, bool offline = true)
