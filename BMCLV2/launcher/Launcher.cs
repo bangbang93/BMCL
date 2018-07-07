@@ -60,7 +60,7 @@ namespace BMCLV2.Launcher
           remove => _onLaunchError -= value;
         }
 
-        public Launcher(VersionInfo versionInfo, AuthResult authResult, Config config = null, bool disableXincgc = false)
+        public Launcher(VersionInfo versionInfo, AuthResult authResult, Config config = null)
         {
             _authResult = authResult;
             VersionInfo = versionInfo;
@@ -69,11 +69,6 @@ namespace BMCLV2.Launcher
             _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.Id);
             _libraryDirectory = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
             _nativesDirectory = Path.Combine(_versionDirectory, $"{VersionInfo.Id}-natives-{TimeHelper.TimeStamp()}");
-
-            if (!disableXincgc)
-            {
-                _arguments.AddRange(new[] { "-Xincgc" });
-            }
             if (!string.IsNullOrEmpty(_config.ExtraJvmArg))
             {
                 _arguments.AddRange(ChildProcess.SplitCommandLine(_config.ExtraJvmArg));
