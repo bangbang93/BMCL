@@ -252,7 +252,7 @@ namespace BMCLV2.Launcher
                 {"${assets_root}", Path.Combine(BmclCore.MinecraftDirectory, "assets")},
                 {"${assets_index_name}", VersionInfo.Assets},
                 {"${user_type}", "Legacy"},
-                {"${version_type}", "Legacy"},
+                {"${version_type}", VersionInfo.Type == null ? "Legacy" : VersionInfo.Type},
                 {"${user_properties}", "{}"}
             };
             if (_config.LaunchMode == LaunchMode.Standalone)
