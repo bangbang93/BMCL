@@ -232,6 +232,7 @@ namespace BMCLV2.Launcher
                 var zipArchive = new ZipArchive(zipFile);
                 foreach (var entry in zipArchive.Entries)
                 {
+                    if (entry.FullName.Contains("META-INF/")) continue;//skip META-INF
                     if (extractRules != null &&
                         extractRules.Exclude.Any(entryName => entry.FullName.Contains(entryName))) continue;
                     var filePath = Path.Combine(_nativesDirectory, entry.FullName);
