@@ -38,6 +38,8 @@ namespace BMCLV2.Windows.MainWindowTab
             labTime.Content = DateTime.Parse(game.Time);
             labRelTime.Content = DateTime.Parse(game.ReleaseTime);
             labType.Content = game.Type;
+
+            ChangeButtonEnable(true);//Enable button after choosing version
         }
 
         private void btnDelete_Click(object sender, RoutedEventArgs e)
@@ -64,6 +66,15 @@ namespace BMCLV2.Windows.MainWindowTab
                 MessageBox.Show(LangManager.GetLangFromResource("DeleteFailedMessageInfo"));
             }
             ReFlushlistver();
+
+            if (BmclCore.GameManager.GetVersions().Count == 0)//No version exists
+            {
+                labVer.Content = "";//Clear label
+                labTime.Content = "";
+                labRelTime.Content = "";
+                labType.Content = "";
+                ChangeButtonEnable(false);//Disable button
+            }
         }
 
         private void btnReName_Click(object sender, RoutedEventArgs e)
@@ -127,6 +138,14 @@ namespace BMCLV2.Windows.MainWindowTab
                 return listVer.Items[0] as string;
             }
             throw new NoSelectGameException();
+        }
+
+        private void ChangeButtonEnable(bool isEnable)
+        {
+            btnDelete.IsEnabled = isEnable;
+            btnReName.IsEnabled = isEnable;
+            btnModMrg.IsEnabled = isEnable;
+            btnModCfgMrg.IsEnabled = isEnable;
         }
     }
 }
