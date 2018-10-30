@@ -9,8 +9,16 @@ namespace BMCLV2.Mirrors.Vanilla
 
         public override async Task DownloadLibrary(LibraryInfo library, string savePath)
         {
-            var url = library.Url ?? Server + library.Path;
+      if (library.HasLibrary())
+          {
+            var url = library.GetLibrary()?.Url ?? Server + library.GetLibraryPath();
             await Downloader.DownloadFileTaskAsync(url, savePath);
-        }
+          }
+          if (library.IsNative)
+          {
+            var url = library.GetNative().Url ?? Server + library.GetNativePath();
+            await Downloader.DownloadFileTaskAsync(url, savePath);
+          }
+    }
     }
 }

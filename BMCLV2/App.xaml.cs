@@ -26,7 +26,8 @@ namespace BMCLV2
         protected override void OnStartup(StartupEventArgs e)
         {
             bool createNew;
-            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, Process.GetCurrentProcess().ProcessName, out createNew);
+//            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, Process.GetCurrentProcess().ProcessName, out createNew);
+            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, $"BMCLNG:{Process.GetCurrentProcess().MainModule.FileName.Replace('\\', '_')}", out createNew);
             if (!createNew)
             {
                 ProgramStarted.Set();
@@ -64,7 +65,6 @@ namespace BMCLV2
             {
                 App.SkipPlugin = true;
             }
-            WebRequest.DefaultWebProxy = null;  //禁用默认代理
             base.OnStartup(e);
         }
 

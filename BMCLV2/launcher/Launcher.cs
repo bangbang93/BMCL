@@ -1,4 +1,5 @@
-﻿using System;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
@@ -33,33 +34,33 @@ namespace BMCLV2.Launcher
         private OnLaunchError _onLaunchError;
 
 
-        public LauncherState State { get; private set; }
+        public LauncherState State { get; }
 
         public event OnGameExit OnGameExit
         {
-            add { _onGameExit += value; }
-            remove { _onGameExit -= value; }
+            add => _onGameExit += value;
+          remove => _onGameExit -= value;
         }
 
         public event OnGameStart OnGameStart
         {
-            add { _onGameStart += value; }
-            remove { _onGameStart -= value; }
+            add => _onGameStart += value;
+          remove => _onGameStart -= value;
         }
 
         public event OnGameLaunch OnGameLaunch
         {
-            add { _onGameLaunch += value; }
-            remove { _onGameLaunch -= value;}
+            add => _onGameLaunch += value;
+          remove => _onGameLaunch -= value;
         }
 
         public event OnLaunchError OnLaunchError
         {
-            add { _onLaunchError += value; }
-            remove { _onLaunchError -= value; }
+            add => _onLaunchError += value;
+          remove => _onLaunchError -= value;
         }
 
-        public Launcher(VersionInfo versionInfo, AuthResult authResult, Config config = null, bool disableXincgc = false)
+        public Launcher(VersionInfo versionInfo, AuthResult authResult, Config config = null)
         {
             _authResult = authResult;
             VersionInfo = versionInfo;
@@ -68,11 +69,6 @@ namespace BMCLV2.Launcher
             _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.Id);
             _libraryDirectory = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
             _nativesDirectory = Path.Combine(_versionDirectory, $"{VersionInfo.Id}-natives-{TimeHelper.TimeStamp()}");
-
-            if (!disableXincgc)
-            {
-                _arguments.AddRange(new[] { "-Xincgc" });
-            }
             if (!string.IsNullOrEmpty(_config.ExtraJvmArg))
             {
                 _arguments.AddRange(ChildProcess.SplitCommandLine(_config.ExtraJvmArg));
@@ -81,6 +77,8 @@ namespace BMCLV2.Launcher
 
         public async Task Start()
         {
+          try
+          {
             _onGameLaunch(this, "LauncherCheckJava", VersionInfo);
             if (!SetupJava()) return;
             if (!CleanNatives()) return;
@@ -95,6 +93,12 @@ namespace BMCLV2.Launcher
             _onGameLaunch(this, "LauncherGo", VersionInfo);
             if (!Launch()) return;
             _onGameStart(this, VersionInfo);
+          }
+          catch (Exception e)
+          {
+            _onLaunchError(this, e);
+            throw;
+          }
         }
 
         private bool Launch()
@@ -161,10 +165,9 @@ namespace BMCLV2.Launcher
             var libraries = VersionInfo.Libraries;
             foreach (var libraryInfo in libraries)
             {
-                // skip natives
                 if (libraryInfo.IsNative) continue;
-                var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
-                if (!libraryInfo.IsVaild(_libraryDirectory))
+                var filePath = Path.Combine(_libraryDirectory, libraryInfo.GetLibraryPath());
+                if (!libraryInfo.IsVaildLibrary(_libraryDirectory))
                 {
                     try
                     {
@@ -201,10 +204,10 @@ namespace BMCLV2.Launcher
                 if (!libraryInfo.IsNative) continue;
                 if (!libraryInfo.ShouldDeployOnOs()) continue;
                 Logger.Info("unarchive");
-                var filePath = Path.Combine(_libraryDirectory, libraryInfo.Path);
+                var filePath = Path.Combine(_libraryDirectory, libraryInfo.GetNativePath());
                 try
                 {
-                    if (!libraryInfo.IsVaild(_libraryDirectory))
+                    if (!libraryInfo.IsVaildNative(_libraryDirectory))
                     {
                         await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
                     }
@@ -229,6 +232,7 @@ namespace BMCLV2.Launcher
                 var zipArchive = new ZipArchive(zipFile);
                 foreach (var entry in zipArchive.Entries)
                 {
+                    if (entry.FullName.Contains("META-INF/")) continue;//skip META-INF
                     if (extractRules != null &&
                         extractRules.Exclude.Any(entryName => entry.FullName.Contains(entryName))) continue;
                     var filePath = Path.Combine(_nativesDirectory, entry.FullName);
@@ -248,7 +252,7 @@ namespace BMCLV2.Launcher
                 {"${assets_root}", Path.Combine(BmclCore.MinecraftDirectory, "assets")},
                 {"${assets_index_name}", VersionInfo.Assets},
                 {"${user_type}", "Legacy"},
-                {"${version_type}", "Legacy"},
+                {"${version_type}", VersionInfo.Type == null ? "Legacy" : VersionInfo.Type},
                 {"${user_properties}", "{}"}
             };
             if (_config.LaunchMode == LaunchMode.Standalone)
@@ -264,49 +268,55 @@ namespace BMCLV2.Launcher
                     values.Add(info.Key, info.Value);
                 }
             }
+          if (VersionInfo.Arguments == null)
+          {
             var arguments = VersionInfo.MinecraftArguments.Split(' ');
-            for (var i = 0; i < arguments.Length; i ++)
+            for (var i = 0; i < arguments.Length; i++)
             {
-                if (values.ContainsKey(arguments[i]))
-                {
-                    arguments[i] = values[arguments[i]];
-                }
+              if (values.ContainsKey(arguments[i]))
+              {
+                arguments[i] = values[arguments[i]];
+              }
             }
             return arguments;
+          }
+          else
+          {
+            var arguments = new List<string>(20);
+            var gameArgs = VersionInfo.Arguments.Game;
+            arguments.AddRange(gameArgs.OfType<string>().Select(s => values.ContainsKey(s) ? values[s] : s));
+            return arguments;
+          }
         }
 
         private void HandleCrashReport(IReadOnlyDictionary<string, int> nowValue)
         {
-            var crashReportsPath = Path.Combine(BmclCore.MinecraftDirectory, "crash-reports");
-            if (nowValue["crashReport"] != _errorCount["crashReport"] && Directory.Exists(crashReportsPath))
-            {
-                Logger.Log("发现新的错误报告");
-                var clientCrashReportDir = new DirectoryInfo(crashReportsPath);
-                var clientReports = clientCrashReportDir.GetFiles();
-                Array.Sort(clientReports,
-                    (info1, info2) => (int) (info1.LastWriteTime - info2.LastWriteTime).TotalSeconds);
-                var crashReportReader = new StreamReader(clientReports[0].FullName);
-                Logger.Log(crashReportReader.ReadToEnd(), Logger.LogType.Crash);
-                crashReportReader.Close();
-                ChildProcess.Exec(clientReports[0].FullName);
-            }
+          var crashReportsPath = Path.Combine(BmclCore.MinecraftDirectory, "crash-reports");
+          if (nowValue["crashReport"] == _errorCount["crashReport"] || !Directory.Exists(crashReportsPath)) return;
+          Logger.Log("发现新的错误报告");
+          var clientCrashReportDir = new DirectoryInfo(crashReportsPath);
+          var clientReports = clientCrashReportDir.GetFiles();
+          Array.Sort(clientReports,
+            (info1, info2) => (int) (info1.LastWriteTime - info2.LastWriteTime).TotalSeconds);
+          var crashReportReader = new StreamReader(clientReports[0].FullName);
+          Logger.Log(crashReportReader.ReadToEnd(), Logger.LogType.Crash);
+          crashReportReader.Close();
+          ChildProcess.Exec(clientReports[0].FullName);
         }
 
         private void HandleHsError(IReadOnlyDictionary<string, int> nowValue)
         {
-            var hsErrorPath = BmclCore.MinecraftDirectory;
-            if (nowValue["hsError"] != _errorCount["hsError"])
-            {
-                Logger.Log("发现新的JVM错误报告");
-                var hsErrorDir = new DirectoryInfo(hsErrorPath);
-                var hsErrors = hsErrorDir.GetFiles().Where(s => s.FullName.StartsWith("hs_err")).ToArray();
-                Array.Sort(hsErrors,
-                    (info1, info2) => (int)(info1.LastWriteTime - info2.LastWriteTime).TotalSeconds);
-                var crashReportReader = new StreamReader(hsErrors[0].FullName);
-                Logger.Log(crashReportReader.ReadToEnd(), Logger.LogType.Crash);
-                crashReportReader.Close();
-                ChildProcess.Exec(hsErrors[0].FullName);
-            }
+          var hsErrorPath = BmclCore.MinecraftDirectory;
+          if (nowValue["hsError"] == _errorCount["hsError"]) return;
+          Logger.Log("发现新的JVM错误报告");
+          var hsErrorDir = new DirectoryInfo(hsErrorPath);
+          var hsErrors = hsErrorDir.GetFiles().Where(s => s.FullName.StartsWith("hs_err")).ToArray();
+          Array.Sort(hsErrors,
+            (info1, info2) => (int)(info1.LastWriteTime - info2.LastWriteTime).TotalSeconds);
+          var crashReportReader = new StreamReader(hsErrors[0].FullName);
+          Logger.Log(crashReportReader.ReadToEnd(), Logger.LogType.Crash);
+          crashReportReader.Close();
+          ChildProcess.Exec(hsErrors[0].FullName);
         }
 
         private bool CleanNatives()

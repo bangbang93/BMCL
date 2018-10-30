@@ -1,10 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
@@ -12,7 +9,6 @@ using System.Windows.Threading;
 using BMCLV2.Auth;
 using BMCLV2.Game;
 using BMCLV2.I18N;
-using BMCLV2.JsonClass;
 using BMCLV2.Mirrors;
 using BMCLV2.Plugin;
 using BMCLV2.Resource;
@@ -136,5 +132,10 @@ namespace BMCLV2
                 Dispatcher.Invoke(window.Show);
             }
         }
+
+      public static void Notify(string message)
+      {
+        NIcon?.ShowBalloonTip(5, message);
+      }
     }
 }

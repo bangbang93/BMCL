@@ -1,4 +1,3 @@
-﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -79,7 +78,7 @@ namespace BMCLV2.Game
 
         public VersionInfo GetVersion(string id)
         {
-            return _versions[id];
+          return _versions.ContainsKey(id) ? _versions[id] : null;
         }
 
         public async Task<Launcher.Launcher> LaunchGame(string id, bool offline = true)
@@ -107,6 +106,7 @@ namespace BMCLV2.Game
             var game = GetVersion(id);
             if (game == null) throw new NoSuchVersionException(id);
             _launcher = new Launcher.Launcher(game, authResult, BmclCore.Config);
+            _launcher.OnLaunchError += (launcher, exception) => _launcher = null;
             _launcher.OnGameExit += (sender, info, exitcode) => _launcher = null;
             _launcher.OnGameStart += LauncherOnGameStart;
             return _launcher;
@@ -117,6 +117,12 @@ namespace BMCLV2.Game
             _assetManager = new AssetManager(versionInfo);
             await _assetManager.Sync();
             //TODO 弹窗
+            BmclCore.Notify("资源文件同步完成");
+        }
+
+        private void registerWatcher()
+        {
+            
         }
     }
 }
