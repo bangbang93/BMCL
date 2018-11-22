@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 using BMCLV2.JsonClass;
@@ -21,8 +21,16 @@ namespace BMCLV2.Game
 
         public async Task Sync()
         {
+          try
+          {
             _assetsIndex =
-                await BmclCore.MirrorManager.CurrectMirror.Asset.GetAssetsIndex(_versionInfo, _indexesDirectory);
+              await BmclCore.MirrorManager.CurrectMirror.Asset.GetAssetsIndex(_versionInfo, _indexesDirectory);
+          }
+          catch (WebException exception)
+          {
+            Logger.Fatal(exception);
+            return;
+          }
             Logger.Log($"assets count: {_assetsIndex.Objects.Count}");
             var index = 0;
             foreach (var obj in _assetsIndex.Objects.Values)

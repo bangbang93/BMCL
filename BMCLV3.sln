@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2048
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BMCLV3", "BMCLV2\BMCLV3.csproj", "{4FC50E09-DB4F-43D5-8C13-FB52F008DD57}"
 EndProject
@@ -14,7 +14,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Configuration", "S
 		SharpZipLib\.editorconfig = SharpZipLib\.editorconfig
 		SharpZipLib\.gitattributes = SharpZipLib\.gitattributes
 		SharpZipLib\.gitignore = SharpZipLib\.gitignore
-		SharpZipLib\Rebracer.xml = SharpZipLib\Rebracer.xml
 	EndProjectSection
 EndProject
 Global
@@ -45,5 +44,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F544BB8B-9F6E-4DC5-A98F-DDFB058C82CF}
 	EndGlobalSection
 EndGlobal
