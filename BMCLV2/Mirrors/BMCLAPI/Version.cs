@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Threading.Tasks;
 using BMCLV2.Game;
 
@@ -10,7 +10,7 @@ namespace BMCLV2.Mirrors.BMCLAPI
 
         private const string Server = "https://bmclapi2.bangbang93.com/";
 
-        private readonly string[] _originServers = new []{"https://launchermeta.mojang.com", "https://launcher.mojang.com/" };
+        private readonly string[] _originServers = new []{"https://launchermeta.mojang.com/", "https://launcher.mojang.com/" };
 
     public Version()
         {

@@ -26,7 +26,7 @@ namespace BMCLV2.Windows
     public partial class FrmMain
     {
         private bool _inscreen;
-        private bool _isLaunchering;
+        private bool _isLaunching;
 
         private FrmPrs _frmPrs;
 
@@ -144,6 +144,7 @@ namespace BMCLV2.Windows
             var somethingBad = false;
             try
             {
+              _isLaunching = true;
                 var selectedVersion = GridGame.GetSelectedVersion();
                 Logger.Info($"正在启动{selectedVersion},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
                 _frmPrs = new FrmPrs(LangManager.GetLangFromResource(selectedVersion));
@@ -159,6 +160,9 @@ namespace BMCLV2.Windows
                 launcher.OnGameLaunch += Launcher_OnGameLaunch;
                 launcher.OnGameStart += Game_GameStartUp;
                 launcher.OnGameExit += launcher_gameexit;
+                var assetManager = new AssetManager(launcher.VersionInfo);
+                assetManager.OnAssetsDownload += (total, cur, name) => _frmPrs.ChangeStatus($"Assets {cur}/{total}");
+                await assetManager.Sync();
                 await launcher.Start();
             }
             catch (NoSelectGameException exception)
@@ -187,6 +191,7 @@ namespace BMCLV2.Windows
             }
             finally
             {
+              _isLaunching = false;
                 if (somethingBad)
                 {
                     _frmPrs?.Close();
@@ -207,7 +212,7 @@ namespace BMCLV2.Windows
             BmclCore.NIcon.ShowBalloonTip(10000, "启动成功" + versionInfo.Id);
             _frmPrs.Close();
             _frmPrs = null;
-            _isLaunchering = false;
+            _isLaunching = false;
             Hide();
         }
 
@@ -390,7 +395,7 @@ namespace BMCLV2.Windows
 
         private void FrmMainWindow_GotFocus(object sender, RoutedEventArgs e)
         {
-            if (_isLaunchering)
+            if (_isLaunching)
             {
                 _frmPrs?.Activate();
             }
@@ -398,18 +403,10 @@ namespace BMCLV2.Windows
 
         private void FrmMainWindow_Activated(object sender, EventArgs e)
         {
-            if (_isLaunchering)
+            if (_isLaunching)
             {
                 _frmPrs?.Activate();
             }
         }
-
-
-
-        
-
-
-
-
     }
 }

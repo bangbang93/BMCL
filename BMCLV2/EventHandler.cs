@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using BMCLV2.Game;
 
 namespace BMCLV2
@@ -14,4 +14,6 @@ namespace BMCLV2
     public delegate void OnGameLaunch(object sender, string status, VersionInfo versionInfo);
 
     public delegate void OnLaunchError(Launcher.Launcher launcher, Exception exception);
+
+    public delegate void OnAssetsDownload(int total, int cur, string name);
 }

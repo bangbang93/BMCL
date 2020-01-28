@@ -20,7 +20,12 @@ namespace BMCLV2.Launcher
     {
         private ChildProcess _childProcess;
         private readonly Config _config;
-        private readonly List<string> _arguments = new List<string>();
+        private readonly List<string> _arguments = new List<string>()
+        {
+          "-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump",
+          "-Dminecraft.launcher.brand=BMCL",
+          $@"-Dminecraft.launcher.version={BmclCore.BmclVersion}"
+        };
         public VersionInfo VersionInfo { get; }
         private readonly string _versionDirectory;
         private readonly string _libraryDirectory;
@@ -166,6 +171,7 @@ namespace BMCLV2.Launcher
             foreach (var libraryInfo in libraries)
             {
                 if (libraryInfo.IsNative) continue;
+                if (!libraryInfo.ShouldDeployOnOs()) continue;
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.GetLibraryPath());
                 if (!libraryInfo.IsVaildLibrary(_libraryDirectory))
                 {

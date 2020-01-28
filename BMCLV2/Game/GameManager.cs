@@ -108,7 +108,6 @@ namespace BMCLV2.Game
             _launcher = new Launcher.Launcher(game, authResult, BmclCore.Config);
             _launcher.OnLaunchError += (launcher, exception) => _launcher = null;
             _launcher.OnGameExit += (sender, info, exitcode) => _launcher = null;
-            _launcher.OnGameStart += LauncherOnGameStart;
             return _launcher;
         }
 
