@@ -90,6 +90,7 @@ namespace BMCLV2
             if (Config.Report)
             {
                 var reporter = new Report();
+                reporter.RunBackGround();
             }
             if (Config.CheckUpdate)
             {
@@ -103,11 +104,6 @@ namespace BMCLV2
                     var updater = new FrmUpdater(updateInfo.LastBuild, updateInfo.Url);
                     updater.ShowDialog();
                 }
-//                if (a != MessageBoxResult.No && a != MessageBoxResult.None) return;
-//                if (MessageBox.Show(MainWindow, updateInfo.Description, "更新", MessageBoxButton.OKCancel,
-//                    MessageBoxImage.Information) != MessageBoxResult.OK)
-//                    return;
-//                updater.ShowDialog();
             }
         }
 

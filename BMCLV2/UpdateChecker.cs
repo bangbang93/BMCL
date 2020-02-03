@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Net;
 using System.Runtime.Serialization.Json;
@@ -11,7 +11,7 @@ namespace BMCLV2
 {
     internal class UpdateChecker
     {
-        private const string CheckUrl = @"https://bbs.bangbang93.com/bmcl/checkupdate.php";
+        private const string CheckUrl = @"https://bmcl.bangbang93.com/update";
 
         public async Task<UpdateDescription> Run()
         {
@@ -27,7 +27,7 @@ namespace BMCLV2
                 }
                 if (verTable.Lastest.Build > Convert.ToInt32(build))
                 {
-                    Logger.Log("需要更新，最新版本为" + verTable.Lastest.Version);
+                    Logger.Log($"需要更新，最新版本为{verTable.Lastest.Version}");
                     Logger.Log($"下载地址为 {verTable.Lastest.DownloadUrl}");
                     var sb = new StringBuilder();
                     foreach (var verInfo in verTable.Update)
