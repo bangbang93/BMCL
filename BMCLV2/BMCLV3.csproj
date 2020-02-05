@@ -106,6 +106,7 @@
     </Compile>
     <Compile Include="Downloader\Version.cs" />
     <Compile Include="Forge\ForgeInstaller.cs" />
+    <Compile Include="Forge\InstallerProfileScheme.cs" />
     <Compile Include="Util\ErrorHandler.cs" />
     <Compile Include="EventHandler.cs" />
     <Compile Include="Exceptions\AnotherGameRunningException.cs" />

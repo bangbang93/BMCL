@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -52,7 +52,7 @@ namespace BMCLV2.Launcher
             _arguments = processStartInfo.Arguments.Split();
         }
 
-        public ChildProcess( string filename, string[] arguments)
+        public ChildProcess(string filename, string[] arguments)
         {
             _arguments = arguments;
             _filename = filename;
@@ -78,6 +78,7 @@ namespace BMCLV2.Launcher
         public bool Start()
         {
             Close();
+            Logger.Info($"{_filename} {JoinArguments(_arguments)}");
             _processStartInfo = new ProcessStartInfo(_filename, JoinArguments(_arguments))
             {
                 RedirectStandardError = true,
@@ -139,6 +140,11 @@ namespace BMCLV2.Launcher
             _childProcess.Close();
             _onExit(this, _childProcess.ExitCode);
             _childProcess = null;
+        }
+
+        public Task AwaitExit()
+        {
+          return new Task(() => _childProcess.WaitForExit());
         }
 
         public static List<string> SplitCommandLine(string commandLine)

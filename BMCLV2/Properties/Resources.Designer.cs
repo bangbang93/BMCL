@@ -59,5 +59,15 @@ namespace BMCLV2.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   查找 System.Byte[] 类型的本地化资源。
+        /// </summary>
+        internal static byte[] forge_installer {
+            get {
+                object obj = ResourceManager.GetObject("forge_installer", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

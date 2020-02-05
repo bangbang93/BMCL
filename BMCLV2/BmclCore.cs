@@ -27,6 +27,7 @@ namespace BMCLV2
     public static Dictionary<string, object> Language = new Dictionary<string, object>();
     public static readonly string BaseDirectory = Environment.CurrentDirectory + '\\';
     public static readonly string MinecraftDirectory = Path.Combine(BaseDirectory, ".minecraft");
+    public static readonly string TempDirectory = Path.Combine(Path.GetTempPath(), "BMCL");
     private static readonly Application ThisApplication = Application.Current;
     private static readonly string Cfgfile = Path.Combine(BaseDirectory, "bmcl.xml");
     public static readonly MirrorManager MirrorManager = new MirrorManager();
@@ -42,6 +43,11 @@ namespace BMCLV2
       {
         Logger.Log($"{MinecraftDirectory}不存在，正在创建");
         Directory.CreateDirectory(MinecraftDirectory);
+      }
+
+      if (!Directory.Exists(TempDirectory))
+      {
+        Directory.CreateDirectory(TempDirectory);
       }
 
       GameManager = new GameManager();

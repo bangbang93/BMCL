@@ -20,7 +20,7 @@ namespace BMCLV2.Game
         private readonly string[] _inheritFields = {"Type", "MinecraftArguments", "MainClass", "Assets", "Jar", "AssetIndex"};
         private AssetManager _assetManager;
 
-        public bool IsGameRunning => _launcher == null;
+        public bool IsGameRunning => _launcher != null;
 
         public GameManager()
         {
