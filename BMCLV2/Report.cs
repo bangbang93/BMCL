@@ -55,7 +55,7 @@ namespace BMCLV2
       }
     }
 
-    public static String ParsToString(Hashtable pars)
+    public static string ParsToString(Hashtable pars)
     {
       StringBuilder sb = new StringBuilder();
       foreach (string k in pars.Keys)

@@ -9,10 +9,8 @@ using System.Windows.Threading;
 using BMCLV2.Auth;
 using BMCLV2.Game;
 using BMCLV2.I18N;
-using BMCLV2.Launcher;
 using BMCLV2.Mirrors;
 using BMCLV2.Plugin;
-using BMCLV2.Resource;
 using BMCLV2.Windows;
 
 namespace BMCLV2
@@ -20,11 +18,8 @@ namespace BMCLV2
   public static class BmclCore
   {
     public static Config Config;
-    public static OldLauncher Game;
     public static GameManager GameManager;
     public static string BmclVersion;
-    public static string UrlResourceBase = Url.URL_RESOURCE_bangbang93;
-    public static string UrlLibrariesBase = Url.URL_LIBRARIES_bangbang93;
     public static NotiIcon NIcon = new NotiIcon();
     public static FrmMain MainWindow = null;
     public static Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -73,7 +73,7 @@ namespace BMCLV2.Forge
         public bool InstallForge(ForgeVersion forgeVersion)
         {
             //将installer中的forge universal提取出来
-            string tempDir = Path.Combine(BmclCore.BaseDirectory, "temp");
+            string tempDir = Path.Combine(Path.GetTempPath(), "BMCL\\ForgeInstaller");
             var archive = new ZipArchive(new FileStream(Path.Combine(BmclCore.BaseDirectory, "forge.jar"), FileMode.Open));
             archive.ExtractToDirectory(tempDir);
 

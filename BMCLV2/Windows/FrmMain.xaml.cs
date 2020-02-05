@@ -121,14 +121,15 @@ namespace BMCLV2.Windows
         }
         private void btnClose_Click(object sender, RoutedEventArgs e)
         {
-            if (BmclCore.Game!=null)
-                if (BmclCore.Game.IsRunning())
-                {
-                    btnMiniSize_Click(null, null);
-                    return;
-                }
+          if (BmclCore.GameManager.IsGameRunning)
+          {
+            btnMiniSize_Click(null, null);
+          }
+          else
+          {
             Logger.Log($"BMCL V2 Ver.{BmclCore.BmclVersion} 正在退出");
             BmclCore.Halt();
+          }
         }
         private async void btnStart_Click(object sender, RoutedEventArgs e)
         {

@@ -94,8 +94,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="assets\assets.cs" />
-    <Compile Include="assets\AssetsEntity.cs" />
     <Compile Include="Auth\AuthResult.cs" />
     <Compile Include="Auth\AuthManager.cs" />
     <Compile Include="Auth\IAuth.cs" />
@@ -107,6 +105,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Downloader\Version.cs" />
+    <Compile Include="Forge\ForgeInstaller.cs" />
     <Compile Include="Util\ErrorHandler.cs" />
     <Compile Include="EventHandler.cs" />
     <Compile Include="Exceptions\AnotherGameRunningException.cs" />
@@ -209,11 +208,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>ServerDat.resx</DependentUpon>
     </Compile>
-    <Compile Include="Resource\Url.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Url.resx</DependentUpon>
-    </Compile>
     <Compile Include="Texturepack\NoResourcePackDirException.cs" />
     <Compile Include="Texturepack\TextureInfo.cs" />
     <Compile Include="Texturepack\TexturePack.cs" />
@@ -304,7 +298,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Launcher\OldLauncher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -329,11 +322,6 @@
     <EmbeddedResource Include="Resource\ServerDat.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ServerDat.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\Url.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Url.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <Page Include="I18N\zh-cn.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -383,7 +371,9 @@
   <ItemGroup>
     <Resource Include="Resource\tabitem.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Content Include="forge-installer.jar" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
