@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Text;
 using System.Windows;
@@ -57,7 +57,7 @@ namespace BMCLV2.Windows.MainWindowTab
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(30, TimeSpan.FromSeconds(0.3)));
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(30, TimeSpan.FromSeconds(2.3)));
             dak.KeyFrames.Add(new LinearDoubleKeyFrame(0, TimeSpan.FromSeconds(2.6)));
-            popupSaveSuccess.BeginAnimation(FrameworkElement.HeightProperty, dak);
+            popupSaveSuccess.BeginAnimation(HeightProperty, dak);
         }
         private void sliderJavaxmx_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {

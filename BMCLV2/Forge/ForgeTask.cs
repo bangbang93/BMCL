@@ -68,7 +68,7 @@ namespace BMCLV2.Forge
               {
                 Logger.Info("已使用内置forge安装器成功安装");
               }
-      }
+            }
         }
 
         public void InstallForgeInOldWay()

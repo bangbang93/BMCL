@@ -67,6 +67,10 @@ namespace BMCLV2.Game
                     version.GetType().GetField(field).SetValue(version, inherbits.GetType().GetField(field).GetValue(inherbits));
                 }
                 version.Libraries = version.Libraries.Concat(inherbits.Libraries).ToArray();
+                if (version.Arguments != null)
+                {
+                  version.Arguments.Game = version.Arguments.Game.Concat(inherbits.Arguments.Game).ToArray();
+                }
             }
         }
 

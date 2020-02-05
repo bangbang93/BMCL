@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using BMCLV2.Mirrors.Interface;
 
@@ -9,7 +9,8 @@ namespace BMCLV2.Mirrors
         private readonly List<Mirror> _version = new List<Mirror>
         {
             new BMCLAPI.Bmclapi(),
-            new Vanilla.Vanilla()
+            new Vanilla.Vanilla(),
+            new MCBBS.MCBBS(),
         };
         public Mirror CurrectMirror;
 

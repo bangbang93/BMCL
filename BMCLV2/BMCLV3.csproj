@@ -107,6 +107,10 @@
     <Compile Include="Downloader\Version.cs" />
     <Compile Include="Forge\ForgeInstaller.cs" />
     <Compile Include="Forge\InstallerProfileScheme.cs" />
+    <Compile Include="Mirrors\MCBBS\Asset.cs" />
+    <Compile Include="Mirrors\MCBBS\MCBBS.cs" />
+    <Compile Include="Mirrors\MCBBS\Library.cs" />
+    <Compile Include="Mirrors\MCBBS\Version.cs" />
     <Compile Include="Util\ErrorHandler.cs" />
     <Compile Include="EventHandler.cs" />
     <Compile Include="Exceptions\AnotherGameRunningException.cs" />
