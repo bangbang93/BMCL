@@ -24,13 +24,13 @@ namespace BMCLV2.Forge
       _path = path;
     }
 
-    public async Task<bool> Run(string installerPath)
+    public async Task Run(string installerPath)
     {
       var libraryPath = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
       var archive = new ZipArchive(new FileStream(installerPath, FileMode.Open));
 
       var entry = archive.GetEntry("version.json");
-      if (entry == null) return false;
+      if (entry == null) throw new Exception("cannot find version.json");
 
       var versionJson = new JSON<VersionInfo>().Parse(entry.Open());
 
@@ -43,7 +43,7 @@ namespace BMCLV2.Forge
       }
 
       entry = archive.GetEntry("install_profile.json");
-      if (entry == null) return false;
+      if (entry == null) throw new Exception("cannot find install_profile.json");
       var profileJson = new JSON<InstallerProfileScheme>().Parse(entry.Open());
 
       foreach (var profileJsonLibrary in profileJson.Libraries)
@@ -75,8 +75,6 @@ namespace BMCLV2.Forge
       cp.OnStdErr += (sender, log) => Logger.Fatal(log);
 
       await cp.WaitForExitAsync();
-
-      return true;
     }
   }
 }

@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using BMCLV2.JsonClass;
+using BMCLV2.Launcher;
 using BMCLV2.Resource;
-using Version = BMCLV2.Downloader.Version;
 
 namespace BMCLV2.Forge
 {
@@ -16,7 +15,7 @@ namespace BMCLV2.Forge
   {
     public delegate void OnProcessChange(string status);
 
-    private const string ForgeUrl = "http://bmclapi2.bangbang93.com/forge/promos";
+    private const string ForgeUrl = "https://bmclapi2.bangbang93.com/forge/promos";
 
     public Dictionary<string, string> ForgeChangeLogUrl = new Dictionary<string, string>();
 
@@ -24,8 +23,8 @@ namespace BMCLV2.Forge
 
     public async Task<ForgeVersion[]> GetVersion()
     {
-      var downloder = new Downloader.Downloader();
-      var json = await downloder.DownloadStringTaskAsync(ForgeUrl);
+      var downloader = new Downloader.Downloader();
+      var json = await downloader.DownloadStringTaskAsync(ForgeUrl);
       var versions = new JSON<ForgeVersion[]>().Parse(json);
       if (versions != null)
         Logger.Info($"获取到{versions.Length}个forge版本");
@@ -53,60 +52,48 @@ namespace BMCLV2.Forge
 
       ProcessChange("InstallingForge");
       var v = int.Parse(forgeVersion.build.version.Split('.')[0]);
-      if (v >= 25)
+      try
       {
-        var installer = new ForgeInstaller(Path.Combine(BmclCore.MinecraftDirectory));
-        installer.ProgressChange += status => ProcessChange(status);
-        await installer.Run(installerPath);
-      }
-      else
-      {
-        var stat = false;
-        try
+        if (v >= 25)
         {
-          stat = InstallForge(forgeVersion, installerPath);
-        }
-        catch (Exception ex)
-        {
-          Logger.Fatal("内置forge安装器出错");
-          Logger.Fatal(ex);
-        }
-
-        if (!stat)
-        {
-          Logger.Info("将使用传统forge安装器");
-          InstallForgeInOldWay();
+          var installer = new ForgeInstaller(Path.Combine(BmclCore.MinecraftDirectory));
+          installer.ProgressChange += status => ProcessChange(status);
+          await installer.Run(installerPath);
         }
         else
         {
-          Logger.Info("已使用内置forge安装器成功安装");
+          try
+          {
+            InstallForge(forgeVersion, installerPath);
+          }
+          catch (Exception ex)
+          {
+            Logger.Fatal(ex);
+          }
         }
+      }
+      catch (Exception ex)
+      {
+        Logger.Fatal("内置forge安装器出错");
+        Logger.Fatal(ex);
+        Logger.Info("将使用传统forge安装器");
+        await InstallForgeInOldWay(installerPath);
+        Logger.Info("已使用内置forge安装器成功安装");
       }
     }
 
-    public void InstallForgeInOldWay()
+    private async Task InstallForgeInOldWay(string installerPath)
     {
-      var forgeIns = new Process
-      {
-        StartInfo =
-        {
-          FileName = BmclCore.Config.Javaw,
-          Arguments = "-jar \"" + BmclCore.TempDirectory + "\\forge.jar\""
-        }
-      };
-      Logger.Log(forgeIns.StartInfo.Arguments);
-      forgeIns.Start();
-      forgeIns.WaitForExit();
+      var cp = new ChildProcess(BmclCore.Config.Javaw, new[] {"-jar", installerPath});
+      cp.Start();
+      await cp.WaitForExitAsync();
     }
 
-    public bool InstallForge(ForgeVersion forgeVersion, string installerPath)
+    private void InstallForge(ForgeVersion forgeVersion, string installerPath)
     {
       //将installer中的forge universal提取出来
       var tempDir = Path.Combine(Path.GetTempPath(), "BMCL\\ForgeInstaller");
-      if (Directory.Exists(tempDir))
-      {
-        Directory.Delete(tempDir, true);
-      }
+      if (Directory.Exists(tempDir)) Directory.Delete(tempDir, true);
       var archive = new ZipArchive(new FileStream(installerPath, FileMode.Open));
       archive.ExtractToDirectory(tempDir);
 
@@ -115,7 +102,7 @@ namespace BMCLV2.Forge
       if (!tempFolder.Exists) tempFolder.Create();
       var tempFiles = tempFolder.GetFiles("*.jar");
       if (tempFiles.Length == 0) //除非下载过来的内容错误，不然installer中一定包含universal
-        return false;
+        throw new Exception("cannot find universal.jar");
       var forge = tempFiles[0].Name;
 
       archive.Dispose();
@@ -141,8 +128,6 @@ namespace BMCLV2.Forge
 
       archive.Dispose();
       Directory.Delete(tempDir, true);
-
-      return true;
     }
   }
 }
