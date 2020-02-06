@@ -58,16 +58,16 @@ namespace BMCLV2.Game
             foreach (var version in _versions.Values)
             {
                 if (version.InheritsFrom == null) continue;
-                var inherbits = GetVersion(version.InheritsFrom);
-                if (inherbits == null) continue;
+                var inherits = GetVersion(version.InheritsFrom);
+                if (inherits == null) continue;
                 foreach (var field in _inheritFields.Where(field => version.GetType().GetField(field).GetValue(version) == null))
                 {
-                    version.GetType().GetField(field).SetValue(version, inherbits.GetType().GetField(field).GetValue(inherbits));
+                    version.GetType().GetField(field).SetValue(version, inherits.GetType().GetField(field).GetValue(inherits));
                 }
-                version.Libraries = version.Libraries.Concat(inherbits.Libraries).ToArray();
+                version.Libraries = version.Libraries.Concat(inherits.Libraries).ToArray();
                 if (version.Arguments != null)
                 {
-                  version.Arguments.Game = version.Arguments.Game.Concat(inherbits.Arguments.Game).ToArray();
+                  version.Arguments.Game = version.Arguments.Game.Concat(inherits.Arguments.Game).ToArray();
                 }
             }
         }

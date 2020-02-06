@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Data;
 using System.Globalization;
 using System.Net;
@@ -44,7 +44,7 @@ namespace BMCLV2.Windows.MainWindowTab
             var versionDownloader = new Version(url);
             _prs = new FrmPrs(LangManager.GetLangFromResource("btnDownloadVer"));
             _prs.Show();
-            versionDownloader.ProcessChange += VersionDownloader_ProcessChange;
+            versionDownloader.ProcessChange += status => _prs.ChangeStatus(LangManager.GetLangFromResource(status));
             await versionDownloader.Start();
             Logger.Log("下载客户端文件成功");
             MessageBox.Show(LangManager.GetLangFromResource("RemoteVerDownloadSuccess"));
@@ -55,11 +55,6 @@ namespace BMCLV2.Windows.MainWindowTab
             BmclCore.MainWindow.TabMain.SelectedIndex = 0;
             _prs.Close();
             _prs = null;
-        }
-
-        private void VersionDownloader_ProcessChange(string status)
-        {
-            _prs.ChangeStatus(status);
         }
         private void listRemoteVer_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {

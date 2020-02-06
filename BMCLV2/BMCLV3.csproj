@@ -111,6 +111,7 @@
     <Compile Include="Mirrors\MCBBS\MCBBS.cs" />
     <Compile Include="Mirrors\MCBBS\Library.cs" />
     <Compile Include="Mirrors\MCBBS\Version.cs" />
+    <Compile Include="Optifine\Installer.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Util\ErrorHandler.cs" />
     <Compile Include="EventHandler.cs" />
@@ -380,6 +381,7 @@
   <ItemGroup>
     <Content Include="forge-installer.jar" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
