@@ -6,6 +6,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using BMCLV2.Exceptions;
@@ -142,12 +143,18 @@ namespace BMCLV2.Launcher
             _childProcess = null;
         }
 
-        public Task AwaitExit()
+        public Task WaitForExitAsync(CancellationToken cancellationToken = default)
         {
-          return new Task(() => _childProcess.WaitForExit());
+          var tcs = new TaskCompletionSource<object>();
+          _childProcess.EnableRaisingEvents = true;
+          _childProcess.Exited += (sender, args) => tcs.TrySetResult(null);
+          if (cancellationToken != default)
+            cancellationToken.Register(tcs.SetCanceled);
+
+          return tcs.Task;
         }
 
-        public static List<string> SplitCommandLine(string commandLine)
+    public static List<string> SplitCommandLine(string commandLine)
         {
             var inQuote = false;
             var inEscape = false;

@@ -39,16 +39,14 @@ namespace BMCLV2.Game
             {
                 try
                 {
-                    using (var jsonStream = new FileStream(jsonFile, FileMode.Open))
-                    {
-                        var info = jsonParser.Parse(jsonStream);
-                        if (info != null)
-                        {
-                            var id = PathHelper.GetDirectoryName(jsonFile);
-                            _versions.Add(_versions.ContainsKey(id) ? $"{id}({jsonFile})" : id, info);
-                        }
-                        jsonStream.Close();
-                    }
+                  var jsonStream = new FileStream(jsonFile, FileMode.Open);
+                  var info = jsonParser.Parse(jsonStream);
+                  if (info != null)
+                  {
+                    var id = PathHelper.GetDirectoryName(jsonFile);
+                    _versions.Add(_versions.ContainsKey(id) ? $"{id}({jsonFile})" : id, info);
+                  }
+                  jsonStream.Close();
                 }
                 catch (SerializationException ex)
                 {

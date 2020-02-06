@@ -16,6 +16,9 @@ namespace BMCLV2.Forge
   {
     private string _path;
 
+    public delegate void OnProgressChange(string status);
+    public event OnProgressChange ProgressChange = status => { };
+
     public ForgeInstaller(string path)
     {
       _path = path;
@@ -23,9 +26,7 @@ namespace BMCLV2.Forge
 
     public async Task<bool> Run(string installerPath)
     {
-      //将installer中的forge universal提取出来
-      string tempDir = Path.Combine(Path.GetTempPath(), "BMCL\\ForgeInstaller");
-      string libraryPath = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
+      var libraryPath = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
       var archive = new ZipArchive(new FileStream(installerPath, FileMode.Open));
 
       var entry = archive.GetEntry("version.json");
@@ -36,10 +37,9 @@ namespace BMCLV2.Forge
       foreach (var jsonLibrary in versionJson.Libraries)
       {
         if (jsonLibrary.Name.StartsWith("net.minecraftforge:forge:")) continue;
-        if (!jsonLibrary.IsVaildLibrary(libraryPath))
-        {
-          await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(jsonLibrary, Path.Combine(libraryPath, jsonLibrary.GetLibraryPath()));
-        }
+        if (jsonLibrary.IsVaildLibrary(libraryPath)) continue;
+        ProgressChange("{DownloadingLibrary} " + jsonLibrary.Name);
+        await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(jsonLibrary, Path.Combine(libraryPath, jsonLibrary.GetLibraryPath()));
       }
 
       entry = archive.GetEntry("install_profile.json");
@@ -48,10 +48,9 @@ namespace BMCLV2.Forge
 
       foreach (var profileJsonLibrary in profileJson.Libraries)
       {
-        if (!profileJsonLibrary.IsVaildLibrary(libraryPath))
-        {
-          await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(profileJsonLibrary, Path.Combine(libraryPath, profileJsonLibrary.GetLibraryPath()));
-        }
+        if (profileJsonLibrary.IsVaildLibrary(libraryPath)) continue;
+        ProgressChange("{DownloadingLibrary} " + profileJsonLibrary.Name);
+        await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(profileJsonLibrary, Path.Combine(libraryPath, profileJsonLibrary.GetLibraryPath()));
       }
 
       var buffer = Resources.forge_installer;
@@ -63,15 +62,19 @@ namespace BMCLV2.Forge
 
       var arguments = new List<string>();
       arguments.AddRange(new[]
-        {"-cp", $"{installerHelperPath};{installerPath}", "com.bangbang93.ForgeInstaller", BmclCore.MinecraftDirectory});
+        {"-cp", $"{installerHelperPath};{installerPath}", "com.bangbang93.ForgeInstaller", _path});
 
       var cp = new ChildProcess(BmclCore.Config.Javaw, arguments.ToArray());
       cp.Start();
 
-      cp.OnStdOut += (sender, log) => Logger.Info(log);
+      cp.OnStdOut += (sender, log) =>
+      {
+        ProgressChange(log);
+        Logger.Info(log);
+      };
       cp.OnStdErr += (sender, log) => Logger.Fatal(log);
 
-      await cp.AwaitExit();
+      await cp.WaitForExitAsync();
 
       return true;
     }

@@ -1,7 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Navigation;
 
 namespace BMCLV2.I18N
 {
@@ -23,6 +25,11 @@ namespace BMCLV2.I18N
         public static string GetLangFromResource(string key)
         {
             key = key ?? "null";
+            if (key.Contains("{"))
+            {
+              var regex = new Regex("\\{(:?<key>.+?)\\}");
+              return regex.Replace(key, match => GetLangFromResource(match.Groups["key"].Value));
+            }
             if (Application.Current.Resources.Contains(key))
                 return Application.Current.Resources[key] as string;
             if (DefaultLanguage.Contains(key))
@@ -30,7 +37,7 @@ namespace BMCLV2.I18N
             return key;
         }
 
-        public static string Transalte(string key, params object[] param)
+        public static string Translate(string key, params object[] param)
         {
             var str = GetLangFromResource(key);
             return string.Format(str, param);

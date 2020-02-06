@@ -67,18 +67,26 @@ namespace BMCLV2.Windows.MainWindowTab
             RefreshForgeVersionList();
         }
         private async void DownloadForge(string ver)
-        {
-            try
-            {
-                var forgeVersion = _forgeVersions.First(version => version.name == ver);
-                await _forgeTask.DownloadForge(forgeVersion);
-            }
-            catch (InvalidOperationException exception)
-            {
-                Logger.Fatal(exception);
-                MessageBox.Show(BmclCore.MainWindow, LangManager.Transalte("ForgeNoSuchVersion", ver), BmclCore.MainWindow.Title,
-                    MessageBoxButton.OK, MessageBoxImage.Error);
-            }
+    {
+      var frmPrs = new FrmPrs(LangManager.GetLangFromResource("DownloadingForge"));
+      try
+      {
+        var forgeVersion = _forgeVersions.First(version => version.name == ver);
+        _forgeTask.ProcessChange += status => frmPrs.ChangeStatus(LangManager.GetLangFromResource(status));
+        frmPrs.Show();
+        await _forgeTask.DownloadForge(forgeVersion);
+      }
+      catch (InvalidOperationException exception)
+      {
+        Logger.Fatal(exception);
+        MessageBox.Show(BmclCore.MainWindow, LangManager.Translate("ForgeNoSuchVersion", ver),
+          BmclCore.MainWindow.Title,
+          MessageBoxButton.OK, MessageBoxImage.Error);
+      }
+      finally
+      {
+        frmPrs.Close();
+      }
             BmclCore.MainWindow.GridGame.ReFlushlistver();
             BmclCore.MainWindow.TabMain.SelectedIndex = 0;
         }

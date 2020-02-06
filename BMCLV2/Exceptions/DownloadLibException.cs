@@ -8,7 +8,7 @@ namespace BMCLV2.Exceptions
     {
         public LibraryInfo Library { get; }
 
-        public DownloadLibException(LibraryInfo library, Exception innerException):base(LangManager.Transalte("DownloadLibException", library.Name), innerException)
+        public DownloadLibException(LibraryInfo library, Exception innerException):base(LangManager.Translate("DownloadLibException", library.Name), innerException)
         {
             Library = library;
         }

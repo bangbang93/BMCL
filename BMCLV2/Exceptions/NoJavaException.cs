@@ -11,7 +11,7 @@ namespace BMCLV2.Exceptions
         public NoJavaException(string javaw)
         {
             Javaw = javaw;
-            Message = LangManager.Transalte("NoJavaException", javaw);
+            Message = LangManager.Translate("NoJavaException", javaw);
         }
     }
 }

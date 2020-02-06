@@ -35,7 +35,7 @@ namespace BMCLV2.Util
             {
                 if (_exception.Message.Contains("System.Runtime.CompilerServices.IAsyncStateMachine"))
                 {
-                    MessageBox.Show(LangManager.Transalte("ExceptionDotNet4.5"), "BMCL", MessageBoxButton.OK);
+                    MessageBox.Show(LangManager.Translate("ExceptionDotNet4.5"), "BMCL", MessageBoxButton.OK);
                     ChildProcess.Exec("https://www.bangbang93.com/topic/4/bmclng-%E9%9C%80%E8%A6%81-net-4-5");
                     return true;
                 }

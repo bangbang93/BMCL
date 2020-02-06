@@ -73,7 +73,7 @@ namespace BMCLV2.Plugin.InnerPlugin.Yggdrasil
                 var res = (HttpWebResponse)exception.Response;
                 if (res.StatusCode != HttpStatusCode.Forbidden) throw;
                 authResult.IsSuccess = false;
-                authResult.ErrCode = authResult.Message = LangManager.Transalte("UsernameOrPasswordError");
+                authResult.ErrCode = authResult.Message = LangManager.Translate("UsernameOrPasswordError");
                 return authResult;
             }
         }

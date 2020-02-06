@@ -5,7 +5,7 @@ namespace BMCLV2.Exceptions
 {
     public class NoSelectGameException :Exception
     {
-        public NoSelectGameException() : base(LangManager.Transalte("NoSelectGameException"))
+        public NoSelectGameException() : base(LangManager.Translate("NoSelectGameException"))
         {
         }
     }

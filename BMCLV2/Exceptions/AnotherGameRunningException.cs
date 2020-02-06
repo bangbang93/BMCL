@@ -5,7 +5,7 @@ namespace BMCLV2.Exceptions
 {
     public class AnotherGameRunningException : Exception
     {
-        public AnotherGameRunningException(Launcher.Launcher launcher):base(LangManager.Transalte("AnotherGameRunningException", launcher.VersionInfo.Id))
+        public AnotherGameRunningException(Launcher.Launcher launcher):base(LangManager.Translate("AnotherGameRunningException", launcher.VersionInfo.Id))
         {
             Launcher = launcher;
             
