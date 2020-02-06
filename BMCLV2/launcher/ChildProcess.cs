@@ -71,7 +71,7 @@ namespace BMCLV2.Launcher
             var sb = new StringBuilder();
             foreach (var argument in arguments)
             {
-                sb.Append("\"" + argument.Replace("\"", "\\\"") + "\"").Append(" ");
+                sb.Append('"').Append(argument.Replace("\"", "\\\"")).Append("\" ");
             }
             return sb.ToString(0, Math.Max(sb.Length - 1, 0));
         }

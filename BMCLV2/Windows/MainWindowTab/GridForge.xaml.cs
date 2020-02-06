@@ -69,10 +69,11 @@ namespace BMCLV2.Windows.MainWindowTab
         private async void DownloadForge(string ver)
     {
       var frmPrs = new FrmPrs(LangManager.GetLangFromResource("DownloadingForge"));
+      void OnProgressChange(string status) => frmPrs.ChangeStatus(LangManager.GetLangFromResource(status));
       try
       {
         var forgeVersion = _forgeVersions.First(version => version.name == ver);
-        _forgeTask.ProcessChange += status => frmPrs.ChangeStatus(LangManager.GetLangFromResource(status));
+        _forgeTask.ProcessChange += OnProgressChange;
         frmPrs.Show();
         await _forgeTask.DownloadForge(forgeVersion);
       }
@@ -85,6 +86,7 @@ namespace BMCLV2.Windows.MainWindowTab
       }
       finally
       {
+        _forgeTask.ProcessChange -= OnProgressChange;
         frmPrs.Close();
       }
             BmclCore.MainWindow.GridGame.ReFlushlistver();
