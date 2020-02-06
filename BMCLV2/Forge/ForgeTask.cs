@@ -68,7 +68,8 @@ namespace BMCLV2.Forge
         }
         catch (Exception ex)
         {
-          Logger.Fatal("内置forge安装器出错：" + ex.Message);
+          Logger.Fatal("内置forge安装器出错");
+          Logger.Fatal(ex);
         }
 
         if (!stat)
@@ -102,6 +103,10 @@ namespace BMCLV2.Forge
     {
       //将installer中的forge universal提取出来
       var tempDir = Path.Combine(Path.GetTempPath(), "BMCL\\ForgeInstaller");
+      if (Directory.Exists(tempDir))
+      {
+        Directory.Delete(tempDir, true);
+      }
       var archive = new ZipArchive(new FileStream(installerPath, FileMode.Open));
       archive.ExtractToDirectory(tempDir);
 
