@@ -12,14 +12,14 @@ namespace BMCLV2.Mirrors.Vanilla
       if (library.HasLibrary())
       {
         var url = library.GetLibrary()?.Url;
-        if (string.IsNullOrEmpty(url)) url = Server + library.GetLibraryPath();
+        if (string.IsNullOrEmpty(url)) url = $"{Server}{library.GetLibraryPath().Replace('\\', '/')}";
         await Downloader.DownloadFileTaskAsync(url, savePath);
       }
 
       if (library.IsNative)
       {
         var url = library.GetNative().Url;
-        if (string.IsNullOrEmpty(url)) url = Server + library.GetNativePath();
+        if (string.IsNullOrEmpty(url)) url = $"{Server}{library.GetNativePath().Replace('\\', '/')}";
         await Downloader.DownloadFileTaskAsync(url, savePath);
       }
     }
