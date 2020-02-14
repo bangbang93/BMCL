@@ -14,7 +14,8 @@ namespace BMCLV2.Mirrors.BMCLAPI
     {
       if (library.HasLibrary())
       {
-        var url = library.GetLibrary()?.Url ?? Server + library.GetLibraryPath();
+        var url = library.GetLibrary()?.Url;
+        if (string.IsNullOrEmpty(url)) url = Server + library.GetLibraryPath();
         url = _vanillaServer.Replace(url, Server);
         url = _forgeServeRegex.Replace(url, Server);
         Logger.Info(url);
@@ -22,7 +23,8 @@ namespace BMCLV2.Mirrors.BMCLAPI
       }
       if (library.IsNative)
       {
-        var url = library.GetNative().Url ?? Server + library.GetNativePath();
+        var url = library.GetNative().Url;
+        if (string.IsNullOrEmpty(url)) url = Server + library.GetNativePath();
         url = _vanillaServer.Replace(url, Server);
         url = _forgeServeRegex.Replace(url, Server);
         await Downloader.DownloadFileTaskAsync(url, savePath);

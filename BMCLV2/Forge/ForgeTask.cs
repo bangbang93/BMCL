@@ -78,7 +78,7 @@ namespace BMCLV2.Forge
         Logger.Fatal(ex);
         Logger.Info("将使用传统forge安装器");
         await InstallForgeInOldWay(installerPath);
-        Logger.Info("已使用内置forge安装器成功安装");
+        Logger.Info("已使用传统forge安装器成功安装");
       }
     }
 
