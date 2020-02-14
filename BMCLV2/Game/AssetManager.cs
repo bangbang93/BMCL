@@ -32,7 +32,7 @@ namespace BMCLV2.Game
           try
           {
             _assetsIndex =
-              await BmclCore.MirrorManager.CurrectMirror.Asset.GetAssetsIndex(_versionInfo, _indexesDirectory);
+              await BmclCore.MirrorManager.CurrentMirror.Asset.GetAssetsIndex(_versionInfo, _indexesDirectory);
           }
           catch (WebException exception)
           {
@@ -51,7 +51,7 @@ namespace BMCLV2.Game
             Logger.Log($"{index}/{_assetsIndex.Objects.Count} Sync {obj.Path}");
             try
             {
-              await BmclCore.MirrorManager.CurrectMirror.Asset.GetAssetsObject(obj, _objectsDirectory);
+              await BmclCore.MirrorManager.CurrentMirror.Asset.GetAssetsObject(obj, _objectsDirectory);
             }
             catch (WebException exception)
             {

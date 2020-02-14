@@ -12,11 +12,11 @@ namespace BMCLV2.Mirrors
             new Vanilla.Vanilla(),
             new MCBBS.MCBBS(),
         };
-        public Mirror CurrectMirror;
+        public Mirror CurrentMirror;
 
         public MirrorManager()
         {
-            CurrectMirror = _version[0];
+            CurrentMirror = _version[0];
         }
 
         public Mirror GetByName(string name)

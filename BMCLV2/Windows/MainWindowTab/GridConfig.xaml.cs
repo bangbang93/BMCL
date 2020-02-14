@@ -90,7 +90,7 @@ namespace BMCLV2.Windows.MainWindowTab
         private void listDownSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var index = listDownSource.SelectedIndex;
-            BmclCore.MirrorManager.CurrectMirror = BmclCore.MirrorManager[index];
+            BmclCore.MirrorManager.CurrentMirror = BmclCore.MirrorManager[index];
             BmclCore.Config.DownloadSource = index;
         }
         private void txtJavaXmx_TextChanged(object sender, TextChangedEventArgs e)

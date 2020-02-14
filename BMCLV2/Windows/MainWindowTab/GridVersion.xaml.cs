@@ -26,7 +26,7 @@ namespace BMCLV2.Windows.MainWindowTab
         private async void btnRefreshRemoteVer_Click(object sender, RoutedEventArgs e)
         {
             btnRefreshRemoteVer.IsEnabled = false;
-            var versionMirror = BmclCore.MirrorManager.CurrectMirror.Version;
+            var versionMirror = BmclCore.MirrorManager.CurrentMirror.Version;
             await versionMirror.Refresh();
             listRemoteVer.DataContext = versionMirror.GetDataTable();
             btnRefreshRemoteVer.IsEnabled = true;

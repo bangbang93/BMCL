@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
-using System.Resources;
 using System.Threading.Tasks;
-using System.Windows;
 using BMCLV2.Game;
 using BMCLV2.JsonClass;
 using BMCLV2.Launcher;
@@ -14,15 +12,16 @@ namespace BMCLV2.Forge
 {
   public class ForgeInstaller
   {
-    private string _path;
-
     public delegate void OnProgressChange(string status);
-    public event OnProgressChange ProgressChange = status => { };
+
+    private readonly string _path;
 
     public ForgeInstaller(string path)
     {
       _path = path;
     }
+
+    public event OnProgressChange ProgressChange = status => { };
 
     public async Task Run(string installerPath)
     {
@@ -39,7 +38,8 @@ namespace BMCLV2.Forge
         if (jsonLibrary.Name.StartsWith("net.minecraftforge:forge:")) continue;
         if (jsonLibrary.IsVaildLibrary(libraryPath)) continue;
         ProgressChange("{DownloadingLibrary} " + jsonLibrary.Name);
-        await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(jsonLibrary, Path.Combine(libraryPath, jsonLibrary.GetLibraryPath()));
+        await BmclCore.MirrorManager.CurrentMirror.Library.DownloadLibrary(jsonLibrary,
+          Path.Combine(libraryPath, jsonLibrary.GetLibraryPath()));
       }
 
       entry = archive.GetEntry("install_profile.json");
@@ -50,7 +50,8 @@ namespace BMCLV2.Forge
       {
         if (profileJsonLibrary.IsVaildLibrary(libraryPath)) continue;
         ProgressChange("{DownloadingLibrary} " + profileJsonLibrary.Name);
-        await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(profileJsonLibrary, Path.Combine(libraryPath, profileJsonLibrary.GetLibraryPath()));
+        await BmclCore.MirrorManager.CurrentMirror.Library.DownloadLibrary(profileJsonLibrary,
+          Path.Combine(libraryPath, profileJsonLibrary.GetLibraryPath()));
       }
 
       var buffer = Resources.forge_installer;

@@ -177,7 +177,7 @@ namespace BMCLV2.Launcher
                 {
                     try
                     {
-                        await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
+                        await BmclCore.MirrorManager.CurrentMirror.Library.DownloadLibrary(libraryInfo, filePath);
                     }
                     catch (WebException exception)
                     {
@@ -215,7 +215,7 @@ namespace BMCLV2.Launcher
                 {
                     if (!libraryInfo.IsVaildNative(_libraryDirectory))
                     {
-                        await BmclCore.MirrorManager.CurrectMirror.Library.DownloadLibrary(libraryInfo, filePath);
+                        await BmclCore.MirrorManager.CurrentMirror.Library.DownloadLibrary(libraryInfo, filePath);
                     }
                     UnzipNative(filePath, libraryInfo.Extract);
                 }
