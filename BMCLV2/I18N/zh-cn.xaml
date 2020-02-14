@@ -7,7 +7,7 @@
     <s:String x:Key="btnDelete">删除</s:String>
     <s:String x:Key="tabGameVersion">游戏版本</s:String>
     <s:String x:Key="llabVer">游戏版本</s:String>
-    <s:String x:Key="llabTime">上次打开时间</s:String>
+  <s:String x:Key="llabTime">更新时间</s:String>
     <s:String x:Key="llabRelTime">发布时间</s:String>
     <s:String x:Key="llabType">发布类型</s:String>
     <s:String x:Key="btnImportOldMc">导入旧版MC</s:String>

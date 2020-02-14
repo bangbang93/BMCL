@@ -10,7 +10,6 @@ using System.Windows.Input;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
 using BMCLV2.I18N;
-using BMCLV2.Mod;
 
 namespace BMCLV2.Windows.MainWindowTab
 {

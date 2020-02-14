@@ -395,9 +395,7 @@
   <ItemGroup>
     <Content Include="forge-installer.jar" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Mod\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
