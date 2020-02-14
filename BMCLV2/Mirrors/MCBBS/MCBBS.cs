@@ -7,6 +7,7 @@ namespace BMCLV2.Mirrors.MCBBS
         public override Interface.Library Library { get; }
         public override Interface.Version Version { get; }
         public override Interface.Asset Asset { get; }
+        public override Interface.Optifine Optifine { get; }
         public override string Name => "MCBBS";
 
         public MCBBS()

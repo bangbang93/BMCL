@@ -1,4 +1,4 @@
-﻿using BMCLV2.Mirrors.Interface;
+using BMCLV2.Mirrors.Interface;
 
 namespace BMCLV2.Mirrors.Vanilla
 {
@@ -7,6 +7,7 @@ namespace BMCLV2.Mirrors.Vanilla
         public override Interface.Library Library { get; }
         public override Interface.Version Version { get; }
         public override Interface.Asset Asset { get; }
+        public override Interface.Optifine Optifine { get; }
         public override string Name => "Vanilla";
 
         public Vanilla()
@@ -14,6 +15,7 @@ namespace BMCLV2.Mirrors.Vanilla
             Library = new Library();
             Version = new Version();
             Asset = new Asset();
+            Optifine = new Optifine();
         }
     }
 }
