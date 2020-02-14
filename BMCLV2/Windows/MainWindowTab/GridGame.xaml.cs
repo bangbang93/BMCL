@@ -100,21 +100,25 @@ namespace BMCLV2.Windows.MainWindowTab
 
         private void btnModMrg_Click(object sender, RoutedEventArgs e)
         {
+          var version = listVer.SelectedItems.ToString();
+          BmclCore.GameManager.SetupModPath(version);
             Process.Start(new ProcessStartInfo
             {
                 FileName = "explorer.exe",
                 Arguments =
-                     Path.Combine(BmclCore.GameManager.GetVersionPath(listVer.SelectedItems.ToString()), "mods")
+                     Path.Combine(BmclCore.GameManager.GetVersionPath(version), "mods")
             });
         }
 
         private void btnModCfgMrg_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start(new ProcessStartInfo
+    {
+      var version = listVer.SelectedItems.ToString();
+      BmclCore.GameManager.SetupModPath(version);
+      Process.Start(new ProcessStartInfo
             {
                 FileName = "explorer.exe",
                 Arguments =
-                    Path.Combine(BmclCore.GameManager.GetVersionPath(listVer.SelectedItems.ToString()), "config")
+                    Path.Combine(BmclCore.GameManager.GetVersionPath(version), "config")
             });
         }
 

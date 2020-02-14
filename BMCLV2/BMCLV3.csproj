@@ -157,7 +157,6 @@
     <Compile Include="Mirrors\Vanilla\Library.cs" />
     <Compile Include="Mirrors\Vanilla\Vanilla.cs" />
     <Compile Include="Mirrors\Vanilla\Version.cs" />
-    <Compile Include="Mod\ModHelper.cs" />
     <Compile Include="Game\LibraryInfo.cs" />
     <Compile Include="Mirrors\VersionManifest.cs" />
     <Compile Include="Plugin\IBmclPlugin.cs" />
@@ -396,7 +395,9 @@
   <ItemGroup>
     <Content Include="forge-installer.jar" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Mod\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>
