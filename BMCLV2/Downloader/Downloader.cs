@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Net;
 using System.Threading.Tasks;
 using BMCLV2.util;
@@ -9,7 +9,7 @@ namespace BMCLV2.Downloader
     {
         public Downloader()
         {
-            Headers.Add("User-Agent", "BMCLNG " + BmclCore.BmclVersion);
+            Headers.Add("User-Agent", "BMCLNG/" + BmclCore.BmclVersion);
         }
 
         public static async Task<string> GetString(string url)
