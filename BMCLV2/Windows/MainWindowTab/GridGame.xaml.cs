@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -34,8 +35,8 @@ namespace BMCLV2.Windows.MainWindowTab
             var id = GetSelectedVersion();
             var game = BmclCore.GameManager.GetVersion(id);
             labVer.Content = game.Id;
-            labTime.Content = DateTime.Parse(game.Time).ToString("yyyy-MM-dd HH:mm:ss");
-            labRelTime.Content = DateTime.Parse(game.ReleaseTime).ToString("yyyy-MM-dd HH:mm:ss");
+            labTime.Content = DateTime.Parse(game.Time).ToString(CultureInfo.CurrentCulture);
+            labRelTime.Content = DateTime.Parse(game.ReleaseTime).ToString(CultureInfo.CurrentCulture);
             labType.Content = game.Type;
 
             ChangeButtonEnable(true);//Enable button after choosing version

@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Json;
@@ -37,7 +38,7 @@ namespace BMCLV2.Mirrors.Interface
             dt.Columns.Add("url");
             foreach (var version in versions)
             {
-                dt.Rows.Add(version.id, version.type, version.time, version.url);
+                dt.Rows.Add(version.id, version.type, DateTime.Parse(version.time).ToString(CultureInfo.CurrentCulture), version.url);
             }
             return dt;
         }
