@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -35,8 +35,8 @@ namespace BMCLV2.Windows.MainWindowTab
             var id = GetSelectedVersion();
             var game = BmclCore.GameManager.GetVersion(id);
             labVer.Content = game.Id;
-            labTime.Content = DateTime.Parse(game.Time);
-            labRelTime.Content = DateTime.Parse(game.ReleaseTime);
+            labTime.Content = DateTime.Parse(game.Time).ToString("yyyy-MM-dd HH:mm:ss");
+            labRelTime.Content = DateTime.Parse(game.ReleaseTime).ToString("yyyy-MM-dd HH:mm:ss");
             labType.Content = game.Type;
 
             ChangeButtonEnable(true);//Enable button after choosing version
@@ -104,7 +104,7 @@ namespace BMCLV2.Windows.MainWindowTab
             {
                 FileName = "explorer.exe",
                 Arguments =
-                     Path.Combine(ModHelper.SetupModPath(listVer.SelectedItem.ToString()), "mods")
+                     Path.Combine(BmclCore.GameManager.GetVersionPath(listVer.SelectedItems.ToString()), "mods")
             });
         }
 
@@ -114,7 +114,7 @@ namespace BMCLV2.Windows.MainWindowTab
             {
                 FileName = "explorer.exe",
                 Arguments =
-                    Path.Combine(ModHelper.SetupModPath(listVer.SelectedItem.ToString()), "config")
+                    Path.Combine(BmclCore.GameManager.GetVersionPath(listVer.SelectedItems.ToString()), "config")
             });
         }
 

@@ -64,6 +64,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>BMCL.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="System" />
@@ -107,11 +116,16 @@
     <Compile Include="Downloader\Version.cs" />
     <Compile Include="Forge\ForgeInstaller.cs" />
     <Compile Include="Forge\InstallerProfileScheme.cs" />
+    <Compile Include="Mirrors\BMCLAPI\Optifine.cs" />
+    <Compile Include="Mirrors\Interface\Optifine.cs" />
     <Compile Include="Mirrors\MCBBS\Asset.cs" />
     <Compile Include="Mirrors\MCBBS\MCBBS.cs" />
     <Compile Include="Mirrors\MCBBS\Library.cs" />
+    <Compile Include="Mirrors\MCBBS\Optifine.cs" />
     <Compile Include="Mirrors\MCBBS\Version.cs" />
+    <Compile Include="Mirrors\Vanilla\Optifine.cs" />
     <Compile Include="Optifine\Installer.cs" />
+    <Compile Include="Optifine\VersionInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Util\ErrorHandler.cs" />
     <Compile Include="EventHandler.cs" />
@@ -334,6 +348,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <None Include="BMCL.snk" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

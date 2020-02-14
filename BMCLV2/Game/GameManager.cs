@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using BMCLV2.Auth;
+using BMCLV2.Cfg;
 using BMCLV2.Exceptions;
 using BMCLV2.JsonClass;
 using BMCLV2.Plugin;
@@ -111,5 +112,28 @@ namespace BMCLV2.Game
             _launcher.OnGameExit += (sender, info, exitcode) => _launcher = null;
             return _launcher;
         }
-    }
+
+        public string GetVersionPath(string version)
+        {
+          return Path.Combine(VersionDirectory, version);
+        }
+
+        public string SetupModPath(string version)
+        {
+          var versionPath = BmclCore.Config.LaunchMode == LaunchMode.Normal
+            ? GetVersionPath(version)
+            : Path.Combine(GetVersionPath(version), ".minecraft");
+          var modPath = Path.Combine(versionPath, "mods");
+          var configPath = Path.Combine(versionPath, "config");
+          if (!Directory.Exists(modPath))
+          {
+            Directory.CreateDirectory(modPath);
+          }
+          if (!Directory.Exists(configPath))
+          {
+            Directory.CreateDirectory(configPath);
+          }
+          return versionPath;
+        }
+  }
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Management;
@@ -36,7 +36,7 @@ namespace BMCLV2
         {
             Javaw = GetJavaDir() ?? "javaw.exe";
             Username = "!!!";
-            Javaxmx = (GetMemory() / 4).ToString(CultureInfo.InvariantCulture);
+            Javaxmx = (GetMemory() / 4).ToString();
             Passwd = new byte[0];
             Login = "啥都没有";
             Autostart = false;
@@ -125,15 +125,14 @@ namespace BMCLV2
                 var reg = Registry.LocalMachine;
                 var openSubKey = reg.OpenSubKey("SOFTWARE");
                 var registryKey = openSubKey?.OpenSubKey("JavaSoft");
-                if (registryKey != null)
-                    reg = registryKey.OpenSubKey("Java Runtime Environment");
-                if (reg == null) return null;
+                var jre = registryKey?.OpenSubKey("Java Runtime Environment");
+                if (jre == null) return null;
                 var javaList = new List<string>();
-                foreach (var ver in reg.GetSubKeyNames())
+                foreach (var ver in jre.GetSubKeyNames())
                 {
                     try
                     {
-                        var command = reg.OpenSubKey(ver);
+                        var command = jre.OpenSubKey(ver);
                         if (command == null) continue;
                         var str = command.GetValue("JavaHome").ToString();
                         if (str != "")

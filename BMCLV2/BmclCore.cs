@@ -68,10 +68,7 @@ namespace BMCLV2
 
       LangManager.UseLanguage(Config.Lang);
       if (!App.SkipPlugin) PluginManager.LoadOldAuthPlugin(LangManager.GetLangFromResource("LangName"));
-#if DEBUG
-#else
       ReleaseCheck();
-#endif
     }
 
     private static async Task ReleaseCheck()
