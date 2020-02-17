@@ -86,6 +86,7 @@ namespace BMCLV2
                 var ser = new DataContractSerializer(typeof(Config));
                 var cfg = (Config)ser.ReadObject(fs);
                 fs.Close();
+                if (cfg.DownloadThread < 1) cfg.DownloadThread = 20;
                 return cfg;
             }
             catch
