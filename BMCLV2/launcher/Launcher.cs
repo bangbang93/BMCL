@@ -5,7 +5,9 @@ using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using BMCLV2.Auth;
 using BMCLV2.Cfg;
@@ -167,34 +169,40 @@ namespace BMCLV2.Launcher
         private async Task<bool> SetupLibraries()
         {
             var libraryPath = new StringBuilder();
-            var libraries = VersionInfo.Libraries;
-            foreach (var libraryInfo in libraries)
+            var libraries = VersionInfo.Libraries.Where(e => !e.IsNative && e.ShouldDeployOnOs());
+            var set = new List<string>();
+            var semi = new SemaphoreSlim(20, 20);
+            await Task.WhenAll(libraries.Select(libraryInfo => Task.Run(async () =>
             {
-                if (libraryInfo.IsNative) continue;
-                if (!libraryInfo.ShouldDeployOnOs()) continue;
+              await semi.WaitAsync();
+
+              try
+              {
+                if (set.Contains(libraryInfo.Name)) return;
+                set.Add(libraryInfo.Name);
                 var filePath = Path.Combine(_libraryDirectory, libraryInfo.GetLibraryPath());
                 if (!libraryInfo.IsVaildLibrary(_libraryDirectory))
                 {
-                    try
-                    {
-                        await BmclCore.MirrorManager.CurrentMirror.Library.DownloadLibrary(libraryInfo, filePath);
-                    }
-                    catch (WebException exception)
-                    {
-                        throw new DownloadLibException(libraryInfo, exception);
-                    }
+                  await BmclCore.MirrorManager.CurrentMirror.Library.DownloadLibrary(libraryInfo, filePath);
                 }
+
                 libraryPath.Append(filePath).Append(";");
-            }
-            if (VersionInfo.InheritsFrom == null)
-            {
-                libraryPath.Append(Path.Combine(_versionDirectory, $"{VersionInfo.Jar ?? VersionInfo.Id}.jar"));
-            }
-            else
-            {
-                libraryPath.Append(Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.InheritsFrom, $"{VersionInfo.Jar ?? VersionInfo.Id}.jar"));
-            }
-            
+              }
+              catch (WebException exception)
+              {
+                throw new DownloadLibException(libraryInfo, exception);
+              }
+              finally
+              {
+                semi.Release();
+              }
+            })));
+
+            libraryPath.Append(VersionInfo.InheritsFrom == null
+              ? Path.Combine(_versionDirectory, $"{VersionInfo.Jar ?? VersionInfo.Id}.jar")
+              : Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.InheritsFrom,
+                $"{VersionInfo.Jar ?? VersionInfo.Id}.jar"));
+
             _arguments.Add("-cp");
             _arguments.Add(libraryPath.ToString());
             return true;
@@ -203,31 +211,43 @@ namespace BMCLV2.Launcher
         private async Task<bool> SetupNatives()
         {
             FileHelper.CreateDirectoryIfNotExist(_nativesDirectory);
-            foreach (var libraryInfo in VersionInfo.Libraries)
+
+            var natives = VersionInfo.Libraries.Where(e => e.IsNative && e.ShouldDeployOnOs());
+
+            var set = new List<string>();
+            var semi = new SemaphoreSlim(20, 20);
+            await Task.WhenAll(natives.Select(nativeInfo => Task.Run(async () =>
             {
+              await semi.WaitAsync();
+              try
+              {
+                if (set.Contains(nativeInfo.Name)) return;
+                set.Add(nativeInfo.Name);
                 //skip non-natives
-                Logger.Info(libraryInfo.Name);
-                if (!libraryInfo.IsNative) continue;
-                if (!libraryInfo.ShouldDeployOnOs()) continue;
+                Logger.Info(nativeInfo.Name);
                 Logger.Info("unarchive");
-                var filePath = Path.Combine(_libraryDirectory, libraryInfo.GetNativePath());
-                try
+                var filePath = Path.Combine(_libraryDirectory, nativeInfo.GetNativePath());
+
+                if (!nativeInfo.IsVaildNative(_libraryDirectory))
                 {
-                    if (!libraryInfo.IsVaildNative(_libraryDirectory))
-                    {
-                        await BmclCore.MirrorManager.CurrentMirror.Library.DownloadLibrary(libraryInfo, filePath);
-                    }
-                    UnzipNative(filePath, libraryInfo.Extract);
+                  await BmclCore.MirrorManager.CurrentMirror.Library.DownloadLibrary(nativeInfo, filePath);
                 }
-                catch (WebException exception)
-                {
-                    throw new DownloadLibException(libraryInfo, exception);
-                }
-                catch (InvalidDataException exception)
-                {
-                    throw new DownloadLibException(libraryInfo, exception);
-                }
-            }
+
+                UnzipNative(filePath, nativeInfo.Extract);
+              }
+              catch (WebException exception)
+              {
+                throw new DownloadLibException(nativeInfo, exception);
+              }
+              catch (InvalidDataException exception)
+              {
+                throw new DownloadLibException(nativeInfo, exception);
+              }
+              finally
+              {
+                semi.Release();
+              }
+            })));
             return true;
         }
 

@@ -12,9 +12,9 @@ using BMCLV2.JsonClass;
 namespace BMCLV2.Mirrors.Interface
 {
     public abstract class Version
-    {
-        protected readonly Downloader.Downloader Downloader = new Downloader.Downloader();
-        protected VersionManifest VersionManifest;
+  {
+    protected Downloader.Downloader Downloader => new Downloader.Downloader();
+    protected VersionManifest VersionManifest;
         protected string Url = "http://bmclapi2.bangbang93.com/mc/game/version_manifest.json";
         public virtual string Name { get;}
 

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Threading;
 using BMCLV2.Auth;
 using BMCLV2.Game;
@@ -12,6 +14,9 @@ using BMCLV2.I18N;
 using BMCLV2.Mirrors;
 using BMCLV2.Plugin;
 using BMCLV2.Windows;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
+using MessageBoxOptions = System.Windows.MessageBoxOptions;
 
 namespace BMCLV2
 {
