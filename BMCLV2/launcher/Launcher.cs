@@ -171,7 +171,7 @@ namespace BMCLV2.Launcher
             var libraryPath = new StringBuilder();
             var libraries = VersionInfo.Libraries.Where(e => !e.IsNative && e.ShouldDeployOnOs());
             var set = new List<string>();
-            var semi = new SemaphoreSlim(20, 20);
+            var semi = new SemaphoreSlim(BmclCore.Config.DownloadThread, BmclCore.Config.DownloadThread);
             await Task.WhenAll(libraries.Select(libraryInfo => Task.Run(async () =>
             {
               await semi.WaitAsync();
@@ -215,7 +215,7 @@ namespace BMCLV2.Launcher
             var natives = VersionInfo.Libraries.Where(e => e.IsNative && e.ShouldDeployOnOs());
 
             var set = new List<string>();
-            var semi = new SemaphoreSlim(20, 20);
+            var semi = new SemaphoreSlim(BmclCore.Config.DownloadThread, BmclCore.Config.DownloadThread);
             await Task.WhenAll(natives.Select(nativeInfo => Task.Run(async () =>
             {
               await semi.WaitAsync();

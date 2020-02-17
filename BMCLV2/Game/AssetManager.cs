@@ -46,7 +46,7 @@ namespace BMCLV2.Game
       Logger.Log($"assets count: {_assetsIndex.Objects.Count}");
       var index = 0;
       var set = new List<string>();
-      var semi = new SemaphoreSlim(20, 20);
+      var semi = new SemaphoreSlim(BmclCore.Config.DownloadThread, BmclCore.Config.DownloadThread);
 
       await Task.WhenAll(_assetsIndex.Objects.Values.Select(obj => Task.Run(async () =>
       {

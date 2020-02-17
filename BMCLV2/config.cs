@@ -31,6 +31,7 @@ namespace BMCLV2
         [DataMember] public int Width;
         [DataMember] public bool FullScreen;
         [DataMember] public LaunchMode LaunchMode;
+        [DataMember] public int DownloadThread = 20;
 
         public Config()
         {
