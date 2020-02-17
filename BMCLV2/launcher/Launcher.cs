@@ -168,7 +168,7 @@ namespace BMCLV2.Launcher
 
         private async Task<bool> SetupLibraries()
         {
-            var libraryPath = new StringBuilder();
+          var libraryPath = new List<string>();
             var libraries = VersionInfo.Libraries.Where(e => !e.IsNative && e.ShouldDeployOnOs());
             var set = new List<string>();
             var semi = new SemaphoreSlim(BmclCore.Config.DownloadThread, BmclCore.Config.DownloadThread);
@@ -186,7 +186,7 @@ namespace BMCLV2.Launcher
                   await BmclCore.MirrorManager.CurrentMirror.Library.DownloadLibrary(libraryInfo, filePath);
                 }
 
-                libraryPath.Append(filePath).Append(";");
+                libraryPath.Add(filePath);
               }
               catch (WebException exception)
               {
@@ -198,13 +198,13 @@ namespace BMCLV2.Launcher
               }
             })));
 
-            libraryPath.Append(VersionInfo.InheritsFrom == null
+            libraryPath.Add(VersionInfo.InheritsFrom == null
               ? Path.Combine(_versionDirectory, $"{VersionInfo.Jar ?? VersionInfo.Id}.jar")
               : Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.InheritsFrom,
                 $"{VersionInfo.Jar ?? VersionInfo.Id}.jar"));
 
             _arguments.Add("-cp");
-            _arguments.Add(libraryPath.ToString());
+            _arguments.Add(string.Join(";", libraryPath));
             return true;
         }
 

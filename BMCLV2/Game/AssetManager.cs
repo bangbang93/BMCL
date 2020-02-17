@@ -57,12 +57,12 @@ namespace BMCLV2.Game
           index++;
           if (set.Contains(obj.Path)) return;
           set.Add(obj.Path);
-          _onAssetsDownload(_assetsIndex.Objects.Count, index, obj.Path);
           var path = Path.Combine(_objectsDirectory, obj.Path);
           var hash = Crypto.GetSha1HashFromFile(path);
           if (hash == obj.Hash) return;
           Logger.Log($"{index}/{_assetsIndex.Objects.Count} Sync {obj.Path}");
           await BmclCore.MirrorManager.CurrentMirror.Asset.GetAssetsObject(obj, _objectsDirectory);
+          _onAssetsDownload(_assetsIndex.Objects.Count, index, obj.Path);
         }
         catch (WebException exception)
         {

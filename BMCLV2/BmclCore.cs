@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Net;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -73,6 +74,7 @@ namespace BMCLV2
 
       LangManager.UseLanguage(Config.Lang);
       if (!App.SkipPlugin) PluginManager.LoadOldAuthPlugin(LangManager.GetLangFromResource("LangName"));
+      ServicePointManager.DefaultConnectionLimit = int.MaxValue;
       ReleaseCheck();
     }
 
