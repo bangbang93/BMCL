@@ -198,10 +198,8 @@ namespace BMCLV2.Launcher
               }
             })));
 
-            libraryPath.Add(VersionInfo.InheritsFrom == null
-              ? Path.Combine(_versionDirectory, $"{VersionInfo.Jar ?? VersionInfo.Id}.jar")
-              : Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.InheritsFrom,
-                $"{VersionInfo.Jar ?? VersionInfo.Id}.jar"));
+            libraryPath.Add(Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.Jar ?? VersionInfo.InheritsFrom ?? VersionInfo.Id,
+                $"{VersionInfo.Jar ?? VersionInfo.InheritsFrom ?? VersionInfo.Id}.jar"));
 
             _arguments.Add("-cp");
             _arguments.Add(string.Join(";", libraryPath));
