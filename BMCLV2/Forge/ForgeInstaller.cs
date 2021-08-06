@@ -54,16 +54,14 @@ namespace BMCLV2.Forge
           Path.Combine(libraryPath, profileJsonLibrary.GetLibraryPath()));
       }
 
-      var buffer = Resources.forge_installer;
+      var buffer = Resources.forge_install_bootstrapper;
       // var stream = Application.GetResourceStream(new Uri("pack://application:,,,/forge_installer"));
       var installerHelperPath = Path.Combine(BmclCore.TempDirectory, "forge-installer-helper.jar");
-      var fs = new FileStream(installerHelperPath, FileMode.Create);
-      await fs.WriteAsync(buffer, 0, buffer.Length);
-      fs.Close();
+      File.WriteAllBytes(installerHelperPath, buffer);
 
       var arguments = new List<string>();
       arguments.AddRange(new[]
-        {"-cp", $"{installerHelperPath};{installerPath}", "com.bangbang93.ForgeInstaller", _path});
+        { "-cp", $"{installerHelperPath};{installerPath}", "com.bangbang93.ForgeInstaller", _path });
 
       var cp = new ChildProcess(BmclCore.Config.Javaw, arguments.ToArray());
       cp.Start();
