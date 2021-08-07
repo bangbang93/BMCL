@@ -44,8 +44,8 @@ namespace BMCLV2.Mojang.Runtime
         else
         {
           var download = file.Value.Downloads["raw"];
-          var mirror = BmclCore.MirrorManager.CurrentMirror;
-          downloadInfos.Add(new DownloadInfo(mirror.Version.GetUrl(download.Url), path, download.Size));
+          download.Url = BmclCore.MirrorManager.CurrentMirror.Version.GetUrl(download.Url);
+          downloadInfos.Add(new DownloadInfo(path, download));
         }
       }
 

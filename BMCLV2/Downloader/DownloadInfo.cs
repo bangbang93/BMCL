@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using System.Security.Policy;
 using BMCLV2.JsonClass;
 
 namespace BMCLV2.Downloader
@@ -27,25 +28,18 @@ namespace BMCLV2.Downloader
 
     private long _complete;
 
-    public DownloadInfo(string name, Uri uri, string savePath, long size = 0)
+    public DownloadInfo(string name, string uri, string savePath, long size = 0)
     {
       Name = name;
-      Uri = uri;
+      Uri = new Uri(uri);
       SavePath = savePath;
       Size = size;
     }
 
-    public DownloadInfo(string name, string url, string savePath, long size = 0) : this(name, new Uri(url), savePath, size)
+    public DownloadInfo(string url, string savePath, long size = 0) : this(Path.GetFileName(url), url, savePath, size)
     { }
 
-    public DownloadInfo(string url, string savePath, long size = 0) : this(Path.GetFileName(url), new Uri(url), savePath, size)
-    { }
-
-    public DownloadInfo(Uri url, string savePath, long size = 0) : this(Path.GetFileName(url.ToString()), url, savePath, size)
-    { }
-
-    public DownloadInfo(string savePath, FileSchema fileSchema) : this(Path.GetFileName(fileSchema.Url), savePath,
-      fileSchema.Size)
+    public DownloadInfo(string savePath, FileSchema fileSchema) : this(Path.GetFileName(fileSchema.Url), fileSchema.Url, savePath, fileSchema.Size)
     {
       Sha1 = fileSchema.Sha1;
     }

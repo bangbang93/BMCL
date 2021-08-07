@@ -1,9 +1,11 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using BMCLV2.Game;
+using BMCLV2.Util;
 
 namespace BMCLV2.Downloader
 {
@@ -32,6 +34,16 @@ namespace BMCLV2.Downloader
           BmclCore.Dispatcher.Invoke(() => DownloadList.ScrollIntoView(downloadInfo));
 
           ct.ThrowIfCancellationRequested();
+
+          if (File.Exists(downloadInfo.SavePath))
+          {
+            var sha1 = Crypto.GetSha1HashFromFile(downloadInfo.SavePath);
+            if (sha1 == downloadInfo.Sha1)
+            {
+              downloadInfo.Complete = downloadInfo.Size;
+              continue;
+            }
+          }
 
           var downloader = new Downloader();
           downloader.DownloadProgressChanged += (sender, args) =>
