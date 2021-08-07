@@ -15,7 +15,7 @@ namespace BMCLV2.Game
 {
     public class GameManager
     {
-        public static readonly string VersionDirectory = Path.Combine(BmclCore.BaseDirectory, @".minecraft\versions");
+        public static readonly string VersionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft", "versions");
         private readonly Dictionary<string, VersionInfo> _versions = new Dictionary<string, VersionInfo>();
         private Launcher.Launcher _launcher;
         private readonly string[] _inheritFields = {"AssetIndex", "Type", "MinecraftArguments", "MainClass", "Assets", "Jar", "JavaVersion"};
@@ -89,13 +89,13 @@ namespace BMCLV2.Game
                 authResult = await BmclCore.AuthManager.Login(BmclCore.Config.Username, BmclCore.Config.GetPassword());
                 if (!authResult.IsSuccess)
                 {
-                    var authname = "BMCL";
+                    var authName = "BMCL";
                     if (BmclCore.AuthManager.GetCurrectAuth() is IBmclAuthPlugin)
                     {
                         var plugin = BmclCore.AuthManager.GetCurrectAuth() as IBmclAuthPlugin;
-                        authname = plugin?.GetName();
+                        authName = plugin?.GetName();
                     }
-                    MessageBox.Show(BmclCore.MainWindow, authResult.Message, authname, MessageBoxButton.OK);
+                    MessageBox.Show(BmclCore.MainWindow, authResult.Message, authName, MessageBoxButton.OK);
                     return null;
                 }
             }

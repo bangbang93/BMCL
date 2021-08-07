@@ -23,7 +23,6 @@ namespace BMCLV2.Launcher
       "-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump",
     };
 
-    private readonly AuthResult _authResult;
     private readonly string _libraryDirectory;
     private readonly string _nativesDirectory;
     private readonly string _versionDirectory;
@@ -36,16 +35,14 @@ namespace BMCLV2.Launcher
     private OnLaunchError _onLaunchError;
 
     private string _java;
-    private LaunchMode _launchMode;
-    private string _xmx;
-    private List<string> _jvmArgs = new List<string>();
+    private readonly LaunchMode _launchMode;
+    private readonly string _xmx;
+    private readonly List<string> _jvmArgs = new List<string>();
     private readonly Dictionary<string, string> _values;
 
     public Launcher(VersionInfo versionInfo, AuthResult authResult, Config config)
     {
-      _authResult = authResult;
       VersionInfo = versionInfo;
-      State = LauncherState.Initializing;
       _java = config.Javaw;
       _launchMode = config.LaunchMode;
       _xmx = config.Javaxmx;
@@ -56,9 +53,10 @@ namespace BMCLV2.Launcher
       {
         _jvmArgs.AddRange(ChildProcess.SplitCommandLine(config.ExtraJvmArg));
       }
+
       _values = new Dictionary<string, string>
       {
-        { "${auth_player_name}", _authResult.Username },
+        { "${auth_player_name}", authResult.Username },
         { "${version_name}", VersionInfo.Id },
         { "${game_directory}", BmclCore.MinecraftDirectory },
         { "${assets_root}", Path.Combine(BmclCore.MinecraftDirectory, "assets") },
@@ -66,11 +64,11 @@ namespace BMCLV2.Launcher
         { "${user_type}", "Legacy" },
         { "${version_type}", VersionInfo.Type ?? "Legacy" },
         { "${user_properties}", "{}" },
-        {"${launcher_name}", "BMCL"},
-        {"${launcher_version}", BmclCore.BmclVersion},
-        {"${natives_directory}", _nativesDirectory},
-        {"${library_directory}", _libraryDirectory},
-        {"${classpath_separator}", BmclCore.OS == "windows" ? ";" : ":"}
+        { "${launcher_name}", "BMCL" },
+        { "${launcher_version}", BmclCore.BmclVersion },
+        { "${natives_directory}", _nativesDirectory },
+        { "${library_directory}", _libraryDirectory },
+        { "${classpath_separator}", BmclCore.OS == "windows" ? ";" : ":" }
       };
 
       if (versionInfo.Arguments?.Jvm != null)
@@ -85,15 +83,12 @@ namespace BMCLV2.Launcher
         _values["${game_directory}"] = gameDirectory;
       }
 
-      if (_authResult.OutInfo != null)
-        foreach (var info in _authResult.OutInfo)
+      if (authResult.OutInfo != null)
+        foreach (var info in authResult.OutInfo)
           _values[info.Key] = info.Value;
     }
 
     public VersionInfo VersionInfo { get; }
-
-
-    public LauncherState State { get; }
 
     public event OnGameExit OnGameExit
     {
@@ -146,6 +141,7 @@ namespace BMCLV2.Launcher
 
     private bool Launch()
     {
+      PatchOldJvmArgs();
       try
       {
         var arguments = new List<string>(_jvmArgs).Concat(_arguments).ToArray();
@@ -168,7 +164,7 @@ namespace BMCLV2.Launcher
       return true;
     }
 
-    private void CompactOldJvmArgs()
+    private void PatchOldJvmArgs()
     {
       var library = _jvmArgs.FirstOrDefault(arg => arg.StartsWith("-Djava.library.path"));
       if (library == null) _jvmArgs.Add($"-Djava.library.path={_nativesDirectory}");
@@ -353,7 +349,7 @@ namespace BMCLV2.Launcher
       return arguments.Select(argument =>
         _values.Aggregate(argument, (current, value) =>
           current.Replace(value.Key, value.Value))
-        ).ToList();
+      ).ToList();
     }
 
     private void HandleCrashReport(IReadOnlyDictionary<string, int> nowValue)

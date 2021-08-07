@@ -1,12 +1,11 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
-using System.Security.Policy;
 using BMCLV2.JsonClass;
 
 namespace BMCLV2.Downloader
 {
-  public class DownloadInfo: INotifyPropertyChanged
+  public class DownloadInfo : INotifyPropertyChanged
   {
     public string Name { get; }
 
@@ -15,7 +14,8 @@ namespace BMCLV2.Downloader
     public long Size;
     public string Sha1;
 
-    public long Complete {
+    public long Complete
+    {
       get => _complete;
       set
       {
@@ -37,9 +37,11 @@ namespace BMCLV2.Downloader
     }
 
     public DownloadInfo(string url, string savePath, long size = 0) : this(Path.GetFileName(url), url, savePath, size)
-    { }
+    {
+    }
 
-    public DownloadInfo(string savePath, FileSchema fileSchema) : this(Path.GetFileName(fileSchema.Url), fileSchema.Url, savePath, fileSchema.Size)
+    public DownloadInfo(string savePath, FileSchema fileSchema) : this(Path.GetFileName(fileSchema.Url), fileSchema.Url,
+      savePath, fileSchema.Size)
     {
       Sha1 = fileSchema.Sha1;
     }

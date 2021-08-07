@@ -3,8 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Documents;
-using BMCLV2.Game;
 using BMCLV2.Util;
 
 namespace BMCLV2.Downloader
@@ -12,11 +10,12 @@ namespace BMCLV2.Downloader
   /// <summary>
   /// DownloadWindow.xaml 的交互逻辑
   /// </summary>
-  public partial class DownloadWindow : Window
+  public partial class DownloadWindow
   {
-    private DownloadInfo[] _downloadInfos;
+    private readonly DownloadInfo[] _downloadInfos;
     private Task _downloadTask;
-    private CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+    private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
     public DownloadWindow(DownloadInfo[] downloads)
     {
       InitializeComponent();
