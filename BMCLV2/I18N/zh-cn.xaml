@@ -1,13 +1,13 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:s="clr-namespace:System;assembly=mscorlib"> 
-  
+                    xmlns:s="clr-namespace:System;assembly=mscorlib">
+
     <s:String x:Key="DisplayName">简体中文</s:String>
     <s:String x:Key="LangName">zh-cn</s:String>
     <s:String x:Key="btnDelete">删除</s:String>
     <s:String x:Key="tabGameVersion">游戏版本</s:String>
     <s:String x:Key="llabVer">游戏版本</s:String>
-  <s:String x:Key="llabTime">更新时间</s:String>
+    <s:String x:Key="llabTime">更新时间</s:String>
     <s:String x:Key="llabRelTime">发布时间</s:String>
     <s:String x:Key="llabType">发布类型</s:String>
     <s:String x:Key="btnImportOldMc">导入旧版MC</s:String>
@@ -20,6 +20,7 @@
     <s:String x:Key="btnMiniSize">隐藏</s:String>
     <s:String x:Key="btnClose">关闭</s:String>
     <s:String x:Key="btnStart">开始</s:String>
+    <s:String x:Key="btnCancel">取消</s:String>
     <s:String x:Key="tabLauncherCfg">启动设置</s:String>
     <s:String x:Key="labUserName">用户名：</s:String>
     <s:String x:Key="labPwd">密码：</s:String>
@@ -36,7 +37,7 @@
     <s:String x:Key="labSaveSucc">保存成功！</s:String>
     <s:String x:Key="listOfficalSource">官方源（国外，更新快）</s:String>
     <s:String x:Key="listAuthorSource">BMCLAPI(国内，更稳定）</s:String>
-    <s:String x:Key="groupAuth">登陆方式</s:String>
+    <s:String x:Key="groupAuth">登录方式</s:String>
     <s:String x:Key="NoneAuth">离线模式</s:String>
     <s:String x:Key="groupDownloadSource">下载服务器</s:String>
     <s:String x:Key="btnSelectJava">浏览</s:String>
@@ -124,7 +125,7 @@
     <s:String x:Key="DownloadLibException">无法获得所需的依赖({0})</s:String>
     <s:String x:Key="LauncherCheckJava">检查Java</s:String>
     <s:String x:Key="LauncherCheckMem">检查内存</s:String>
-    <s:String x:Key="LauncherAuth">正在登陆</s:String>
+    <s:String x:Key="LauncherAuth">正在登录</s:String>
     <s:String x:Key="LauncherSettingupEnvoriement">设置环境变量</s:String>
     <s:String x:Key="LauncherSolveLib">处理依赖</s:String>
     <s:String x:Key="LauncherDownloadLib">下载依赖</s:String>

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Management;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,13 +30,18 @@ namespace BMCLV2
     public static readonly string BaseDirectory = Environment.CurrentDirectory + '\\';
     public static readonly string MinecraftDirectory = Path.Combine(BaseDirectory, ".minecraft");
     public static readonly string LibrariesDirectory = Path.Combine(MinecraftDirectory, "libraries");
+    public static readonly string RuntimeDirectory = Path.Combine(MinecraftDirectory, "runtime");
     public static readonly string TempDirectory = Path.Combine(Path.GetTempPath(), "BMCL");
     private static readonly Application ThisApplication = Application.Current;
     private static readonly string Cfgfile = Path.Combine(BaseDirectory, "bmcl.xml");
     public static readonly MirrorManager MirrorManager = new MirrorManager();
     public static readonly PluginManager PluginManager = new PluginManager();
     public static readonly AuthManager AuthManager = new AuthManager();
-    public static readonly string Platform = "windows";
+    public static readonly string OS = "windows";
+    public static readonly string Arch = "x86";
+    public static readonly string OSVersion = System.Environment.OSVersion.VersionString;
+
+    public static string Platform => $"{OS}-{Arch}";
 
     static BmclCore()
     {
@@ -69,6 +75,19 @@ namespace BMCLV2
       if (!App.SkipPlugin) PluginManager.LoadOldAuthPlugin(LangManager.GetLangFromResource("LangName"));
       ServicePointManager.DefaultConnectionLimit = int.MaxValue;
       ReleaseCheck();
+      try //系统位数，系统名称
+      {
+        var searcher = new ManagementClass("WIN32_Processor");
+        var moc = searcher.GetInstances();
+        foreach (var mo in moc)
+        {
+          Arch = mo["AddressWidth"].ToString() == "64" ? "x86" : "x64";
+        }
+      }
+      catch
+      {
+        // ignored
+      }
     }
 
     private static async Task ReleaseCheck()

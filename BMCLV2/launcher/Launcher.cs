@@ -10,6 +10,7 @@ using BMCLV2.Auth;
 using BMCLV2.Cfg;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
+using BMCLV2.Mojang.Runtime;
 using BMCLV2.util;
 
 namespace BMCLV2.Launcher
@@ -19,12 +20,9 @@ namespace BMCLV2.Launcher
     private readonly List<string> _arguments = new List<string>
     {
       "-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump",
-      "-Dminecraft.launcher.brand=BMCL",
-      $@"-Dminecraft.launcher.version={BmclCore.BmclVersion}"
     };
 
     private readonly AuthResult _authResult;
-    private readonly Config _config;
     private readonly string _libraryDirectory;
     private readonly string _nativesDirectory;
     private readonly string _versionDirectory;
@@ -36,17 +34,59 @@ namespace BMCLV2.Launcher
     private OnGameStart _onGameStart;
     private OnLaunchError _onLaunchError;
 
-    public Launcher(VersionInfo versionInfo, AuthResult authResult, Config config = null)
+    private string _java;
+    private LaunchMode _launchMode;
+    private string _xmx;
+    private List<string> _jvmArgs = new List<string>();
+    private readonly Dictionary<string, string> _values;
+
+    public Launcher(VersionInfo versionInfo, AuthResult authResult, Config config)
     {
       _authResult = authResult;
       VersionInfo = versionInfo;
       State = LauncherState.Initializing;
-      _config = config ?? Config.Load();
+      _java = config.Javaw;
+      _launchMode = config.LaunchMode;
+      _xmx = config.Javaxmx;
       _versionDirectory = Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions", VersionInfo.Id);
       _libraryDirectory = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
       _nativesDirectory = Path.Combine(_versionDirectory, $"{VersionInfo.Id}-natives-{TimeHelper.TimeStamp()}");
-      if (!string.IsNullOrEmpty(_config.ExtraJvmArg))
-        _arguments.AddRange(ChildProcess.SplitCommandLine(_config.ExtraJvmArg));
+      if (!string.IsNullOrEmpty(config.ExtraJvmArg))
+      {
+        _jvmArgs.AddRange(ChildProcess.SplitCommandLine(config.ExtraJvmArg));
+      }
+      _values = new Dictionary<string, string>
+      {
+        { "${auth_player_name}", _authResult.Username },
+        { "${version_name}", VersionInfo.Id },
+        { "${game_directory}", BmclCore.MinecraftDirectory },
+        { "${assets_root}", Path.Combine(BmclCore.MinecraftDirectory, "assets") },
+        { "${assets_index_name}", VersionInfo.Assets },
+        { "${user_type}", "Legacy" },
+        { "${version_type}", VersionInfo.Type ?? "Legacy" },
+        { "${user_properties}", "{}" },
+        {"${launcher_name}", "BMCL"},
+        {"${launcher_version}", BmclCore.BmclVersion},
+        {"${natives_directory}", _nativesDirectory},
+        {"${library_directory}", _libraryDirectory},
+        {"${classpath_separator}", BmclCore.OS == "windows" ? ";" : ":"}
+      };
+
+      if (versionInfo.Arguments?.Jvm != null)
+      {
+        _jvmArgs.AddRange(versionInfo.Arguments.Jvm.OfType<string>());
+      }
+
+      if (_launchMode == LaunchMode.Standalone)
+      {
+        var gameDirectory = Path.Combine(_versionDirectory, ".minecraft");
+        FileHelper.CreateDirectoryIfNotExist(gameDirectory);
+        _values["${game_directory}"] = gameDirectory;
+      }
+
+      if (_authResult.OutInfo != null)
+        foreach (var info in _authResult.OutInfo)
+          _values[info.Key] = info.Value;
     }
 
     public VersionInfo VersionInfo { get; }
@@ -83,9 +123,8 @@ namespace BMCLV2.Launcher
       try
       {
         _onGameLaunch(this, "LauncherCheckJava", VersionInfo);
-        if (!SetupJava()) return;
+        await SetupJava();
         if (!CleanNatives()) return;
-        _arguments.Add($"-Djava.library.path={_nativesDirectory}");
         _onGameLaunch(this, "LauncherSolveLib", VersionInfo);
         if (!await SetupLibraries()) return;
         if (!await SetupNatives()) return;
@@ -108,10 +147,12 @@ namespace BMCLV2.Launcher
     {
       try
       {
+        var arguments = new List<string>(_jvmArgs).Concat(_arguments).ToArray();
+        arguments = this.ReplaceArguments(arguments).ToArray();
         _childProcess =
-          _config.LaunchMode == LaunchMode.Normal
-            ? new ChildProcess(_config.Javaw, _arguments.ToArray())
-            : new ChildProcess(_config.Javaw, _versionDirectory, _arguments.ToArray());
+          _launchMode == LaunchMode.Normal
+            ? new ChildProcess(_java, arguments)
+            : new ChildProcess(_java, _versionDirectory, arguments);
         if (!_childProcess.Start()) return false;
         _childProcess.OnStdOut += OnStdOut;
         _childProcess.OnStdErr += OnStdOut;
@@ -124,6 +165,16 @@ namespace BMCLV2.Launcher
       }
 
       return true;
+    }
+
+    private void CompactOldJvmArgs()
+    {
+      var library = _jvmArgs.FirstOrDefault(arg => arg.StartsWith("-Djava.library.path"));
+      if (library == null) _jvmArgs.Add($"-Djava.library.path={_nativesDirectory}");
+      var cp = _jvmArgs.Contains("-cp");
+      if (cp) return;
+      _jvmArgs.Add("-cp");
+      _jvmArgs.Add(_values["${classpath}"]);
     }
 
     private static Dictionary<string, int> CountError()
@@ -159,11 +210,22 @@ namespace BMCLV2.Launcher
       Logger.Log(log);
     }
 
-    private bool SetupJava()
+    private async Task SetupJava()
     {
-      if (!File.Exists(_config.Javaw)) throw new NoJavaException(_config.Javaw);
-      _arguments.Add($"-Xmx{_config.Javaxmx}M");
-      return true;
+      if (VersionInfo.JavaVersion == null)
+      {
+        if (!File.Exists(_java)) throw new NoJavaException(_java);
+        _arguments.Add($"-Xmx{_xmx}M");
+      }
+      else
+      {
+        var javaManager = new JavaManager(VersionInfo.JavaVersion.Component);
+        var downloads = await javaManager.EnsureJava();
+        // var downloadWindow = new DownloadWindow(downloads);
+        // downloadWindow.Show();
+        // await downloadWindow.WaitForFinish();
+        _java = javaManager.ExecutablePath;
+      }
     }
 
     private async Task<bool> SetupLibraries()
@@ -184,7 +246,7 @@ namespace BMCLV2.Launcher
           if (!libraryInfo.IsVaildLibrary(_libraryDirectory))
             await BmclCore.MirrorManager.CurrentMirror.Library.DownloadLibrary(libraryInfo, filePath);
 
-          libraryPath.Add(filePath);
+          libraryPath.Add(filePath.Replace('/', '\\'));
         }
         catch (WebException exception)
         {
@@ -196,12 +258,14 @@ namespace BMCLV2.Launcher
         }
       })));
 
-      libraryPath.Add(Path.Combine(BmclCore.BaseDirectory, ".minecraft\\versions",
-        VersionInfo.Jar ?? VersionInfo.InheritsFrom ?? VersionInfo.Id,
-        $"{VersionInfo.Jar ?? VersionInfo.InheritsFrom ?? VersionInfo.Id}.jar"));
+      if (VersionInfo.MainClass != "cpw.mods.bootstraplauncher.BootstrapLauncher")
+      {
+        libraryPath.Add(Path.Combine(BmclCore.BaseDirectory, ".minecraft", "versions",
+          VersionInfo.Jar ?? VersionInfo.InheritsFrom ?? VersionInfo.Id,
+          $"{VersionInfo.Jar ?? VersionInfo.InheritsFrom ?? VersionInfo.Id}.jar"));
+      }
 
-      _arguments.Add("-cp");
-      _arguments.Add(string.Join(";", libraryPath));
+      _values["${classpath}"] = string.Join(_values["${classpath_separator}"], libraryPath);
       return true;
     }
 
@@ -265,42 +329,29 @@ namespace BMCLV2.Launcher
 
     private IEnumerable<string> McArguments()
     {
-      var values = new Dictionary<string, string>
-      {
-        { "${auth_player_name}", _authResult.Username },
-        { "${version_name}", VersionInfo.Id },
-        { "${game_directory}", BmclCore.MinecraftDirectory },
-        { "${assets_root}", Path.Combine(BmclCore.MinecraftDirectory, "assets") },
-        { "${assets_index_name}", VersionInfo.Assets },
-        { "${user_type}", "Legacy" },
-        { "${version_type}", VersionInfo.Type ?? "Legacy" },
-        { "${user_properties}", "{}" }
-      };
-      if (_config.LaunchMode == LaunchMode.Standalone)
-      {
-        var gameDirectory = Path.Combine(_versionDirectory, ".minecraft");
-        FileHelper.CreateDirectoryIfNotExist(gameDirectory);
-        values["${game_directory}"] = gameDirectory;
-      }
-
-      if (_authResult.OutInfo != null)
-        foreach (var info in _authResult.OutInfo)
-          values.Add(info.Key, info.Value);
       if (VersionInfo.Arguments == null)
       {
         var arguments = VersionInfo.MinecraftArguments.Split(' ');
         for (var i = 0; i < arguments.Length; i++)
-          if (values.ContainsKey(arguments[i]))
-            arguments[i] = values[arguments[i]];
+          if (_values.ContainsKey(arguments[i]))
+            arguments[i] = _values[arguments[i]];
         return arguments;
       }
       else
       {
         var arguments = new List<string>(20);
         var gameArgs = VersionInfo.Arguments.Game;
-        arguments.AddRange(gameArgs.OfType<string>().Select(s => values.ContainsKey(s) ? values[s] : s));
+        arguments.AddRange(gameArgs.OfType<string>().Select(s => _values.ContainsKey(s) ? _values[s] : s));
         return arguments;
       }
+    }
+
+    private List<string> ReplaceArguments(IEnumerable<string> arguments)
+    {
+      return arguments.Select(argument =>
+        _values.Aggregate(argument, (current, value) =>
+          current.Replace(value.Key, value.Value))
+        ).ToList();
     }
 
     private void HandleCrashReport(IReadOnlyDictionary<string, int> nowValue)

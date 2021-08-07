@@ -2,6 +2,7 @@ using System;
 using System.Data;
 using System.Globalization;
 using System.Linq;
+using System.Security.Policy;
 using System.Threading.Tasks;
 using BMCLV2.JsonClass;
 
@@ -53,5 +54,6 @@ namespace BMCLV2.Mirrors.Interface
 
     public abstract Task<string> DownloadJson(string url);
     public abstract Task DownloadJar(string url, string savePath);
+    public abstract string GetUrl(string url);
   }
 }

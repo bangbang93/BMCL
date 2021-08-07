@@ -113,12 +113,14 @@
     <Compile Include="Downloader\Downloader.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Downloader\DownloadInfo.cs" />
     <Compile Include="Downloader\DownloadWindow.xaml.cs">
       <DependentUpon>DownloadWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Downloader\Version.cs" />
     <Compile Include="Forge\ForgeInstaller.cs" />
     <Compile Include="Forge\InstallerProfileScheme.cs" />
+    <Compile Include="JsonClass\FileSchema.cs" />
     <Compile Include="Mirrors\BMCLAPI\Optifine.cs" />
     <Compile Include="Mirrors\Interface\Optifine.cs" />
     <Compile Include="Mirrors\MCBBS\Asset.cs" />
@@ -127,8 +129,12 @@
     <Compile Include="Mirrors\MCBBS\Optifine.cs" />
     <Compile Include="Mirrors\MCBBS\Version.cs" />
     <Compile Include="Mirrors\Vanilla\Optifine.cs" />
+    <Compile Include="Mojang\Runtime\JavaManager.cs" />
+    <Compile Include="Mojang\Runtime\JavaManifest.cs" />
+    <Compile Include="Mojang\Runtime\JavaMeta.cs" />
     <Compile Include="Optifine\Installer.cs" />
     <Compile Include="Optifine\VersionInfo.cs" />
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Util\ErrorHandler.cs" />
     <Compile Include="EventHandler.cs" />
@@ -404,7 +410,6 @@
     <Content Include="forge-installer.jar" />
     <None Include="Resources\forge-install-bootstrapper.jar" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PreBuildEvent>

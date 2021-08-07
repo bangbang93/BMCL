@@ -28,5 +28,10 @@ namespace BMCLV2.Mirrors.BMCLAPI
             url = _originServers.Aggregate(url, (current, originServer) => current.Replace(originServer, Server));
             await Downloader.DownloadFileTaskAsync(url, savePath);
         }
+
+        public override string GetUrl(string url)
+        {
+          return _originServers.Aggregate(url, (current, originServer) => current.Replace(originServer, Server));
+        }
     }
 }

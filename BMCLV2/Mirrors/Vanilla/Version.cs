@@ -15,6 +15,11 @@ namespace BMCLV2.Mirrors.Vanilla
             await Downloader.DownloadFileTaskAsync(url, savePath);
         }
 
+        public override string GetUrl(string url)
+        {
+          return url;
+        }
+
         public Version()
         {
             Url = "http://launchermeta.mojang.com/mc/game/version_manifest.json";

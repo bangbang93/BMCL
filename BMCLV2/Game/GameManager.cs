@@ -18,7 +18,7 @@ namespace BMCLV2.Game
         public static readonly string VersionDirectory = Path.Combine(BmclCore.BaseDirectory, @".minecraft\versions");
         private readonly Dictionary<string, VersionInfo> _versions = new Dictionary<string, VersionInfo>();
         private Launcher.Launcher _launcher;
-        private readonly string[] _inheritFields = {"Type", "MinecraftArguments", "MainClass", "Assets", "Jar", "AssetIndex"};
+        private readonly string[] _inheritFields = {"AssetIndex", "Type", "MinecraftArguments", "MainClass", "Assets", "Jar", "JavaVersion"};
 
         public bool IsGameRunning => _launcher != null;
 
@@ -39,14 +39,10 @@ namespace BMCLV2.Game
             {
                 try
                 {
-                  var jsonStream = new FileStream(jsonFile, FileMode.Open);
-                  var info = jsonParser.Parse(jsonStream);
-                  if (info != null)
-                  {
-                    var id = PathHelper.GetDirectoryName(jsonFile);
-                    _versions.Add(_versions.ContainsKey(id) ? $"{id}({jsonFile})" : id, info);
-                  }
-                  jsonStream.Close();
+                  var info = jsonParser.Parse(File.ReadAllText(jsonFile));
+                  if (info == null) continue;
+                  var id = PathHelper.GetDirectoryName(jsonFile);
+                  _versions.Add(_versions.ContainsKey(id) ? $"{id}({jsonFile})" : id, info);
                 }
                 catch (SerializationException ex)
                 {
@@ -65,10 +61,9 @@ namespace BMCLV2.Game
                     version.GetType().GetField(field).SetValue(version, inherits.GetType().GetField(field).GetValue(inherits));
                 }
                 version.Libraries = version.Libraries.Concat(inherits.Libraries).ToArray();
-                if (version.Arguments != null)
-                {
-                  version.Arguments.Game = version.Arguments.Game.Concat(inherits.Arguments.Game).ToArray();
-                }
+                if (version.Arguments == null) continue;
+                version.Arguments.Game = version.Arguments.Game?.Concat(inherits.Arguments.Game).ToArray();
+                version.Arguments.Jvm = version.Arguments.Jvm?.Concat(inherits.Arguments.Jvm).ToArray();
             }
         }
 

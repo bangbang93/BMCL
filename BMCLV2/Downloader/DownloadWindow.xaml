@@ -1,4 +1,4 @@
-﻿<Window x:Class="BMCLV2.Downloader.DownloadWindow"
+<Window x:Class="BMCLV2.Downloader.DownloadWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -6,7 +6,18 @@
         xmlns:local="clr-namespace:BMCLV2.Downloader"
         mc:Ignorable="d"
         Title="DownloadWindow" Height="450" Width="800">
-    <Grid>
-        
-    </Grid>
+  <Grid>
+    <ListView HorizontalAlignment="Left" Height="348" VerticalAlignment="Top" Width="800" Margin="0, 0, 0, 100"
+              d:DataContext="{d:DesignData DownloadInfo}" Name="DownloadList">
+      <ListView.View>
+        <GridView>
+          <GridViewColumn Header="name" Width="700" DisplayMemberBinding="{Binding Name}"/>
+          <GridViewColumn Header="progress" Width="92" DisplayMemberBinding="{Binding Progress}"/>
+        </GridView>
+      </ListView.View>
+    </ListView>
+    <Button HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="100" Height="50" Margin="0, 0, 20, 20"
+            Content="{DynamicResource  btnCancel}"
+            Click="ButtonBase_OnClick"></Button>
+  </Grid>
 </Window>
