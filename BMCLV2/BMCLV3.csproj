@@ -113,6 +113,9 @@
     <Compile Include="Downloader\Downloader.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Downloader\DownloadWindow.xaml.cs">
+      <DependentUpon>DownloadWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Downloader\Version.cs" />
     <Compile Include="Forge\ForgeInstaller.cs" />
     <Compile Include="Forge\InstallerProfileScheme.cs" />
@@ -244,6 +247,10 @@
     <Compile Include="Plugin\InnerPlugin\Yggdrasil\GameProfile.cs" />
     <Compile Include="Plugin\InnerPlugin\Yggdrasil\Yggdrasil.cs" />
     <Compile Include="Plugin\InnerPlugin\Yggdrasil\Response.cs" />
+    <Page Include="Downloader\DownloadWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Themes\Generic.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

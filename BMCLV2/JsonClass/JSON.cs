@@ -10,7 +10,10 @@ namespace BMCLV2.JsonClass
 
     public JSON()
     {
-      _serializer = new DataContractJsonSerializer(typeof(T));
+      _serializer = new DataContractJsonSerializer(typeof(T), new DataContractJsonSerializerSettings
+      {
+        UseSimpleDictionaryFormat = true
+      });
     }
 
     public static T ParseOnce(string json)
@@ -25,7 +28,7 @@ namespace BMCLV2.JsonClass
 
     public T Parse(Stream stream)
     {
-      return (T) _serializer.ReadObject(stream);
+      return (T)_serializer.ReadObject(stream);
     }
 
     public T Parse(string json)

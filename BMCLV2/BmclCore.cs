@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Net;
-using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Forms;
 using System.Windows.Threading;
 using BMCLV2.Auth;
 using BMCLV2.Game;
@@ -15,24 +13,22 @@ using BMCLV2.I18N;
 using BMCLV2.Mirrors;
 using BMCLV2.Plugin;
 using BMCLV2.Windows;
-using Application = System.Windows.Application;
-using MessageBox = System.Windows.MessageBox;
-using MessageBoxOptions = System.Windows.MessageBoxOptions;
 
 namespace BMCLV2
 {
   public static class BmclCore
   {
-    public static Config Config;
-    public static GameManager GameManager;
-    public static string BmclVersion;
-    public static NotiIcon NIcon = new NotiIcon();
+    public static readonly Config Config;
+    public static readonly GameManager GameManager;
+    public static readonly string BmclVersion;
+    public static readonly NotiIcon NIcon = new NotiIcon();
     public static FrmMain MainWindow = null;
-    public static Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
+    public static readonly Dispatcher Dispatcher = Dispatcher.CurrentDispatcher;
     public static gameinfo GameInfo;
-    public static Dictionary<string, object> Language = new Dictionary<string, object>();
+    public static readonly Dictionary<string, object> Language = new Dictionary<string, object>();
     public static readonly string BaseDirectory = Environment.CurrentDirectory + '\\';
     public static readonly string MinecraftDirectory = Path.Combine(BaseDirectory, ".minecraft");
+    public static readonly string LibrariesDirectory = Path.Combine(MinecraftDirectory, "libraries");
     public static readonly string TempDirectory = Path.Combine(Path.GetTempPath(), "BMCL");
     private static readonly Application ThisApplication = Application.Current;
     private static readonly string Cfgfile = Path.Combine(BaseDirectory, "bmcl.xml");
@@ -51,14 +47,11 @@ namespace BMCLV2
         Directory.CreateDirectory(MinecraftDirectory);
       }
 
-      if (!Directory.Exists(TempDirectory))
-      {
-        Directory.CreateDirectory(TempDirectory);
-      }
+      if (!Directory.Exists(TempDirectory)) Directory.CreateDirectory(TempDirectory);
 
       GameManager = new GameManager();
       Config = Config.Load(Cfgfile);
-      if (Config.Passwd == null) Config.Passwd = new byte[0]; //V2的密码存储兼容
+      Config.Passwd = Config.Passwd ?? Array.Empty<byte>();
 
       Logger.Log($"加载{Cfgfile}文件");
       Logger.Log(Config);

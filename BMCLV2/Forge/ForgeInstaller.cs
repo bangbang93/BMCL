@@ -2,11 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.Compression;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using BMCLV2.Game;
 using BMCLV2.JsonClass;
 using BMCLV2.Launcher;
 using BMCLV2.Properties;
+using BMCLV2.util;
 
 namespace BMCLV2.Forge
 {
@@ -14,16 +16,19 @@ namespace BMCLV2.Forge
   {
     public delegate void OnProgressChange(string status);
 
+    private readonly string _mcVersion;
+
     private readonly string _path;
 
-    public ForgeInstaller(string path)
+    public ForgeInstaller(string path, string mcVersion)
     {
       _path = path;
+      _mcVersion = mcVersion;
     }
 
     public event OnProgressChange ProgressChange = status => { };
 
-    public async Task Run(string installerPath)
+    public async Task Run(string installerPath, VersionInfo vanillaInfo)
     {
       var libraryPath = Path.Combine(BmclCore.MinecraftDirectory, "libraries");
       var archive = new ZipArchive(new FileStream(installerPath, FileMode.Open));
@@ -52,6 +57,25 @@ namespace BMCLV2.Forge
         ProgressChange("{DownloadingLibrary} " + profileJsonLibrary.Name);
         await BmclCore.MirrorManager.CurrentMirror.Library.DownloadLibrary(profileJsonLibrary,
           Path.Combine(libraryPath, profileJsonLibrary.GetLibraryPath()));
+      }
+
+      ProgressChange("{DownloadingLibrary} processor data");
+      if (profileJson.Data.ContainsKey("MOJMAPS"))
+      {
+        var dataItem = profileJson.Data["MOJMAPS"];
+        var regex = new Regex("^\\[(.*)]$");
+        var match = regex.Match(dataItem.Client);
+        if (dataItem.Client != null && match.Success)
+        {
+          var lib = match.Groups[1].Value;
+          if (vanillaInfo.Downloads.ClientMappings != null)
+          {
+            var data = await BmclCore.MirrorManager.CurrentMirror.Version.DownloadJson(vanillaInfo.Downloads
+              .ClientMappings.Url);
+            File.WriteAllText(Path.Combine(BmclCore.LibrariesDirectory,
+              PathHelper.ParseJavaLibraryNameToPath(lib)), data);
+          }
+        }
       }
 
       var buffer = Resources.forge_install_bootstrapper;

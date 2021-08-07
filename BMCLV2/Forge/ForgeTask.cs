@@ -35,18 +35,20 @@ namespace BMCLV2.Forge
 
     public async Task DownloadForge(ForgeVersion forgeVersion)
     {
-      if (!Directory.Exists(BmclCore.BaseDirectory + ".minecraft\\versions\\" + forgeVersion.GetMc()))
+      var vanillaPath = BmclCore.BaseDirectory + ".minecraft\\versions\\" + forgeVersion.GetMc();
+      if (!Directory.Exists(vanillaPath))
       {
         MessageBox.Show("请先下载原版");
         return;
       }
 
+      var vanillaInfo = BmclCore.GameManager.GetVersion(forgeVersion.GetMc());
+
       ProcessChange("DownloadingForge");
       var url = forgeVersion.GetDownloadUrl();
       var downer = new Downloader.Downloader();
-      var w = new StreamWriter(AppDomain.CurrentDomain.BaseDirectory + "\\.minecraft\\launcher_profiles.json");
-      w.Write(NormalProfile.Profile);
-      w.Close();
+      File.WriteAllText(Path.Combine(BmclCore.MinecraftDirectory, "launcher_profiles.json"), NormalProfile.Profile);
+
       var installerPath = Path.Combine(BmclCore.TempDirectory, "forge.jar");
       await downer.DownloadFileTaskAsync(url, installerPath);
 
@@ -56,9 +58,9 @@ namespace BMCLV2.Forge
       {
         if (v >= 25)
         {
-          var installer = new ForgeInstaller(Path.Combine(BmclCore.MinecraftDirectory));
+          var installer = new ForgeInstaller(Path.Combine(BmclCore.MinecraftDirectory), forgeVersion.GetMc());
           installer.ProgressChange += status => ProcessChange(status);
-          await installer.Run(installerPath);
+          await installer.Run(installerPath, vanillaInfo);
         }
         else
         {
@@ -84,7 +86,7 @@ namespace BMCLV2.Forge
 
     private async Task InstallForgeInOldWay(string installerPath)
     {
-      var cp = new ChildProcess(BmclCore.Config.Javaw, new[] {"-jar", installerPath});
+      var cp = new ChildProcess(BmclCore.Config.Javaw, new[] { "-jar", installerPath });
       cp.Start();
       await cp.WaitForExitAsync();
     }
