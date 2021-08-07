@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Threading.Tasks;
 using BMCLV2.JsonClass;
 
@@ -16,7 +17,17 @@ namespace BMCLV2.Mojang.Runtime
 
     public async Task<ManifestSchema> FetchManifest()
     {
-      var json = await BmclCore.MirrorManager.CurrentMirror.Version.DownloadJson(_url);
+      var cache = BmclCore.Cache.Get(_url);
+      string json;
+      if (cache != null)
+      {
+        json = Encoding.Default.GetString(cache);
+      }
+      else
+      {
+        json = await BmclCore.MirrorManager.CurrentMirror.Version.DownloadJson(_url);
+        BmclCore.Cache.Set(_url, json);
+      }
       return new JSON<ManifestSchema>().Parse(json);
     }
 

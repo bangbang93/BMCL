@@ -9,9 +9,11 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Threading;
 using BMCLV2.Auth;
+using BMCLV2.Downloader;
 using BMCLV2.Game;
 using BMCLV2.I18N;
 using BMCLV2.Mirrors;
+using BMCLV2.Mojang.Runtime;
 using BMCLV2.Plugin;
 using BMCLV2.Windows;
 
@@ -31,17 +33,22 @@ namespace BMCLV2
     public static readonly string MinecraftDirectory = Path.Combine(BaseDirectory, ".minecraft");
     public static readonly string LibrariesDirectory = Path.Combine(MinecraftDirectory, "libraries");
     public static readonly string RuntimeDirectory = Path.Combine(MinecraftDirectory, "runtime");
+    public static readonly string CacheDirectory = Path.Combine(BaseDirectory, "caches");
     public static readonly string TempDirectory = Path.Combine(Path.GetTempPath(), "BMCL");
-    private static readonly Application ThisApplication = Application.Current;
-    private static readonly string Cfgfile = Path.Combine(BaseDirectory, "bmcl.xml");
+
     public static readonly MirrorManager MirrorManager = new MirrorManager();
     public static readonly PluginManager PluginManager = new PluginManager();
     public static readonly AuthManager AuthManager = new AuthManager();
+    public static readonly Cache Cache = new Cache();
+
     public static readonly string OS = "windows";
     public static readonly string Arch = "x86";
     public static readonly string OSVersion = System.Environment.OSVersion.VersionString;
-
     public static string Platform => $"{OS}-{Arch}";
+
+    private static readonly Application ThisApplication = Application.Current;
+    private static readonly string Cfgfile = Path.Combine(BaseDirectory, "bmcl.xml");
+
 
     static BmclCore()
     {
@@ -74,7 +81,6 @@ namespace BMCLV2
       LangManager.UseLanguage(Config.Lang);
       if (!App.SkipPlugin) PluginManager.LoadOldAuthPlugin(LangManager.GetLangFromResource("LangName"));
       ServicePointManager.DefaultConnectionLimit = int.MaxValue;
-      ReleaseCheck();
       try //系统位数，系统名称
       {
         var searcher = new ManagementClass("WIN32_Processor");
@@ -88,6 +94,7 @@ namespace BMCLV2
       {
         // ignored
       }
+      ReleaseCheck();
     }
 
     private static async Task ReleaseCheck()

@@ -1,8 +1,12 @@
-﻿using System.IO;
+﻿using System.ComponentModel;
+using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
+using BMCLV2.Annotations;
 using BMCLV2.Util;
 
 namespace BMCLV2.Downloader
@@ -10,17 +14,25 @@ namespace BMCLV2.Downloader
   /// <summary>
   /// DownloadWindow.xaml 的交互逻辑
   /// </summary>
-  public partial class DownloadWindow
+  public partial class DownloadWindow: INotifyPropertyChanged
   {
+    public string ProgressStatus => $"{ProgressValue}/{_downloadInfos.Length}";
+    public int ProgressValue { get; private set; }
+
+    public int ProgressMax => _downloadInfos.Length;
+
     private readonly DownloadInfo[] _downloadInfos;
     private Task _downloadTask;
     private readonly CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+
+    public event PropertyChangedEventHandler PropertyChanged;
 
     public DownloadWindow(DownloadInfo[] downloads)
     {
       InitializeComponent();
       _downloadInfos = downloads;
       DownloadList.ItemsSource = downloads.ToList();
+      Container.DataContext = this;
     }
 
     public async Task StartDownload()
@@ -30,6 +42,9 @@ namespace BMCLV2.Downloader
       {
         foreach (var downloadInfo in _downloadInfos)
         {
+          ProgressValue++;
+          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ProgressValue"));
+          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ProgressStatus"));
           BmclCore.Dispatcher.Invoke(() => DownloadList.ScrollIntoView(downloadInfo));
 
           ct.ThrowIfCancellationRequested();
@@ -61,6 +76,14 @@ namespace BMCLV2.Downloader
     {
       _cancellationTokenSource.Cancel();
       Close();
+    }
+
+    private void DownloadWindow_OnMouseDown(object sender, MouseButtonEventArgs e)
+    {
+      if (e.LeftButton == MouseButtonState.Pressed)
+      {
+        DragMove();
+      }
     }
   }
 }

@@ -3,12 +3,16 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:BMCLV2.Downloader"
+        xmlns:downloader="clr-namespace:BMCLV2.Downloader"
         mc:Ignorable="d"
-        Title="DownloadWindow" Height="450" Width="800">
-  <Grid>
-    <ListView HorizontalAlignment="Left" Height="348" VerticalAlignment="Top" Width="800" Margin="0, 0, 0, 100"
-              d:DataContext="{d:DesignData DownloadInfo}" Name="DownloadList">
+        Title="DownloadWindow" Height="450" Width="800"
+        WindowStyle="None"
+        MouseDown="DownloadWindow_OnMouseDown"
+        >
+
+  <Grid Name="Container" d:DataContext="{d:DesignInstance downloader:DownloadWindow}">
+    <ListView HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0, 0, 0, 100"
+              d:DataContext="{d:DesignInstance downloader:DownloadInfo}" Name="DownloadList">
       <ListView.View>
         <GridView>
           <GridViewColumn Header="name" Width="700" DisplayMemberBinding="{Binding Name}"/>
@@ -16,8 +20,11 @@
         </GridView>
       </ListView.View>
     </ListView>
+    <ProgressBar VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="50, 0, 20, 50" Width="400" Height="20"
+                 Value="{Binding Path=ProgressValue, Mode=OneWay}" Maximum="{Binding ProgressMax}"></ProgressBar>
+    <TextBlock Text="{Binding ProgressStatus}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Margin="50, 0, 20, 20"></TextBlock>
     <Button HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="100" Height="50" Margin="0, 0, 20, 20"
             Content="{DynamicResource  btnCancel}"
-            Click="ButtonBase_OnClick"></Button>
+            Click="ButtonBase_OnClick" />
   </Grid>
 </Window>
