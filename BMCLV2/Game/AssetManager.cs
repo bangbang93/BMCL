@@ -2,8 +2,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Script.Serialization;
 using BMCLV2.JsonClass;
 using BMCLV2.Util;
 
@@ -34,8 +36,31 @@ namespace BMCLV2.Game
     {
       try
       {
-        _assetsIndex =
-          await BmclCore.MirrorManager.CurrentMirror.Asset.GetAssetsIndex(_versionInfo, _indexesDirectory);
+        var assetIndex = _versionInfo.AssetIndex;
+        string url;
+        if (assetIndex == null)
+          url = $"http://resources.download.minecraft.net/indexes/{_versionInfo.Assets}.json";
+        else
+          url = _versionInfo.AssetIndex.Url;
+        var cache = BmclCore.Cache.Get(url);
+        string assetIndexString;
+        if (cache != null)
+        {
+          assetIndexString = Encoding.Default.GetString(cache);
+        }
+        else
+        {
+          var savePath = Path.Combine(_indexesDirectory, $"{assetIndex?.Id ?? _versionInfo.Assets}.json");
+          assetIndexString = await BmclCore.MirrorManager.CurrentMirror.Version.DownloadJson(url);
+          File.WriteAllText(savePath, assetIndexString);
+          BmclCore.Cache.Set(url, assetIndexString);
+        }
+        // assets的json比较奇葩，不能直接通过反序列化得到
+        var assetsObject = new JSON<Dictionary<string, Dictionary<string, AssetsIndex.Assets>>>().Parse(assetIndexString);
+        _assetsIndex=  new AssetsIndex
+        {
+          Objects = assetsObject["objects"]
+        };
       }
       catch (WebException exception)
       {
