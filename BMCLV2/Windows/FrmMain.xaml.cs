@@ -146,49 +146,55 @@ namespace BMCLV2.Windows
             try
             {
               _isLaunching = true;
-                var selectedVersion = GridGame.GetSelectedVersion();
-                Logger.Info($"正在启动{selectedVersion},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
-                _frmPrs = new FrmPrs(LangManager.GetLangFromResource(selectedVersion));
-                _frmPrs.Show();
-                _frmPrs.ChangeStatus(LangManager.GetLangFromResource("LauncherAuth"));
-                var launcher = await BmclCore.GameManager.LaunchGame(selectedVersion, false);
-                if (launcher == null)
-                {
-                    _frmPrs.Close();
-                    _frmPrs = null;
-                    return;
-                }
-                launcher.OnGameLaunch += Launcher_OnGameLaunch;
-                launcher.OnGameStart += Game_GameStartUp;
-                launcher.OnGameExit += launcher_gameexit;
-                var assetManager = new AssetManager(launcher.VersionInfo);
-                assetManager.OnAssetsDownload += (total, cur, name) => _frmPrs.ChangeStatus($"Assets {cur}/{total}");
-                await assetManager.Sync();
-                await launcher.Start();
+              var selectedVersion = GridGame.GetSelectedVersion();
+              Logger.Info($"正在启动{selectedVersion},使用的登陆方式为{GridConfig.listAuth.SelectedItem}");
+              _frmPrs = new FrmPrs(LangManager.GetLangFromResource(selectedVersion));
+              _frmPrs.Show();
+              _frmPrs.ChangeStatus(LangManager.GetLangFromResource("LauncherAuth"));
+              var launcher = await BmclCore.GameManager.LaunchGame(selectedVersion, false);
+              if (launcher == null)
+              {
+                _frmPrs.Close();
+                _frmPrs = null;
+                return;
+              }
+
+              launcher.OnGameLaunch += Launcher_OnGameLaunch;
+              launcher.OnGameStart += Game_GameStartUp;
+              launcher.OnGameExit += launcher_gameexit;
+              var assetManager = new AssetManager(launcher.VersionInfo);
+              assetManager.OnAssetsDownload += (total, cur, name) => _frmPrs.ChangeStatus($"Assets {cur}/{total}");
+              await assetManager.Sync();
+              await launcher.Start();
             }
             catch (NoSelectGameException exception)
             {
-                Logger.Fatal(exception);
-                somethingBad = true;
-                MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+              Logger.Fatal(exception);
+              somethingBad = true;
+              MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (NoJavaException exception)
             {
-                Logger.Fatal(exception);
-                somethingBad = true;
-                MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+              Logger.Fatal(exception);
+              somethingBad = true;
+              MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (AnotherGameRunningException exception)
             {
-                Logger.Fatal(exception);
-                somethingBad = true;
-                MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+              Logger.Fatal(exception);
+              somethingBad = true;
+              MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
             }
             catch (DownloadLibException exception)
             {
-                Logger.Fatal(exception);
-                somethingBad = true;
-                MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+              Logger.Fatal(exception);
+              somethingBad = true;
+              MessageBox.Show(this, exception.Message, Title, MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (OperationCanceledException)
+            {
+              _frmPrs?.Close();
+              _frmPrs = null;
             }
             finally
             {
@@ -199,7 +205,7 @@ namespace BMCLV2.Windows
                     _frmPrs = null;
                 }
             }
-            
+
         }
 
         private void Launcher_OnGameLaunch(object sender, string status, VersionInfo versionInfo)
@@ -342,23 +348,23 @@ namespace BMCLV2.Windows
             var da2 = new DoubleAnimation(0, TabMain.ActualHeight, new Duration(new TimeSpan(0, 0, 0, 0, 100)));
             switch (TabMain.SelectedIndex)
             {
-                case 0: 
-                    GridGame.BeginAnimation(WidthProperty, da1); GridGame.BeginAnimation(HeightProperty, da2); 
+                case 0:
+                    GridGame.BeginAnimation(WidthProperty, da1); GridGame.BeginAnimation(HeightProperty, da2);
                     break;
-                case 1: 
-                    GridConfig.BeginAnimation(WidthProperty, da1); GridConfig.BeginAnimation(HeightProperty, da2); 
+                case 1:
+                    GridConfig.BeginAnimation(WidthProperty, da1); GridConfig.BeginAnimation(HeightProperty, da2);
                     break;
-                case 2: 
-                    GridVersion.BeginAnimation(WidthProperty, da1); GridVersion.BeginAnimation(HeightProperty, da2); 
-                    if (GridVersion.btnRefreshRemoteVer.IsEnabled && GridVersion.listRemoteVer.HasItems == false) GridVersion.RefreshVersion(); 
+                case 2:
+                    GridVersion.BeginAnimation(WidthProperty, da1); GridVersion.BeginAnimation(HeightProperty, da2);
+                    if (GridVersion.btnRefreshRemoteVer.IsEnabled && GridVersion.listRemoteVer.HasItems == false) GridVersion.RefreshVersion();
                     break;
-                case 3: 
-                    GridForge.BeginAnimation(WidthProperty, da1); GridForge.BeginAnimation(HeightProperty, da2); 
-                    if (GridForge.btnReForge.IsEnabled && GridForge.treeForgeVer.HasItems == false) GridForge.RefreshForge(); 
+                case 3:
+                    GridForge.BeginAnimation(WidthProperty, da1); GridForge.BeginAnimation(HeightProperty, da2);
+                    if (GridForge.btnReForge.IsEnabled && GridForge.treeForgeVer.HasItems == false) GridForge.RefreshForge();
                     break;
                 case 4:
-                    gridUpdateInfo.BeginAnimation(WidthProperty, da1); 
-                    gridUpdateInfo.BeginAnimation(HeightProperty, da2); 
+                    gridUpdateInfo.BeginAnimation(WidthProperty, da1);
+                    gridUpdateInfo.BeginAnimation(HeightProperty, da2);
                     break;
             }
         }
@@ -377,7 +383,7 @@ namespace BMCLV2.Windows
             }
             else
                 _inscreen = false;
-            
+
         }
 
         public void ChangeLanguage()

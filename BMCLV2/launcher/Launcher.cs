@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using BMCLV2.Auth;
 using BMCLV2.Cfg;
+using BMCLV2.Downloader;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
 using BMCLV2.Mojang.Runtime;
@@ -221,9 +222,10 @@ namespace BMCLV2.Launcher
       {
         var javaManager = new JavaManager(VersionInfo.JavaVersion.Component);
         var downloads = await javaManager.EnsureJava();
-        // var downloadWindow = new DownloadWindow(downloads);
-        // downloadWindow.Show();
-        // await downloadWindow.WaitForFinish();
+        var downloadWindow = new DownloadWindow(downloads);
+        downloadWindow.Show();
+        await downloadWindow.StartDownload();
+        downloadWindow.Close();
         _java = javaManager.ExecutablePath;
       }
     }

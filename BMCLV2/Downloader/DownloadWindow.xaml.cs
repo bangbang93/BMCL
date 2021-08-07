@@ -20,14 +20,19 @@ namespace BMCLV2.Downloader
       InitializeComponent();
       _downloadInfos = downloads;
       DownloadList.ItemsSource = downloads.ToList();
+    }
 
-      var ct = new CancellationTokenSource().Token;
+    public async Task StartDownload()
+    {
+      var ct = _cancellationTokenSource.Token;
       _downloadTask = Task.Run(async () =>
       {
         foreach (var downloadInfo in _downloadInfos)
         {
           BmclCore.Dispatcher.Invoke(() => DownloadList.ScrollIntoView(downloadInfo));
-          if (ct.IsCancellationRequested) return;
+
+          ct.ThrowIfCancellationRequested();
+
           var downloader = new Downloader();
           downloader.DownloadProgressChanged += (sender, args) =>
           {
@@ -38,12 +43,7 @@ namespace BMCLV2.Downloader
           await downloader.DownloadFileTaskAsync(downloadInfo.Uri, downloadInfo.SavePath);
         }
       }, ct);
-    }
-
-    public async Task WaitForFinish()
-    {
       await _downloadTask;
-      Close();
     }
 
     private void ButtonBase_OnClick(object sender, RoutedEventArgs e)

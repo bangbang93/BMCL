@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.IO;
+using BMCLV2.JsonClass;
 
 namespace BMCLV2.Downloader
 {
@@ -11,6 +12,8 @@ namespace BMCLV2.Downloader
     public readonly Uri Uri;
     public readonly string SavePath;
     public long Size;
+    public string Sha1;
+
     public long Complete {
       get => _complete;
       set
@@ -40,6 +43,12 @@ namespace BMCLV2.Downloader
 
     public DownloadInfo(Uri url, string savePath, long size = 0) : this(Path.GetFileName(url.ToString()), url, savePath, size)
     { }
+
+    public DownloadInfo(string savePath, FileSchema fileSchema) : this(Path.GetFileName(fileSchema.Url), savePath,
+      fileSchema.Size)
+    {
+      Sha1 = fileSchema.Sha1;
+    }
 
     public event PropertyChangedEventHandler PropertyChanged;
   }
