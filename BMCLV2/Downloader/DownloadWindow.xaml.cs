@@ -62,7 +62,10 @@ namespace BMCLV2.Downloader
           var downloader = new Downloader();
           downloader.DownloadProgressChanged += (sender, args) =>
           {
-            ct.ThrowIfCancellationRequested();
+            if (ct.IsCancellationRequested)
+            {
+              downloader.CancelAsync();
+            }
             downloadInfo.Complete = args.BytesReceived;
             downloadInfo.Size = args.TotalBytesToReceive;
           };
