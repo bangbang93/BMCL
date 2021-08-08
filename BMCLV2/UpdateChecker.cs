@@ -1,9 +1,6 @@
 using System;
-using System.Text;
-using System.Net;
-using System.Runtime.Serialization.Json;
 using System.Runtime.Serialization;
-using System.Threading;
+using System.Text;
 using System.Threading.Tasks;
 using BMCLV2.JsonClass;
 
@@ -18,7 +15,7 @@ namespace BMCLV2
             try
             {
                 var build = Convert.ToInt32(BmclCore.BmclVersion.Split('.')[3]);
-                var res = await new WebClient().DownloadStringTaskAsync(new Uri($"{CheckUrl}?ver={build}"));
+                var res = await new Downloader.Downloader().DownloadStringTaskAsync(new Uri($"{CheckUrl}?ver={build}"));
                 var verTable = new JSON<VersionList>().Parse(res);
                 if (verTable.Lastest.Build == 0)
                 {
@@ -32,11 +29,9 @@ namespace BMCLV2
                     var sb = new StringBuilder();
                     foreach (var verInfo in verTable.Update)
                     {
-                        if (verInfo.Build > Convert.ToInt32(build))
-                        {
-                            sb.AppendLine(verInfo.Version);
-                            sb.AppendLine(verInfo.Info);
-                        }
+                      if (verInfo.Build <= Convert.ToInt32(build)) continue;
+                      sb.AppendLine(verInfo.Version);
+                      sb.AppendLine(verInfo.Info);
                     }
                     return new UpdateDescription
                     {
@@ -54,7 +49,7 @@ namespace BMCLV2
             return null;
         }
     }
-    
+
     internal class UpdateDescription
     {
         public int LastBuild;

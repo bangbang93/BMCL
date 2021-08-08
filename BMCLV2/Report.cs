@@ -1,18 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Net;
-using System.Threading;
-using System.Web;
-using System.Runtime.Serialization.Json;
-using System.Collections;
-using System.IO;
+using System.Collections.Specialized;
 using System.Management;
+using System.Net;
+using System.Runtime.Serialization;
+using System.Threading;
+using BMCLV2.JsonClass;
 
 namespace BMCLV2
 {
-  class Report
+  public class Report
   {
     public void RunBackGround()
     {
@@ -23,120 +19,78 @@ namespace BMCLV2
 
     public void Run()
     {
+      var sysinfoJson = new JSON<SysInfoSchema>().Stringify(new SysInfoSchema());
       try
       {
-        var sysinfoJsonSerializer = new DataContractJsonSerializer(typeof(sysinfo));
-        var sysinfoJsonStream = new MemoryStream();
-        var systeminfo = new sysinfo();
-        sysinfoJsonSerializer.WriteObject(sysinfoJsonStream, systeminfo);
-        sysinfoJsonStream.Position = 0;
-        var sysinfoJsonReader = new StreamReader(sysinfoJsonStream);
-        string sysinfoJson = sysinfoJsonReader.ReadToEnd();
-        var ht = new Hashtable
-        {
-          {"id", BmclCore.Config.Username},
-          {"sysinfo", sysinfoJson},
-          {"version", BmclCore.BmclVersion}
-        };
-        string postdata = ParsToString(ht);
-        var req = (HttpWebRequest) WebRequest.Create("https://bmcl.bangbang93.com/usage");
-        req.Method = "POST";
-        req.ContentType = "application/x-www-form-urlencoded";
-        byte[] buffer = Encoding.UTF8.GetBytes(postdata);
-        req.ContentLength = buffer.Length;
-        var s = req.GetRequestStream();
-        s.Write(buffer, 0, buffer.Length);
-        s.Close();
-        req.GetResponse();
+        var data = new NameValueCollection();
+        data.Add("id", BmclCore.Config.Username);
+        data.Add("sysinfo", sysinfoJson);
+        data.Add("version", BmclCore.BmclVersion);
+        var webClient = new Downloader.Downloader();
+        webClient.UploadValues("https://bmcl.bangbang93.com/usage", data);
       }
       catch (Exception ex)
       {
         Logger.Log(ex);
       }
     }
-
-    public static string ParsToString(Hashtable pars)
-    {
-      StringBuilder sb = new StringBuilder();
-      foreach (string k in pars.Keys)
-      {
-        if (sb.Length > 0)
-        {
-          sb.Append("&");
-        }
-
-        sb.Append(HttpUtility.UrlEncode(k) + "=" + HttpUtility.UrlEncode(pars[k].ToString()));
-      }
-
-      return sb.ToString();
-    }
   }
 
-  [Serializable]
-  class sysinfo
+  [DataContract]
+  public class SysInfoSchema
   {
-    string memory;
-    string cpu;
-    string bit;
-    string video;
-    string system;
+    [DataMember(Name = "memory")] public string Memory;
+    [DataMember(Name = "cpu")] public string Cpu;
+    [DataMember(Name = "bit")] public string Bit;
+    [DataMember(Name = "video")] public string Video;
+    [DataMember(Name = "system")] public string System;
 
-    public sysinfo()
+    public SysInfoSchema()
     {
-      double capacity = 0.0;
-      ManagementClass cimobject1 = new ManagementClass("Win32_PhysicalMemory");
-      ManagementObjectCollection moc1 = cimobject1.GetInstances();
-      foreach (ManagementObject mo1 in moc1)
+      var capacity = 0.0;
+      var cimobject1 = new ManagementClass("Win32_PhysicalMemory");
+      var moc1 = cimobject1.GetInstances();
+      foreach (var o in moc1)
       {
-        capacity += ((Math.Round(Int64.Parse(mo1.Properties["Capacity"].Value.ToString()) / 1024 / 1024.0, 1)));
+        var mo1 = (ManagementObject)o;
+        capacity += Math.Round(long.Parse(mo1.Properties["Capacity"].Value.ToString()) / 1024.0 / 1024.0, 1);
       }
 
       moc1.Dispose();
       cimobject1.Dispose();
-      memory = capacity.ToString("f0") + "MB";
+      Memory = capacity.ToString("f0") + "MB";
 
       try //系统位数，系统名称
       {
-        ManagementClass searcher = new ManagementClass("WIN32_Processor");
-        ManagementObjectCollection moc = searcher.GetInstances();
-        foreach (ManagementObject mo in moc)
+        var searcher = new ManagementClass("WIN32_Processor");
+        var moc = searcher.GetInstances();
+        foreach (var o in moc)
         {
-          cpu = mo["Name"].ToString().Trim();
-          bit = mo["AddressWidth"].ToString().Trim() + "Bit";
+          var mo = (ManagementObject)o;
+          Cpu = mo["Name"].ToString().Trim();
+          Bit = mo["AddressWidth"].ToString().Trim() + "Bit";
         }
       }
       catch
       {
+        // ignored
       }
 
       try //显卡， 支持多显卡
       {
-        ManagementClass searcher = new ManagementClass("Win32_VideoController");
-        ManagementObjectCollection moc = searcher.GetInstances();
-        foreach (ManagementObject mo in moc)
+        var searcher = new ManagementClass("Win32_VideoController");
+        var moc = searcher.GetInstances();
+        foreach (var mo in moc)
         {
-          video += (mo["Name"].ToString().Trim()) + "\n";
+          Video += mo["Name"].ToString().Trim() + "\n";
         }
       }
       catch
       {
+        // ignored
       }
 
-      try //系统版本
-      {
-        //ManagementClass searcher = new ManagementClass("Win32_OperatingSystem");
-        //ManagementObjectCollection moc = searcher.GetInstances();
-        //foreach (ManagementObject mo in moc)
-        //{
-        //    system += (mo["Name"].ToString().Trim()) + "\n";
-        //    system += (mo["CSDVersion"].ToString().Trim()) + "\n";
-        //    system += (mo["Version"].ToString().Trim()) + "\n";
-        //}
-        system = Environment.OSVersion.VersionString;
-      }
-      catch
-      {
-      }
+      System = Environment.OSVersion.VersionString;
     }
   }
 }
