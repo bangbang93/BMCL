@@ -3,14 +3,15 @@ using System.Globalization;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Forms;
 using System.Windows.Input;
 using System.Windows.Markup;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using BMCLV2.Cfg;
+using BMCLV2.Config;
 using BMCLV2.Exceptions;
 using BMCLV2.I18N;
-using BMCLV2.Mirrors;
+using KeyEventArgs = System.Windows.Input.KeyEventArgs;
+using MessageBox = System.Windows.MessageBox;
 
 namespace BMCLV2.Windows.MainWindowTab
 {
@@ -69,14 +70,14 @@ namespace BMCLV2.Windows.MainWindowTab
         }
         private void btnSelectJava_Click(object sender, RoutedEventArgs e)
         {
-            var ofJava = new System.Windows.Forms.OpenFileDialog
+            var ofJava = new OpenFileDialog
             {
                 RestoreDirectory = true,
                 Filter = @"Javaw.exe|Javaw.exe",
                 Multiselect = false,
                 CheckFileExists = true
             };
-            if (ofJava.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            if (ofJava.ShowDialog() == DialogResult.OK)
             {
                 txtJavaPath.Text = ofJava.FileName;
             }
@@ -103,14 +104,14 @@ namespace BMCLV2.Windows.MainWindowTab
             {
                 Logger.Log(ex);
                 MessageBox.Show("请输入一个有效数字");
-                txtJavaXmx.Text = (Config.GetMemory()/4).ToString(CultureInfo.InvariantCulture);
+                txtJavaXmx.Text = (Config.Config.GetMemory()/4).ToString(CultureInfo.InvariantCulture);
                 txtJavaXmx.SelectAll();
             }
             catch (XamlParseException ex)
             {
                 Logger.Log(ex);
                 MessageBox.Show("请输入一个有效数字");
-                txtJavaXmx.Text = (Config.GetMemory() / 4).ToString(CultureInfo.InvariantCulture);
+                txtJavaXmx.Text = (Config.Config.GetMemory() / 4).ToString(CultureInfo.InvariantCulture);
                 txtJavaXmx.SelectAll();
             }
         }
@@ -126,7 +127,7 @@ namespace BMCLV2.Windows.MainWindowTab
 
         private void txtExtJArg_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (txtExtJArg.Text.IndexOf("-Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true", System.StringComparison.Ordinal) != -1)
+            if (txtExtJArg.Text.IndexOf("-Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true", StringComparison.Ordinal) != -1)
             {
                 checkOptifine.IsChecked = true;
             }
@@ -134,7 +135,7 @@ namespace BMCLV2.Windows.MainWindowTab
 
         private void checkOptifine_Checked(object sender, RoutedEventArgs e)
         {
-            if (txtExtJArg.Text.IndexOf("-Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true", System.StringComparison.Ordinal) != -1)
+            if (txtExtJArg.Text.IndexOf("-Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true", StringComparison.Ordinal) != -1)
                 return;
             txtExtJArg.Text += " -Dfml.ignoreInvalidMinecraftCertificates=true -Dfml.ignorePatchDiscrepancies=true";
         }

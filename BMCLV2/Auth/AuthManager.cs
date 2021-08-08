@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
-using BMCLV2.Plugin;
+﻿using System.Threading.Tasks;
 
 namespace BMCLV2.Auth
 {
@@ -10,12 +7,12 @@ namespace BMCLV2.Auth
         public IAuth GetAuth(string name)
         {
             var authPlugin = BmclCore.PluginManager.GetAuth(name);
-            if (authPlugin == null) return null;
-            if (authPlugin is IAuth)
+            return authPlugin switch
             {
-                return authPlugin as IAuth;
-            }
-            return WrapOldAuth(authPlugin);
+              null => null,
+              IAuth auth => auth,
+              _ => WrapOldAuth(authPlugin)
+            };
         }
 
         private static IAuth WrapOldAuth(object oldAuth)
@@ -23,15 +20,15 @@ namespace BMCLV2.Auth
             return new OldPluginLogin(oldAuth);
         }
 
-        public IAuth GetCurrectAuth()
+        public IAuth GetCurrentAuth()
         {
-            var currectAuthName = BmclCore.Config.Login;
-            return GetAuth(currectAuthName);
+            var currentAuthName = BmclCore.Config.Login;
+            return GetAuth(currentAuthName);
         }
 
         public async Task<AuthResult> Login(string username, string password = null)
         {
-            var auth = GetCurrectAuth();
+            var auth = GetCurrentAuth();
             if (auth == null) return new AuthResult(username)
             {
                 IsSuccess = true

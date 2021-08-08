@@ -41,8 +41,8 @@ namespace BMCLV2.Downloader
         foreach (var downloadInfo in _downloadInfos)
         {
           ProgressValue++;
-          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ProgressValue"));
-          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("ProgressStatus"));
+          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProgressValue)));
+          PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProgressStatus)));
           BmclCore.Dispatcher.Invoke(() => DownloadList.ScrollIntoView(downloadInfo));
 
           ct.ThrowIfCancellationRequested();
@@ -58,7 +58,7 @@ namespace BMCLV2.Downloader
           }
 
           var downloader = new Downloader();
-          downloader.DownloadProgressChanged += (sender, args) =>
+          downloader.DownloadProgressChanged += (_, args) =>
           {
             if (ct.IsCancellationRequested)
             {

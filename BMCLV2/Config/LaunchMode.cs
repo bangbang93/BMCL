@@ -1,7 +1,4 @@
-﻿using System.ComponentModel;
-using BMCLV2.I18N;
-
-namespace BMCLV2.Cfg
+﻿namespace BMCLV2.Config
 {
     public enum LaunchMode
     {

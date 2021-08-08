@@ -12,7 +12,7 @@ namespace BMCLV2.Downloader
     public readonly Uri Uri;
     public readonly string SavePath;
     public long Size;
-    public string Sha1;
+    public readonly string Sha1;
 
     public long Complete
     {
@@ -20,7 +20,7 @@ namespace BMCLV2.Downloader
       set
       {
         _complete = value;
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Progress"));
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Progress)));
       }
     }
 

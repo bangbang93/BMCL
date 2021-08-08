@@ -7,7 +7,7 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using BMCLV2.Auth;
-using BMCLV2.Cfg;
+using BMCLV2.Config;
 using BMCLV2.Downloader;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
@@ -40,7 +40,7 @@ namespace BMCLV2.Launcher
     private readonly List<string> _jvmArgs = new List<string>();
     private readonly Dictionary<string, string> _values;
 
-    public Launcher(VersionInfo versionInfo, AuthResult authResult, Config config)
+    public Launcher(VersionInfo versionInfo, AuthResult authResult, Config.Config config)
     {
       VersionInfo = versionInfo;
       _java = config.Javaw;

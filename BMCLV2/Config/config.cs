@@ -1,16 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Management;
-using Microsoft.Win32;
-using System.Runtime.Serialization;
 using System.IO;
 using System.Linq;
+using System.Management;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Windows;
-using BMCLV2.Cfg;
+using Microsoft.Win32;
 
-namespace BMCLV2
+namespace BMCLV2.Config
 {
     [DataContract]
     public class Config
@@ -97,14 +96,8 @@ namespace BMCLV2
         }
         public static void Save(Config cfg = null ,string file = null)
         {
-            if (cfg == null)
-            {
-                cfg = BmclCore.Config;
-            }
-            if (file == null)
-            {
-                file = BmclCore.BaseDirectory + "bmcl.xml";
-            }
+            cfg ??= BmclCore.Config;
+            file ??= BmclCore.BaseDirectory + "bmcl.xml";
             var fs = new FileStream(file, FileMode.Create);
             var ser = new DataContractSerializer(typeof(Config));
             ser.WriteObject(fs, cfg);
@@ -142,14 +135,14 @@ namespace BMCLV2
                     }
                     catch { return null; }
                 }
-                //优先java8
-                foreach (var java in javaList)
-                {
-                    if(java.ToLower().Contains("jre8")||java.ToLower().Contains("jdk1.8")||java.ToLower().Contains("jre1.8")){
-                        return java;
-                    }
-                }
-                return javaList[0];
+
+                return javaList
+                  .FirstOrDefault((java) =>
+                  {
+                    var javaString = java.ToLower();
+                    return javaString.Contains("jre8") || javaString.Contains("jdk1.8") ||
+                           javaString.Contains("jre1.8");
+                  }) ?? javaList[0];
             }
             catch { return null; }
 
@@ -176,11 +169,6 @@ namespace BMCLV2
                 Logger.Fatal(ex);
                 return ulong.MaxValue;
             }
-        }
-
-        public static string GetGuid()
-        {
-            return Guid.NewGuid().ToString();
         }
 
         public string GetPassword()

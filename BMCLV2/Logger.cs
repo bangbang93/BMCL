@@ -72,7 +72,7 @@ namespace BMCLV2
         {
             Write(str, type);
         }
-        public static void Log(Config cfg, LogType type = LogType.Info)
+        public static void Log(Config.Config cfg, LogType type = LogType.Info)
         {
             Write(cfg.ToString(), type);
         }

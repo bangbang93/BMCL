@@ -20,7 +20,7 @@ namespace BMCLV2
 {
   public static class BmclCore
   {
-    public static readonly Config Config;
+    public static readonly Config.Config Config;
     public static readonly GameManager GameManager;
     public static readonly string BmclVersion;
     public static readonly NotiIcon NIcon = new NotiIcon();
@@ -51,7 +51,7 @@ namespace BMCLV2
 
     static BmclCore()
     {
-      BmclVersion = Application.ResourceAssembly.GetName().Version.ToString();
+      BmclVersion = Application.ResourceAssembly.GetName().Version?.ToString();
       Logger.Log("BMCLNG Ver." + BmclVersion + "正在启动");
       if (!Directory.Exists(MinecraftDirectory))
       {
@@ -62,7 +62,7 @@ namespace BMCLV2
       if (!Directory.Exists(TempDirectory)) Directory.CreateDirectory(TempDirectory);
 
       GameManager = new GameManager();
-      Config = Config.Load(Cfgfile);
+      Config = BMCLV2.Config.Config.Load(Cfgfile);
       Config.Passwd ??= Array.Empty<byte>();
 
       Logger.Log($"加载{Cfgfile}文件");
@@ -72,10 +72,10 @@ namespace BMCLV2
       Logger.Log("加载默认配置");
       if (!Directory.Exists(BaseDirectory + ".minecraft")) Directory.CreateDirectory(BaseDirectory + ".minecraft");
 
-      if (Config.Javaw == "autosearch") Config.Javaw = Config.GetJavaDir();
+      if (Config.Javaw == "autosearch") Config.Javaw = BMCLV2.Config.Config.GetJavaDir();
 
       if (Config.Javaxmx == "autosearch")
-        Config.Javaxmx = (Config.GetMemory() / 4).ToString(CultureInfo.InvariantCulture);
+        Config.Javaxmx = (BMCLV2.Config.Config.GetMemory() / 4).ToString(CultureInfo.InvariantCulture);
 
       LangManager.UseLanguage(Config.Lang);
       if (!App.SkipPlugin) PluginManager.LoadOldAuthPlugin(LangManager.GetLangFromResource("LangName"));

@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 using System.Threading.Tasks;
 using System.Windows;
 using BMCLV2.Auth;
-using BMCLV2.Cfg;
+using BMCLV2.Config;
 using BMCLV2.Exceptions;
 using BMCLV2.JsonClass;
 using BMCLV2.Plugin;
@@ -90,9 +90,9 @@ namespace BMCLV2.Game
                 if (!authResult.IsSuccess)
                 {
                     var authName = "BMCL";
-                    if (BmclCore.AuthManager.GetCurrectAuth() is IBmclAuthPlugin)
+                    if (BmclCore.AuthManager.GetCurrentAuth() is IBmclAuthPlugin)
                     {
-                        var plugin = BmclCore.AuthManager.GetCurrectAuth() as IBmclAuthPlugin;
+                        var plugin = BmclCore.AuthManager.GetCurrentAuth() as IBmclAuthPlugin;
                         authName = plugin?.GetName();
                     }
                     MessageBox.Show(BmclCore.MainWindow, authResult.Message, authName, MessageBoxButton.OK);

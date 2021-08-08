@@ -9,7 +9,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using BMCLV2.Cfg;
+using BMCLV2.Config;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
 using BMCLV2.I18N;
@@ -49,7 +49,7 @@ namespace BMCLV2.Windows
             GridConfig.txtUserName.Text = BmclCore.Config.Username;
             GridConfig.txtPwd.Password = Encoding.UTF8.GetString(BmclCore.Config.Passwd);
             GridConfig.txtJavaPath.Text = BmclCore.Config.Javaw;
-            GridConfig.sliderJavaxmx.Maximum = Config.GetMemory();
+            GridConfig.sliderJavaxmx.Maximum = Config.Config.GetMemory();
             GridConfig.txtJavaXmx.Text = BmclCore.Config.Javaxmx;
             GridConfig.sliderJavaxmx.Value = int.Parse(BmclCore.Config.Javaxmx);
             GridConfig.txtExtJArg.Text = BmclCore.Config.ExtraJvmArg;

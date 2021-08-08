@@ -24,7 +24,7 @@ namespace BMCLV2.Auth
             ClientIdentifier = clientIdentifier ?? Guid.NewGuid().ToString();
         }
 
-        public AuthResult(Config config) : this(config.Username)
+        public AuthResult(Config.Config config) : this(config.Username)
         {
         }
     }
