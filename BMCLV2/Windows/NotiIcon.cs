@@ -1,15 +1,17 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Forms;
 using BMCLV2.I18N;
+using Application = System.Windows.Application;
 
 namespace BMCLV2.Windows
 {
     public  class NotiIcon
     {
-        public readonly NotifyIcon NIcon = new NotifyIcon();
-        private readonly ContextMenu _nMenu = new ContextMenu();
+        public readonly NotifyIcon NIcon = new();
+        private readonly ContextMenuStrip _nMenu = new();
         private Window _mainWindow;
         public Window MainWindow
         {
@@ -17,7 +19,7 @@ namespace BMCLV2.Windows
             set
             {
                 this._mainWindow = value;
-                var menuItems = _nMenu.MenuItems.Find("ShowMainWindow", false);
+                var menuItems = _nMenu.Items.Find("ShowMainWindow", false);
                 if (menuItems.Length != 0)
                 {
                     menuItems[0].Enabled = true;
@@ -29,18 +31,17 @@ namespace BMCLV2.Windows
         {
             NIcon.Visible = false;
             NIcon = new NotifyIcon { Visible = true };
-            var s = System.Windows.Application.GetResourceStream(new Uri("pack://application:,,,/screenLaunch.png"));
-            if (s != null) this.NIcon.Icon = System.Drawing.Icon.FromHandle(new System.Drawing.Bitmap(s.Stream).GetHicon());
-            MenuItem menuItem = _nMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
+            var s = Application.GetResourceStream(new Uri("pack://application:,,,/screenLaunch.png"));
+            if (s != null) this.NIcon.Icon = Icon.FromHandle(new Bitmap(s.Stream).GetHicon());
+            var menuItem = _nMenu.Items.Add(LangManager.GetLangFromResource("MenuShowMainWindow"));
             menuItem.Name = "ShowMainWindow";
-            menuItem.DefaultItem = true;
             menuItem.Enabled = false;
             menuItem.Click += NMenu_ShowMainWindows_Click;
             NIcon.DoubleClick += NIcon_DoubleClick;
-            MenuItem debugMode = _nMenu.MenuItems.Add(LangManager.GetLangFromResource("MenuUseDebugMode"));
+            var debugMode = _nMenu.Items.Add(LangManager.GetLangFromResource("MenuUseDebugMode"));
             debugMode.Name = "DebugMode";
             debugMode.Click += DebugMode_Click;
-            NIcon.ContextMenu = _nMenu;
+            NIcon.ContextMenuStrip = _nMenu;
         }
 
         public void ShowBalloonTip(int time, string message, ToolTipIcon toolTipIcon = ToolTipIcon.Info)

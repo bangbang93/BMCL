@@ -1,21 +1,11 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4FC50E09-DB4F-43D5-8C13-FB52F008DD57}</ProjectGuid>
+    <TargetFramework>net5.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BMCLV2</RootNamespace>
     <AssemblyName>BMCLNG</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <WarningLevel>4</WarningLevel>
-    <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <LangVersion>8</LangVersion>
+    <LangVersion>9</LangVersion>
     <PublishUrl>发布\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -30,27 +20,11 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <UseWindowsForms>true</UseWindowsForms>
+    <UseWPF>true</UseWPF>
+    <ImportWindowsDesktopTargets>true</ImportWindowsDesktopTargets>
+    <PublicSign>true</PublicSign>
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>tofu.ico</ApplicationIcon>
@@ -58,12 +32,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugDebug|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\DebugDebug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>
@@ -75,305 +44,15 @@
     <AssemblyOriginatorKeyFile>BMCL.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="System" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
-    <Reference Include="System.IO.Compression.FileSystem" />
-    <Reference Include="System.Management" />
-    <Reference Include="System.Runtime.Serialization" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Xaml">
-      <RequiredTargetFramework>4.0</RequiredTargetFramework>
-    </Reference>
-    <Reference Include="WindowsBase" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Include="App.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </ApplicationDefinition>
-    <Compile Include="Auth\AuthResult.cs" />
-    <Compile Include="Auth\AuthManager.cs" />
-    <Compile Include="Auth\IAuth.cs" />
-    <Compile Include="Auth\OldPluginLogin.cs" />
-    <Compile Include="BmclCore.cs" />
-    <Compile Include="Config.cs" />
-    <Compile Include="Cfg\LaunchMode.cs" />
-    <Compile Include="Downloader\FileCache.cs" />
-    <Compile Include="Downloader\Downloader.cs">
+    <Compile Update="Downloader\Downloader.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Downloader\DownloadInfo.cs" />
-    <Compile Include="Downloader\DownloadWindow.xaml.cs">
-      <DependentUpon>DownloadWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Downloader\Version.cs" />
-    <Compile Include="Forge\ForgeInstaller.cs" />
-    <Compile Include="Forge\InstallerProfileScheme.cs" />
-    <Compile Include="JsonClass\FileSchema.cs" />
-    <Compile Include="Mirrors\BMCLAPI\Optifine.cs" />
-    <Compile Include="Mirrors\Interface\Optifine.cs" />
-    <Compile Include="Mirrors\MCBBS\Asset.cs" />
-    <Compile Include="Mirrors\MCBBS\MCBBS.cs" />
-    <Compile Include="Mirrors\MCBBS\Library.cs" />
-    <Compile Include="Mirrors\MCBBS\Optifine.cs" />
-    <Compile Include="Mirrors\MCBBS\Version.cs" />
-    <Compile Include="Mirrors\Vanilla\Optifine.cs" />
-    <Compile Include="Mojang\Runtime\JavaManager.cs" />
-    <Compile Include="Mojang\Runtime\JavaManifest.cs" />
-    <Compile Include="Mojang\Runtime\JavaMeta.cs" />
-    <Compile Include="Optifine\Installer.cs" />
-    <Compile Include="Optifine\VersionInfo.cs" />
-    <Compile Include="Properties\Annotations.cs" />
-    <Compile Include="Settings.cs" />
-    <Compile Include="Util\ErrorHandler.cs" />
-    <Compile Include="EventHandler.cs" />
-    <Compile Include="Exceptions\AnotherGameRunningException.cs" />
-    <Compile Include="Exceptions\DownloadLibException.cs" />
-    <Compile Include="Exceptions\NoSelectGameException.cs" />
-    <Compile Include="Exceptions\NoSuchVersionException.cs" />
-    <Compile Include="Exceptions\ProcessNotStartException.cs" />
-    <Compile Include="Game\AssetManager.cs" />
-    <Compile Include="Game\GameManager.cs" />
-    <Compile Include="Game\VersionInfo.cs" />
-    <Compile Include="JsonClass\AssetsIndex.cs" />
-    <Compile Include="JsonClass\JSON.cs" />
-    <Compile Include="Launcher\ChildProcess.cs" />
-    <Compile Include="Launcher\Launcher.cs" />
-    <Compile Include="Exceptions\NoJavaException.cs" />
-    <Compile Include="Exceptions\UnSupportVersionException.cs" />
-    <Compile Include="Launcher\LauncherState.cs" />
-    <Compile Include="Mirrors\BMCLAPI\Asset.cs" />
-    <Compile Include="Mirrors\BMCLAPI\BMCLAPI.cs" />
-    <Compile Include="Mirrors\BMCLAPI\Library.cs" />
-    <Compile Include="Mirrors\BMCLAPI\Version.cs" />
-    <Compile Include="Mirrors\Interface\Asset.cs" />
-    <Compile Include="Mirrors\Interface\Library.cs" />
-    <Compile Include="Mirrors\Interface\Mirror.cs" />
-    <Compile Include="Mirrors\Interface\Version.cs" />
-    <Compile Include="Mirrors\MirrorManager.cs" />
-    <Compile Include="Mirrors\Vanilla\Asset.cs" />
-    <Compile Include="Mirrors\Vanilla\Library.cs" />
-    <Compile Include="Mirrors\Vanilla\Vanilla.cs" />
-    <Compile Include="Mirrors\Vanilla\Version.cs" />
-    <Compile Include="Game\LibraryInfo.cs" />
-    <Compile Include="Mirrors\VersionManifest.cs" />
-    <Compile Include="Plugin\IBmclPlugin.cs" />
-    <Compile Include="Plugin\IBmclAuthPlugin.cs" />
-    <Compile Include="Plugin\PluginManager.cs" />
-    <Compile Include="Themes\Background.cs" />
-    <Compile Include="Util\PathHelper.cs" />
-    <Compile Include="Util\TimeHelper.cs" />
-    <Compile Include="Windows\FrmUpdater.xaml.cs">
-      <DependentUpon>FrmUpdater.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MainWindowTab\GridConfig.xaml.cs">
-      <DependentUpon>GridConfig.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MainWindowTab\GridForge.xaml.cs">
-      <DependentUpon>GridForge.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MainWindowTab\GridGame.xaml.cs">
-      <DependentUpon>GridGame.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\MainWindowTab\GridVersion.xaml.cs">
-      <DependentUpon>GridVersion.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Versions\VersionHelper.cs" />
-    <Compile Include="Windows\CrashHandle.xaml.cs">
-      <DependentUpon>CrashHandle.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Forge\ForgeListNotReadyException.cs" />
-    <Compile Include="Forge\ForgeTask.cs" />
-    <Compile Include="Windows\FrmCheckRes.xaml.cs">
-      <DependentUpon>FrmCheckRes.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\FrmDownload.xaml.cs">
-      <DependentUpon>FrmDownload.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\FrmLibraries.xaml.cs">
-      <DependentUpon>FrmLibraries.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\FrmLog.xaml.cs">
-      <DependentUpon>FrmLog.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\FrmPrs.xaml.cs">
-      <DependentUpon>FrmPrs.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Windows\FrmTexturepack.xaml.cs">
-      <DependentUpon>FrmTexturepack.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="JsonClass\ForgeVersion.cs" />
-    <Compile Include="JsonClass\soundsJson.cs" />
-    <Compile Include="I18N\LangManager.cs" />
-    <Compile Include="I18N\LangType.cs" />
-    <Compile Include="Launcher\gameinfo.cs" />
-    <Compile Include="libraries\extract.cs" />
-    <Compile Include="libraries\libraryies.cs" />
-    <Compile Include="libraries\OS.cs" />
-    <Compile Include="libraries\ros.cs" />
-    <Compile Include="libraries\rules.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="Login\LoginInfo.cs" />
-    <Compile Include="Login\LoginThread.cs" />
-    <Compile Include="Report.cs" />
-    <Compile Include="Resource\NormalProfile.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>NormalProfile.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Resource\ServerDat.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ServerDat.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Texturepack\NoResourcePackDirException.cs" />
-    <Compile Include="Texturepack\TextureInfo.cs" />
-    <Compile Include="Texturepack\TexturePack.cs" />
-    <Compile Include="Texturepack\TexturePackEntity.cs" />
-    <Compile Include="UpdateChecker.cs" />
-    <Compile Include="Util\FileHelper.cs" />
-    <Compile Include="Util\MathHelper.cs" />
-    <Compile Include="Util\Crypto.cs" />
-    <Compile Include="Versions\RemoteVerType.cs" />
-    <Compile Include="Windows\NotiIcon.cs" />
-    <Compile Include="Plugin\InnerPlugin\Yggdrasil\Agent.cs" />
-    <Compile Include="Plugin\InnerPlugin\Yggdrasil\AuthenticationRequest.cs" />
-    <Compile Include="Plugin\InnerPlugin\Yggdrasil\AuthenticationResponse.cs" />
-    <Compile Include="Plugin\InnerPlugin\Yggdrasil\GameProfile.cs" />
-    <Compile Include="Plugin\InnerPlugin\Yggdrasil\Yggdrasil.cs" />
-    <Compile Include="Plugin\InnerPlugin\Yggdrasil\Response.cs" />
-    <Page Include="Downloader\DownloadWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Themes\Generic.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Windows\FrmUpdater.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MainWindowTab\GridConfig.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MainWindowTab\GridForge.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MainWindowTab\GridGame.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\MainWindowTab\GridVersion.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\CrashHandle.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\FrmCheckRes.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Windows\FrmDownload.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\FrmLibraries.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\FrmLog.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\FrmMain.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="App.xaml.cs">
-      <DependentUpon>App.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Windows\FrmMain.xaml.cs">
-      <DependentUpon>FrmMain.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="Windows\FrmPrs.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\FrmTexturepack.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="I18N\zh-tw.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Windows\Style.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\NormalProfile.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>NormalProfile.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Resource\ServerDat.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ServerDat.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <Page Include="I18N\zh-cn.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <None Include="BMCL.snk" />
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
     <AppDesigner Include="Properties\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="tofu.ico" />
@@ -409,18 +88,21 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="forge-installer.jar" />
-    <None Include="Resources\forge-install-bootstrapper.jar" />
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-  </PropertyGroup>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
+    <PackageReference Include="Microsoft.VisualBasic" Version="10.3.0" />
+    <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.2.237901">
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="Plugin\IBmclLauncher.cs" />
+    <Compile Remove="Plugin\IBmclMirror.cs" />
+  </ItemGroup>
+  <PropertyGroup />
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
 </Project>

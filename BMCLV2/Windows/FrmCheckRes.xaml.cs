@@ -8,12 +8,12 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading;
-using System.Web.Script.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Animation;
 using System.Xml;
 using BMCLV2.I18N;
+using BMCLV2.JsonClass;
 
 namespace BMCLV2.Windows
 {
@@ -258,8 +258,7 @@ namespace BMCLV2.Windows
 
         private void btnNewMusic_Click(object sender, RoutedEventArgs e)
         {
-            JavaScriptSerializer SoundsJsonSerizlizer = new JavaScriptSerializer();
-            var sounds = SoundsJsonSerizlizer.Deserialize<Dictionary<string, Dictionary<string, object>>>(_soundsJsonString);
+            var sounds = new JSON<Dictionary<string, Dictionary<string, object>>>().Parse(_soundsJsonString);
             Hashtable DownloadFile = new Hashtable();
             int FileCount=0;
             int DuplicateFileCount=0;

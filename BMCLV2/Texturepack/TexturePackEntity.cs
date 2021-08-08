@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using System.IO.Compression;
-using System.Web.Script.Serialization;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using BMCLV2.JsonClass;
