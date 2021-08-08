@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Specialized;
 using System.Management;
-using System.Net;
 using System.Runtime.Serialization;
 using System.Threading;
 using BMCLV2.JsonClass;
@@ -22,10 +21,12 @@ namespace BMCLV2
       var sysinfoJson = new JSON<SysInfoSchema>().Stringify(new SysInfoSchema());
       try
       {
-        var data = new NameValueCollection();
-        data.Add("id", BmclCore.Config.Username);
-        data.Add("sysinfo", sysinfoJson);
-        data.Add("version", BmclCore.BmclVersion);
+        var data = new NameValueCollection
+        {
+          { "id", BmclCore.Config.Username },
+          { "sysinfo", sysinfoJson },
+          { "version", BmclCore.BmclVersion }
+        };
         var webClient = new Downloader.Downloader();
         webClient.UploadValues("https://bmcl.bangbang93.com/usage", data);
       }

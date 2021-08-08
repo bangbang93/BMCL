@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Specialized;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,7 +16,13 @@ namespace BMCLV2
             try
             {
                 var build = Convert.ToInt32(BmclCore.BmclVersion.Split('.')[3]);
-                var res = await new Downloader.Downloader().DownloadStringTaskAsync(new Uri($"{CheckUrl}?ver={build}"));
+                var query = new NameValueCollection
+                {
+                  { "ver", build.ToString() }
+                };
+                var req = new Downloader.Downloader();
+                req.QueryString = query;
+                var res = await req.DownloadStringTaskAsync(CheckUrl);
                 var verTable = new JSON<VersionList>().Parse(res);
                 if (verTable.Lastest.Build == 0)
                 {
