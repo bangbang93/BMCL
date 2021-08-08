@@ -5,7 +5,6 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
 using BMCLV2.JsonClass;
 using BMCLV2.Util;
 
@@ -13,9 +12,9 @@ namespace BMCLV2.Game
 {
   public class AssetManager
   {
-    private readonly string _assetsDirectory = Path.Combine(BmclCore.MinecraftDirectory, "assets");
-    private readonly string _indexesDirectory = Path.Combine(BmclCore.MinecraftDirectory, "assets/indexes");
-    private readonly string _objectsDirectory = Path.Combine(BmclCore.MinecraftDirectory, "assets/objects");
+    private static readonly string AssetsDirectory = Path.Combine(BmclCore.MinecraftDirectory, "assets");
+    private static readonly string IndexesDirectory = Path.Combine(AssetsDirectory, "indexes");
+    private static readonly string ObjectsDirectory = Path.Combine(AssetsDirectory, "objects");
     private readonly VersionInfo _versionInfo;
     private AssetsIndex _assetsIndex;
 
@@ -42,7 +41,7 @@ namespace BMCLV2.Game
           url = $"http://resources.download.minecraft.net/indexes/{_versionInfo.Assets}.json";
         else
           url = _versionInfo.AssetIndex.Url;
-        var cache = BmclCore.Cache.Get(url);
+        var cache = BmclCore.FileCache.Get(url);
         string assetIndexString;
         if (cache != null)
         {
@@ -50,10 +49,10 @@ namespace BMCLV2.Game
         }
         else
         {
-          var savePath = Path.Combine(_indexesDirectory, $"{assetIndex?.Id ?? _versionInfo.Assets}.json");
+          var savePath = Path.Combine(IndexesDirectory, $"{assetIndex?.Id ?? _versionInfo.Assets}.json");
           assetIndexString = await BmclCore.MirrorManager.CurrentMirror.Version.DownloadJson(url);
           File.WriteAllText(savePath, assetIndexString);
-          BmclCore.Cache.Set(url, assetIndexString);
+          BmclCore.FileCache.Set(url, assetIndexString);
         }
         // assets的json比较奇葩，不能直接通过反序列化得到
         var assetsObject = new JSON<Dictionary<string, Dictionary<string, AssetsIndex.Assets>>>().Parse(assetIndexString);
@@ -82,11 +81,11 @@ namespace BMCLV2.Game
           index++;
           if (set.Contains(obj.Path)) return;
           set.Add(obj.Path);
-          var path = Path.Combine(_objectsDirectory, obj.Path);
+          var path = Path.Combine(ObjectsDirectory, obj.Path);
           var hash = Crypto.GetSha1HashFromFile(path);
           if (hash == obj.Hash) return;
           Logger.Log($"{index}/{_assetsIndex.Objects.Count} Sync {obj.Path}");
-          await BmclCore.MirrorManager.CurrentMirror.Asset.GetAssetsObject(obj, _objectsDirectory);
+          await BmclCore.MirrorManager.CurrentMirror.Asset.GetAssetsObject(obj, ObjectsDirectory);
           _onAssetsDownload(_assetsIndex.Objects.Count, index, obj.Path);
         }
         catch (WebException exception)

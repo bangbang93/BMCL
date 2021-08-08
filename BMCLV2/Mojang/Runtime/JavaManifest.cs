@@ -17,7 +17,7 @@ namespace BMCLV2.Mojang.Runtime
 
     public async Task<ManifestSchema> FetchManifest()
     {
-      var cache = BmclCore.Cache.Get(_url);
+      var cache = BmclCore.FileCache.Get(_url);
       string json;
       if (cache != null)
       {
@@ -26,7 +26,7 @@ namespace BMCLV2.Mojang.Runtime
       else
       {
         json = await BmclCore.MirrorManager.CurrentMirror.Version.DownloadJson(_url);
-        BmclCore.Cache.Set(_url, json);
+        BmclCore.FileCache.Set(_url, json);
       }
       return new JSON<ManifestSchema>().Parse(json);
     }

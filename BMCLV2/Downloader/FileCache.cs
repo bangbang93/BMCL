@@ -5,7 +5,7 @@ using BMCLV2.util;
 
 namespace BMCLV2.Downloader
 {
-  public class Cache
+  public class FileCache
   {
     public byte[] Get(string url)
     {

@@ -1,12 +1,10 @@
 ﻿using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using BMCLV2.Annotations;
 using BMCLV2.Util;
 
 namespace BMCLV2.Downloader

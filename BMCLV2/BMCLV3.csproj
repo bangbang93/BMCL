@@ -15,6 +15,7 @@
     <WarningLevel>4</WarningLevel>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
+    <LangVersion>8</LangVersion>
     <PublishUrl>发布\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -29,7 +30,6 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <LangVersion>8</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -111,7 +111,7 @@
     <Compile Include="BmclCore.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Cfg\LaunchMode.cs" />
-    <Compile Include="Downloader\Cache.cs" />
+    <Compile Include="Downloader\FileCache.cs" />
     <Compile Include="Downloader\Downloader.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -364,7 +364,6 @@
       <SubType>Designer</SubType>
     </Page>
     <None Include="BMCL.snk" />
-    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

@@ -13,7 +13,6 @@ using BMCLV2.Downloader;
 using BMCLV2.Game;
 using BMCLV2.I18N;
 using BMCLV2.Mirrors;
-using BMCLV2.Mojang.Runtime;
 using BMCLV2.Plugin;
 using BMCLV2.Windows;
 
@@ -39,11 +38,11 @@ namespace BMCLV2
     public static readonly MirrorManager MirrorManager = new MirrorManager();
     public static readonly PluginManager PluginManager = new PluginManager();
     public static readonly AuthManager AuthManager = new AuthManager();
-    public static readonly Cache Cache = new Cache();
+    public static readonly FileCache FileCache = new FileCache();
 
-    public static readonly string OS = "windows";
+    public const string OS = "windows";
     public static readonly string Arch = "x86";
-    public static readonly string OSVersion = System.Environment.OSVersion.VersionString;
+    public static readonly string OSVersion = Environment.OSVersion.VersionString;
     public static string Platform => $"{OS}-{Arch}";
 
     private static readonly Application ThisApplication = Application.Current;
@@ -64,7 +63,7 @@ namespace BMCLV2
 
       GameManager = new GameManager();
       Config = Config.Load(Cfgfile);
-      Config.Passwd = Config.Passwd ?? Array.Empty<byte>();
+      Config.Passwd ??= Array.Empty<byte>();
 
       Logger.Log($"加载{Cfgfile}文件");
       Logger.Log(Config);
