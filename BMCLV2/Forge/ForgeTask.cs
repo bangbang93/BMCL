@@ -8,6 +8,7 @@ using System.Windows;
 using BMCLV2.JsonClass;
 using BMCLV2.Launcher;
 using BMCLV2.Resource;
+using BMCLV2.util;
 
 namespace BMCLV2.Forge
 {
@@ -47,7 +48,7 @@ namespace BMCLV2.Forge
       ProcessChange("DownloadingForge");
       var url = forgeVersion.GetDownloadUrl();
       var downer = new Downloader.Downloader();
-      File.WriteAllText(Path.Combine(BmclCore.MinecraftDirectory, "launcher_profiles.json"), NormalProfile.Profile);
+      FileHelper.WriteFile(Path.Combine(BmclCore.MinecraftDirectory, "launcher_profiles.json"), NormalProfile.Profile);
 
       var installerPath = Path.Combine(BmclCore.TempDirectory, "forge.jar");
       await downer.DownloadFileTaskAsync(url, installerPath);

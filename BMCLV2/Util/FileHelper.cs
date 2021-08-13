@@ -58,5 +58,11 @@ namespace BMCLV2.util
             File.WriteAllText(path, content);
         }
 
+        public static void WriteFile(string path, byte[] content)
+        {
+          CreateDirectoryForFile(path);
+          File.WriteAllBytes(path, content);
+        }
+
     }
 }

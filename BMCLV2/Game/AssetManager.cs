@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using BMCLV2.JsonClass;
+using BMCLV2.util;
 using BMCLV2.Util;
 
 namespace BMCLV2.Game
@@ -51,10 +52,9 @@ namespace BMCLV2.Game
         {
           var savePath = Path.Combine(IndexesDirectory, $"{assetIndex?.Id ?? _versionInfo.Assets}.json");
           assetIndexString = await BmclCore.MirrorManager.CurrentMirror.Version.DownloadJson(url);
-          File.WriteAllText(savePath, assetIndexString);
+          FileHelper.WriteFile(savePath, assetIndexString);
           BmclCore.FileCache.Set(url, assetIndexString);
         }
-        // assets的json比较奇葩，不能直接通过反序列化得到
         var assetsObject = new JSON<Dictionary<string, Dictionary<string, AssetsIndex.Assets>>>().Parse(assetIndexString);
         _assetsIndex=  new AssetsIndex
         {
