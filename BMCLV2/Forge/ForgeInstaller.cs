@@ -72,7 +72,7 @@ namespace BMCLV2.Forge
           {
             var data = await BmclCore.MirrorManager.CurrentMirror.Version.DownloadJson(vanillaInfo.Downloads
               .ClientMappings.Url);
-            File.WriteAllText(Path.Combine(BmclCore.LibrariesDirectory,
+            FileHelper.WriteFile(Path.Combine(BmclCore.LibrariesDirectory,
               PathHelper.ParseJavaLibraryNameToPath(lib)), data);
           }
         }
