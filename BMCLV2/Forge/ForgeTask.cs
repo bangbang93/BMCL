@@ -65,14 +65,7 @@ namespace BMCLV2.Forge
         }
         else
         {
-          try
-          {
-            InstallForge(forgeVersion, installerPath);
-          }
-          catch (Exception ex)
-          {
-            Logger.Fatal(ex);
-          }
+          InstallForge(forgeVersion, installerPath);
         }
       }
       catch (Exception ex)

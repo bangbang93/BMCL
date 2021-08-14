@@ -9,14 +9,14 @@ namespace BMCLV2.Mirrors.BMCLAPI
   {
     public override async Task<VersionInfo[]> GetVersionList()
     {
-      var json = await Downloader.DownloadStringTaskAsync(new Uri("https://bmclapi2.bangbang93.com/optifine/versionList"));
+      var json = await Downloader.DownloadStringTaskAsync(new Uri("http://bmclapi2.bangbang93.com/optifine/versionList"));
       return JSON<VersionInfo[]>.ParseOnce(json);
     }
 
     public override async Task Download(string mcversion, string type, string patch, string path)
     {
       await Downloader.DownloadFileTaskAsync(
-        new Uri($"https://bmclapi2.bangbang93.com/optifine/{mcversion}/{type}/{patch}"), path);
+        new Uri($"http://bmclapi2.bangbang93.com/optifine/{mcversion}/{type}/{patch}"), path);
     }
   }
 }

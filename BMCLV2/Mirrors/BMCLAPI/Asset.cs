@@ -8,7 +8,7 @@ namespace BMCLV2.Mirrors.BMCLAPI
 {
     public class Asset : Interface.Asset
     {
-        private const string Server = "https://bmclapi2.bangbang93.com/";
+        private const string Server = "http://bmclapi2.bangbang93.com/";
         private readonly Regex _originServer = new Regex(@"https://launchermeta\.mojang\.com/");
 
         public override async Task GetAssetsObject(AssetsIndex.Assets assets, string savePath)

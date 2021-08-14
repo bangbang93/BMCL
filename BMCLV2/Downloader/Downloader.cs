@@ -30,12 +30,23 @@ namespace BMCLV2.Downloader
       Logger.Log($"url: {uri}, path: {path}");
       FileHelper.CreateDirectoryForFile(path);
       var buffer = await DownloadDataTaskAsync(uri);
-      File.WriteAllBytes(path, buffer);
+      FileHelper.WriteFile(path, buffer);
     }
 
     public new async Task DownloadFileTaskAsync(string uri, string path)
     {
       await DownloadFileTaskAsync(new Uri(uri), path);
+    }
+
+    protected override WebRequest GetWebRequest(Uri address)
+    {
+      var req =  base.GetWebRequest(address);
+      if (req is HttpWebRequest httpWebRequest)
+      {
+        httpWebRequest.AllowAutoRedirect = true;
+      }
+
+      return req;
     }
   }
 }
