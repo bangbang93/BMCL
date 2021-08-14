@@ -1,15 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.IO;
-using System.Diagnostics;
-using System.Net;
-using System.Threading;
-using System.Windows.Markup;
+using System.Windows.Threading;
 using BMCLV2.Util;
 using BMCLV2.Windows;
-using Application = System.Windows.Application;
-using MessageBox = System.Windows.MessageBox;
 
 namespace BMCLV2
 {
@@ -25,9 +22,8 @@ namespace BMCLV2
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            bool createNew;
-//            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, Process.GetCurrentProcess().ProcessName, out createNew);
-            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, $"BMCLNG:{Process.GetCurrentProcess().MainModule.FileName.Replace('\\', '_')}", out createNew);
+          //            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, Process.GetCurrentProcess().ProcessName, out createNew);
+            ProgramStarted = new EventWaitHandle(false, EventResetMode.AutoReset, $"BMCLNG:{Process.GetCurrentProcess().MainModule.FileName.Replace('\\', '_')}", out var createNew);
             if (!createNew)
             {
                 ProgramStarted.Set();
@@ -63,7 +59,7 @@ namespace BMCLV2
             }
             if (Array.IndexOf(e.Args, "-SkipPlugin") != -1)
             {
-                App.SkipPlugin = true;
+                SkipPlugin = true;
             }
             base.OnStartup(e);
         }
@@ -102,7 +98,7 @@ namespace BMCLV2
 
         // ReSharper disable once UnusedMember.Local
         // ReSharper disable once UnusedParameter.Local
-        private void Dispatcher_UnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private void Dispatcher_UnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             e.Handled = true;
             var resolved = new ErrorHandler(e.Exception).Resolve();
@@ -121,7 +117,7 @@ namespace BMCLV2
                 {
                     File.Copy(processName, "BMCL.exe", true);
                     Process.Start("BMCL.exe", "-Update " + processName);
-                    Application.Current.Shutdown(0);
+                    Current.Shutdown(0);
                     return;
                 }
                 catch (Exception e)
