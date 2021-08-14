@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net5.0-windows</TargetFramework>
     <OutputType>WinExe</OutputType>
@@ -43,9 +43,6 @@
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>BMCL.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System.IO.Compression" />
-  </ItemGroup>
   <ItemGroup>
     <Compile Update="Downloader\Downloader.cs">
       <SubType>Component</SubType>
@@ -97,16 +94,13 @@
     <PackageReference Include="Microsoft.DotNet.UpgradeAssistant.Extensions.Default.Analyzers" Version="0.2.237901">
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="5.0.2" />
+    <PackageReference Include="System.Management" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>
     <Compile Remove="Plugin\IBmclLauncher.cs" />
     <Compile Remove="Plugin\IBmclMirror.cs" />
   </ItemGroup>
   <PropertyGroup />
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
-  </ItemGroup>
   <ItemGroup>
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

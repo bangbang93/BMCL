@@ -40,15 +40,16 @@ namespace BMCLV2
   [DataContract]
   public class SysInfoSchema
   {
-    [DataMember(Name = "memory")] public string Memory;
-    [DataMember(Name = "cpu")] public string Cpu;
     [DataMember(Name = "bit")] public string Bit;
-    [DataMember(Name = "video")] public string Video;
+    [DataMember(Name = "cpu")] public string Cpu;
+    [DataMember(Name = "memory")] public string Memory;
     [DataMember(Name = "system")] public string System;
+    [DataMember(Name = "video")] public string Video;
 
     public SysInfoSchema()
     {
       var capacity = 0.0;
+
       var cimobject1 = new ManagementClass("Win32_PhysicalMemory");
       var moc1 = cimobject1.GetInstances();
       foreach (var o in moc1)
@@ -81,10 +82,7 @@ namespace BMCLV2
       {
         var searcher = new ManagementClass("Win32_VideoController");
         var moc = searcher.GetInstances();
-        foreach (var mo in moc)
-        {
-          Video += mo["Name"].ToString().Trim() + "\n";
-        }
+        foreach (var mo in moc) Video += mo["Name"].ToString().Trim() + "\n";
       }
       catch
       {
