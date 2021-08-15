@@ -22,5 +22,5 @@
   <Button Command="{x:Static md:DialogHost.CloseDialogCommand}" Content="OK" Margin="10" Grid.Row="1" Grid.Column="0"
           CommandParameter="true" Name="BtnOk" />
   <Button Command="{x:Static md:DialogHost.CloseDialogCommand}" Content="CANCEL" Margin="10" Grid.Row="1"
-          Grid.Column="1" CommandParameter="false" />
+          Grid.Column="1" CommandParameter="false" Style="{DynamicResource MaterialDesignRaisedAccentButton}"/>
 </Grid>
