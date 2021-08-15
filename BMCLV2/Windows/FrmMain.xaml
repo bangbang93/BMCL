@@ -5,7 +5,8 @@
         xmlns:mainWindowTab="clr-namespace:BMCLV2.Windows.MainWindowTab" x:Name="FrmMainWindow" x:Class="BMCLV2.Windows.FrmMain"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
         Background="{DynamicResource MaterialDesignPaper}"
-        Title="BMCLV2" Height="504" Width="900" ResizeMode="NoResize" WindowStyle="None" Loaded="FrmMainWindow_Loaded" MouseDown="FrmMainWindow_MouseDown" AllowsTransparency="True" Closing="FrmMainWindow_Closing" IsVisibleChanged="FrmMainWindow_IsVisibleChanged" Icon="..\tofu.ico" GotFocus="FrmMainWindow_GotFocus" Activated="FrmMainWindow_Activated">
+        Title="BMCL MineCraft Launcher"
+        Height="504" Width="900" ResizeMode="NoResize" WindowStyle="None" Loaded="FrmMainWindow_Loaded" MouseDown="FrmMainWindow_MouseDown" AllowsTransparency="True" Closing="FrmMainWindow_Closing" IsVisibleChanged="FrmMainWindow_IsVisibleChanged" Icon="..\tofu.ico" GotFocus="FrmMainWindow_GotFocus" Activated="FrmMainWindow_Activated">
   <Window.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
