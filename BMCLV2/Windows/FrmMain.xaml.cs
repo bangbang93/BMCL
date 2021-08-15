@@ -13,7 +13,6 @@ using BMCLV2.Config;
 using BMCLV2.Exceptions;
 using BMCLV2.Game;
 using BMCLV2.I18N;
-using BMCLV2.Texturepack;
 using BMCLV2.Themes;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
@@ -68,11 +67,6 @@ namespace BMCLV2.Windows
             GridConfig.chkLaunchMode.IsChecked = BmclCore.Config.LaunchMode == LaunchMode.Standalone;
         }
 
-        public void SwitchStartButton(bool isenable)
-        {
-            btnStart.IsEnabled = isenable;
-        }
-
         public void ClickStartButton()
         {
             if (btnStart.IsEnabled)
@@ -95,11 +89,6 @@ namespace BMCLV2.Windows
         public void SwitchDownloadGrid(Visibility visibility)
         {
             gridDown.Visibility = visibility;
-        }
-
-        public void SetDownloadInfo(string info)
-        {
-            labDownInfo.Content = info;
         }
 
         #region 公共按钮
@@ -241,51 +230,6 @@ namespace BMCLV2.Windows
             Hide();
             BmclCore.NIcon.NIcon.ShowBalloonTip(2000, "BMCL", LangManager.GetLangFromResource("BMCLHiddenInfo"), ToolTipIcon.Info);
         }
-        private void MenuSelectFile_Click(object sender, RoutedEventArgs e)
-        {
-            var ofbg = new OpenFileDialog
-            {
-                CheckFileExists = true,
-                Filter = @"支持的图片|*.jpg;*.png;*.bmp",
-                Multiselect = false
-            };
-            string pic;
-            if (ofbg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                pic = ofbg.FileName;
-            else
-                return;
-            var b = new ImageBrush {ImageSource = new BitmapImage(new Uri((pic))), Stretch = Stretch.Fill};
-            var da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
-            BeginAnimation(OpacityProperty, da);
-            Container.Background = b;
-            da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
-            BeginAnimation(OpacityProperty, da);
-        }
-        private void MenuSelectTexturePack_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("这是个正在试验的功能，请不要报告有关任何该功能的bug");
-            var frmTexturepack = new FrmTexturepack();
-            frmTexturepack.ShowDialog();
-            TexturePackEntity texture = frmTexturepack.GetSelected();
-            var b = new ImageBrush();
-            var bitmap = new BitmapImage();
-            bitmap.BeginInit();
-            bitmap.StreamSource = texture.GuiBackground;
-            bitmap.EndInit();
-            b.ImageSource = bitmap;
-            b.ViewportUnits = BrushMappingMode.Absolute;
-            b.Viewport = new Rect(0, 0, bitmap.Width, bitmap.Height);
-            b.Stretch = Stretch.None;
-            b.TileMode = TileMode.Tile;
-            var button = new ImageBrush {ImageSource = texture.GuiButton.Source};
-
-            var da = new DoubleAnimation(1, 0, TimeSpan.FromSeconds(0.25));
-            BeginAnimation(OpacityProperty, da);
-            Container.Background = b;
-            btnStart.Background = button;
-            da = new DoubleAnimation(0, 1, TimeSpan.FromSeconds(0.25));
-            BeginAnimation(OpacityProperty, da);
-        }
         #endregion
 
         public bool LoadOk;
@@ -312,7 +256,7 @@ namespace BMCLV2.Windows
             try
             {
                 var rand = new Random();
-                int img = rand.Next(Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg").Length);
+                var img = rand.Next(Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\bg").Length);
                 var b = new ImageBrush
                 {
                     ImageSource =
@@ -324,9 +268,9 @@ namespace BMCLV2.Windows
             }
             catch
             {
-                var b=new SolidColorBrush(Color.FromRgb(255,255,255));
-                Container.Background = b;
+              // ignored
             }
+
             LoadOk = true;
         }
         private void FrmMainWindow_MouseDown(object sender, MouseButtonEventArgs e)

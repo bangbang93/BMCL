@@ -89,6 +89,7 @@
     <Resource Include="Resource\tabitem.png" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="4.2.0-ci2657" />
     <PackageReference Include="System.Management" Version="5.0.0" />
   </ItemGroup>
   <ItemGroup>

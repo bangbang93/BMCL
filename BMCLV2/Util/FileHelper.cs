@@ -4,39 +4,21 @@ namespace BMCLV2.util
 {
     internal static class FileHelper
     {
-        public static void Dircopy(string from, string to)
+        public static void CopyDir(string from, string to)
         {
-            DirectoryInfo dir = new DirectoryInfo(from);
+            var dir = new DirectoryInfo(from);
             if (!Directory.Exists(to))
             {
                 Directory.CreateDirectory(to);
             }
-            foreach (DirectoryInfo sondir in dir.GetDirectories())
+            foreach (var subDir in dir.GetDirectories())
             {
-                Dircopy(sondir.FullName, to + "\\" + sondir.Name);
+                CopyDir(subDir.FullName, to + "\\" + subDir.Name);
             }
-            foreach (FileInfo file in dir.GetFiles())
+            foreach (var file in dir.GetFiles())
             {
                 File.Copy(file.FullName, to + "\\" + file.Name, true);
             }
-        }
-
-        public static bool IfFileVaild(string path, long length = -1)
-        {
-            if (!File.Exists(path))
-            {
-                return false;
-            }
-            if (new FileInfo(path).Length == 0)
-            {
-                return false;
-            }
-            if (length != -1)
-            {
-                if (new FileInfo(path).Length != length)
-                    return false;
-            }
-            return true;
         }
 
         public static void CreateDirectoryIfNotExist(string dir)

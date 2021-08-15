@@ -1,35 +1,33 @@
-﻿<Grid x:Class="BMCLV2.Windows.MainWindowTab.GridGame"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Background="#50FFFFFF">
-    <Grid.Resources>
-        <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="../Style.xaml"></ResourceDictionary>
-            </ResourceDictionary.MergedDictionaries>
-        </ResourceDictionary>
-    </Grid.Resources>
-    <ListBox x:Name="listVer" HorizontalAlignment="Left" Height="374" VerticalAlignment="Top" Width="243" SelectionChanged="listVer_SelectionChanged" Background="#A0FFFFFF" Margin="0,10,0,0" MouseDoubleClick="listVer_MouseDoubleClick" ToolTip="双击版本号也可启动" Grid.ColumnSpan="2"/>
-    <Button x:Name="btnDelete" Content="{DynamicResource btnDelete}" HorizontalAlignment="Left" Margin="447,205,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnDelete_Click" BorderBrush="{x:Null}"  Style="{StaticResource NormalButtonStyle}" IsEnabled="False">
-    </Button>
-    <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="119" Margin="270,10,0,0" VerticalAlignment="Top" Width="567" Background="#A0FFFFFF">
-        <Grid>
-            <Label x:Name="llabVer" Content="{DynamicResource llabVer}" HorizontalAlignment="Left" Margin="2,-2,0,0" VerticalAlignment="Top"/>
-            <Label x:Name="llabTime" Content="{DynamicResource llabTime}" HorizontalAlignment="Left" Margin="2,29,0,0" VerticalAlignment="Top"/>
-            <Label x:Name="llabRelTime" Content="{DynamicResource llabRelTime}" HorizontalAlignment="Left" Margin="2,60,0,0" VerticalAlignment="Top"/>
-            <Label x:Name="llabType" Content="{DynamicResource llabType}" HorizontalAlignment="Left" Margin="2,91,0,0" VerticalAlignment="Top"/>
-            <Label x:Name="labTime" Content="" HorizontalAlignment="Left" Margin="89,29,0,0" VerticalAlignment="Top"/>
-            <Label x:Name="labVer" Content="" HorizontalAlignment="Left" Margin="89,-2,0,0" VerticalAlignment="Top"/>
-            <Label x:Name="labRelTime" Content="" HorizontalAlignment="Left" Margin="89,60,0,0" VerticalAlignment="Top"/>
-            <Label x:Name="labType" Content="" HorizontalAlignment="Left" Margin="89,91,0,0" VerticalAlignment="Top"/>
-        </Grid>
-    </Border>
-    <Button x:Name="btnReName" Content="{DynamicResource btnReName}" HorizontalAlignment="Left" Margin="556,205,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnReName_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}" IsEnabled="False">
-    </Button>
-    <Button x:Name="btnModMrg" Content="{DynamicResource btnModMrg}" HorizontalAlignment="Left" Margin="447,248,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModMrg_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}" IsEnabled="False">
-    </Button>
-    <Button x:Name="btnModCfgMrg" Content="{DynamicResource btnModCfgMrg}" HorizontalAlignment="Left" Margin="557,248,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModCfgMrg_Click" BorderBrush="{x:Null}" Style="{StaticResource NormalButtonStyle}" IsEnabled="False">
-    </Button>
+<Grid x:Class="BMCLV2.Windows.MainWindowTab.GridGame"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
+      mc:Ignorable="d"
+      Background="{DynamicResource MaterialDesignPaper}">
+  <ListBox x:Name="listVer" HorizontalAlignment="Left" Height="374" VerticalAlignment="Top" Width="243"
+                                                                    SelectionChanged="listVer_SelectionChanged" Margin="0,10,0,0" MouseDoubleClick="listVer_MouseDoubleClick"
+                                                                    ToolTip="双击版本号也可启动" Grid.ColumnSpan="2"/>
+  <Button x:Name="btnDelete" Content="{DynamicResource btnDelete}" HorizontalAlignment="Left" Margin="447,205,0,0"
+          VerticalAlignment="Top" Width="105" Height="38" Click="btnDelete_Click" IsEnabled="False" />
+  <md:Card HorizontalAlignment="Left" Height="119" Margin="270,10,0,0" VerticalAlignment="Top" Width="567">
+    <Grid>
+      <Label Content="{DynamicResource llabVer}" HorizontalAlignment="Left" Margin="2,-2,0,0" VerticalAlignment="Top" />
+      <Label Content="{DynamicResource llabTime}" HorizontalAlignment="Left" Margin="2,29,0,0" VerticalAlignment="Top" />
+      <Label Content="{DynamicResource llabRelTime}" HorizontalAlignment="Left" Margin="2,60,0,0"
+             VerticalAlignment="Top" />
+      <Label Content="{DynamicResource llabType}" HorizontalAlignment="Left" Margin="2,91,0,0" VerticalAlignment="Top" />
+      <Label x:Name="labTime" Content="" HorizontalAlignment="Left" Margin="89,29,0,0" VerticalAlignment="Top" />
+      <Label x:Name="labVer" Content="" HorizontalAlignment="Left" Margin="89,-2,0,0" VerticalAlignment="Top" />
+      <Label x:Name="labRelTime" Content="" HorizontalAlignment="Left" Margin="89,60,0,0" VerticalAlignment="Top" />
+      <Label x:Name="labType" Content="" HorizontalAlignment="Left" Margin="89,91,0,0" VerticalAlignment="Top" />
+    </Grid>
+  </md:Card>
+  <Button x:Name="btnReName" Content="{DynamicResource btnReName}" HorizontalAlignment="Left" Margin="556,205,0,0"
+          VerticalAlignment="Top" Width="105" Height="38" Click="btnReName_Click" IsEnabled="False" />
+  <Button x:Name="btnModMrg" Content="{DynamicResource btnModMrg}" HorizontalAlignment="Left" Margin="447,248,0,0"
+          VerticalAlignment="Top" Width="105" Height="38" Click="btnModMrg_Click" IsEnabled="False" />
+  <Button x:Name="btnModCfgMrg" Content="{DynamicResource btnModCfgMrg}" HorizontalAlignment="Left"
+          Margin="557,248,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModCfgMrg_Click" IsEnabled="False" />
 </Grid>
