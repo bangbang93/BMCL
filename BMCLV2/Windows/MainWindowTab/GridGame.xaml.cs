@@ -9,7 +9,6 @@ using System.Windows.Input;
 using BMCLV2.Components;
 using BMCLV2.Exceptions;
 using BMCLV2.I18N;
-using BMCLV2.Model;
 using MaterialDesignThemes.Wpf;
 
 namespace BMCLV2.Windows.MainWindowTab

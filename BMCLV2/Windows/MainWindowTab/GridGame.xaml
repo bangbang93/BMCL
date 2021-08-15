@@ -5,18 +5,13 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:md="http://materialdesigninxaml.net/winfx/xaml/themes"
       xmlns:mainWindowTab="clr-namespace:BMCLV2.Windows.MainWindowTab"
-      xmlns:model="clr-namespace:BMCLV2.Model"
       mc:Ignorable="d"
       Background="{DynamicResource MaterialDesignPaper}"
-      d:DataContext="{d:DesignInstance mainWindowTab:GridGame}"
-      >
-
-  <md:DialogHost d:DataContext="{d:DesignInstance model:InputDialogModel}">
-    <Grid>
+      d:DataContext="{d:DesignInstance mainWindowTab:GridGame}">
 
   <ListBox x:Name="listVer" HorizontalAlignment="Left" Height="374" VerticalAlignment="Top" Width="243"
            SelectionChanged="listVer_SelectionChanged" Margin="0,10,0,0" MouseDoubleClick="listVer_MouseDoubleClick"
-           ToolTip="双击版本号也可启动" Grid.ColumnSpan="2"/>
+           ToolTip="双击版本号也可启动" Grid.ColumnSpan="2" />
   <Button x:Name="btnDelete" Content="{DynamicResource btnDelete}" HorizontalAlignment="Left" Margin="447,205,0,0"
           VerticalAlignment="Top" Width="105" Height="38" Click="btnDelete_Click" IsEnabled="False" />
   <md:Card HorizontalAlignment="Left" Height="119" Margin="270,10,0,0" VerticalAlignment="Top" Width="567">
@@ -37,7 +32,6 @@
   <Button x:Name="btnModMrg" Content="{DynamicResource btnModMrg}" HorizontalAlignment="Left" Margin="447,248,0,0"
           VerticalAlignment="Top" Width="105" Height="38" Click="btnModMrg_Click" IsEnabled="False" />
   <Button x:Name="btnModCfgMrg" Content="{DynamicResource btnModCfgMrg}" HorizontalAlignment="Left"
-          Margin="557,248,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModCfgMrg_Click" IsEnabled="False" />
-    </Grid>
-  </md:DialogHost>
+          Margin="557,248,0,0" VerticalAlignment="Top" Width="105" Height="38" Click="btnModCfgMrg_Click"
+          IsEnabled="False" />
 </Grid>
