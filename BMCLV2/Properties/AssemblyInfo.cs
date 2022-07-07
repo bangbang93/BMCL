@@ -10,7 +10,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("bangbang93")]
 [assembly: AssemblyProduct("BMCLNG")]
-[assembly: AssemblyCopyright("Copyright ©  2014-2021")]
+[assembly: AssemblyCopyright("Copyright ©  2014-2022")]
 [assembly: AssemblyTrademark("BMCL")]
 [assembly: AssemblyCulture("")]
 
@@ -30,12 +30,12 @@ using System.Windows;
 
 
 [assembly: ThemeInfo(
-    ResourceDictionaryLocation.None, //主题特定资源词典所处位置
-    //(在页面或应用程序资源词典中
-    // 未找到某个资源的情况下使用)
-    ResourceDictionaryLocation.SourceAssembly //常规资源词典所处位置
-    //(在页面、应用程序或任何主题特定资源词典中
-    // 未找到某个资源的情况下使用)
+  ResourceDictionaryLocation.None, //主题特定资源词典所处位置
+  //(在页面或应用程序资源词典中
+  // 未找到某个资源的情况下使用)
+  ResourceDictionaryLocation.SourceAssembly //常规资源词典所处位置
+  //(在页面、应用程序或任何主题特定资源词典中
+  // 未找到某个资源的情况下使用)
 )]
 
 
@@ -49,4 +49,4 @@ using System.Windows;
 // 可以指定所有这些值，也可以使用“生成号”和“修订号”的默认值，
 // 方法是按如下所示使用“*”:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("4.13.0.2121")]
+[assembly: AssemblyVersion("5.0.0.2200")]
