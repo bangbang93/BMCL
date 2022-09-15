@@ -55,8 +55,10 @@ namespace BMCLV2.Game
           FileHelper.WriteFile(savePath, assetIndexString);
           BmclCore.FileCache.Set(url, assetIndexString);
         }
-        var assetsObject = new JSON<Dictionary<string, Dictionary<string, AssetsIndex.Assets>>>().Parse(assetIndexString);
-        _assetsIndex=  new AssetsIndex
+
+        var assetsObject =
+          new JSON<Dictionary<string, Dictionary<string, AssetsIndex.Assets>>>().Parse(assetIndexString);
+        _assetsIndex = new AssetsIndex
         {
           Objects = assetsObject["objects"]
         };
@@ -91,6 +93,10 @@ namespace BMCLV2.Game
         catch (WebException exception)
         {
           Logger.Log($"{index}/{_assetsIndex.Objects.Count} SyncFailed {obj.Path}");
+          Logger.Fatal(exception);
+        }
+        catch (IOException exception)
+        {
           Logger.Fatal(exception);
         }
         finally

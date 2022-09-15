@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Management;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -20,6 +19,7 @@ namespace BMCLV2
 {
   public static class BmclCore
   {
+    public const string OS = "windows";
     public static readonly Config.Config Config;
     public static readonly GameManager GameManager;
     public static readonly string BmclVersion;
@@ -39,11 +39,8 @@ namespace BMCLV2
     public static readonly PluginManager PluginManager = new();
     public static readonly AuthManager AuthManager = new();
     public static readonly FileCache FileCache = new();
-
-    public const string OS = "windows";
     public static readonly string Arch = "x86";
     public static readonly string OSVersion = Environment.OSVersion.VersionString;
-    public static string Platform => $"{OS}-{Arch}";
 
     private static readonly Application ThisApplication = Application.Current;
     private static readonly string Cfgfile = Path.Combine(BaseDirectory, "bmcl.xml");
@@ -80,21 +77,12 @@ namespace BMCLV2
       LangManager.UseLanguage(Config.Lang);
       if (!App.SkipPlugin) PluginManager.LoadOldAuthPlugin(LangManager.GetLangFromResource("LangName"));
       ServicePointManager.DefaultConnectionLimit = int.MaxValue;
-      try //系统位数，系统名称
-      {
-        var searcher = new ManagementClass("WIN32_Processor");
-        var moc = searcher.GetInstances();
-        foreach (var mo in moc)
-        {
-          Arch = mo["AddressWidth"].ToString() == "64" ? "x86" : "x64";
-        }
-      }
-      catch
-      {
-        // ignored
-      }
+      Arch = Environment.Is64BitOperatingSystem ? "x64" : "x86";
+      Logger.Log($"arch{Arch}");
       ReleaseCheck();
     }
+
+    public static string Platform => $"{OS}-{Arch}";
 
     private static async Task ReleaseCheck()
     {
